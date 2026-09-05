@@ -30,7 +30,7 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
   place(triumphalArch(), -26, -9, -0.1);
   place(basilica(), -26, -21, 0.05).scale.setScalar(0.85);
   place(treviFountain(), -32, 5, Math.PI / 2);   // west end, facing the paddock and the piazza
-  place(cafeTables(), -3, 4.5, 0.5);
+  place(cafeTables(), -15, -4.6, 0);
   for (const [x, z, rot, len] of [[-24, 2.2, 0, 6], [-24, 7.8, 0, 6], [-27, 5, Math.PI / 2, 5.6], [-21, 5, Math.PI / 2, 5.6]] as [number, number, number, number][]) { const f = new THREE.Group(); const n = Math.round(len / 1.1); for (let i = 0; i <= n; i++) add(f, new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.7, 0.09), mat("#6e4a2c")), -len / 2 + (i / n) * len, 0.35, 0); add(f, new THREE.Mesh(new THREE.BoxGeometry(len, 0.06, 0.05), mat("#8b5e3c")), 0, 0.55, 0); add(f, new THREE.Mesh(new THREE.BoxGeometry(len, 0.06, 0.05), mat("#8b5e3c")), 0, 0.3, 0); place(f, x, z, rot); }
   group.add(path([[-30, -10], [-22, -8], [-14, -8], [-6, -6], [2, -4], [8, -6]], 2.6, "#cdbfa2"));
   group.add(path([[-10, 8], [-9, 12], [-6, 18], [-2, 22]], 1.8, "#cdbfa2"));

@@ -255,9 +255,10 @@ export function italyMarket(): P {
   };
   const layout: [string, string, number, number, number][] = [["tomato", "#c9413f", -4.2, -2.2, 0.5], ["cheese", "#e9c46a", 0, -2.8, 0], ["salumi", "#8e2a22", 4.2, -2.2, -0.5], ["herbs", "#2f5d3f", 4.2, 2.2, -2.6], ["oil", "#3f6b3f", -4.2, 2.2, 2.6]];
   for (const [k, c, x, z, rot] of layout) { const s = stall(k, c); s.position.set(x, 0, z); s.rotation.y = rot; g.add(s); }
-  add(g, fountain(), 0, 0, 1.2).scale.setScalar(0.55);
+  // a flower cart in the middle instead of a fountain, so nobody wades
+  add(g, box(1.4, 0.5, 0.8, IT.wood), 0, 0.55, 1.2); for (let i = 0; i < 8; i++) add(g, ball(0.1, pick(["#e8563f", "#f2b64d", "#e07aa0", "#f4f1ea"]), 6), -0.55 + (i % 4) * 0.37, 0.92, 1.0 + Math.floor(i / 4) * 0.4); add(g, cyl(0.2, 0.2, 0.08, "#2a2a2a", 10), 0.6, 0.2, 1.2).rotation.x = Math.PI / 2;
   // shoppers stroll between stalls
-  const spots = layout.map(([, , x, z]) => new THREE.Vector3(x * 0.6, 0, z * 0.55)); spots.push(new THREE.Vector3(-2, 0, 0), new THREE.Vector3(2, 0, 0));
+  const spots = layout.map(([, , x, z]) => new THREE.Vector3(x * 0.6, 0, z * 0.55)); spots.push(new THREE.Vector3(-2.2, 0, -0.3), new THREE.Vector3(2.2, 0, -0.3));
   const shoppers = [0, 1, 2, 3].map((i) => { const p = person(pick(["#c0392b", "#e0a52c", "#3f6b8f", "#f4f1ea"])); const st = spots[i * 2 % spots.length].clone(); p.position.copy(st); g.add(p); return { p, pos: st, target: spots[(i * 3 + 1) % spots.length].clone(), wait: i, speed: 0.7 + rnd() * 0.4 }; });
   // pigeons
   const pigeons: THREE.Group[] = [];

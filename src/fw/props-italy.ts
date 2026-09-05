@@ -513,9 +513,9 @@ export function etna(): P {
 export function citrusGrove(): P {
   const g = group();
   for (let i = 0; i < 3; i++) for (let j = 0; j < 4; j++) add(g, citrusTree(j % 2 ? "lemon" : "orange", 0.9 + rnd() * 0.25), -4 + j * 2.6, 0, -2.4 + i * 2.4);
-  add(g, box(9.5, 0.3, 0.3, IT.stone), 0, 0.15, 3.6);
-  add(g, person("#e0a52c", { hat: true }), 3.2, 0, 3.8);
-  const crate = add(g, box(0.6, 0.3, 0.45, "#a37a4f"), 4.2, 0.15, 3.9); for (let k = 0; k < 6; k++) add(crate, ball(0.09, k % 2 ? IT.lemon : IT.orange, 6), (rnd() - 0.5) * 0.45, 0.18, (rnd() - 0.5) * 0.3);
+  add(g, box(9.5, 0.3, 0.3, IT.stone), 0, 0.15, 3.0);
+  add(g, person("#e0a52c", { hat: true }), 3.2, 0, -3.4);
+  const crate = add(g, box(0.6, 0.3, 0.45, "#a37a4f"), 4.2, 0.15, -3.4); for (let k = 0; k < 6; k++) add(crate, ball(0.09, k % 2 ? IT.lemon : IT.orange, 6), (rnd() - 0.5) * 0.45, 0.18, (rnd() - 0.5) * 0.3);
   const falling: THREE.Mesh[] = [];
   const re = reaction(0.7);
   g.userData.poke = () => { re.poke(); for (let i = 0; i < 8; i++) { const f = add(g, ball(0.09, i % 2 ? IT.lemon : IT.orange, 6), -4 + Math.floor(rnd() * 4) * 2.6 + (rnd() - 0.5) * 0.8, 1.2 + rnd() * 0.5, -2.4 + Math.floor(rnd() * 3) * 2.4 + (rnd() - 0.5) * 0.8); f.userData.v = 0; f.userData.life = 0; falling.push(f); } };

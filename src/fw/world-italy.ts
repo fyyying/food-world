@@ -37,7 +37,7 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
   group.add(path([[-2, -4], [4, 0], [8, 6], [10, 10]], 1.6, "#cdbfa2"));
   place(colosseum(), -28, 12, 0.3);
   for (let i = 0; i < 7; i++) place(umbrellaPine(0.9 + (i % 3) * 0.15), -34 + i * 2.4, -2 + Math.sin(i) * 1.2, i);
-  for (let i = 0; i < 5; i++) place(umbrellaPine(1.0), -20 + i * 3, 20 + (i % 2) * 1.5, i);
+  for (let i = 0; i < 5; i++) place(umbrellaPine(1.0), -22 + i * 3, 16.5 + (i % 2) * 1.2, i);
   for (let i = 0; i < 5; i++) place(cypress(0.9 + (i % 2) * 0.2), -14 + i * 1.3, -22, i);
   for (let i = 0; i < 4; i++) place(cypress(1.0), -2 + i * 1.3, -22, i);
   // Roman streets of ochre houses around the piazza
@@ -109,7 +109,7 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
   tickers.push((t) => { const u = (t * 0.006) % 1; const p = sail.getPointAt(u), n = sail.getPointAt((u + 0.005) % 1); sailer.position.set(p.x, TOP + 0.05, p.z); sailer.rotation.y = Math.atan2(n.x - p.x, n.z - p.z) - Math.PI / 2; });
   place(etna(), 26.5, 9, 0.4).scale.setScalar(0.8);
   place(baroqueChurch(), 0, 19, 0.05);
-  for (let i = 0; i < 4; i++) place(pricklyPear(), 22 + i * 2.2, 18 + (i % 2) * 1.2, i);
+  for (let i = 0; i < 4; i++) place(pricklyPear(), 29 + i * 1.9, 18.2 + (i % 2) * 1.0, i);
   for (let i = 0; i < 6; i++) place(oliveTree(0.9), -12 + i * 2.2, 12 + (i % 2) * 1.6, i);
   // a small harbour mole with a lighthouse
   add(group, new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.6, 7), mat(IT.stone)), 14, 0.3, 24.5);

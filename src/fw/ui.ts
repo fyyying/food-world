@@ -15,7 +15,7 @@ export type UiHandlers = {
 };
 
 const card = () => document.getElementById("card")!;
-const ICON_KEYS: Record<string, true> = { tomato: true, pasta: true, olive: true, cheese: true, basil: true, italyBeef: true, italyChicken: true, mushrooms: true, lemon: true, seafood: true, oven: true, ragu: true, gelateria: true, bacaro: true, "stall-arancini": true, pastry: true, garlic: true, spices: true, fish: true, chilli: true, pepper: true, jars: true, tofu: true, veg: true, mushroom: true, rice: true, wheat: true, cow: true, pig: true, chicken: true, aromatics: true, wok: true, claypot: true, griddle: true, prep: true, noodle: true, dumpling: true, hotpot: true, teahouse: true };
+const ICON_KEYS: Record<string, true> = { kimchi: true, hanwoo: true, riceKr: true, namul: true, seafoodKr: true, tangerine: true, blackPig: true, gochugaru: true, aromaticsKr: true, grill: true, dolsot: true, gwangjang: true, pojangmacha: true, "stall-gimbap": true, tomato: true, pasta: true, olive: true, cheese: true, basil: true, italyBeef: true, italyChicken: true, mushrooms: true, lemon: true, seafood: true, oven: true, ragu: true, gelateria: true, bacaro: true, "stall-arancini": true, pastry: true, garlic: true, spices: true, fish: true, chilli: true, pepper: true, jars: true, tofu: true, veg: true, mushroom: true, rice: true, wheat: true, cow: true, pig: true, chicken: true, aromatics: true, wok: true, claypot: true, griddle: true, prep: true, noodle: true, dumpling: true, hotpot: true, teahouse: true };
 
 /** Which world object a "paired with" word points at, so every partner that exists in the world is clickable. */
 const PARTNER_ALIASES: [RegExp, string][] = [
@@ -23,6 +23,9 @@ const PARTNER_ALIASES: [RegExp, string][] = [
   [/tofu|soy ?bean/i, "tofu"], [/pork|belly/i, "pig"], [/beef/i, "cow"], [/chicken/i, "chicken"], [/\brice\b/i, "rice"],
   [/noodle|wheat|wrapper|pancake|dough/i, "wheat"], [/shiitake|mushroom/i, "mushroom"], [/cucumber|celery|potato|greens|cabbage|carrot/i, "veg"],
   [/cumin|star anise|five.spice|cassia|cinnamon|fennel/i, "spices"], [/fish|prawn|shrimp/i, "fish"],
+  // Korea
+  [/kimchi/i, "kimchi"], [/gochu|pepper flakes|ssamjang|chilli|chili/i, "gochugaru"], [/hanwoo|bulgogi|beef/i, "hanwoo"], [/pork|belly|samgyeopsal/i, "blackPig"], [/namul|spinach|sprout|lettuce|perilla|carrot|zucchini|vegetable/i, "namul"],
+  [/tangerine|honey|tea/i, "tangerine"], [/\brice\b|\bbap\b/i, "riceKr"], [/garlic|scallion|sesame|soy|ginger|onion|doenjang/i, "aromaticsKr"], [/fish|seafood|anchovy|shrimp|squid|abalone/i, "seafoodKr"], [/grill|barbecue|charcoal/i, "grill"], [/\begg\b|yolk/i, "dolsot"],
   // Italy
   [/tomato/i, "tomato"], [/pasta|lasagn|ragù|ragu/i, "pasta"], [/olive oil|olive/i, "olive"], [/parmesan|mozzarella|cheese|pecorino|ricotta|cream|butter/i, "cheese"],
   [/basil|pesto|herb|rosemary|parsley|oregano|pine nut/i, "basil"], [/beef|pork|salami|prosciutto|soffritto|mince/i, "italyBeef"], [/lemon|orange|citrus/i, "lemon"], [/mushroom|porcini/i, "mushrooms"],
@@ -30,9 +33,13 @@ const PARTNER_ALIASES: [RegExp, string][] = [
   [/garlic|ginger|scallion|onion|cilantro|soy sauce|vinegar|sesame|sugar|wine|stock|pickled mustard/i, "garlic"],
 ];
 function partnerObject(p: string, self: WorldObject, all: WorldObject[]): WorldObject | undefined {
-  const hit = PARTNER_ALIASES.find(([re]) => re.test(p));
-  const obj = hit ? all.find((x) => x.id === hit[1]) : undefined;
-  return obj && obj.id !== self.id ? obj : undefined;
+  // the first alias whose object actually exists in this world wins, so "pork" is the pig in China and the black pig in Jeju
+  for (const [re, id] of PARTNER_ALIASES) {
+    if (!re.test(p)) continue;
+    const obj = all.find((x) => x.id === id);
+    if (obj && obj.id !== self.id) return obj;
+  }
+  return undefined;
 }
 const thumb = (r: EnrichedRecipe) => (r.imageUrl ? `style="background-image:url(${imageUrl(r.id)})"` : "");
 

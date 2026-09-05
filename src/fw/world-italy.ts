@@ -30,7 +30,7 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
   place(triumphalArch(), -26, -9, -0.1);
   place(basilica(), -26, -21, 0.05).scale.setScalar(0.85);
   place(treviFountain(), -32, 2, Math.PI / 2).scale.setScalar(0.7);   // smaller, at the quiet west end, facing the piazza
-  place(cafeTables(), -15, -4.6, 0);
+  place(cafeTables(), -12.5, -16.5, 0);
   for (const [x, z, rot, len] of [[-20, 9.2, 0, 6], [-20, 14.8, 0, 6], [-23, 12, Math.PI / 2, 5.6], [-17, 12, Math.PI / 2, 5.6]] as [number, number, number, number][]) { const f = new THREE.Group(); const n = Math.round(len / 1.1); for (let i = 0; i <= n; i++) add(f, new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.7, 0.09), mat("#6e4a2c")), -len / 2 + (i / n) * len, 0.35, 0); add(f, new THREE.Mesh(new THREE.BoxGeometry(len, 0.06, 0.05), mat("#8b5e3c")), 0, 0.55, 0); add(f, new THREE.Mesh(new THREE.BoxGeometry(len, 0.06, 0.05), mat("#8b5e3c")), 0, 0.3, 0); place(f, x, z, rot); }
   group.add(path([[-30, -10], [-22, -8], [-14, -8], [-6, -6], [2, -4], [8, -6]], 2.6, "#cdbfa2"));
   group.add(path([[-10, 8], [-9, 12], [-6, 18], [-2, 22]], 1.8, "#cdbfa2"));
@@ -129,7 +129,7 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
   const walkers = ["#3f6b8f", "#e0a52c", "#c0392b", "#f4f1ea", "#2f5d3f", "#e07aa0", "#7a4a3a", "#2a2a2e", "#6a7fb0", "#e9d7b8"].map((c, i) => person(c, { hat: i % 4 === 1 }));
   walkers.forEach((w) => group.add(w));
   const loop = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-26, 0, -9), new THREE.Vector3(-20, 0, -8), new THREE.Vector3(-13, 0, -8), new THREE.Vector3(-6, 0, -7), new THREE.Vector3(0, 0, -6.5), new THREE.Vector3(6, 0, -7.5),
+    new THREE.Vector3(-26, 0, -9), new THREE.Vector3(-20, 0, -9), new THREE.Vector3(-13, 0, -9), new THREE.Vector3(-6, 0, -7.5), new THREE.Vector3(0, 0, -6.5), new THREE.Vector3(6, 0, -7.5),
     new THREE.Vector3(3, 0, -5), new THREE.Vector3(4, 0, 0), new THREE.Vector3(5.5, 0, 5), new THREE.Vector3(6, 0, 9), new THREE.Vector3(3, 0, 10.5), new THREE.Vector3(-2, 0, 8),
     new THREE.Vector3(-7, 0, 7), new THREE.Vector3(-11, 0, 7.8), new THREE.Vector3(-16, 0, 8), new THREE.Vector3(-21, 0, 6.8), new THREE.Vector3(-26.5, 0, 3), new THREE.Vector3(-28, 0, -2), new THREE.Vector3(-27, 0, -6),
   ], true);
@@ -138,14 +138,15 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
   const sight = ["#c0392b", "#f4f1ea", "#3f6b8f", "#e0a52c", "#2a2a2e", "#e07aa0"].map((c) => person(c));
   sight.forEach((w) => group.add(w));
   const loop2 = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-3, 0, -9.4), new THREE.Vector3(-9, 0, -9.6), new THREE.Vector3(-15, 0, -9.8), new THREE.Vector3(-21, 0, -9.4), new THREE.Vector3(-26, 0, -9), new THREE.Vector3(-29, 0, -11.5),
-    new THREE.Vector3(-26, 0, -14.5), new THREE.Vector3(-23, 0, -12), new THREE.Vector3(-19, 0, -10.4), new THREE.Vector3(-12, 0, -10.3), new THREE.Vector3(-6, 0, -10.5),
+    new THREE.Vector3(-3, 0, -10.2), new THREE.Vector3(-9, 0, -10.4), new THREE.Vector3(-15, 0, -10.6), new THREE.Vector3(-21, 0, -10.2), new THREE.Vector3(-26, 0, -9.6), new THREE.Vector3(-29, 0, -11.5),
+    new THREE.Vector3(-26, 0, -14.5), new THREE.Vector3(-23, 0, -12.4), new THREE.Vector3(-19, 0, -11.2), new THREE.Vector3(-12, 0, -11.1), new THREE.Vector3(-6, 0, -11.3),
   ], true);
   tickers.push((t) => sight.forEach((w, i) => { const u = (t * 0.008 + i * 0.17) % 1; const p = loop2.getPointAt(u), n = loop2.getPointAt((u + 0.004) % 1); w.position.set(p.x, 0, p.z); w.rotation.y = Math.atan2(n.x - p.x, n.z - p.z); (w.userData as { walk?: (t: number) => void }).walk?.(t + i); }));
   // Vespas buzzing round the street loop, faster than anyone on foot
   const scooters = [vespa("#8fc4c9"), vespa("#c0392b")];
   scooters.forEach((v) => group.add(v));
-  tickers.push((t) => scooters.forEach((v, i) => { const u = (t * 0.03 + i * 0.5) % 1; const p = loop.getPointAt(u), n = loop.getPointAt((u + 0.003) % 1); v.position.set(p.x, 0, p.z); v.rotation.y = Math.atan2(n.x - p.x, n.z - p.z) - Math.PI / 2; v.rotation.z = Math.sin(t * 3 + i) * 0.03; }));
+  // they ride on the kerb side of the loop, 1.1 units off the walkers' line, so they pass beside people instead of through them
+  tickers.push((t) => scooters.forEach((v, i) => { const u = (t * 0.03 + i * 0.5) % 1; const p = loop.getPointAt(u), n = loop.getPointAt((u + 0.003) % 1); const dx = n.x - p.x, dz = n.z - p.z, l = Math.hypot(dx, dz) || 1; v.position.set(p.x + (dz / l) * 1.1, 0, p.z - (dx / l) * 1.1); v.rotation.y = Math.atan2(dx, dz) - Math.PI / 2; v.rotation.z = Math.sin(t * 3 + i) * 0.03; }));
   // standing groups chatting on the piazza
   for (const [x, z, n] of [[-13, -3, 3], [-7, -4, 2], [-12, 5, 3], [-1, -1, 2]] as [number, number, number][]) for (let i = 0; i < n; i++) { const a = (i / n) * Math.PI * 2; place(person(["#3f6b8f", "#e0a52c", "#c0392b", "#f4f1ea", "#e07aa0", "#7a4a3a"][(x + i) % 6 < 0 ? -((x + i) % 6) : (x + i) % 6]), x + Math.cos(a) * 0.6, z + Math.sin(a) * 0.6, -a - Math.PI / 2); }
   const flies = [[-24, 12], [20, 18], [-6, 8]].map(([x, z], i) => { const b = butterfly(["#f2b64d", "#ffffff", "#f4a6b8"][i]); group.add(b); tickers.push(b.userData.tick!); return { b, x, z, ph: i * 2 }; });

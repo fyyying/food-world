@@ -3,10 +3,11 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer.js";
 import { fetchRecipes } from "../data";
-import { MAP_REGIONS, AREAS, WORLDS, areasOf, objectsOf, worldRecipes, enrich, isChinaRecipe, isItalyRecipe, objectById, type Area, type EnrichedRecipe, type MapRegion, type WorldId } from "./graph";
+import { MAP_REGIONS, AREAS, WORLDS, areasOf, objectsOf, worldRecipes, enrich, isChinaRecipe, isItalyRecipe, isKoreaRecipe, objectById, type Area, type EnrichedRecipe, type MapRegion, type WorldId } from "./graph";
 import { buildMap, type MapWorld, type PlacedRegion } from "./map";
 import { buildChina } from "./world-china";
 import { buildItaly } from "./world-italy";
+import { buildKorea } from "./world-korea";
 import { type Diorama, type DishMarker, type Placed } from "./worldkit";
 const areaCenter = (a: Area) => new THREE.Vector3(AREAS[a].center[0], 0, AREAS[a].center[1]);
 import { mountUi, showRecipePage, setCrumbs, hint, toast } from "./ui";
@@ -138,10 +139,11 @@ async function boot() {
     for (const region of MAP_REGIONS) counts.set(region.id, recipes.filter((r) => region.cuisines.includes(r.cuisine ?? "")).length);
     counts.set("china", recipes.filter(isChinaRecipe).length);
     counts.set("italy", recipes.filter(isItalyRecipe).length);
+    counts.set("korea", recipes.filter(isKoreaRecipe).length);
     mapWorld = buildMap(counts);
     mapScene.add(mapWorld.group);
     for (const r of mapWorld.regions) r.labelEl.addEventListener("click", () => { if (level !== "map" || flight) return; if (r.region.built) enterRegion(r.region); else ui.showRegion(r.region, r.count, "/"); });
-    status.textContent = `${recipes.length} dishes · ${counts.get("china")} in China · ${counts.get("italy")} in Italy`;
+    status.textContent = `${recipes.length} dishes · ${counts.get("china")} in China · ${counts.get("italy")} in Italy · ${counts.get("korea")} in Korea`;
   } catch (e) {
     status.textContent = `Couldn't load the cookbook: ${(e as Error).message}`;
     return;
@@ -199,7 +201,7 @@ function getWorld(id: WorldId): Diorama {
   let d = worlds[id];
   if (!d) {
     const recipes = worldRecipes(id, allRecipes).map(enrich);
-    d = id === "china" ? buildChina(recipes) : buildItaly(recipes);
+    d = id === "china" ? buildChina(recipes) : id === "italy" ? buildItaly(recipes) : buildKorea(recipes);
     worlds[id] = d;
     for (const p of d.placed) p.labelEl.addEventListener("click", () => { if (p.labelEl.classList.contains("pinned")) openObject(p); });
   }
@@ -423,5 +425,6 @@ const dbg = () => ({ level, flying: Boolean(flight), diorama: Boolean(diorama), 
   document.body.appendChild(wrap);
 };
 (dbg as unknown as { open: (id: string) => void }).open = (id: string) => { const p = diorama?.placed.find((x) => x.obj.id === id); if (p) openObject(p); };
+(dbg as unknown as { enter: (id: string) => void }).enter = (id: string) => { const r = MAP_REGIONS.find((x) => x.id === id); if (r) enterRegion(r); };
 (window as unknown as { __fw: typeof dbg }).__fw = dbg;
 boot();

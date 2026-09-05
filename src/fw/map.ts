@@ -5,6 +5,7 @@ import { MAP_REGIONS, type MapRegion } from "./graph";
 import { wobble } from "../world/noise";
 import { mat, mountain, house, tree, temple, pagoda, birds, lanternString, gate } from "./props";
 import { colosseum, baroqueChurch, campanile, umbrellaPine, cypress, italianHouse } from "./props-italy";
+import { palaceGate, hanok, seoulTower } from "./props-korea";
 
 export type PlacedRegion = {
   region: MapRegion;
@@ -75,6 +76,14 @@ export function buildMap(counts: Map<string, number>): MapWorld {
       const cp = campanile(); cp.position.set(2.5 * s, h, 3.5 * s); cp.scale.setScalar(s * 0.45); g.add(cp);
       for (let i = 0; i < 5; i++) { const p = i % 2 ? umbrellaPine(s * 0.8) : cypress(s * 0.9); p.position.set((-5 + i * 2.6) * s, h, (-4 + (i % 2) * 8) * s); g.add(p); }
       const hs = italianHouse("rome", 2.2 * s, 1.8 * s, 1.3 * s, 2); hs.position.set(-5 * s, h, -1 * s); hs.rotation.y = 0.5; g.add(hs);
+      const bd = birds(4, 5 * s, 5 * s); bd.position.set(0, h, 0); bd.scale.setScalar(s * 0.9); g.add(bd);
+      g.userData.tick = (t: number, dt: number) => { bd.userData.tick?.(t, dt); };
+    } else if (region.built && region.id === "korea") {
+      const s = region.size / 10;
+      const pg = palaceGate(); pg.position.set(-2 * s, h, -1 * s); pg.scale.setScalar(s * 0.42); pg.rotation.y = 0.2; g.add(pg);
+      const tw = seoulTower(); tw.position.set(4.5 * s, h, -3 * s); tw.scale.setScalar(s * 0.35); g.add(tw);
+      for (let i = 0; i < 3; i++) { const hk = hanok(2.6 * s, 2 * s, 1.4 * s); hk.position.set((-5 + i * 3.2) * s, h, 3.5 * s); hk.rotation.y = 0.3 - i * 0.3; g.add(hk); }
+      for (let i = 0; i < 4; i++) { const p = tree(i % 2 ? "pine" : "blossom", s * 0.8); p.position.set((3 + (i % 2) * 2.5) * s, h, (1.5 + Math.floor(i / 2) * 3) * s); g.add(p); }
       const bd = birds(4, 5 * s, 5 * s); bd.position.set(0, h, 0); bd.scale.setScalar(s * 0.9); g.add(bd);
       g.userData.tick = (t: number, dt: number) => { bd.userData.tick?.(t, dt); };
     } else if (region.built) {

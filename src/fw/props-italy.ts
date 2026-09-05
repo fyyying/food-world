@@ -216,8 +216,8 @@ export function trattoria(): P {
     add(g, cyl(0.06, 0.05, 0.3, "#5a1f2a", 6), x + 0.35, 0.95, z - 0.2);
     for (let i = 0; i < 2; i++) { const a = i * Math.PI + 0.4; add(g, cyl(0.2, 0.2, 0.42, "#4a3222", 8), x + Math.cos(a) * 0.95, 0.21, z + Math.sin(a) * 0.95); const d = person(pick(["#3f6b8f", "#e0a52c", "#f4f1ea", "#2f5d3f"])); (d.userData as { sit?: () => void }).sit?.(); add(g, d, x + Math.cos(a) * 0.95, 0.04, z + Math.sin(a) * 0.95).rotation.y = Math.atan2(x - (x + Math.cos(a) * 0.95), z - (z + Math.sin(a) * 0.95)); diners.push(d); }
   }
-  const waiter = add(g, person("#f4f1ea", { apron: true }), 2.6, 0, 1.0); waiter.rotation.y = -1.2;
-  add(g, cyl(0.03, 0.03, 0.5, "#2a2a2a", 4), 2.5, 1.05, 1.2).rotation.z = 0.5; // pepper mill
+  const waiter = add(g, person("#f4f1ea", { apron: true }), 3.1, 0, 2.3); waiter.rotation.y = -1.4;
+  add(g, cyl(0.03, 0.03, 0.5, "#2a2a2a", 4), 2.85, 1.05, 2.2).rotation.z = 0.5; // pepper mill
   const pot = add(g, cyl(0.4, 0.36, 0.5, "#8c2f2a", 12), -2.4, 0.95, -0.2);
   add(g, box(1.2, 0.7, 0.8, IT.stone), -2.4, 0.35, -0.2);
   g.userData.steam = new THREE.Vector3(-2.4, 1.3, -0.2);

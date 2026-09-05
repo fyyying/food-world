@@ -6,8 +6,8 @@
 import type { Recipe } from "../data";
 
 export type Kind = "ingredient" | "flavour" | "technique" | "landmark" | "place" | "dish";
-export type WorldId = "china" | "italy";
-export type Area = "sichuan" | "jiangnan" | "northern" | "everyday" | "rome" | "venice" | "sicily";
+export type WorldId = "china" | "italy" | "korea";
+export type Area = "sichuan" | "jiangnan" | "northern" | "everyday" | "rome" | "venice" | "sicily" | "seoul" | "jeonju" | "busan" | "jeju";
 
 export type EnrichedRecipe = Recipe & {
   zh?: string;
@@ -67,10 +67,15 @@ export const AREAS: Record<Area, AreaInfo> = {
   rome: { world: "italy", name: "Rome", zh: "Roma", blurb: "trattorie, pasta, the piazza and the pizza oven", center: [-12, 0] },
   venice: { world: "italy", name: "Venice", zh: "Venezia", blurb: "canals, gondolas, seafood and risotto", center: [16, -8] },
   sicily: { world: "italy", name: "Sicily", zh: "Sicilia", blurb: "Etna, lemons, tomatoes and street food", center: [12, 14] },
+  seoul: { world: "korea", name: "Seoul", zh: "서울", blurb: "palace, market alleys, barbecue smoke and kimchi jars", center: [-10, -10] },
+  jeonju: { world: "korea", name: "Jeonju", zh: "전주", blurb: "hanok village, rice paddies and the home of bibimbap", center: [-16, 12] },
+  busan: { world: "korea", name: "Busan", zh: "부산", blurb: "the port: fish market, beach and boats", center: [10, 6] },
+  jeju: { world: "korea", name: "Jeju", zh: "제주", blurb: "volcanic island: tangerines, black pigs and diving women", center: [28, 16] },
 };
 export const WORLDS: Record<WorldId, { name: string; zh: string; regionId: string }> = {
   china: { name: "China", zh: "中国", regionId: "china" },
   italy: { name: "Italy", zh: "Italia", regionId: "italy" },
+  korea: { name: "Korea", zh: "한국", regionId: "korea" },
 };
 export const areasOf = (world: WorldId) => (Object.keys(AREAS) as Area[]).filter((a) => AREAS[a].world === world);
 
@@ -99,6 +104,9 @@ const ENRICH: { test: RegExp; data: Enrichment }[] = [
   { test: /caprese/i, data: { zh: "Insalata caprese", world: "italy", area: "rome", spice: 0, flavours: ["fresh", "milky", "tomato"], core: ["tomato", "mozzarella", "basil", "olive oil"], techniques: ["raw"], place: "romeMarket" } },
   { test: /italian chopped salad/i, data: { zh: "Insalata", world: "italy", area: "rome", spice: 0, flavours: ["fresh", "tangy", "salty"], core: ["lettuce", "chickpeas", "salami", "provolone", "tomato", "vinaigrette"], techniques: ["raw"], place: "romeMarket" } },
   { test: /tomato soup/i, data: { zh: "Zuppa di pomodoro", world: "italy", area: "sicily", spice: 0, flavours: ["tomato", "sweet", "comforting"], core: ["tomato", "onion", "garlic", "olive oil", "basil"], techniques: ["pot"], place: "sicilyMarket" } },
+  // ---- Korea ----
+  { test: /bulgogi/i, data: { zh: "불고기", world: "korea", area: "seoul", spice: 0, flavours: ["sweet-savoury", "garlicky", "smoky", "sesame"], core: ["beef", "soy sauce", "pear", "garlic", "scallion", "sesame oil", "lettuce"], techniques: ["grill"], place: "grill" } },
+  { test: /bibimbap/i, data: { zh: "비빔밥", world: "korea", area: "jeonju", spice: 1, flavours: ["gochujang", "sesame", "fresh", "savoury"], core: ["rice", "beef", "egg", "namul", "gochujang", "sesame oil", "spinach", "carrot"], techniques: ["dolsot"], place: "dolsot" } },
 ];
 
 export function enrich(r: Recipe): EnrichedRecipe {
@@ -107,13 +115,13 @@ export function enrich(r: Recipe): EnrichedRecipe {
   return {
     ...r,
     zh: hit.zh,
-    world: hit.world ?? (r.cuisine === "Italian" ? "italy" : "china"),
-    area: hit.area ?? (r.cuisine === "Italian" ? "rome" : "everyday"),
+    world: hit.world ?? (r.cuisine === "Italian" ? "italy" : r.cuisine === "Korean" ? "korea" : "china"),
+    area: hit.area ?? (r.cuisine === "Italian" ? "rome" : r.cuisine === "Korean" ? "seoul" : "everyday"),
     spice: hit.spice ?? (spicy ? 2 : 0),
     flavours: hit.flavours ?? [],
     core: hit.core ?? [...r.protein, ...r.mainIngredient.map((m) => m.toLowerCase())],
     techniques: hit.techniques ?? (r.method === "Pan" ? ["wok"] : r.method === "Pot" ? ["braise"] : []),
-    place: hit.place ?? (r.cuisine === "Italian" ? "trattoria" : "wok"),
+    place: hit.place ?? (r.cuisine === "Italian" ? "trattoria" : r.cuisine === "Korean" ? "grill" : "wok"),
     weeknight: (r.totalMin !== null && r.totalMin <= 40) || r.tags.includes("busy_day") || r.tags.includes("quick"),
   };
 }
@@ -125,7 +133,10 @@ export function isChinaRecipe(r: Recipe): boolean {
 export function isItalyRecipe(r: Recipe): boolean {
   return r.cuisine === "Italian" || /italian|caprese|bolognese|lasagn|pizza|pesto|risotto/i.test(r.title);
 }
-export const worldRecipes = (world: WorldId, all: Recipe[]) => all.filter(world === "china" ? isChinaRecipe : isItalyRecipe);
+export function isKoreaRecipe(r: Recipe): boolean {
+  return r.cuisine === "Korean" || /korean|bulgogi|bibimbap|kimchi|tteok|japchae|galbi/i.test(r.title);
+}
+export const worldRecipes = (world: WorldId, all: Recipe[]) => all.filter(world === "china" ? isChinaRecipe : world === "italy" ? isItalyRecipe : isKoreaRecipe);
 
 const has = (list: string[], re: RegExp) => list.some((x) => re.test(x));
 
@@ -241,7 +252,7 @@ export const ITALY_OBJECTS: WorldObject[] = [
   { id: "italyChicken", world: "italy", kind: "ingredient", name: "Chicken", zh: "Pollo", emoji: "🐓", area: "rome", pos: [-18, 14], prop: "chicken",
     tagline: "Roasted with lemon and rosemary, or breaded and baked.", blurb: "Italian chicken is simple: pollo arrosto with rosemary and garlic, or chicken alla parmigiana, the breaded-and-baked dish that Italian emigrants made famous in America. Most of the family's pasta-and-chicken dinners come from that second tradition.",
     partners: ["lemon", "rosemary", "tomato", "mozzarella"], match: (r) => has(r.protein, /chicken/) },
-  { id: "mushrooms", world: "italy", kind: "ingredient", name: "Mushrooms", zh: "Funghi", emoji: "🍄", area: "rome", pos: [-24, -1], prop: "porciniWood", rot: 0.3,
+  { id: "mushrooms", world: "italy", kind: "ingredient", name: "Mushrooms", zh: "Funghi", emoji: "🍄", area: "rome", pos: [-25, 0.5], prop: "porciniWood", rot: 0.3,
     tagline: "Porcini from the chestnut woods.", blurb: "Autumn in the Apennines means porcini, foraged under chestnut and oak and sold fresh at market or dried for the year. Dried porcini give a cream sauce its depth; fresh ones are sliced thin over pasta.",
     partners: ["cream", "garlic", "parmesan", "parsley"], match: (r) => has(r.core, /mushroom|porcini/) || has(r.mainIngredient, /Mushroom/) },
   { id: "lemon", world: "italy", kind: "ingredient", name: "Lemons & citrus", zh: "Limoni", emoji: "🍋", area: "sicily", pos: [23, 18], prop: "citrusGrove", rot: -0.2,
@@ -284,7 +295,61 @@ export const ITALY_OBJECTS: WorldObject[] = [
     tagline: "Ricotta, pistachio and almond.", blurb: "Sicilian pastry grew out of the convents: cannoli, cassata layered with marzipan, and almond paste fruits. Bronte's pistachios, grown on Etna's lava soil, are the island's most expensive crop.", match: () => false },
 ];
 
-export const ALL_OBJECTS = [...OBJECTS, ...ITALY_OBJECTS];
+
+// ---------- the Korea world ----------
+
+const GJ: [number, number] = [-17, -9];
+export const KOREA_OBJECTS: WorldObject[] = [
+  // --- ingredients ---
+  { id: "kimchi", world: "korea", kind: "ingredient", name: "Kimchi", zh: "김치", emoji: "🥬", area: "seoul", pos: [-29, -6], prop: "jangdokdae", rot: 0.2,
+    tagline: "Cabbage, salt, chilli and time, buried in a clay jar.", blurb: "Koreans were salting vegetables for winter in the Three Kingdoms period (57 BC–668 AD), and the Goryeo poet Yi Gyu-bo (1168–1241) wrote of radish kept in brine. Chilli only reached Korea around 1600, first recorded in 1614, and red kimchi became the norm in the 1700s; the whole-cabbage kimchi eaten today took shape in the 1800s. Every November families still gather for kimjang, the making of a winter's worth, which UNESCO listed as heritage in 2013. The onggi jars breathe a little, and buried to the neck they hold the cabbage at 0–4 °C all winter.",
+    flavour: ["sour", "spicy", "salty", "umami"], partners: ["gochugaru", "garlic", "rice", "pork"], match: (r) => has(r.core, /kimchi/) },
+  { id: "hanwoo", world: "korea", kind: "ingredient", name: "Beef (hanwoo)", zh: "한우", emoji: "🐂", area: "jeonju", pos: [-31, 15], prop: "hanwoo", rot: 0.5,
+    tagline: "The native brown cattle Koreans marinate thin and grill fast.", blurb: "Hanwoo are Korea's own breed, brown and stocky, kept for ploughing for two thousand years, which is why Joseon kings (1392–1910) banned their slaughter again and again and beef stayed a feast food. Grilled marinated beef goes back to maekjeok, the skewered meat of the Goguryeo kingdom (37 BC–668 AD); the Joseon court called its thin marinated slices neobiani. The name bulgogi, fire meat, spread from Pyongyang in the 1920s and 1930s. The marinade is soy, sugar, garlic, sesame oil and grated pear, whose enzymes soften the meat.",
+    partners: ["soy sauce", "pear", "garlic", "sesame oil", "lettuce"], match: (r) => has(r.protein, /beef/) },
+  { id: "riceKr", world: "korea", kind: "ingredient", name: "Rice", zh: "쌀", emoji: "🍚", area: "jeonju", pos: [-6, 13], prop: "ricePaddyKorea", rot: 0,
+    tagline: "Bap: the word for rice is the word for a meal.", blurb: "Rice has been grown on the peninsula since about 1500 BC, and the sticky short-grain kind became the centre of every table: 'have you eaten rice?' is still a greeting. A meal is bap with soup and banchan, the small shared side dishes. Bibimbap, rice mixed with vegetables and gochujang, was first written down as goldongban in the Siuijeonseo cookbook of the late 1800s; Jeonju's version is the famous one.",
+    partners: ["namul", "gochujang", "egg", "sesame oil"], match: (r) => has(r.core, /\brice\b/) },
+  { id: "namul", world: "korea", kind: "ingredient", name: "Vegetables & namul", zh: "나물", emoji: "🥗", area: "jeonju", pos: [-23, 8], prop: "namulPlot", rot: -0.1,
+    tagline: "Blanched, squeezed and seasoned, one vegetable at a time.", blurb: "Namul are seasoned vegetables: spinach, bean sprouts, fernbrake, radish and bellflower root, each blanched and dressed with sesame oil, garlic and salt or soy. Mountain foraging for them is older than farming here, and on the first full moon of the lunar year (Jeongwol Daeboreum) Koreans eat nine kinds of dried namul for luck. Napa cabbage arrived from China in the Joseon period (1392–1910) and by the late 1800s had become the kimchi cabbage.",
+    partners: ["sesame oil", "garlic", "soy sauce", "rice"], match: (r) => has(r.core, /namul|spinach|carrot|sprout|zucchini|vegetable/) },
+  { id: "seafoodKr", world: "korea", kind: "ingredient", name: "Fish & seafood", zh: "해산물", emoji: "🦑", area: "busan", pos: [10, 7], prop: "jagalchi", rot: -0.3, place: true, placeName: "Jagalchi fish market",
+    tagline: "Busan's market, run by the ajumma of Jagalchi.", blurb: "Jagalchi, named after the gravel (jagal) of its shore, grew into Korea's biggest fish market after the Korean War (1950–53) filled Busan with refugees who sold their catch on the beach. The women who run it, the Jagalchi ajumma, sell live octopus, flounder and mackerel, and upstairs you eat what you point at. Korea's coasts give it dried anchovy for stock, salted shrimp and fish sauce for kimchi, and the seaweed for gim and miyeok soup.",
+    partners: ["gochugaru", "garlic", "scallion", "rice"], match: (r) => has(r.protein, /fish|prawn|shrimp|seafood|squid|octopus/) },
+  { id: "tangerine", world: "korea", kind: "ingredient", name: "Jeju tangerines", zh: "제주 감귤", emoji: "🍊", area: "jeju", pos: [24, 13], prop: "tangerineGrove", rot: 0.15,
+    tagline: "Once tribute for kings, now the island's winter harvest.", blurb: "Jeju sent citrus to the Joseon court as tribute from the 1400s, guarded so closely that islanders were punished if a tree died. The sweet, seedless tangerine grown today was planted in 1911 by a French missionary, Father Taquet, who traded Jeju cherry seedlings for fourteen trees from Japan. The groves are walled with black basalt, like every field on the island, and picked from November.",
+    partners: ["honey", "tea"], match: (r) => has(r.core, /tangerine|mandarin|citrus|orange/) },
+  { id: "blackPig", world: "korea", kind: "ingredient", name: "Pork (Jeju black pig)", zh: "흑돼지", emoji: "🐖", area: "jeju", pos: [24, 18.5], prop: "blackPigs", rot: 0.2,
+    tagline: "The island's small black pigs, grilled thick over charcoal.", blurb: "Jeju's black pigs are a native breed raised on the island for at least a thousand years, historically in stone pens beneath the outhouse. Their pork is grilled in thick slabs, skin on, and eaten dipped in salted anchovy sauce (meljeot). On the mainland, pork belly (samgyeopsal) became the everyday barbecue meat in the 1970s and 1980s, when beef was too dear for most families.",
+    partners: ["kimchi", "garlic", "lettuce", "ssamjang"], match: (r) => has(r.protein, /pork/) },
+  // --- flavours ---
+  { id: "gochugaru", world: "korea", kind: "flavour", name: "Gochugaru & gochujang", zh: "고춧가루·고추장", emoji: "🌶️", area: "jeonju", pos: [-32, 6], prop: "chilliMats", rot: 0.1,
+    tagline: "Sun-dried chilli flakes, and the fermented red paste made from them.", blurb: "Chilli came to Korea from the Americas by way of Japan around 1600, first recorded in the Jibong yuseol of 1614, and within a century it had coloured kimchi red. Gochugaru is the flakes of sun-dried chillies, milder and fruitier than most. Gochujang, a paste of chilli, fermented soybean and glutinous rice, appears in a 1715 farming manual and matures for months in the jars on the jangdokdae; Sunchang, in the south-west, is its home town.",
+    flavour: ["hot", "sweet", "fermented"], partners: ["kimchi", "rice", "garlic", "sesame"], match: (r) => has(r.core, /gochu|chilli|chili|pepper flakes/) },
+  { id: "aromaticsKr", world: "korea", kind: "flavour", name: "Garlic, scallion & sesame", zh: "마늘·파·참깨", emoji: "🧄", area: "seoul", pos: [GJ[0] + 1.5, GJ[1] + 2.2], prop: "none", hitOnly: true, parent: "gwangjang",
+    tagline: "The seasoning under almost every Korean dish.", blurb: "In the founding myth, a bear became the first Korean's mother by eating only garlic and mugwort for a hundred days, and Koreans still eat more garlic per head than anyone. Toasted sesame oil has been pressed since the Three Kingdoms period (57 BC–668 AD) and finishes namul, bibimbap and marinades. Fermented soybean, doenjang and soy sauce, is older still: the Samguk sagi (1145) lists jang among the gifts at a royal wedding in 683 AD.",
+    flavour: ["pungent", "nutty", "savoury"], partners: ["soy sauce", "sesame oil", "gochugaru", "beef"], match: (r) => has(r.core, /garlic|scallion|sesame|ginger|onion|soy/) },
+  // --- techniques ---
+  { id: "grill", world: "korea", kind: "technique", name: "Tabletop barbecue", zh: "고기구이", emoji: "🔥", area: "seoul", pos: [0, -7], prop: "bbqHouse", rot: 0, place: true, placeName: "Barbecue house",
+    tagline: "Charcoal in the table, tongs in hand, lettuce for wrapping.", blurb: "Gogi-gui, meat grilled at the table over charcoal, descends from the marinated skewers of Goguryeo (37 BC–668 AD) and the court's neobiani. The restaurants with a grill sunk into every table spread across Seoul in the 1960s and 1970s. Thin bulgogi cooks in a minute; each piece is wrapped in lettuce or perilla with rice, garlic and ssamjang, a spoon of doenjang and gochujang, and eaten in one bite.",
+    partners: ["beef", "pork", "kimchi", "lettuce", "garlic"], match: (r) => has(r.techniques, /grill/) },
+  { id: "dolsot", world: "korea", kind: "technique", name: "Stone-bowl cooking", zh: "돌솥", emoji: "🥘", area: "jeonju", pos: [-14, 10], prop: "dolsotHouse", rot: 0.1, place: true, placeName: "Jeonju hanok restaurant",
+    tagline: "A heavy stone bowl that keeps sizzling at the table.", blurb: "A dolsot is a bowl carved from stone, heated until the rice pressed against it turns into a golden crust called nurungji. Bibimbap served this way, dolsot bibimbap, became famous from Jeonju restaurants in the 1960s. The toppings are laid out by colour, five kinds for the five elements, and a raw yolk goes on top; you stir it all with a spoon of gochujang and eat it hot.",
+    partners: ["rice", "namul", "gochujang", "egg", "beef"], match: (r) => has(r.techniques, /dolsot/) },
+  // --- places ---
+  { id: "gwangjang", world: "korea", kind: "place", name: "Gwangjang Market", zh: "광장시장", emoji: "🏮", area: "seoul", pos: GJ, prop: "gwangjang", rot: 0, place: true, open: "reveal",
+    tagline: "Seoul's oldest market, open since 1905.", blurb: "Korea's first permanent market, founded in 1905 by Korean merchants as an answer to Japanese-run shops. Under its roof the food alley sells mung-bean pancakes fried in pork fat, mayak gimbap, spicy rice cakes, kimchi by the tub and the garlic and sesame that season everything.", match: () => false },
+  { id: "stall-kimchi", world: "korea", kind: "ingredient", name: "Kimchi", zh: "김치", emoji: "🥬", area: "seoul", pos: [GJ[0] - 5, GJ[1] - 2.2], prop: "none", hitOnly: true, parent: "gwangjang", alias: "kimchi", tagline: "", blurb: "", match: () => false },
+  { id: "stall-veg", world: "korea", kind: "ingredient", name: "Vegetables & namul", zh: "나물", emoji: "🥗", area: "seoul", pos: [GJ[0] - 3.5, GJ[1] + 2.2], prop: "none", hitOnly: true, parent: "gwangjang", alias: "namul", tagline: "", blurb: "", match: () => false },
+  { id: "stall-gimbap", world: "korea", kind: "dish", name: "Gimbap & bindaetteok", zh: "김밥·빈대떡", emoji: "🍙", area: "seoul", pos: [GJ[0] + 2, GJ[1] - 2.2], prop: "none", hitOnly: true, parent: "gwangjang",
+    tagline: "The market's own dishes.", blurb: "Bindaetteok are mung beans ground on a stone mill and fried into thick pancakes with kimchi and pork; Gwangjang's stalls have made them since the 1900s. Mayak gimbap, 'narcotic' gimbap, are the market's finger-sized seaweed rice rolls, so called because nobody stops at one. Tteokbokki in a red gochujang sauce was invented by Ma Bok-rim in Seoul's Sindang-dong in 1953.", match: () => false },
+  { id: "pojangmacha", world: "korea", kind: "dish", name: "Pojangmacha", zh: "포장마차", emoji: "🍢", area: "seoul", pos: [6, -3.5], prop: "pojangmacha", rot: -0.3, placeName: "Street tent",
+    tagline: "An orange tent, a few stools, skewers and soju.", blurb: "Pojangmacha means covered wagon: the street tents that appeared after the Korean War (1950–53), where people eat fish-cake skewers in hot broth, tteokbokki and grilled meat late into the night with soju. Soju, distilled since the Mongol era of the 1200s, is still Korea's drink.", match: () => false },
+  { id: "haenyeo", world: "korea", kind: "landmark", name: "Haenyeo", zh: "해녀", emoji: "🤿", area: "jeju", pos: [27, 23.5], prop: "haenyeo", rot: 0,
+    tagline: "Jeju's diving women, who harvest the sea without air tanks.", blurb: "The haenyeo dive to ten metres on one breath for abalone, sea urchin and octopus, whistling as they surface. Records of women divers on Jeju go back to the 1600s, when the men were away fishing or conscripted; most are now over sixty. UNESCO listed them as heritage in 2016. What they catch is eaten raw with gochujang or stewed into abalone porridge.", match: () => false },
+];
+
+export const ALL_OBJECTS = [...OBJECTS, ...ITALY_OBJECTS, ...KOREA_OBJECTS];
 export const objectsOf = (world: WorldId) => ALL_OBJECTS.filter((o) => o.world === world);
 export const objectById = (id: string) => ALL_OBJECTS.find((o) => o.id === id)!;
 
@@ -312,7 +377,7 @@ export const MAP_REGIONS: MapRegion[] = [
   { id: "india", name: "India", cuisines: ["Indian"], pos: [22, 20], size: 6, color: "#e0b25e", emoji: ["🍛", "🫚", "🌶️", "🫓"], built: false, seed: 17 },
   { id: "china", name: "China", cuisines: ["Chinese"], pos: [26, -8], size: 10, color: "#c9a26a", emoji: ["🌶️", "🥟", "🍜", "🏮"], built: true, seed: 18 },
   { id: "southeast-asia", name: "Southeast Asia", cuisines: ["Thai", "Vietnamese"], pos: [38, 16], size: 6, color: "#9cc27f", emoji: ["🥥", "🌿", "🍜", "🦐"], built: false, seed: 19 },
-  { id: "korea", name: "Korea", cuisines: ["Korean"], pos: [44, -16], size: 4, color: "#d7a7a0", emoji: ["🥬", "🍚", "🔥", "🥢"], built: false, seed: 20 },
+  { id: "korea", name: "Korea", cuisines: ["Korean"], pos: [44, -16], size: 6, color: "#d7a7a0", emoji: ["🥬", "🍚", "🔥", "🥢"], built: true, seed: 20 },
   { id: "japan", name: "Japan", cuisines: ["Japanese"], pos: [52, -4], size: 4.5, color: "#e8b8c4", emoji: ["🍣", "🍙", "🍵", "🐟"], built: false, seed: 21 },
 ];
 

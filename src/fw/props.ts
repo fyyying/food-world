@@ -465,6 +465,13 @@ export function fish(color = "#e07a3a", pattern = "#f4f1ea", len = 0.9): P {
   return g;
 }
 
+/** Attach an accessory (hat, helmet, shield) to a figure's upper body so it moves with the lean and sway. */
+export function wear(p: P, o: THREE.Object3D, x: number, y: number, z: number): THREE.Object3D {
+  const u = p.userData as { upper?: THREE.Group; hipY?: number };
+  if (!u.upper) return add(p, o, x, y, z);
+  return add(u.upper, o, x, y - (u.hipY ?? 0), z);
+}
+
 // ---------- people ----------
 
 export function person(shirt = "#3f6b8f", opts: { hat?: boolean; pole?: boolean; apron?: boolean } = {}): P {
@@ -501,7 +508,8 @@ export function person(shirt = "#3f6b8f", opts: { hat?: boolean; pole?: boolean;
   for (const x of [-0.13, 0.13]) add(upper, ball(0.03 * s, C.skin, 5), x * s, U(1.03 * s), 0);
   if (opts.hat) { add(upper, cone(0.4 * s, 0.28 * s, C.straw, 10), 0, U(1.15 * s), 0); add(upper, cyl(0.41 * s, 0.41 * s, 0.02, "#c9ad68", 12), 0, U(1.02 * s), 0); }
   if (opts.apron) { add(upper, box(0.24 * s, 0.42 * s, 0.04, C.white), 0, U(0.58 * s), 0.15 * s); add(upper, cyl(0.15 * s, 0.15 * s, 0.1 * s, C.white, 8), 0, U(1.18 * s), 0); }
-  (g.userData as { upper?: THREE.Group }).upper = upper;
+  (g.userData as { upper?: THREE.Group; hipY?: number }).upper = upper;
+  (g.userData as { upper?: THREE.Group; hipY?: number }).hipY = hipY;
   (g.userData as { arms?: { left: THREE.Group; right: THREE.Group; hand: number } }).arms = { left: armL, right: armR, hand: -0.37 * s };
   if (opts.pole) {
     // a shoulder pole the traditional way: resting on the right shoulder, running front to back, one hand steadying it

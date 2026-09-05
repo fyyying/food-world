@@ -1,6 +1,6 @@
 /** Italian props: Roman stone and umbrella pines, Venetian canals and gondolas, Sicilian lava and citrus. */
 import * as THREE from "three";
-import { mat, add, rnd, C, chineseRoof, person, cow, chicken, awning, bubble, type P } from "./props";
+import { mat, add, rnd, C, chineseRoof, person, cow, chicken, awning, bubble, wear, type P } from "./props";
 
 const group = (): P => new THREE.Group() as P;
 const box = (w: number, h: number, d: number, color: string) => new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat(color));
@@ -148,10 +148,10 @@ export function colosseum(): P {
   // the arena: two gladiators circling each other, and a tiger pacing
   const glad = (color: string) => {
     const p = person(color);
-    add(p, cyl(0.16, 0.16, 0.12, "#8c9096", 10), 0, 1.1, 0);                  // helmet
-    add(p, box(0.04, 0.06, 0.08, "#c0392b"), 0, 1.2, 0);                        // crest
-    add(p, cyl(0.28, 0.28, 0.04, "#8e2a22", 12), -0.25, 0.6, 0.15).rotation.y = Math.PI / 2;   // shield
-    add(p, box(0.04, 0.5, 0.04, "#c9ccd0"), 0.3, 0.75, 0.25).rotation.x = -0.6;               // short sword
+    wear(p, cyl(0.16, 0.16, 0.12, "#8c9096", 10), 0, 1.1, 0);                  // helmet
+    wear(p, box(0.04, 0.06, 0.08, "#c0392b"), 0, 1.2, 0);                        // crest
+    wear(p, cyl(0.28, 0.28, 0.04, "#8e2a22", 12), -0.25, 0.6, 0.15).rotation.y = Math.PI / 2;   // shield
+    wear(p, box(0.04, 0.5, 0.04, "#c9ccd0"), 0.3, 0.75, 0.25).rotation.x = -0.6;               // short sword
     return p;
   };
   const g1 = add(g, glad("#8e2a22"), -1.1, 0.1, 0.4), g2 = add(g, glad("#3f6b8f"), 1.1, 0.1, -0.4);
@@ -499,7 +499,7 @@ export function gondola(): P {
   const passengers = [add(g, person("#e0a52c"), -0.2, 0.15, 0.1), add(g, person("#3f6b8f"), 0.3, 0.15, -0.1)];
   passengers.forEach((p) => { (p.userData as { sit?: () => void }).sit?.(); p.scale.setScalar(0.8); p.rotation.y = Math.PI / 2; });
   const gondolier = add(g, person("#1f1f22"), -1.0, 0.22, 0); gondolier.rotation.y = Math.PI / 2; gondolier.scale.setScalar(0.9);
-  add(gondolier, cyl(0.14, 0.14, 0.05, "#f7f2e6", 10), 0, 1.22, 0); add(gondolier, cyl(0.12, 0.12, 0.08, "#c9413f", 10), 0, 1.26, 0);
+  wear(gondolier, cyl(0.14, 0.14, 0.05, "#f7f2e6", 10), 0, 1.22, 0); wear(gondolier, cyl(0.12, 0.12, 0.08, "#c9413f", 10), 0, 1.26, 0);
   const oar = add(g, cyl(0.02, 0.02, 2.2, "#c9a37a", 4), -0.8, 0.6, 0.35); oar.rotation.set(0.5, 0, 0.9);
   g.userData.tick = (t) => { oar.rotation.z = 0.9 + Math.sin(t * 1.5) * 0.25; oar.rotation.x = 0.5 + Math.cos(t * 1.5) * 0.15; g.rotation.z = Math.sin(t * 1.1) * 0.02; };
   return g;
@@ -870,7 +870,7 @@ export function vespa(color = "#8fc4c9"): P {
   add(g, box(0.06, 0.06, 0.5, "#8c9096"), 0.4, 1.0, 0);
   const rider = add(g, person(pick(["#c0392b", "#3f6b8f", "#e0a52c"])), -0.05, 0.3, 0);
   (rider.userData as { sit?: () => void }).sit?.(); rider.rotation.y = Math.PI / 2; rider.scale.setScalar(0.85);
-  add(rider, ball(0.17, "#f4f1ea", 9), 0, 1.06, 0).scale.set(1, 0.8, 1);  // helmet
+  wear(rider, ball(0.17, "#f4f1ea", 9), 0, 1.06, 0).scale.set(1, 0.8, 1);  // helmet
   return g;
 }
 

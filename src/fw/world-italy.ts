@@ -110,7 +110,7 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
   place(etna(), 26.5, 9, 0.4).scale.setScalar(0.8);
   place(baroqueChurch(), 0, 19, 0.05);
   for (let i = 0; i < 4; i++) place(pricklyPear(), 29 + i * 1.9, 18.2 + (i % 2) * 1.0, i);
-  for (let i = 0; i < 6; i++) place(oliveTree(0.9), -12 + i * 2.2, 12 + (i % 2) * 1.6, i);
+  for (let i = 0; i < 5; i++) place(oliveTree(0.9), -7 + i * 2.2, 12 + (i % 2) * 1.6, i);
   // a small harbour mole with a lighthouse
   add(group, new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.6, 7), mat(IT.stone)), 14, 0.3, 24.5);
   add(group, new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.5, 2.6, 10), mat("#f4f1ea")), 14, 1.6, 27.5);

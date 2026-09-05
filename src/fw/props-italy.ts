@@ -117,8 +117,36 @@ export function colosseum(): P {
   // inner arena floor and a few standing walls
   add(g, new THREE.Mesh(new THREE.CircleGeometry(R - 0.4, 32), mat("#cbb894")), 0, 0.05, 0).rotation.x = -Math.PI / 2;
   add(g, new THREE.Mesh(new THREE.RingGeometry(1.6, R - 0.6, 32), mat("#a89a7c")), 0, 0.08, 0).rotation.x = -Math.PI / 2;
-  for (let i = 0; i < 6; i++) { const a = i * 1.05 + 0.3; add(g, box(0.3, 0.5 + rnd() * 0.6, 1.2, "#b7a98a"), Math.cos(a) * 2.6, 0.35, Math.sin(a) * 2.6).rotation.y = -a; }
+  // the arena: two gladiators circling each other, and a tiger pacing
+  const glad = (color: string) => {
+    const p = person(color);
+    add(p, cyl(0.16, 0.16, 0.12, "#8c9096", 10), 0, 1.1, 0);                  // helmet
+    add(p, box(0.04, 0.06, 0.08, "#c0392b"), 0, 1.2, 0);                        // crest
+    add(p, cyl(0.28, 0.28, 0.04, "#8e2a22", 12), -0.25, 0.6, 0.15).rotation.y = Math.PI / 2;   // shield
+    add(p, box(0.04, 0.5, 0.04, "#c9ccd0"), 0.3, 0.75, 0.25).rotation.x = -0.6;               // short sword
+    return p;
+  };
+  const g1 = add(g, glad("#8e2a22"), -1.1, 0.1, 0.4), g2 = add(g, glad("#3f6b8f"), 1.1, 0.1, -0.4);
+  const tiger = group();
+  add(tiger, box(1.3, 0.55, 0.5, "#e8912a"), 0, 0.55, 0);
+  for (let i = 0; i < 5; i++) add(tiger, box(0.08, 0.5, 0.54, "#2a2a2e"), -0.45 + i * 0.22, 0.6, 0);
+  const th = add(tiger, box(0.45, 0.42, 0.44, "#e8912a"), 0.8, 0.7, 0);
+  add(th, box(0.2, 0.16, 0.3, "#f4f1ea"), 0.2, -0.12, 0); for (const z of [-0.14, 0.14]) { add(th, cone(0.06, 0.12, "#e8912a", 4), 0, 0.26, z); add(th, ball(0.03, "#1f1f1f", 4), 0.22, 0.05, z); }
+  for (const x of [-0.45, 0.45]) for (const z of [-0.18, 0.18]) add(tiger, box(0.16, 0.35, 0.16, "#e8912a"), x, 0.17, z);
+  const tail = add(tiger, cyl(0.03, 0.03, 0.7, "#e8912a", 4), -0.85, 0.65, 0); tail.rotation.z = 0.9;
+  g.add(tiger); tiger.position.set(0, 0.1, -1.8);
   for (let i = 0; i < 3; i++) add(g, person(pick(["#3f6b8f", "#e0a52c", "#c0392b"])), Math.cos(i * 2.2) * 5.4, 0, Math.sin(i * 2.2) * 5.4).rotation.y = -i * 2.2 + Math.PI;
+  g.userData.tick = (t) => {
+    // gladiators circle and lunge
+    const a = t * 0.4;
+    g1.position.set(Math.cos(a) * 1.1, 0.1, Math.sin(a) * 1.1); g2.position.set(-Math.cos(a) * 1.1, 0.1, -Math.sin(a) * 1.1);
+    g1.rotation.y = Math.atan2(g2.position.x - g1.position.x, g2.position.z - g1.position.z); g2.rotation.y = Math.atan2(g1.position.x - g2.position.x, g1.position.z - g2.position.z);
+    const lunge = Math.max(0, Math.sin(t * 2.2));
+    for (const [p, k] of [[g1, lunge], [g2, Math.max(0, Math.sin(t * 2.2 + Math.PI))]] as [P, number][]) { const up = (p.userData as { upper?: THREE.Group }).upper; if (up) up.rotation.x = 0.15 + k * 0.4; (p.userData as { walk?: (t: number) => void }).walk?.(t * 1.3); }
+    // the tiger paces the far side of the arena
+    const u = t * 0.5; tiger.position.set(Math.sin(u) * 2.2, 0.1, -2.2 + Math.cos(u * 0.5) * 0.4); tiger.rotation.y = Math.cos(u) > 0 ? Math.PI / 2 : -Math.PI / 2;
+    tail.rotation.y = Math.sin(t * 3) * 0.5; th.rotation.y = Math.sin(t * 1.1) * 0.3;
+  };
   return g;
 }
 

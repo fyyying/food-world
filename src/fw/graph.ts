@@ -226,7 +226,7 @@ export const ITALY_OBJECTS: WorldObject[] = [
   { id: "pasta", world: "italy", kind: "ingredient", name: "Pasta", zh: "Pasta", emoji: "🍝", area: "rome", pos: [-22, -6], prop: "pastaWorkshop", rot: 0.4, place: true,
     tagline: "Durum wheat, water, and a nonna's rolling pin.", blurb: "Dried pasta was made in Sicily under the Arabs by the 1100s, long before Marco Polo, and Naples industrialised it in the 1800s. Fresh egg pasta is the north's tradition: sheets rolled thin for lasagne and tagliatelle. Pasta is always cooked al dente and finished in its sauce, never drowned in it.",
     partners: ["parmesan", "tomato", "olive oil", "ragù"], match: (r) => has(r.core, /pasta|lasagn/) },
-  { id: "olive", world: "italy", kind: "ingredient", name: "Olive oil", zh: "Olio d'oliva", emoji: "🫒", area: "rome", pos: [-24, 12], prop: "oliveGrove", rot: 0.1,
+  { id: "olive", world: "italy", kind: "ingredient", name: "Olive oil", zh: "Olio d'oliva", emoji: "🫒", area: "rome", pos: [-16, 12], prop: "oliveGrove", rot: 0.1,
     tagline: "The fat Italy cooks with.", blurb: "Olives have been pressed in Italy since the Greeks planted them in the south around 700 BC. Trees live for centuries; some in Puglia and Sicily are over a thousand years old. Extra-virgin oil is used raw over salads and bread and as the base of almost every sauce, where garlic goes in first.",
     flavour: ["grassy", "peppery", "fruity"], partners: ["garlic", "tomato", "basil", "bread"], match: (r) => has(r.core, /olive oil|vinaigrette/) },
   { id: "cheese", world: "italy", kind: "ingredient", name: "Cheese", zh: "Formaggio", emoji: "🧀", area: "rome", pos: [-33, -7], prop: "dairy", rot: -0.3,

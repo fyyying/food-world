@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { ITALY_OBJECTS, type EnrichedRecipe } from "./graph";
 import { mat, add, person, tree, butterfly, path, fish, type P } from "./props";
 import { ITALY_PROPS, IT, italianHouse, umbrellaPine, cypress, colosseum, fountain, obelisk, campanile, gondola, venetianBridge, mooringPole, etna, fishingBoat, baroqueChurch, pricklyPear, oliveTree, pantheon, triumphalArch, basilica, treviFountain, vespa, cafeTables } from "./props-italy";
-import { buildWorld, addWater, riverGeometry, type Diorama, type LayoutCtx } from "./worldkit";
+import { buildWorld, addWater, riverGeometry, flowingWaterMaterial, addFish, type Diorama, type LayoutCtx } from "./worldkit";
 
 void tree;
 
@@ -55,7 +55,8 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
 
   // ---------- Venice: lagoon with three islands, canals, bridges, gondolas, the campanile ----------
   // one body of water: the lagoon, a channel down the east edge, and the sea along the south
-  const waterMat = new THREE.MeshStandardMaterial({ color: "#5aa4b6", roughness: 0.3 });   // solid fill, right to the table edge
+  const waterMat = flowingWaterMaterial("#6ab3c2", "#3f8fa4");   // solid, flowing, right to the table edge
+  tickers.push((t) => { waterMat.uniforms.uTime.value = t; });
   const bedMat = mat("#3f7a86"); void bedMat;
   const water = (w: number, d: number, x: number, z: number) => {
     const bed = new THREE.Mesh(new THREE.PlaneGeometry(w, d), bedMat); bed.rotation.x = -Math.PI / 2; bed.position.set(x, TOP + 0.012, z); bed.receiveShadow = true; group.add(bed);
@@ -100,6 +101,10 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
   // people on the islands and a couple on a bridge
   for (const [x, z, c] of [[11, -16, "#e0a52c"], [25, -20.5, "#3f6b8f"], [21, -9, "#c0392b"], [19, -6, "#f4f1ea"]] as [number, number, string][]) place(person(c), x, z, x).position.y = 0.45;
 
+  addFish({ group, tickers, place, tint, TOP }, canal, [["#8a949c", "#c9d0d4"], ["#5c7f9a", "#c9d0d4"], ["#b3bfc9", "#8a949c"], ["#8a949c", "#dfe3e6"], ["#5c7f9a", "#dfe3e6"], ["#c9d0d4", "#8a949c"]], 1.2, 0.34);
+  const seaLane = new THREE.CatmullRomCurve3([new THREE.Vector3(-34, 0, 24), new THREE.Vector3(-20, 0, 26), new THREE.Vector3(-6, 0, 23.5), new THREE.Vector3(8, 0, 26), new THREE.Vector3(22, 0, 24), new THREE.Vector3(34, 0, 26), new THREE.Vector3(36, 0, 18), new THREE.Vector3(30, 0, 27.5), new THREE.Vector3(12, 0, 27), new THREE.Vector3(-10, 0, 27.5), new THREE.Vector3(-30, 0, 27)], true);
+  addFish({ group, tickers, place, tint, TOP }, seaLane, [["#3f8fa4", "#dfe3e6"], ["#8a949c", "#c9d0d4"], ["#e8912a", "#f4f1ea"], ["#5c7f9a", "#dfe3e6"], ["#b3bfc9", "#8a949c"], ["#3f8fa4", "#c9d0d4"], ["#8a949c", "#dfe3e6"], ["#5c7f9a", "#c9d0d4"]], 1.6, 0.36);
+
   // ---------- Sicily: the coast, Etna, citrus, a baroque church ----------
   add(group, new THREE.Mesh(new THREE.PlaneGeometry(64, 1.6), mat("#efe0bb")), -8, TOP + 0.02, 20.6).rotation.x = -Math.PI / 2;   // beach
   const boats = [fishingBoat("#3f6b8f"), fishingBoat("#c0392b"), fishingBoat("#f4f1ea")];
@@ -139,5 +144,5 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
   const gulls: THREE.Group[] = [];
   for (let i = 0; i < 6; i++) { const gl = new THREE.Group(); add(gl, new THREE.Mesh(new THREE.SphereGeometry(0.1, 7, 5), mat("#f4f1ea")), 0, 0, 0).scale.set(1.3, 0.7, 1); for (const sd of [-1, 1]) add(gl, new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.03, 0.12), mat("#e6e2da")), sd * 0.25, 0.02, 0); group.add(gl); gulls.push(gl); }
   tickers.push((t) => gulls.forEach((gl, i) => { const a = t * 0.25 + i * 1.1; const cx = i < 3 ? 20 : 6, cz = i < 3 ? -12 : 24; gl.position.set(cx + Math.cos(a) * 8, 8 + Math.sin(t * 0.7 + i) * 1.2, cz + Math.sin(a) * 4); gl.rotation.y = -a; gl.children.forEach((c, k) => { if (k) c.rotation.z = Math.sin(t * 9 + i) * 0.5 * (k === 1 ? 1 : -1); }); }));
-  void riverGeometry; void addWater; void fish; void IT;
+  void riverGeometry; void addWater; void fish; void IT; void addFish;
 }

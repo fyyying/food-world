@@ -2,7 +2,7 @@
 import * as THREE from "three";
 import { CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
 import { AREAS, type EnrichedRecipe, type WorldId, type WorldObject } from "./graph";
-import { mat, add, type P } from "./props";
+import { mat, add, fish, type P } from "./props";
 import { plateTexture, escapeHtml as esc } from "../world/plates";
 
 export type Placed = { obj: WorldObject; group: THREE.Group; hit: THREE.Mesh; labelEl: HTMLElement; anchor: THREE.Vector3; top: number; ring: THREE.Mesh; small: boolean };
@@ -268,4 +268,53 @@ export function addWater(ctx: LayoutCtx, curve: THREE.CatmullRomCurve3, width = 
   for (let i = 0; i < 30; i++) { const u = (i + 0.5) / 30; const p = curve.getPointAt(u), tg = curve.getTangentAt(u); const side = new THREE.Vector3(-tg.z, 0, tg.x).normalize().multiplyScalar((Math.random() - 0.5) * (width - 1)); const pb = add(group, new THREE.Mesh(new THREE.DodecahedronGeometry(0.1 + Math.random() * 0.08, 0), mat("#9fb3a6")), p.x + side.x, 0.005, p.z + side.z); pb.scale.y = 0.4; }
   tickers.push((t) => { riverMat.uniforms.uTime.value = t; });
   return river;
+}
+
+
+/** Flowing water surface for arbitrary shapes: ripples and glints driven by world position, opaque. */
+export function flowingWaterMaterial(shallow = "#6ab3c2", deep = "#3f8fa4"): THREE.ShaderMaterial {
+  const m = new THREE.ShaderMaterial({
+    uniforms: { uTime: { value: 0 }, uShallow: { value: new THREE.Color(shallow) }, uDeep: { value: new THREE.Color(deep) } },
+    vertexShader: `varying vec3 vPos; void main(){ vec4 wp = modelMatrix * vec4(position,1.0); vPos = wp.xyz; gl_Position = projectionMatrix * viewMatrix * wp; }`,
+    fragmentShader: `uniform float uTime; uniform vec3 uShallow; uniform vec3 uDeep; varying vec3 vPos;
+      float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7))) * 43758.5453); }
+      float noise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f);
+        return mix(mix(hash(i), hash(i+vec2(1,0)), f.x), mix(hash(i+vec2(0,1)), hash(i+vec2(1,1)), f.x), f.y); }
+      void main(){
+        vec2 p = vPos.xz;
+        float n = noise(p*0.35 + vec2(uTime*0.12, -uTime*0.08))*0.6 + noise(p*0.9 - vec2(uTime*0.2, uTime*0.1))*0.4;
+        float wave = 0.5 + 0.5*sin(p.x*1.6 + p.z*0.9 + uTime*1.4 + n*3.0);
+        vec3 col = mix(uDeep, uShallow, wave*0.55 + n*0.25);
+        float glint = smoothstep(0.80, 0.9, noise(p*1.8 + vec2(uTime*0.5, -uTime*0.35)));
+        col += glint*0.18;
+        gl_FragColor = vec4(col, 1.0); }`,
+  });
+  return m;
+}
+
+/** A school of small fish that steer along a curve with gentle lane changes, bending as they swim. */
+export function addFish(ctx: LayoutCtx, curve: THREE.CatmullRomCurve3, palette: [string, string][], laneWidth = 1.4, size = 0.4) {
+  const { group, tickers, TOP } = ctx;
+  type F = { g: THREE.Group; u: number; side: number; targetSide: number; speed: number; heading: number; ph: number };
+  const school: F[] = palette.map(([c1, c2], i) => {
+    const f = fish(c1, c2, size + (i % 3) * 0.06); group.add(f);
+    return { g: f, u: (i / palette.length + Math.random() * 0.05) % 1, side: (Math.random() - 0.5) * laneWidth, targetSide: (Math.random() - 0.5) * laneWidth, speed: 0.003 + Math.random() * 0.003, heading: 0, ph: Math.random() * 6 };
+  });
+  tickers.push((t, dt) => {
+    for (const k of school) {
+      if (Math.random() < dt * 0.15) k.targetSide = (Math.random() - 0.5) * laneWidth;
+      k.side += (k.targetSide - k.side) * Math.min(1, dt * 0.6);
+      const glide = 1 + Math.sin(t * 0.5 + k.ph) * 0.2;
+      k.u = (k.u + dt * k.speed * glide) % 1;
+      const p = curve.getPointAt(k.u), tg = curve.getTangentAt(k.u);
+      const n = new THREE.Vector3(-tg.z, 0, tg.x).normalize();
+      const pos = p.clone().addScaledVector(n, k.side);
+      const ahead = curve.getPointAt((k.u + 0.01) % 1).addScaledVector(n, k.targetSide);
+      const want = Math.atan2(ahead.x - pos.x, ahead.z - pos.z);
+      let d = want - k.heading; d = Math.atan2(Math.sin(d), Math.cos(d)); k.heading += d * Math.min(1, dt * 1.6);
+      k.g.position.set(pos.x, TOP + 0.03 + Math.sin(t * 1.3 + k.ph) * 0.012, pos.z);
+      k.g.rotation.set(0, k.heading - Math.PI / 2, 0);
+      (k.g.userData as { swim?: (t: number, k: number) => void }).swim?.(t + k.ph, glide);
+    }
+  });
 }

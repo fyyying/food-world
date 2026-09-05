@@ -197,22 +197,58 @@ export function buildWorld(spec: WorldSpec): Diorama {
   // ---------- hover feedback: the thing under the cursor lifts and wobbles a little ----------
   let hovered: Placed | DishMarker | null = null;
   const hoverPhase = new Map<THREE.Object3D, number>();
+  const hoverScale = new Map<THREE.Object3D, number>();
+  // click feedback: a squash-and-stretch bounce of the whole prop plus a burst of sparkles from its top
+  const bounce = new Map<THREE.Object3D, number>();
+  type Spark = { m: THREE.Mesh; v: THREE.Vector3; spin: THREE.Vector3; life: number };
+  const sparks: Spark[] = [];
+  const sparkGeo = new THREE.BoxGeometry(0.16, 0.16, 0.16);
+  const sparkMats = ["#f2c14e", "#ffffff", "#f4a6b8", "#e0483a", "#8fc4c9"].map((c) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.6, emissive: new THREE.Color(c), emissiveIntensity: 0.35 }));
+  function burst(p: Placed) {
+    bounce.set(p.group, 1);
+    const n = 16;
+    for (let i = 0; i < n; i++) {
+      const m = new THREE.Mesh(sparkGeo, sparkMats[i % sparkMats.length]);
+      m.position.set(p.anchor.x + (Math.random() - 0.5) * 0.6, Math.min(p.top, 6) + 0.4, p.anchor.z + (Math.random() - 0.5) * 0.6);
+      const a = (i / n) * Math.PI * 2 + Math.random() * 0.4;
+      const v = new THREE.Vector3(Math.cos(a) * (1.2 + Math.random() * 1.6), 3.2 + Math.random() * 2.2, Math.sin(a) * (1.2 + Math.random() * 1.6));
+      group.add(m);
+      sparks.push({ m, v, spin: new THREE.Vector3(Math.random() * 8, Math.random() * 8, Math.random() * 8), life: 0 });
+    }
+  }
   tickers.push((t, dt) => {
     for (const p of placed) {
       const on = hovered === p;
       const k = Math.min(1, dt * 9);
+      let hs = hoverScale.get(p.group) ?? 1;
       if (p.small) {
         // small things (animals, trees, jars, tables) hop and wobble
         const targetY = TOP + (on ? 0.18 : 0);
         p.group.position.y += (targetY - p.group.position.y) * k;
-        const ts = on ? 1.035 : 1;
-        p.group.scale.setScalar(p.group.scale.x + (ts - p.group.scale.x) * k);
+        hs += ((on ? 1.035 : 1) - hs) * k;
+        hoverScale.set(p.group, hs);
         const ph = hoverPhase.get(p.group) ?? 0;
         const wob = on ? Math.min(1, ph + dt * 2) : Math.max(0, ph - dt * 3);
         hoverPhase.set(p.group, wob);
         p.group.rotation.z = Math.sin(t * 6) * 0.025 * wob * (1 - wob * 0.6);
       }
       // buildings, fields and the market get no hover effect at all; the label pill is enough
+      const b = bounce.get(p.group) ?? 0;
+      if (b > 0) {
+        const nb = Math.max(0, b - dt * 1.4);
+        bounce.set(p.group, nb);
+        const w = Math.sin((1 - nb) * Math.PI * 3) * nb * 0.09;   // three decaying wobbles
+        p.group.scale.set(hs * (1 - w * 0.6), hs * (1 + w), hs * (1 - w * 0.6));
+      } else if (p.group.scale.x !== hs) p.group.scale.setScalar(hs);
+    }
+    for (let i = sparks.length - 1; i >= 0; i--) {
+      const s = sparks[i];
+      s.life += dt; s.v.y -= dt * 9;
+      s.m.position.addScaledVector(s.v, dt);
+      s.m.rotation.x += s.spin.x * dt; s.m.rotation.y += s.spin.y * dt;
+      const sc = Math.max(0.001, 1 - s.life / 1.1);
+      s.m.scale.setScalar(sc);
+      if (s.life > 1.1 || s.m.position.y < TOP) { group.remove(s.m); sparks.splice(i, 1); }
     }
   });
 
@@ -242,7 +278,7 @@ export function buildWorld(spec: WorldSpec): Diorama {
     highlight,
     hover: (thing) => { hovered = thing && "obj" in thing ? thing : null; if (thing && "recipe" in thing) thing.group.scale.setScalar(1.15); },
     pin: (ids) => { for (const p of placed) p.labelEl.classList.toggle("show", ids?.has(p.obj.id) ?? false); for (const p of placed) p.labelEl.classList.toggle("pinned", ids?.has(p.obj.id) ?? false); },
-    poke: (p) => p.group.userData.poke?.(),
+    poke: (p) => { burst(p); p.group.userData.poke?.(); },
   };
 }
 

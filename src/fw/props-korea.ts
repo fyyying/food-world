@@ -10,7 +10,7 @@ const cone = (r: number, h: number, color: string, seg = 8) => new THREE.Mesh(ne
 const ball = (r: number, color: string, seg = 8) => new THREE.Mesh(new THREE.SphereGeometry(r, seg, Math.max(4, seg - 2)), mat(color));
 const pick = <T,>(arr: T[]) => arr[Math.floor(rnd() * arr.length)];
 const tickChildren = (g: THREE.Object3D) => (t: number, dt: number) => g.traverse((c) => { if (c !== g && (c as P).userData.tick) (c as P).userData.tick!(t, dt); });
-function reaction(rate = 1) { let k = 0; return { poke: () => { k = 1; }, step: (dt: number) => { k = Math.max(0, k - dt * rate); return k; } }; }
+function reaction(rate = 1) { let k = 0; return { poke: () => { k = 1; }, step: (dt: number) => { k = Math.max(0, k - dt * rate * 0.7); return k; } }; }
 
 export const KR = { giwa: "#3b3d44", wall: "#f3ede0", wood: "#9a6b45", woodDark: "#5a3d28", stone: "#9a9891", dancheongG: "#2f7f6a", dancheongR: "#b83a3a", dancheongB: "#3c5fa8", onggi: "#5a3a2a", tent: "#f08a2a", basalt: "#3a3a3d", pine: "#3f6b3f" };
 
@@ -124,7 +124,7 @@ export function jangdokdae(): P {
   add(g, cyl(0.3, 0.24, 0.25, "#a8a49c", 8), 3.6, 0.13, 2.0); add(g, ball(0.2, "#c9413f", 7), 3.6, 0.32, 2.0).scale.y = 0.6;
   const re = reaction(0.7);
   g.userData.poke = () => { re.poke(); bubble(keeper, "김치! Kimchi!", 1.5, 1300); };
-  g.userData.tick = (t, dt) => { const k = re.step(dt); lids.forEach((l) => { l.lid.position.y = l.base + k * Math.abs(Math.sin(t * 14 + l.ph)) * 0.16; l.lid.rotation.z = k * Math.sin(t * 12 + l.ph) * 0.12; }); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); lids.forEach((l) => { l.lid.position.y = l.base + k * Math.abs(Math.sin(t * 12 + l.ph)) * 0.45; l.lid.rotation.z = k * Math.sin(t * 10 + l.ph) * 0.35; l.lid.rotation.y += k * dt * 6; }); };
   return g;
 }
 
@@ -138,7 +138,7 @@ export function chilliMats(): P {
   const worker = add(g, person("#7a4a3a", { hat: true }), 3.4, 0, -0.9);
   const re = reaction(0.8);
   g.userData.poke = () => { re.poke(); bubble(worker, "고추! Chilli!", 1.5, 1200); };
-  g.userData.tick = (t, dt) => { const k = re.step(dt); chillies.forEach((c, i) => { c.position.y = 0.09 + k * Math.max(0, Math.sin(t * 11 + i)) * 0.15; }); const up = (worker.userData as { upper?: THREE.Group }).upper; if (up) up.rotation.x = 0.2 + k * Math.abs(Math.sin(t * 8)) * 0.3; };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); chillies.forEach((c, i) => { c.position.y = 0.09 + k * Math.max(0, Math.sin(t * 11 + i)) * 0.5; c.rotation.y += k * dt * 8; }); const up = (worker.userData as { upper?: THREE.Group }).upper; if (up) up.rotation.x = 0.2 + k * Math.abs(Math.sin(t * 8)) * 0.3; };
   return g;
 }
 
@@ -167,8 +167,8 @@ export function bbqHouse(): P {
   g.userData.poke = () => { re.poke(); bubble(diners[2], "맛있다! Delicious!", 1.4, 1300); };
   g.userData.tick = (t, dt) => {
     const k = re.step(dt);
-    for (const tb of tables) tb.slices.forEach((s, i) => { s.position.y = 0.96 + k * Math.max(0, Math.sin(t * 12 + i * 1.3)) * 0.12; s.rotation.y += k * dt * 4; });   // slices flipped
-    tongs.position.y = 1.15 + k * Math.abs(Math.sin(t * 12)) * 0.15;
+    for (const tb of tables) tb.slices.forEach((s, i) => { s.position.y = 0.96 + k * Math.max(0, Math.sin(t * 12 + i * 1.3)) * 0.4; s.rotation.y += k * dt * 9; s.rotation.x = k * Math.sin(t * 12 + i) * 1.2; });   // slices flipped
+    tongs.position.y = 1.15 + k * Math.abs(Math.sin(t * 12)) * 0.45;
     diners.forEach((d, i) => { const up = (d.userData as { upper?: THREE.Group }).upper; if (up) { up.rotation.x = 0.15 + Math.sin(t * 1.4 + i) * 0.05 + k * 0.25 * Math.sin(Math.min(1, k * 2) * Math.PI); up.rotation.y = Math.sin(t * 0.6 + i) * 0.2; } });
     tickChildren(g)(t, dt);
   };
@@ -200,7 +200,7 @@ export function dolsotHouse(): P {
   g.userData.poke = () => { re.poke(); bubble(server, "비빔밥! Bibimbap!", 1.5, 1300); };
   g.userData.tick = (t, dt) => {
     const k = re.step(dt);
-    bowls.forEach((b, i) => { b.rotation.y += k * dt * 5; b.position.y = 0.53 + k * Math.abs(Math.sin(t * 10 + i)) * 0.05; });   // bowls stirred
+    bowls.forEach((b, i) => { b.rotation.y += k * dt * 12; b.position.y = 0.53 + k * Math.abs(Math.sin(t * 10 + i)) * 0.25; });   // bowls stirred
     diners.forEach((d, i) => { const up = (d.userData as { upper?: THREE.Group }).upper; if (up) { up.rotation.x = 0.2 + Math.sin(t * 1.4 + i) * 0.05 + k * 0.3 * Math.sin(Math.min(1, k * 2) * Math.PI); up.rotation.z = Math.sin(t * 0.9 + i) * 0.06; } });
     tickChildren(g)(t, dt);
   };
@@ -243,7 +243,7 @@ export function gwangjang(): P {
   g.userData.poke = () => { re.poke(); bubble(g, "어서 오세요! Welcome!", 4.0, 1300); };
   g.userData.tick = (t, dt) => {
     const k = re.step(dt);
-    vendors.forEach((v, i) => { const up = (v.userData as { upper?: THREE.Group }).upper; if (up) up.rotation.z = k * Math.sin(t * 8 + i) * 0.25; });
+    vendors.forEach((v, i) => { const up = (v.userData as { upper?: THREE.Group }).upper; if (up) { up.rotation.z = k * Math.sin(t * 8 + i) * 0.4; up.rotation.x = -k * Math.abs(Math.sin(t * 6 + i)) * 0.25; } v.position.y = k * Math.abs(Math.sin(t * 9 + i)) * 0.25; });
     for (const sh of shoppers) {
       if (sh.wait > 0) { sh.wait -= dt; continue; }
       const to = sh.target.clone().sub(sh.pos); const d = to.length();
@@ -272,7 +272,7 @@ export function pojangmacha(): P {
   g.userData.steam = new THREE.Vector3(1.1, 1.3, 0.1);
   const re = reaction(0.6);
   g.userData.poke = () => { re.poke(); bubble(people[1], "건배! Cheers!", 1.4, 1300); };
-  g.userData.tick = (t, dt) => { const k = re.step(dt); people.forEach((p, i) => { const up = (p.userData as { upper?: THREE.Group }).upper; if (up) { up.rotation.z = Math.sin(t * 0.9 + i) * 0.08; up.rotation.x = -k * 0.3 * Math.sin(Math.min(1, k * 2) * Math.PI); } }); tickChildren(g)(t, dt); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); people.forEach((p, i) => { const up = (p.userData as { upper?: THREE.Group }).upper; if (up) { up.rotation.z = Math.sin(t * 0.9 + i) * 0.08 + k * Math.sin(t * 7 + i) * 0.25; up.rotation.x = -k * 0.5 * Math.sin(Math.min(1, k * 2) * Math.PI); } p.position.y = 0.04 + k * Math.abs(Math.sin(t * 8 + i)) * 0.2; }); tickChildren(g)(t, dt); };
   return g;
 }
 
@@ -283,15 +283,20 @@ export function blackPigs(): P {
   const pigs: P[] = [];
   for (let i = 0; i < 3; i++) {
     const p = group();
-    add(p, box(1.0, 0.55, 0.6, "#2a2a2e"), 0, 0.45, 0); const head = add(p, box(0.45, 0.45, 0.45, "#2a2a2e"), 0.65, 0.45, 0); add(head, box(0.14, 0.2, 0.26, "#4a4a50"), 0.28, -0.05, 0); for (const z of [-0.16, 0.16]) add(head, box(0.1, 0.18, 0.1, "#2a2a2e"), 0, 0.28, z);
-    for (const x of [-0.32, 0.32]) for (const z of [-0.18, 0.18]) add(p, box(0.15, 0.28, 0.15, "#2a2a2e"), x, 0.14, z);
+    const coat = "#4a4044";
+    add(p, ball(0.5, coat, 10), 0, 0.5, 0).scale.set(1.1, 0.65, 0.65); const head = add(p, ball(0.28, coat, 9), 0.62, 0.5, 0); head.scale.set(1, 0.9, 0.9);
+    add(head, cyl(0.12, 0.14, 0.14, "#e8a0a8", 8), 0.3, -0.04, 0).rotation.z = Math.PI / 2; for (const z of [-0.05, 0.05]) add(head, ball(0.025, "#5a2a30", 4), 0.37, -0.04, z);   // pink snout with nostrils
+    for (const z of [-0.14, 0.14]) { const ear = add(head, cone(0.09, 0.22, coat, 4), 0.02, 0.26, z); ear.rotation.x = z > 0 ? 0.5 : -0.5; add(ear, cone(0.05, 0.12, "#e8a0a8", 4), 0, -0.02, 0); }
+    for (const z of [-0.14, 0.14]) { add(head, ball(0.045, "#f4f1ea", 5), 0.22, 0.08, z); add(head, ball(0.025, "#1a1a1e", 4), 0.25, 0.08, z); }
+    for (const x of [-0.32, 0.32]) for (const z of [-0.18, 0.18]) add(p, box(0.15, 0.3, 0.15, coat), x, 0.15, z);
+    const tail = add(p, cyl(0.02, 0.02, 0.22, "#e8a0a8", 4), -0.55, 0.62, 0); tail.rotation.z = 1.2;
     p.position.set(-1.2 + i * 1.2, 0, (i % 2) * 0.8 - 0.4); p.rotation.y = i * 1.3; g.add(p); pigs.push(p);
     (p.userData as { head?: THREE.Mesh }).head = head;
   }
   for (const [x, z, rot, len] of [[0, -1.5, 0, 4.6], [0, 1.5, 0, 4.6], [-2.3, 0, Math.PI / 2, 3], [2.3, 0, Math.PI / 2, 3]] as [number, number, number, number][]) { const f = new THREE.Group(); const n = Math.round(len / 0.9); for (let i = 0; i <= n; i++) add(f, box(0.14, 0.7, 0.14, KR.basalt), -len / 2 + (i / n) * len, 0.35, 0); add(f, box(len, 0.07, 0.07, KR.basalt), 0, 0.5, 0); f.position.set(x, 0, z); f.rotation.y = rot; g.add(f); }
   const re = reaction(0.8);
   g.userData.poke = () => { re.poke(); bubble(pigs[1], "꿀꿀 Oink!", 1.1, 1200); };
-  g.userData.tick = (t, dt) => { const k = re.step(dt); pigs.forEach((p, i) => { p.position.y = k * Math.abs(Math.sin(t * 12 + i)) * 0.08; p.rotation.z = k * Math.sin(t * 16 + i) * 0.08; const h = (p.userData as { head?: THREE.Mesh }).head; if (h) h.position.y = 0.45 + Math.abs(Math.sin(t * 2 + i)) * 0.05; }); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); pigs.forEach((p, i) => { p.position.y = k * Math.abs(Math.sin(t * 12 + i)) * 0.35; p.rotation.z = k * Math.sin(t * 16 + i) * 0.15; p.rotation.y += k * dt * 3; const h = (p.userData as { head?: THREE.Mesh }).head; if (h) h.position.y = 0.45 + Math.abs(Math.sin(t * 2 + i)) * 0.05; }); };
   return g;
 }
 
@@ -310,7 +315,7 @@ export function haenyeo(): P {
   add(g, ball(0.3, "#f08a2a", 9), 2.6, 0.12, -1.6).scale.y = 0.7;
   const re = reaction(0.6);
   g.userData.poke = () => { re.poke(); bubble(g, "숨비소리~ Whistle!", 1.2, 1400); };
-  g.userData.tick = (t, dt) => { const k = re.step(dt); divers.forEach(({ d, ph }, i) => { d.position.y = Math.sin(t * 1.2 + ph) * 0.04 - k * Math.max(0, Math.sin(k * Math.PI)) * 0.5 * (i === 1 ? 1 : 0.3); d.rotation.y = Math.sin(t * 0.4 + ph) * 0.4; }); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); divers.forEach(({ d, ph }, i) => { d.position.y = Math.sin(t * 1.2 + ph) * 0.04 - k * Math.max(0, Math.sin(k * Math.PI)) * 1.1 * (i === 1 ? 1 : 0.5); d.rotation.x = -k * Math.max(0, Math.sin(k * Math.PI)) * 1.0; d.rotation.y = Math.sin(t * 0.4 + ph) * 0.4; }); };
   return g;
 }
 
@@ -375,15 +380,17 @@ export function namulPlot(): P {
   const gardener = add(g, person("#2f5d3f", { hat: true }), 3.2, 0, 0.5);
   const re = reaction(0.6);
   g.userData.poke = () => { re.poke(); bubble(gardener, "나물! Namul!", 1.5, 1300); };
-  g.userData.tick = (t, dt) => { const k = re.step(dt); plants.forEach((p) => { const s2 = 1 + k * Math.max(0, Math.sin((1 - k) * 9 - (p.position.x + 2.4) * 1.2)) * 0.3; p.scale.set(s2, 1 + (s2 - 1) * 1.2, s2); }); const up = (gardener.userData as { upper?: THREE.Group }).upper; if (up) up.rotation.z = k * Math.sin(t * 8) * 0.2; };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); plants.forEach((p) => { const s2 = 1 + k * Math.max(0, Math.sin((1 - k) * 9 - (p.position.x + 2.4) * 1.2)) * 0.6; p.scale.set(s2, 1 + (s2 - 1) * 1.2, s2); }); const up = (gardener.userData as { upper?: THREE.Group }).upper; if (up) up.rotation.z = k * Math.sin(t * 8) * 0.2; };
   return g;
 }
 
 export function hallasan(): P {
   const g = mountain(4.8, 6, true);
   // a broad shield volcano with the crater lake Baengnokdam on top
-  add(g, cyl(1.1, 1.7, 0.7, "#4a4a44", 12), 0, 5.55, 0);
-  add(g, cyl(0.95, 0.95, 0.08, "#5fa8b8", 12), 0, 5.9, 0);
+  add(g, cyl(1.3, 1.9, 0.9, "#6f7a68", 12), 0, 5.4, 0);                       // rocky summit
+  add(g, new THREE.Mesh(new THREE.TorusGeometry(1.0, 0.28, 8, 14), mat("#5b6356")), 0, 5.85, 0).rotation.x = Math.PI / 2;   // the crater rim
+  add(g, cyl(0.8, 0.8, 0.1, "#4a4f45", 12), 0, 5.7, 0);                        // crater floor
+  add(g, cyl(0.5, 0.5, 0.05, "#7fb8c4", 12), 0, 5.76, 0);                      // Baengnokdam, the small lake in the floor
   return g;
 }
 
@@ -421,7 +428,7 @@ export function jagalchi(): P {
   g.userData.poke = () => { re.poke(); bubble(vendors[1], "싱싱해요! Fresh!", 1.5, 1300); };
   g.userData.tick = (t, dt) => {
     const k = re.step(dt);
-    swimmers.forEach((s, i) => { const a = t * (0.6 + (i % 3) * 0.2) + s.ph; s.m.position.x = s.cx + Math.cos(a) * 0.9; s.m.position.z = s.cz + Math.sin(a) * 0.35; s.m.rotation.y = -a; s.m.position.y = 1.0 + k * Math.max(0, Math.sin(t * 9 + i)) * 0.35; });   // fish leap when poked
+    swimmers.forEach((s, i) => { const a = t * (0.6 + (i % 3) * 0.2) + s.ph; s.m.position.x = s.cx + Math.cos(a) * 0.9; s.m.position.z = s.cz + Math.sin(a) * 0.35; s.m.rotation.y = -a; s.m.position.y = 1.0 + k * Math.max(0, Math.sin(t * 9 + i)) * 0.9; });   // fish leap when poked
     vendors.forEach((v, i) => { const up = (v.userData as { upper?: THREE.Group }).upper; if (up) up.rotation.z = k * Math.sin(t * 8 + i) * 0.25; });
     tickChildren(g)(t, dt);
   };
@@ -434,7 +441,7 @@ export const KOREA_PROPS: Record<string, () => P> = {
 
 export const KOREA_ICONS: Record<string, () => P> = {
   hanwoo: () => cow(false, false),
-  blackPig: () => { const g = group(); add(g, box(1.0, 0.55, 0.6, "#2a2a2e"), 0, 0.45, 0); const h = add(g, box(0.45, 0.45, 0.45, "#2a2a2e"), 0.65, 0.45, 0); add(h, box(0.14, 0.2, 0.26, "#4a4a50"), 0.28, -0.05, 0); for (const z of [-0.16, 0.16]) add(h, box(0.1, 0.18, 0.1, "#2a2a2e"), 0, 0.28, z); for (const x of [-0.32, 0.32]) for (const z of [-0.18, 0.18]) add(g, box(0.15, 0.28, 0.15, "#2a2a2e"), x, 0.14, z); return g; },
+  blackPig: () => { const g = group(); const coat = "#4a4044"; add(g, ball(0.5, coat, 10), 0, 0.5, 0).scale.set(1.1, 0.65, 0.65); const h = add(g, ball(0.28, coat, 9), 0.62, 0.5, 0); add(h, cyl(0.12, 0.14, 0.14, "#e8a0a8", 8), 0.3, -0.04, 0).rotation.z = Math.PI / 2; for (const z of [-0.14, 0.14]) { add(h, cone(0.09, 0.22, coat, 4), 0.02, 0.26, z); add(h, ball(0.045, "#f4f1ea", 5), 0.22, 0.08, z); add(h, ball(0.025, "#1a1a1e", 4), 0.25, 0.08, z); } for (const x of [-0.32, 0.32]) for (const z of [-0.18, 0.18]) add(g, box(0.15, 0.3, 0.15, coat), x, 0.15, z); return g; },
   seafoodKr: () => { const g = group(); add(g, ball(0.28, "#5a5a5a", 9), -0.3, 0.2, 0).scale.set(1.2, 0.6, 1); for (let i = 0; i < 5; i++) add(g, ball(0.06, "#e8e0d0", 5), -0.3 + Math.cos(i * 1.3) * 0.25, 0.3, Math.sin(i * 1.3) * 0.2); add(g, ball(0.22, "#f08a2a", 9), 0.45, 0.16, 0.1).scale.y = 0.7; add(g, cyl(0.12, 0.1, 0.16, "#a8a49c", 8), 0.45, 0.3, 0.1); return g; },
   tangerine: () => { const g = group(); for (let i = 0; i < 3; i++) add(g, ball(0.2, "#f08a2a", 12), -0.3 + i * 0.32, 0.2, (i - 1) * 0.12).scale.y = 0.85; add(g, ball(0.09, "#3f7a3a", 6), 0.05, 0.4, 0.15).scale.set(1, 0.3, 1.6); return g; },
   riceKr: () => { const g = group(); add(g, cyl(0.42, 0.28, 0.32, "#2a2a2e", 12), 0, 0.16, 0); add(g, ball(0.38, "#fbf7ef", 9), 0, 0.36, 0).scale.y = 0.5; for (let i = 0; i < 6; i++) add(g, ball(0.05, ["#f2cf3a", "#3f7a3a", "#e07a3a", "#c9413f", "#8fc26a", "#e8dcc3"][i], 5), Math.cos(i * 1.05) * 0.24, 0.55, Math.sin(i * 1.05) * 0.24); add(g, ball(0.09, "#f2cf3a", 7), 0, 0.58, 0).scale.y = 0.5; return g; },

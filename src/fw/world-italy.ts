@@ -19,7 +19,7 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
   // ground tones: Roman ochre-green, Venetian pale stone, Sicilian sun-dried gold
   tint(-14, -2, 22, 16, "#b3c47c", 0.1);
   tint(2, 14, 20, 11, "#c9b978", -0.2);
-  tint(18, -12, 16, 10, "#c9c4a6");
+
 
   // ---------- Rome: piazza, streets, Colosseum, pines ----------
   add(group, new THREE.Mesh(new THREE.CircleGeometry(8, 28), mat("#d9cbb0")), -10, TOP + 0.02, 0).rotation.x = -Math.PI / 2;
@@ -40,7 +40,7 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
     ["rome", -1, -9, 0.2, 3.0, 2.4, 2.2, 2], ["rome", 3, -10, 0.1, 3.4, 2.6, 2.2, 3], ["rome", -18, 6, 0.6, 3.0, 2.4, 2.2, 2],
     ["rome", -30, 4, -0.5, 3.2, 2.6, 2.2, 2], ["rome", -32, -8, 0.3, 2.8, 2.4, 2.2, 2],
     ["sicily", -9, 20, 0.1, 3.0, 2.4, 2.2, 1], ["sicily", 7, 19.5, -0.2, 2.6, 2.2, 2.2, 2], ["sicily", 12, 18.5, 0.2, 3.2, 2.4, 2.2, 1],
-    ["sicily", 16, 12, 0.6, 2.8, 2.4, 2.2, 2], ["sicily", 22, 8, -0.3, 3.0, 2.4, 2.2, 1], ["rome", 6, 4, 0.4, 2.8, 2.4, 2.2, 2],
+    ["sicily", 16, 12, 0.6, 2.8, 2.4, 2.2, 2], ["rome", 6, 4, 0.4, 2.8, 2.4, 2.2, 2],
   ];
   for (const [style, x, z, rot, w, d, h, st] of houses) place(italianHouse(style, w, d, h, st), x, z, rot);
   // a Roman ruin: broken columns
@@ -48,9 +48,17 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
   add(group, new THREE.Mesh(new THREE.BoxGeometry(7, 0.4, 3), mat("#d9ccb0")), -19, 0.2, 16.5);
 
   // ---------- Venice: lagoon with three islands, canals, bridges, gondolas, the campanile ----------
-  const lagoon = new THREE.Mesh(new THREE.PlaneGeometry(34, 26), new THREE.MeshStandardMaterial({ color: "#5fa8b8", roughness: 0.3, transparent: true, opacity: 0.85 }));
-  lagoon.rotation.x = -Math.PI / 2; lagoon.position.set(20, TOP + 0.03, -14); lagoon.receiveShadow = true; group.add(lagoon);
-  add(group, new THREE.Mesh(new THREE.PlaneGeometry(34, 26), mat("#3f7a86")), 20, TOP - 0.02, -14).rotation.x = -Math.PI / 2;
+  // one body of water: the lagoon, a channel down the east edge, and the sea along the south
+  const waterMat = new THREE.MeshStandardMaterial({ color: "#5fa8b8", roughness: 0.25, transparent: true, opacity: 0.86, depthWrite: false });
+  const bedMat = mat("#3f7a86");
+  const water = (w: number, d: number, x: number, z: number) => {
+    const bed = new THREE.Mesh(new THREE.PlaneGeometry(w, d), bedMat); bed.rotation.x = -Math.PI / 2; bed.position.set(x, TOP + 0.012, z); bed.receiveShadow = true; group.add(bed);
+    const top = new THREE.Mesh(new THREE.PlaneGeometry(w, d), waterMat); top.rotation.x = -Math.PI / 2; top.position.set(x, TOP + 0.06, z); top.renderOrder = 2; group.add(top);
+  };
+  water(34, 26, 20, -14);      // Venetian lagoon
+  water(6, 24, 35, 10);        // channel along the eastern edge
+  water(80, 9, 0, 25.5);       // the Sicilian sea
+  water(8, 4, 34, 22);         // the corner where channel meets sea
   const island = (x: number, z: number, w: number, d: number) => { add(group, new THREE.Mesh(new THREE.BoxGeometry(w, 0.5, d), mat(IT.venCream)), x, 0.2, z); add(group, new THREE.Mesh(new THREE.BoxGeometry(w + 0.4, 0.25, d + 0.4), mat("#b9ad98")), x, 0.05, z); };
   island(12, -18, 9, 8); island(24, -20, 9, 7); island(20, -8, 10, 7); island(31, -10, 6, 6);
   place(campanile(), 24, -22).scale.setScalar(0.75);
@@ -72,15 +80,15 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
   for (const [x, z, c] of [[11, -16, "#e0a52c"], [25, -20.5, "#3f6b8f"], [21, -9, "#c0392b"], [19, -6, "#f4f1ea"]] as [number, number, string][]) place(person(c), x, z, x).position.y = 0.45;
 
   // ---------- Sicily: the coast, Etna, citrus, a baroque church ----------
-  const sea = new THREE.Mesh(new THREE.PlaneGeometry(80, 9), new THREE.MeshStandardMaterial({ color: "#4f9db0", roughness: 0.3, transparent: true, opacity: 0.85 }));
-  sea.rotation.x = -Math.PI / 2; sea.position.set(0, TOP + 0.03, 25.5); sea.receiveShadow = true; group.add(sea);
-  add(group, new THREE.Mesh(new THREE.PlaneGeometry(80, 9), mat("#2f6a7a")), 0, TOP - 0.02, 25.5).rotation.x = -Math.PI / 2;
-  add(group, new THREE.Mesh(new THREE.PlaneGeometry(80, 1.6), mat("#efe0bb")), 0, TOP + 0.01, 20.6).rotation.x = -Math.PI / 2;
+  add(group, new THREE.Mesh(new THREE.PlaneGeometry(64, 1.6), mat("#efe0bb")), -8, TOP + 0.02, 20.6).rotation.x = -Math.PI / 2;   // beach
   const boats = [fishingBoat("#3f6b8f"), fishingBoat("#c0392b"), fishingBoat("#f4f1ea")];
   boats.forEach((b, i) => { place(b, -12 + i * 14, 24 + (i % 2) * 1.5, 0.3 - i * 0.5); });
-  place(etna(), 32, 12, 0.4);
+  const sailer = fishingBoat("#e0a52c"); group.add(sailer); tickers.push(sailer.userData.tick!);
+  const channel = new THREE.CatmullRomCurve3([new THREE.Vector3(32, 0, -3), new THREE.Vector3(35.5, 0, 6), new THREE.Vector3(35.5, 0, 16), new THREE.Vector3(30, 0, 25), new THREE.Vector3(18, 0, 26), new THREE.Vector3(24, 0, 23), new THREE.Vector3(34, 0, 20), new THREE.Vector3(36, 0, 10)], true);
+  tickers.push((t) => { const u = (t * 0.006) % 1; const p = channel.getPointAt(u), n = channel.getPointAt((u + 0.005) % 1); sailer.position.set(p.x, TOP + 0.05, p.z); sailer.rotation.y = Math.atan2(n.x - p.x, n.z - p.z) - Math.PI / 2; });
+  place(etna(), 28.5, 8, 0.4).scale.setScalar(0.8);
   place(baroqueChurch(), 0, 19, 0.05);
-  for (let i = 0; i < 5; i++) place(pricklyPear(), 26 + i * 2, 20 + (i % 2) * 1.5, i);
+  for (let i = 0; i < 4; i++) place(pricklyPear(), 22 + i * 2.2, 18 + (i % 2) * 1.2, i);
   for (let i = 0; i < 6; i++) place(oliveTree(0.9), -12 + i * 2.2, 12 + (i % 2) * 1.6, i);
   // a small harbour mole with a lighthouse
   add(group, new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.6, 7), mat(IT.stone)), 14, 0.3, 24.5);

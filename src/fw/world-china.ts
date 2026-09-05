@@ -1,78 +1,21 @@
-/** Level 3: the China miniature world. Terrain, villages, interactive objects, dish markers and ambient life. */
+/** China: the layout of the first world. Terrain, villages, farms, life. Objects come from graph.ts. */
 import * as THREE from "three";
 import { CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
-import { AREAS, OBJECTS, type EnrichedRecipe, type WorldObject } from "./graph";
+import { OBJECTS, type EnrichedRecipe } from "./graph";
 import { PROPS, mat, mountain, house, tree, terrace, bridge, woodenBridge, boat, signpost, chicken, butterfly, temple, pagoda, gate, lanternString, dragon, person, fence, pond, cow, goat, path, add, birds, crane, coop, panda, fish, C, type P } from "./props";
-import { plateTexture, escapeHtml as esc } from "../world/plates";
+import { buildWorld, addWater, type Diorama, type LayoutCtx } from "./worldkit";
 
-export type Placed = { obj: WorldObject; group: THREE.Group; hit: THREE.Mesh; labelEl: HTMLElement; anchor: THREE.Vector3; top: number; ring: THREE.Mesh; small: boolean };
-export type DishMarker = { recipe: EnrichedRecipe; host: Placed; group: THREE.Group; hit: THREE.Mesh; labelEl: HTMLElement; anchor: THREE.Vector3; ring: THREE.Mesh; base: THREE.Vector3; shown: boolean };
+void CSS2DObject; void signpost;
 
-export type Diorama = {
-  group: THREE.Group;
-  placed: Placed[];
-  dishes: DishMarker[];
-  bounds: THREE.Box3;
-  tick: (t: number, dt: number) => void;
-  highlight: (objectIds: Set<string> | null, dishIds: Set<string> | null) => void;
-  hover: (thing: Placed | DishMarker | null) => void;
-  /** keep name labels showing on these objects (used by "Explore ingredients") */
-  pin: (ids: Set<string> | null) => void;
-  poke: (p: Placed) => void;
-};
-
-const W = 76, D = 56;
-const TOP = 0;
-
-function riverGeometry(curve: THREE.CatmullRomCurve3, width: number, segments = 90): THREE.BufferGeometry {
-  const pts = curve.getSpacedPoints(segments);
-  const positions: number[] = [], uvs: number[] = [], indices: number[] = [];
-  for (let i = 0; i <= segments; i++) {
-    const p = pts[i], tangent = curve.getTangentAt(i / segments);
-    const side = new THREE.Vector3(-tangent.z, 0, tangent.x).normalize().multiplyScalar(width / 2 * (0.85 + Math.sin(i * 0.7) * 0.15));
-    positions.push(p.x - side.x, p.y, p.z - side.z, p.x + side.x, p.y, p.z + side.z);
-    uvs.push(0, i / segments, 1, i / segments);
-    if (i < segments) { const k = i * 2; indices.push(k, k + 1, k + 2, k + 1, k + 3, k + 2); }
-  }
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
-  geo.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
-  geo.setIndex(indices);
-  geo.computeVertexNormals();
-  return geo;
+export function buildChina(recipes: EnrichedRecipe[]): Diorama {
+  return buildWorld({
+    id: "china", W: 76, D: 56, ground: "#8cb86b", plinth: "#6e4a2c", recipes, objects: OBJECTS, props: PROPS,
+    small: /^(cow|pig|chicken|pepperTree|jars)$/, fallbackPlace: "wok",
+    layout: layoutChina,
+  });
 }
 
-function ringMesh(r: number): THREE.Mesh {
-  // rings are no longer shown; kept as invisible placeholders so the object records stay simple
-  const m = new THREE.Mesh(new THREE.RingGeometry(r, r + 0.3, 8), new THREE.MeshBasicMaterial({ color: "#f2b64d", transparent: true, opacity: 0, depthWrite: false }));
-  m.rotation.x = -Math.PI / 2; m.position.y = 0.07; m.visible = false;
-  return m;
-}
-
-function softDot(): THREE.Texture {
-  const c = document.createElement("canvas"); c.width = c.height = 64;
-  const ctx = c.getContext("2d")!;
-  const g = ctx.createRadialGradient(32, 32, 2, 32, 32, 30);
-  g.addColorStop(0, "rgba(255,255,255,0.9)"); g.addColorStop(1, "rgba(255,255,255,0)");
-  ctx.fillStyle = g; ctx.fillRect(0, 0, 64, 64);
-  return new THREE.CanvasTexture(c);
-}
-
-export function buildDiorama(recipes: EnrichedRecipe[]): Diorama {
-  const group = new THREE.Group();
-  const tickers: ((t: number, dt: number) => void)[] = [];
-  const place = <T extends THREE.Object3D>(o: T, x: number, z: number, rot = 0, s = 1): T => { o.position.set(x, TOP, z); o.rotation.y = rot; o.scale.setScalar(s); group.add(o); const tk = (o as unknown as P).userData?.tick; if (tk) tickers.push(tk); return o; };
-
-  // ---------- base: a model on a wooden plinth ----------
-  const plinth = new THREE.Mesh(new THREE.BoxGeometry(W + 4, 2.4, D + 4), mat("#6e4a2c", { roughness: 0.6 }));
-  plinth.position.y = -1.7; plinth.receiveShadow = true; group.add(plinth);
-  add(group, new THREE.Mesh(new THREE.BoxGeometry(W + 4.6, 0.25, D + 4.6), mat("#8a5f3a")), 0, -0.55, 0);
-  const ground = new THREE.Mesh(new THREE.BoxGeometry(W, 1.0, D), mat("#8cb86b"));
-  ground.position.y = -0.5; ground.receiveShadow = true; group.add(ground);
-  const tint = (x: number, z: number, rx: number, rz: number, color: string, rot = 0) => {
-    const m = new THREE.Mesh(new THREE.CircleGeometry(1, 20), mat(color));
-    m.scale.set(rx, rz, 1); m.rotation.x = -Math.PI / 2; m.rotation.z = rot; m.position.set(x, TOP + 0.006, z); m.receiveShadow = true; group.add(m);
-  };
+function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   tint(-18, 6, 18, 15, "#82b263", 0.2);
   tint(20, 8, 16, 12, "#9cc484", -0.3);
   tint(2, -16, 18, 8, "#c2bd7a");
@@ -83,23 +26,7 @@ export function buildDiorama(recipes: EnrichedRecipe[]): Diorama {
     new THREE.Vector3(-38, TOP + 0.03, 4), new THREE.Vector3(-28, TOP + 0.03, 8), new THREE.Vector3(-14, TOP + 0.03, 9),
     new THREE.Vector3(-2, TOP + 0.03, 6), new THREE.Vector3(10, TOP + 0.03, 8), new THREE.Vector3(20, TOP + 0.03, 3), new THREE.Vector3(30, TOP + 0.03, 6), new THREE.Vector3(38, TOP + 0.03, 4),
   ]);
-  const riverMat = new THREE.ShaderMaterial({
-    uniforms: { uTime: { value: 0 } },
-    vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
-    fragmentShader: `uniform float uTime; varying vec2 vUv;
-      void main(){ float edge = smoothstep(0.0,0.18,vUv.x)*smoothstep(1.0,0.82,vUv.x);
-        float ripple = 0.5+0.5*sin((vUv.y*70.0 - uTime*1.6) + sin(vUv.x*12.0+uTime)*1.5);
-        vec3 col = mix(vec3(0.40,0.66,0.68), vec3(0.62,0.83,0.84), ripple*0.6);
-        col = mix(vec3(0.86,0.9,0.86), col, edge);
-        gl_FragColor = vec4(col, 0.72 + 0.2*(1.0-edge)); }`,
-    transparent: true, depthWrite: false,
-  });
-  const river = new THREE.Mesh(riverGeometry(curve, 3.4), riverMat); river.receiveShadow = true; river.renderOrder = 2; group.add(river);
-  // a darker bed strip just under the surface so the water reads as deep, and pebbles the koi swim over
-  const bed = new THREE.Mesh(riverGeometry(curve, 3.1), mat("#5e8a86")); bed.position.y = -0.025; bed.receiveShadow = true; group.add(bed);
-  for (let i = 0; i < 30; i++) { const u = (i + 0.5) / 30; const p = curve.getPointAt(u), tg = curve.getTangentAt(u); const side = new THREE.Vector3(-tg.z, 0, tg.x).normalize().multiplyScalar((Math.random() - 0.5) * 2.2); const pb = add(group, new THREE.Mesh(new THREE.DodecahedronGeometry(0.1 + Math.random() * 0.08, 0), mat("#9fb3a6")), p.x + side.x, 0.005, p.z + side.z); pb.scale.y = 0.4; }
-  const bank = new THREE.Mesh(riverGeometry(curve, 4.8), mat("#d9c89a")); bank.position.y = -0.02; bank.receiveShadow = true; group.add(bank);
-  tickers.push((t) => { riverMat.uniforms.uTime.value = t; });
+  addWater({ group, tickers, place, tint, TOP }, curve, 3.4);
   // reeds and stones along the bank
   for (let i = 0; i < 40; i++) { const u = i / 40; const p = curve.getPointAt(u), tg = curve.getTangentAt(u); const side = new THREE.Vector3(-tg.z, 0, tg.x).normalize().multiplyScalar(2.3 * (i % 2 ? 1 : -1)); const x = p.x + side.x, z = p.z + side.z; if (Math.abs(x) > 35) continue; if (i % 3 === 0) add(group, new THREE.Mesh(new THREE.DodecahedronGeometry(0.25 + (i % 4) * 0.08, 0), mat(C.stone)), x, 0.1, z); else for (let k = 0; k < 3; k++) add(group, new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.03, 0.8, 4), mat("#6fae4f")), x + (k - 1) * 0.15, 0.4, z + (k % 2) * 0.15); }
   // village street + lanes
@@ -276,158 +203,11 @@ export function buildDiorama(recipes: EnrichedRecipe[]): Diorama {
     for (let i = splashes.length - 1; i >= 0; i--) { const sp = splashes[i]; sp.life += dt; const s2 = 1 + sp.life * 6; sp.m.scale.set(s2, s2, 1); (sp.m.material as THREE.MeshBasicMaterial).opacity = 0.7 * (1 - sp.life / 0.9); if (sp.life > 0.9) { group.remove(sp.m); splashes.splice(i, 1); } }
   });
 
-  // ---------- interactive objects ----------
-  const steamSources: THREE.Vector3[] = [];
-  const placed: Placed[] = OBJECTS.map((obj) => {
-    if (obj.hitOnly) {
-      // a clickable spot inside a place (a market stall): no prop of its own
-      const hit = new THREE.Mesh(new THREE.BoxGeometry(3.0, 2.6, 2.4), new THREE.MeshBasicMaterial({ visible: false }));
-      hit.position.set(obj.pos[0], 1.3, obj.pos[1]); group.add(hit);
-      const ring = ringMesh(1.6); ring.position.set(obj.pos[0], TOP + 0.07, obj.pos[1]); group.add(ring);
-      const labelEl = document.createElement("div");
-      labelEl.className = "obj-label";
-      labelEl.innerHTML = `<span class="pill">${obj.emoji} ${esc(obj.name)}${obj.zh ? `<span class="zh">${obj.zh}</span>` : ""}<span class="k">${obj.kind}</span></span>`;
-      const label = new CSS2DObject(labelEl); label.position.set(obj.pos[0], 2.6, obj.pos[1]); group.add(label);
-      const p: Placed = { obj, group: new THREE.Group(), hit, labelEl, anchor: new THREE.Vector3(obj.pos[0], TOP, obj.pos[1]), top: 2.4, ring, small: false };
-      hit.userData.placed = p;
-      return p;
-    }
-    const prop = PROPS[obj.prop]();
-    prop.position.set(obj.pos[0], TOP, obj.pos[1]);
-    prop.rotation.y = obj.rot ?? 0;
-    group.add(prop);
-    prop.updateMatrixWorld(true);
-    if (prop.userData.tick) tickers.push(prop.userData.tick);
-    for (const key of ["steam", "smoke"] as const) { const local = prop.userData[key]; if (local) steamSources.push(obj.prop === "market" ? local.clone() : prop.localToWorld(local.clone())); }
-    const box = new THREE.Box3().setFromObject(prop);
-    const size = box.getSize(new THREE.Vector3()), center = box.getCenter(new THREE.Vector3());
-    const roam = obj.prop === "cow" ? 1.8 : 0;
-    const hit = new THREE.Mesh(new THREE.BoxGeometry(Math.max(2.2, size.x + 0.4 + roam), Math.max(2, size.y + 0.6), Math.max(2.2, size.z + 0.4 + roam)), new THREE.MeshBasicMaterial({ visible: false }));
-    hit.position.copy(center); group.add(hit);
-    const ring = ringMesh(Math.max(size.x, size.z) * 0.55 + 0.4); ring.position.set(center.x, TOP + 0.07, center.z); group.add(ring);
-    const labelEl = document.createElement("div");
-    labelEl.className = "obj-label";
-    labelEl.innerHTML = `<span class="pill">${obj.emoji} ${esc(obj.placeName ?? obj.name)}${obj.zh && !obj.placeName ? `<span class="zh">${obj.zh}</span>` : ""}<span class="k">${obj.placeName || obj.kind === "landmark" ? "place" : obj.kind}</span></span>`;
-    const label = new CSS2DObject(labelEl); label.position.set(center.x, box.max.y + 0.4, center.z); group.add(label);
-    const p: Placed = { obj, group: prop, hit, labelEl, anchor: new THREE.Vector3(center.x, TOP, center.z), top: box.max.y, ring, small: /^(cow|pig|chicken|pepperTree|jars)$/.test(obj.prop) };
-    hit.userData.placed = p;
-    return p;
-  });
-
-  // ---------- dish markers: plates that emerge around their place when it is opened ----------
-  const dishes: DishMarker[] = [];
-  const byPlace = new Map<string, EnrichedRecipe[]>();
-  for (const r of recipes) { const list = byPlace.get(r.place) ?? []; list.push(r); byPlace.set(r.place, list); }
-  const plateGeo = new THREE.CircleGeometry(0.72, 30);
-  const rimGeo = new THREE.CylinderGeometry(0.86, 0.8, 0.1, 30);
-  for (const [placeId, list] of byPlace) {
-    const host = placed.find((p) => p.obj.id === placeId) ?? placed.find((p) => p.obj.id === "wok")!;
-    list.forEach((recipe, i) => {
-      const g = new THREE.Group();
-      const spread = Math.min(1.0, 0.55 + list.length * 0.12);
-      const angle = Math.PI / 2 + (i - (list.length - 1) / 2) * spread; // fan toward the viewer (+z)
-      const dist = 2.6 + list.length * 0.25;
-      const base = new THREE.Vector3(host.anchor.x + Math.cos(angle) * dist, host.top + 1.2, host.anchor.z + Math.sin(angle) * dist);
-      g.position.copy(base);
-      const rim = new THREE.Mesh(rimGeo, mat("#fbf6ec", { roughness: 0.4 })); rim.castShadow = true; g.add(rim);
-      const dishMat = new THREE.MeshStandardMaterial({ color: "#e9d6a8", roughness: 0.6 });
-      const dish = new THREE.Mesh(plateGeo, dishMat); dish.rotation.x = -Math.PI / 2; dish.position.y = 0.055; g.add(dish);
-      plateTexture(recipe).then((tex) => { if (tex) { dishMat.map = tex; dishMat.color.set("#ffffff"); dishMat.needsUpdate = true; } });
-      g.rotation.x = 0.55; // tilt toward the camera
-      const hit = new THREE.Mesh(new THREE.CylinderGeometry(1.0, 1.0, 0.8, 10), new THREE.MeshBasicMaterial({ visible: false })); g.add(hit);
-      const ring = ringMesh(0.95); ring.position.set(base.x, TOP + 0.07, base.z); group.add(ring);
-      const labelEl = document.createElement("div");
-      labelEl.className = "obj-label";
-      labelEl.innerHTML = `<span class="pill dish">🍽 ${esc(recipe.title)}${recipe.zh ? `<span class="zh">${recipe.zh}</span>` : ""}</span>`;
-      const label = new CSS2DObject(labelEl); label.position.set(0, 1.0, 0); g.add(label);
-      g.scale.setScalar(0.001); g.visible = false;
-      group.add(g);
-      const marker: DishMarker = { recipe, host, group: g, hit, labelEl, anchor: base.clone(), ring, base, shown: false };
-      hit.userData.dish = marker;
-      dishes.push(marker);
-    });
-  }
-
-  // ---------- ambient life ----------
-  const puffTex = softDot();
-  const puffs: { s: THREE.Sprite; life: number; max: number; src: THREE.Vector3; drift: number }[] = [];
-  // temple incense + house chimneys
-  group.traverse((o) => { const sm = (o as P).userData?.smoke; if (sm && o.parent === group && !placed.some((p) => p.group === o)) { o.updateMatrixWorld(true); steamSources.push(o.localToWorld(sm.clone())); } });
-  for (const src of steamSources) for (let i = 0; i < 4; i++) {
-    const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: puffTex, transparent: true, opacity: 0.7, depthWrite: false }));
-    s.visible = false; group.add(s);
-    puffs.push({ s, life: Math.random() * 2.6, max: 2.6, src, drift: Math.random() * 6 });
-  }
-  tickers.push((t, dt) => {
-    for (const p of puffs) {
-      p.life += dt;
-      if (p.life > p.max) { p.life = 0; p.s.position.copy(p.src); }
-      const k = p.life / p.max;
-      p.s.visible = true;
-      p.s.position.y = p.src.y + k * 2.4;
-      p.s.position.x = p.src.x + Math.sin(t * 0.8 + p.drift) * 0.25 * k;
-      p.s.position.z = p.src.z + Math.cos(t * 0.6 + p.drift) * 0.2 * k;
-      const sc = 0.5 + k * 1.4; p.s.scale.set(sc, sc, 1);
-      (p.s.material as THREE.SpriteMaterial).opacity = 0.5 * (1 - k) * Math.min(1, k * 6);
-    }
-  });
+  // butterflies and boats
   const flies = [[-7, 15], [25, 15], [-19, 1], [3, -15]].map(([x, z], i) => { const b = butterfly(["#f2b64d", "#f4a6b8", "#ffffff", "#f2b64d"][i]); group.add(b); tickers.push(b.userData.tick!); return { b, x, z, ph: i * 2 }; });
   tickers.push((t) => flies.forEach(({ b, x, z, ph }) => { b.position.set(x + Math.sin(t * 0.6 + ph) * 2.4, TOP + 1.8 + Math.sin(t * 1.7 + ph) * 0.4, z + Math.cos(t * 0.45 + ph) * 2); b.rotation.y = t * 0.6 + ph; }));
   tickers.push((t) => {
     const drift = (b: THREE.Object3D, u0: number, span: number, ph: number) => { const u = u0 + span * (0.5 + 0.5 * Math.sin(t * 0.05 + ph)); const p = curve.getPointAt(u), n = curve.getPointAt(Math.min(1, u + 0.01)); b.position.set(p.x, TOP + 0.05, p.z); b.rotation.y = Math.atan2(n.x - p.x, n.z - p.z) + Math.PI / 2; };
     drift(theBoat, 0.5, 0.3, 0); drift(boat2, 0.05, 0.2, 2);
   });
-
-  // ---------- hover feedback: the thing under the cursor lifts and wobbles a little ----------
-  let hovered: Placed | DishMarker | null = null;
-  const hoverPhase = new Map<THREE.Object3D, number>();
-  tickers.push((t, dt) => {
-    for (const p of placed) {
-      const on = hovered === p;
-      const k = Math.min(1, dt * 9);
-      if (p.small) {
-        // small things (animals, trees, jars, tables) hop and wobble
-        const targetY = TOP + (on ? 0.18 : 0);
-        p.group.position.y += (targetY - p.group.position.y) * k;
-        const ts = on ? 1.035 : 1;
-        p.group.scale.setScalar(p.group.scale.x + (ts - p.group.scale.x) * k);
-        const ph = hoverPhase.get(p.group) ?? 0;
-        const wob = on ? Math.min(1, ph + dt * 2) : Math.max(0, ph - dt * 3);
-        hoverPhase.set(p.group, wob);
-        p.group.rotation.z = Math.sin(t * 6) * 0.025 * wob * (1 - wob * 0.6);
-      }
-      // buildings, fields and the market get no hover effect at all; the label pill is enough
-    }
-  });
-
-  // ---------- highlight & dish emergence ----------
-  let hiObjects: Set<string> | null = null, hiDishes: Set<string> | null = null;
-  function highlight(objectIds: Set<string> | null, dishIds: Set<string> | null) {
-    hiObjects = objectIds; hiDishes = dishIds;
-    for (const d of dishes) d.shown = dishIds?.has(d.recipe.id) ?? false;
-  }
-  tickers.push((t, dt) => {
-    for (const p of placed) {
-      void p; // no rings on objects at all: the card, the camera glide and the emerging dishes carry the selection
-    }
-    for (const d of dishes) {
-      const targetScale = d.shown ? 1 : 0.001;
-      const sc = d.group.scale.x + (targetScale - d.group.scale.x) * Math.min(1, dt * (d.shown ? 7 : 10));
-      d.group.scale.setScalar(sc);
-      d.group.visible = sc > 0.02;
-      d.group.position.y = d.base.y + (d.shown ? Math.sin(t * 2.2 + d.base.x) * 0.12 : -0.6);
-    }
-  });
-
-  return {
-    group, placed, dishes,
-    bounds: new THREE.Box3(new THREE.Vector3(-W / 2, 0, -D / 2), new THREE.Vector3(W / 2, 0, D / 2)),
-    tick: (t, dt) => { for (const f of tickers) f(t, dt); },
-    highlight,
-    hover: (thing) => { hovered = thing && "obj" in thing ? thing : null; if (thing && "recipe" in thing) thing.group.scale.setScalar(1.15); },
-    pin: (ids) => { for (const p of placed) p.labelEl.classList.toggle("show", ids?.has(p.obj.id) ?? false); for (const p of placed) p.labelEl.classList.toggle("pinned", ids?.has(p.obj.id) ?? false); },
-    poke: (p) => p.group.userData.poke?.(),
-  };
 }
-
-export const areaCenter = (a: keyof typeof AREAS) => new THREE.Vector3(AREAS[a].center[0], 0, AREAS[a].center[1]);

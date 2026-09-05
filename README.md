@@ -24,6 +24,11 @@ Production: `npm run build && npm start` serves `dist/` and the API from one Nod
   fetches a recipe page's ingredients/steps on demand, caches photos on disk (`/api/image/:id`) so the
   browser never hot-links recipe sites, and proxies the meal planner (`GET /api/plan`, `POST /api/plan/assign`,
   `POST /api/plan/remove`). If `PLANNER_URL` is unreachable the tray falls back to a local week saved in the browser.
+- `src/fw/` — **Food World**: the explorable miniature worlds (`world.html`). `graph.ts` holds the knowledge graph
+  (worlds, areas, objects with history, recipe placements), `worldkit.ts` the engine (slab, interactive objects,
+  dish plates, steam, hover), `world-china.ts` / `world-italy.ts` the layouts, `props.ts` / `props-italy.ts` the
+  procedural props, `map.ts` the atlas, `ui.ts` the cards. Two worlds so far: China (Sichuan, Jiangnan, the north)
+  and Italy (Rome, Venice, Sicily). Published to GitHub Pages by `.github/workflows/pages.yml` after `npm run export`.
 - `src/regions.ts` — the seven islands and which cuisines land on each. Unknown cuisines go to Northern Europe;
   recipes with no cuisine go to The Pantry. Edit this file to redraw the map.
 - `src/world/` — three.js scene: procedural low-poly islands (`island.ts`), recipe plates (`plates.ts`),

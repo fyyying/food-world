@@ -4,6 +4,7 @@ import { CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
 import { MAP_REGIONS, type MapRegion } from "./graph";
 import { wobble } from "../world/noise";
 import { mat, mountain, house, tree, temple, pagoda, birds, lanternString, gate } from "./props";
+import { colosseum, baroqueChurch, campanile, umbrellaPine, cypress, italianHouse } from "./props-italy";
 
 export type PlacedRegion = {
   region: MapRegion;
@@ -67,7 +68,16 @@ export function buildMap(counts: Map<string, number>): MapWorld {
     g.add(rim);
 
     let clouds: THREE.Group | null = null;
-    if (region.built) {
+    if (region.built && region.id === "italy") {
+      const s = region.size / 10;
+      const col = colosseum(); col.position.set(-1.5 * s, h, 1.5 * s); col.scale.setScalar(s * 0.55); g.add(col);
+      const ch = baroqueChurch(); ch.position.set(4.5 * s, h, -2 * s); ch.scale.setScalar(s * 0.5); ch.rotation.y = -0.5; g.add(ch);
+      const cp = campanile(); cp.position.set(2.5 * s, h, 3.5 * s); cp.scale.setScalar(s * 0.45); g.add(cp);
+      for (let i = 0; i < 5; i++) { const p = i % 2 ? umbrellaPine(s * 0.8) : cypress(s * 0.9); p.position.set((-5 + i * 2.6) * s, h, (-4 + (i % 2) * 8) * s); g.add(p); }
+      const hs = italianHouse("rome", 2.2 * s, 1.8 * s, 1.3 * s, 2); hs.position.set(-5 * s, h, -1 * s); hs.rotation.y = 0.5; g.add(hs);
+      const bd = birds(4, 5 * s, 5 * s); bd.position.set(0, h, 0); bd.scale.setScalar(s * 0.9); g.add(bd);
+      g.userData.tick = (t: number, dt: number) => { bd.userData.tick?.(t, dt); };
+    } else if (region.built) {
       // a peek of the world inside: mountains, a temple, a pagoda, lanterns and a dragon
       const s = region.size / 10;
       const m1 = mountain(2.4 * s, 4.6 * s); m1.position.set(-4.2 * s, h, -2.2 * s); g.add(m1);

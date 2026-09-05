@@ -3,9 +3,12 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer.js";
 import { fetchRecipes } from "../data";
-import { MAP_REGIONS, OBJECTS, enrich, isChinaRecipe, objectById, type Area, type EnrichedRecipe, type MapRegion } from "./graph";
+import { MAP_REGIONS, AREAS, WORLDS, areasOf, objectsOf, worldRecipes, enrich, isChinaRecipe, isItalyRecipe, objectById, type Area, type EnrichedRecipe, type MapRegion, type WorldId } from "./graph";
 import { buildMap, type MapWorld, type PlacedRegion } from "./map";
-import { buildDiorama, areaCenter, type Diorama, type DishMarker, type Placed } from "./diorama";
+import { buildChina } from "./world-china";
+import { buildItaly } from "./world-italy";
+import { type Diorama, type DishMarker, type Placed } from "./worldkit";
+const areaCenter = (a: Area) => new THREE.Vector3(AREAS[a].center[0], 0, AREAS[a].center[1]);
 import { mountUi, showRecipePage, setCrumbs, hint, toast } from "./ui";
 
 // ---------- renderer ----------
@@ -87,7 +90,11 @@ type Level = "home" | "map" | "world";
 let level: Level = "home";
 let mapWorld: MapWorld | null = null;
 let diorama: Diorama | null = null;
-let china: EnrichedRecipe[] = [];
+let world: WorldId = "china";
+const worlds: Partial<Record<WorldId, Diorama>> = {};
+let allRecipes: EnrichedRecipe[] = [];
+let china: EnrichedRecipe[] = [];   // recipes of the current world
+const OBJECTS_NOW = () => objectsOf(world);
 let hoveredRegion: PlacedRegion | null = null;
 let hoveredThing: Placed | DishMarker | null = null;
 let currentArea: Area | null = null;
@@ -104,7 +111,7 @@ const ui = mountUi({
   onGoObject: (o) => openObject(diorama!.placed.find((p) => p.obj.id === o.id)!),
   onCook: (r) => { showRecipePage(r, () => {}); },
   onExploreIngredients: (r) => {
-    const ids = new Set(OBJECTS.filter((o) => (o.kind === "ingredient" || o.kind === "flavour") && !o.alias && o.match(r)).map((o) => o.id));
+    const ids = new Set(OBJECTS_NOW().filter((o) => (o.kind === "ingredient" || o.kind === "flavour") && !o.alias && o.match(r)).map((o) => o.id));
     diorama!.highlight(null, null);
     ui.hide();
     diorama!.pin(ids);
@@ -123,17 +130,15 @@ async function boot() {
   enter.disabled = true;
   try {
     const { recipes } = await fetchRecipes();
-    china = recipes.filter(isChinaRecipe).map(enrich);
+    allRecipes = recipes.map(enrich);
     const counts = new Map<string, number>();
     for (const region of MAP_REGIONS) counts.set(region.id, recipes.filter((r) => region.cuisines.includes(r.cuisine ?? "")).length);
-    counts.set("china", china.length);
+    counts.set("china", recipes.filter(isChinaRecipe).length);
+    counts.set("italy", recipes.filter(isItalyRecipe).length);
     mapWorld = buildMap(counts);
     mapScene.add(mapWorld.group);
     for (const r of mapWorld.regions) r.labelEl.addEventListener("click", () => { if (level !== "map" || flight) return; if (r.region.built) enterRegion(r.region); else ui.showRegion(r.region, r.count, "/"); });
-    diorama = buildDiorama(china);
-    worldScene.add(diorama.group);
-    for (const p of diorama.placed) p.labelEl.addEventListener("click", () => { if (p.labelEl.classList.contains("pinned")) openObject(p); });
-    status.textContent = `${recipes.length} dishes · ${china.length} in China so far`;
+    status.textContent = `${recipes.length} dishes · ${counts.get("china")} in China · ${counts.get("italy")} in Italy`;
   } catch (e) {
     status.textContent = `Couldn't load the cookbook: ${(e as Error).message}`;
     return;
@@ -186,9 +191,27 @@ function showMap(first = false) {
   }
 }
 
+/** Build a world the first time it is entered; keep it after that. */
+function getWorld(id: WorldId): Diorama {
+  let d = worlds[id];
+  if (!d) {
+    const recipes = worldRecipes(id, allRecipes).map(enrich);
+    d = id === "china" ? buildChina(recipes) : buildItaly(recipes);
+    worlds[id] = d;
+    for (const p of d.placed) p.labelEl.addEventListener("click", () => { if (p.labelEl.classList.contains("pinned")) openObject(p); });
+  }
+  return d;
+}
+
 function enterRegion(region: MapRegion) {
-  if (!region.built || !diorama) return;
+  if (!region.built) return;
   ui.hide();
+  const id = region.id as WorldId;
+  if (diorama) worldScene.remove(diorama.group);
+  world = id; currentArea = null;
+  diorama = getWorld(id);
+  china = worldRecipes(id, allRecipes).map(enrich);
+  worldScene.add(diorama.group);
   const placed = mapWorld!.regions.find((r) => r.region.id === region.id)!;
   const c = placed.group.position;
   // dive toward the region, fade to paper, arrive above the valley
@@ -207,17 +230,11 @@ function enterRegion(region: MapRegion) {
 }
 
 function setCrumbsWorld() {
-  setCrumbs([{ label: "🌍 Food World", onClick: () => leaveWorld() }, { label: "China · 中国" }], {
-    current: currentArea,
-    onPick: (a) => { currentArea = a; setCrumbsWorld(); if (a) { glideTo(areaCenter(a), 42, 1.3); hint(`${a === "everyday" ? "The everyday table" : a[0].toUpperCase() + a.slice(1)} · ${AREAS_BLURB[a]}`, 6000); } },
+  setCrumbs([{ label: "🌍 Food World", onClick: () => leaveWorld() }, { label: `${WORLDS[world].name} · ${WORLDS[world].zh}` }], {
+    current: currentArea, areas: areasOf(world),
+    onPick: (a) => { currentArea = a; setCrumbsWorld(); if (a) { glideTo(areaCenter(a), 42, 1.3); hint(`${AREAS[a].name} · ${AREAS[a].blurb}`, 6000); } },
   });
 }
-const AREAS_BLURB: Record<Area, string> = {
-  sichuan: "chilli, numbing pepper and the fiercest woks",
-  jiangnan: "water towns: gentle, sweet, slow-braised",
-  northern: "wheat country: dumplings, rolls and griddles",
-  everyday: "home cooking that belongs to no province",
-};
 
 function leaveWorld() {
   const fade = document.getElementById("fade")!;
@@ -226,11 +243,16 @@ function leaveWorld() {
 }
 
 // ---------- world interactions ----------
+const COARSE = window.matchMedia("(pointer: coarse)").matches;
+let cardTimer: number | undefined;
 function openObject(p: Placed) {
   if (p.obj.open === "reveal") { revealPlace(p); return; }
   const obj = p.obj.alias ? objectById(p.obj.alias) : p.obj;   // a market stall opens its ingredient's card
   const recipes = china.filter((r) => obj.match(r));
-  ui.showObject(obj, recipes, OBJECTS);
+  // on a phone the card covers the world, so let the reaction play first
+  clearTimeout(cardTimer);
+  if (COARSE) cardTimer = window.setTimeout(() => ui.showObject(obj, recipes, OBJECTS_NOW()), 1100);
+  else ui.showObject(obj, recipes, OBJECTS_NOW());
   diorama!.highlight(new Set([obj.id]), null);   // the card is enough; plates only rise at a place or on "Explore dishes"
   diorama!.poke(p);
   glideTo(p.anchor.clone().add(new THREE.Vector3(0, 0.8, 0)), p.obj.hitOnly ? 16 : 28, 1.0, undefined, p.obj.hitOnly ? 3 : 5);
@@ -239,18 +261,19 @@ function openObject(p: Placed) {
 /** A place (market, noodle shop, dumpling stall…) zooms in and shows what's inside; you pick a plate or a stall from there. */
 function revealPlace(p: Placed) {
   const recipes = china.filter((r) => p.obj.match(r));
-  const stalls = OBJECTS.filter((o) => o.parent === p.obj.id);
+  const stalls = OBJECTS_NOW().filter((o) => o.parent === p.obj.id);
   ui.hide();
   diorama!.highlight(null, new Set(recipes.map((r) => r.id)));
   diorama!.poke(p);
   glideTo(p.anchor.clone().add(new THREE.Vector3(0, 1.2, 0)), stalls.length ? 20 : 15, 1.2);
-  if (!recipes.length && !stalls.length) { ui.showObject(p.obj, [], OBJECTS); return; }
+  if (!recipes.length && !stalls.length) { ui.showObject(p.obj, [], OBJECTS_NOW()); return; }
   const what = [stalls.length ? "a stall" : "", recipes.length ? (recipes.length === 1 ? "the plate" : "a plate") : ""].filter(Boolean).join(" or ");
   hint(`${p.obj.placeName ?? p.obj.name} · tap ${what}`, 6000);
 }
 
 function openDish(r: EnrichedRecipe) {
   const marker = diorama!.dishes.find((d) => d.recipe.id === r.id);
+  clearTimeout(cardTimer);
   ui.showRecipePreview(r);
   diorama!.highlight(new Set([r.place]), new Set([r.id]));
   if (marker) glideTo(marker.anchor.clone().add(new THREE.Vector3(0, 1, 0)), 22, 1.3, undefined, 4);
@@ -345,8 +368,8 @@ window.addEventListener("keydown", (e) => {
 
 // ---------- loop ----------
 const clock = new THREE.Clock();
-renderer.setAnimationLoop(() => {
-  const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
+function frame(forcedDt?: number) {
+  const dt = forcedDt ?? Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime + (forcedDt ? (stepT += forcedDt) : 0);
   if (flight) {
     flight.t = Math.min(1, flight.t + dt / flight.dur);
     const k = easeInOut(flight.t);
@@ -368,8 +391,13 @@ renderer.setAnimationLoop(() => {
   if (level === "world") diorama?.tick(t, dt);
   renderer.render(active, camera);
   labelRenderer.render(active, camera);
-});
+}
+let stepT = 0;
+renderer.setAnimationLoop(() => frame());
 
 void toast;
-(window as unknown as { __fw: () => unknown }).__fw = () => ({ level, flying: Boolean(flight), diorama: Boolean(diorama), map: Boolean(mapWorld) });
+const dbg = () => ({ level, flying: Boolean(flight), diorama: Boolean(diorama), map: Boolean(mapWorld) });
+// debug: advance n frames even when the tab is hidden and requestAnimationFrame is paused
+(dbg as unknown as { step: (n: number) => void }).step = (n: number) => { for (let i = 0; i < n; i++) frame(1 / 60); };
+(window as unknown as { __fw: typeof dbg }).__fw = dbg;
 boot();

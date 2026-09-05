@@ -15,7 +15,7 @@ export type UiHandlers = {
 };
 
 const card = () => document.getElementById("card")!;
-const ICON_KEYS: Record<string, true> = { garlic: true, spices: true, fish: true, chilli: true, pepper: true, jars: true, tofu: true, veg: true, mushroom: true, rice: true, wheat: true, cow: true, pig: true, chicken: true, aromatics: true, wok: true, claypot: true, griddle: true, prep: true, noodle: true, dumpling: true, hotpot: true, teahouse: true };
+const ICON_KEYS: Record<string, true> = { tomato: true, pasta: true, olive: true, cheese: true, basil: true, italyBeef: true, italyChicken: true, mushrooms: true, lemon: true, seafood: true, oven: true, ragu: true, dough: true, gelateria: true, bacaro: true, "stall-arancini": true, pastry: true, garlic: true, spices: true, fish: true, chilli: true, pepper: true, jars: true, tofu: true, veg: true, mushroom: true, rice: true, wheat: true, cow: true, pig: true, chicken: true, aromatics: true, wok: true, claypot: true, griddle: true, prep: true, noodle: true, dumpling: true, hotpot: true, teahouse: true };
 
 /** Which world object a "paired with" word points at, so every partner that exists in the world is clickable. */
 const PARTNER_ALIASES: [RegExp, string][] = [
@@ -23,6 +23,10 @@ const PARTNER_ALIASES: [RegExp, string][] = [
   [/tofu|soy ?bean/i, "tofu"], [/pork|belly/i, "pig"], [/beef/i, "cow"], [/chicken/i, "chicken"], [/\brice\b/i, "rice"],
   [/noodle|wheat|wrapper|pancake|dough/i, "wheat"], [/shiitake|mushroom/i, "mushroom"], [/cucumber|celery|potato|greens|cabbage|carrot/i, "veg"],
   [/cumin|star anise|five.spice|cassia|cinnamon|fennel/i, "spices"], [/fish|prawn|shrimp/i, "fish"],
+  // Italy
+  [/tomato/i, "tomato"], [/pasta|lasagn|ragù|ragu/i, "pasta"], [/olive oil|olive/i, "olive"], [/parmesan|mozzarella|cheese|pecorino|ricotta|cream|butter/i, "cheese"],
+  [/basil|pesto|herb|rosemary|parsley|oregano|pine nut/i, "basil"], [/beef|pork|salami|prosciutto|soffritto|mince/i, "italyBeef"], [/lemon|orange|citrus/i, "lemon"], [/mushroom|porcini/i, "mushrooms"],
+  [/clam|seafood|sardine/i, "seafood"], [/pizza dough|dough|flour|yeast|bread/i, "dough"], [/stock|saffron|white wine|red wine|wine/i, "ragu"],
   [/garlic|ginger|scallion|onion|cilantro|soy sauce|vinegar|sesame|sugar|wine|stock|pickled mustard/i, "garlic"],
 ];
 function partnerObject(p: string, self: WorldObject, all: WorldObject[]): WorldObject | undefined {
@@ -186,11 +190,11 @@ export async function showRecipePage(r: EnrichedRecipe, onBack: () => void) {
 
 // ---------- crumbs, hint, toast ----------
 
-export function setCrumbs(parts: { label: string; onClick?: () => void }[], areas?: { current: Area | null; onPick: (a: Area | null) => void }) {
+export function setCrumbs(parts: { label: string; onClick?: () => void }[], areas?: { current: Area | null; areas: Area[]; onPick: (a: Area | null) => void }) {
   const nav = document.getElementById("crumbs")!;
   nav.hidden = false;
   nav.innerHTML = parts.map((p, i) => `${i ? `<span class="sep">›</span>` : ""}${p.onClick ? `<button data-i="${i}">${esc(p.label)}</button>` : `<span class="here">${esc(p.label)}</span>`}`).join("")
-    + (areas ? `<span class="areas">${(Object.keys(AREAS) as Area[]).map((a) => `<button data-area="${a}" class="${areas.current === a ? "on" : ""}">${AREAS[a].name}<span class="zh">${AREAS[a].zh}</span></button>`).join("")}</span>` : "");
+    + (areas ? `<span class="areas">${areas.areas.map((a) => `<button data-area="${a}" class="${areas.current === a ? "on" : ""}">${AREAS[a].name}<span class="zh">${AREAS[a].zh}</span></button>`).join("")}</span>` : "");
   nav.querySelectorAll<HTMLButtonElement>("button[data-i]").forEach((b) => b.addEventListener("click", () => parts[Number(b.dataset.i)].onClick?.()));
   nav.querySelectorAll<HTMLButtonElement>("button[data-area]").forEach((b) => b.addEventListener("click", () => areas?.onPick(areas.current === b.dataset.area ? null : (b.dataset.area as Area))));
 }

@@ -1,6 +1,7 @@
 /** Renders a prop into a small transparent image, so cards can show a picture of the real thing instead of an emoji. */
 import * as THREE from "three";
 import { ICONS, PROPS } from "./props";
+import { ITALY_ICONS, ITALY_PROPS } from "./props-italy";
 
 let renderer: THREE.WebGLRenderer | null = null;
 const cache = new Map<string, string>();
@@ -8,7 +9,7 @@ const cache = new Map<string, string>();
 export function snapshot(key: string, size = 192): string | null {
   const hit = cache.get(key);
   if (hit) return hit;
-  const build = ICONS[key] ?? PROPS[key];
+  const build = ICONS[key] ?? ITALY_ICONS[key] ?? PROPS[key] ?? ITALY_PROPS[key];
   if (!build) return null;
   if (!renderer) {
     renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, preserveDrawingBuffer: true });

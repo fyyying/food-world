@@ -553,9 +553,10 @@ export function fishMarket(): P {
   const g = group();
   // an open loggia with columns and a red-tiled roof, the Pescheria
   add(g, box(7, 0.3, 4.4, IT.venCream), 0, 0.15, 0);
-  for (const x of [-3.1, -1.05, 1.05, 3.1]) for (const z of [-1.8, 1.8]) add(g, cyl(0.14, 0.16, 2.6, "#d9ccb0", 8), x, 1.6, z);
-  add(g, tiledRoof(7.8, 5.2, 1.1, "#a8433a"), 0, 2.9, 0);
-  add(g, box(2.0, 0.4, 0.06, "#f3e6c8"), 0, 2.4, 2.25); add(g, box(0.12, 0.4, 0.06, "#3f6b8f"), -0.7, 2.4, 2.29); add(g, box(0.12, 0.4, 0.06, "#3f6b8f"), 0.7, 2.4, 2.29);
+  for (const x of [-3.1, -1.05, 1.05, 3.1]) for (const z of [-2.6, -0.2]) add(g, cyl(0.14, 0.16, 2.6, "#d9ccb0", 8), x, 1.6, z);
+  // a shallow roof over the back only, so the slabs of seafood are in the open
+  add(g, tiledRoof(7.8, 3.0, 0.8, "#a8433a"), 0, 2.9, -1.4);
+  add(g, box(2.0, 0.4, 0.06, "#f3e6c8"), 0, 2.4, 0.2); add(g, box(0.12, 0.4, 0.06, "#3f6b8f"), -0.7, 2.4, 0.24); add(g, box(0.12, 0.4, 0.06, "#3f6b8f"), 0.7, 2.4, 0.24);
   // three slabs of ice: whole fish, shellfish, and the octopus and crab
   for (const x of [-2.2, 0, 2.2]) { add(g, box(1.8, 0.7, 1.1, IT.stone), x, 0.65, 0.3); add(g, box(1.8, 0.12, 1.1, "#eef4f4"), x, 1.06, 0.3); }
   fishOnIce(g, -2.6, 1.18, 0.05, "#b3bfc9", 0.55); fishOnIce(g, -2.0, 1.18, 0.4, "#7f93a6", 0.5); fishOnIce(g, -1.5, 1.18, 0.0, "#c9d0d4", 0.42); fishOnIce(g, -2.4, 1.2, 0.65, "#e07a3a", 0.3);

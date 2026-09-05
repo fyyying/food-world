@@ -82,7 +82,7 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
   const vHouses: [number, number, number, number, number, number][] = [
     [9, -19, 0.2, 2.6, 2.2, 2], [13, -21, 0, 2.6, 2.2, 3], [15, -16, -0.2, 2.6, 2.2, 2],
     [21, -21, 0.1, 2.6, 2.2, 2], [27, -18, -0.1, 2.6, 2.2, 3],
-    [17, -8, 0.3, 2.6, 2.2, 2], [23, -6, 0, 2.6, 2.2, 2], [31, -12, 0.2, 2.4, 2.0, 2],
+    [17, -8, 0.3, 2.6, 2.2, 2], [31, -12, 0.2, 2.4, 2.0, 2],
   ];
   for (const [x, z, rot, w, d, st] of vHouses) place(italianHouse("venice", w, d, 2.2, st), x, z, rot).position.y = 0.45;
   // bridges span the actual gaps between the four quays

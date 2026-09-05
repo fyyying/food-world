@@ -353,7 +353,7 @@ window.addEventListener("pointerup", (e) => {
     else ui.showRegion(region.region, region.count, "/");
   } else if (level === "world") {
     const thing = castWorld(e.clientX, e.clientY);
-    if (!thing) { ui.hide(); diorama!.highlight(null, null); diorama!.pin(null); return; }
+    if (!thing) { clearTimeout(cardTimer); ui.hide(); diorama!.highlight(null, null); diorama!.pin(null); return; }
     if ("recipe" in thing) openDish(thing.recipe);
     else openObject(thing);
   }
@@ -361,7 +361,7 @@ window.addEventListener("pointerup", (e) => {
 window.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
     if (!document.getElementById("recipe")!.hidden) { document.getElementById("recipe")!.hidden = true; return; }
-    if (ui.open) { ui.hide(); diorama?.highlight(null, null); diorama?.pin(null); return; }
+    if (ui.open) { clearTimeout(cardTimer); ui.hide(); diorama?.highlight(null, null); diorama?.pin(null); return; }
     if (level === "world") leaveWorld();
   }
 });
@@ -399,5 +399,6 @@ void toast;
 const dbg = () => ({ level, flying: Boolean(flight), diorama: Boolean(diorama), map: Boolean(mapWorld) });
 // debug: advance n frames even when the tab is hidden and requestAnimationFrame is paused
 (dbg as unknown as { step: (n: number) => void }).step = (n: number) => { for (let i = 0; i < n; i++) frame(1 / 60); };
+(dbg as unknown as { open: (id: string) => void }).open = (id: string) => { const p = diorama?.placed.find((x) => x.obj.id === id); if (p) openObject(p); };
 (window as unknown as { __fw: typeof dbg }).__fw = dbg;
 boot();

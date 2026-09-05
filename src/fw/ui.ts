@@ -92,12 +92,12 @@ export function mountUi(h: UiHandlers) {
           ${r.stars ? `<span>${"★".repeat(r.stars)}</span>` : ""}
           ${r.portions ? `<span>🍽 ${r.portions} portions</span>` : ""}
         </div>
-        ${r.flavours.length ? `<h4>Main flavours</h4><div class="chips">${r.flavours.map((f) => `<span class="chip fl">${esc(f)}</span>`).join("")}</div>` : ""}
-        <h4>Core ingredients</h4><div class="chips">${r.core.map((c) => `<span class="chip">${esc(c)}</span>`).join("")}</div>
         <div class="actions">
           <button class="explore" id="cook">Cook this</button>
           <button class="explore ghost" id="ingredients">Explore ingredients</button>
         </div>
+        ${r.flavours.length ? `<h4>Main flavours</h4><div class="chips">${r.flavours.map((f) => `<span class="chip fl">${esc(f)}</span>`).join("")}</div>` : ""}
+        <h4>Core ingredients</h4><div class="chips">${r.core.map((c) => `<span class="chip">${esc(c)}</span>`).join("")}</div>
       </div>`;
     el.hidden = false;
     el.scrollTop = 0;

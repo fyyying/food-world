@@ -1,0 +1,785 @@
+[
+ {
+  "id": "3c395c6d-26b4-818d-9f98-d517cdd38dc7",
+  "name": "Vietnamese Chicken Salad (Goi Ga)",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1680084559531-9c57ae41d316?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://www.recipetineats.com/tachyon/2020/11/Vietnamese-Chicken-Salad_2.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "3c295c6d-26b4-81f5-af6d-c779f7ebd75d",
+  "name": "Mediterranean Baked Salmon with Tomatoes, Olives & Capers",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1592320649301-4690ff34ff60?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://www.acouplecooks.com/wp-content/uploads/2026/04/Mediterranean-Salmon_0001.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "3c295c6d-26b4-8145-8fe2-d09f54c6a686",
+  "name": "Lobio (Georgian Kidney Bean & Walnut Stew)",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1602873520153-ec56ca3c205b?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://thenewbaguette.com/wp-content/uploads/2023/01/lobio-ft.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "3bd95c6d-26b4-8106-813b-f6679c9d3c4b",
+  "name": "Hummus",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1697126248475-a537cc5cce28?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://cookieandkate.com/images/2018/05/best-hummus-recipe-6.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "0bcad2c3-2852-4177-afa8-709f26f35c11",
+  "name": "Greek Salad",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1549745708-fa4a8423a0b4?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://cdn.loveandlemons.com/wp-content/uploads/opengraph/2019/07/greek-salad-2.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "47bd234e-0768-47eb-a35a-b44aa2ebe03e",
+  "name": "Lemon Coconut Chickpea Energy Bites",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1505253865397-1d932f9f3b35?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://livesimplynatural.com/wp-content/uploads/2017/01/Chickpea-Lemon-Coconut-Bites-10.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "43cd6f3f-8242-4af7-a23d-e24449c36bb3",
+  "name": "chilled high protein chocolate bites",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1647532197692-ad9f2ecae422?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://www.ambitiouskitchen.com/wp-content/uploads/2025/09/Chocolate-Protein-Brownie-Bites-7long.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "ff84eaa5-edc4-4253-a280-cf70441473a4",
+  "name": "Chicken Parmesan Stuffed Peppers",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1592119747782-d8c12c2ea267?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://cdn.apartmenttherapy.info/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_1500,ar_3:2/k%2FPhoto%2FRecipes%2F2024-09-cheesy-chicken-parm-stuffed-peppers%2Fcheesy-chicken-parm-stuffed-peppers-125",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "3b195c6d-26b4-81fb-843f-ea83d40e5575",
+  "name": "Spanish Simmered White Fish with Chickpeas",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1621174438159-6a9a82405498?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://thedefineddish.com/wp-content/uploads/2023/11/Spanish-Simmered-Chickpeas-with-White-Fish-5-scaled.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "3b195c6d-26b4-81d0-95ed-e4fe54ef58ab",
+  "name": "Bolognese Mapo Tofu Pasta",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1579684947550-22e945225d9a?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://www.thefoodinmybeard.com/wp-content/uploads/2016/12/sichbolo5.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "9a9b2abb-7f07-4015-9dd1-0b152894bafc",
+  "name": "Instant Pot Mexican Rice",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1737315551939-d2564cd7c7a0?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://kristineskitchenblog.com/wp-content/uploads/2021/04/instant-pot-mexican-rice-376.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "bfa24056-7bf6-4b88-8f0b-1e231805fcdc",
+  "name": "Tri-Color Slaw with Lime Dressing",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1537784969314-05a37106f68e?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://www.allrecipes.com/thmb/2sC6k9QZmVXe1tuD8gZVn36pJr4=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/2211980-37cd71ddb792442ea551da518983256e.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "3a695c6d-26b4-8107-9deb-ec589d284d72",
+  "name": "Hungarian Goulash (Gulyás)",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1591386767153-987783380885?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://www.chilipeppermadness.com/wp-content/uploads/2022/08/Hungarian-Goulash-SQ.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "3a755578-6600-4ac1-9e92-c0fb05b6c056",
+  "name": "Banana Nut Cookies",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1645258751218-1a1ddb1630dc?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://sugarspunrun.com/wp-content/uploads/2025/07/Banana-cookies-1-of-1.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "dae482d1-cfed-4e44-9d66-deb04bb5b451",
+  "name": "Smashed Asian Cucumber Salad",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1652088083542-dae1576b7232?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://thewoksoflife.com/wp-content/uploads/2015/06/smashed-asian-cucumber-salad-5.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "e52d2c43-f84d-4aa1-a2af-4e6867e319bd",
+  "name": "Secret Onion Beef Rolls",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1771268494481-cc301a1b7505?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://i2.chuimg.com/fd151acc0045493f98a378eddc68e1c9_1125w_759h.jpg?imageView2/1/w/640/h/520/q/75/format/jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "3a095c6d-26b4-8100-90cf-c20678503d0d",
+  "name": "Miso-Glazed Cod",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1706468238744-6af411063336?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://www.foodiecrush.com/wp-content/uploads/2016/04/Broiled-Miso-Cod-foodiecrush.com-048.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "39c95c6d-26b4-8147-8ae1-f69a5432f3a0",
+  "name": "Honey Lemon Pepper Chicken Wings",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1608039755401-742074f0548d?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "http://www.kamadojoe.com/cdn/shop/articles/HoneyLemonPepperWings.jpg?v=1705431020",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "e834658c-578e-44f8-8ffd-bd74b47389b2",
+  "name": "The Best Mixed Grill",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1702827487086-9ab8a573d825?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://weekendatthecottage.com/wp-content/uploads/2017/06/MixedGrillBeauty.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "fae2eda3-8677-4991-9d91-619483bc271a",
+  "name": "Fresh Salsa (Pico de Gallo)",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1690944253646-d37b0515f769?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://www.simplyrecipes.com/thmb/inUqPVgIg8k3bmH3H-zFmPEMejI=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/Simply-Recipes-Pico-de-Gallo-LEAD-1-ede3527f9fae4a2d88810a8779ca22c2.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "87a6a588-0a26-4924-ba53-87f7c1a8765b",
+  "name": "Japanese-Style Cabbage Salad",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1734775373504-ff24ea8419b2?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://www.allrecipes.com/thmb/NBBG_36GefnWwO8gQn8ir4vRNRk=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/150135-japanese-style-cabbage-salad-PICS-Beauty-2x1-183ed5304799423485b91acba47525cc.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "195e6026-dfee-456f-b2a0-d3f944801ec4",
+  "name": "Kupus Salata (Balkan Cabbage Salad)",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1654458804670-2f4f26ab3154?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://balkanlunchbox.com/wp-content/uploads/2016/05/okiiiiiiii.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "1fd9930f-bbb6-48c1-8c1e-af9d4cdab06f",
+  "name": "Everyday Salad",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1569760142069-bc6838de16c1?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://www.gimmesomeoven.com/wp-content/uploads/2018/06/Everyday-Green-Salad-Recipe-3-cropped.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "cd1604b8-c6c0-4dcd-9617-2864f9254a6a",
+  "name": "Caprese Salad",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1595587870672-c79b47875c6a?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://cdn.loveandlemons.com/wp-content/uploads/opengraph/2019/08/caprese-salad-recipe.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "3583b33f-93cd-42c1-8a71-13ba0d648efe",
+  "name": "Italian Chopped Salad",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1614098026096-f69b76d1eabc?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://cdn.loveandlemons.com/wp-content/uploads/opengraph/2020/05/chopped-salad.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "65057cce-bc7b-4f38-8632-74ae2b9fc39f",
+  "name": "Roasted Vegetables",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1586195833898-170cabf110c5?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://cdn.loveandlemons.com/wp-content/uploads/opengraph/2020/12/roasted-vegetables-2.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "b7db0c08-7be9-4d6f-a21e-419e6bc5fef2",
+  "name": "Homemade Pizza (3 topping options)",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1594007654729-407eedc4be65?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://cdn.loveandlemons.com/wp-content/uploads/opengraph/2019/07/homemade-pizza.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "5fe5e55f-f58a-4263-884d-409366855d14",
+  "name": "Pan-Fried Broccoli With Garlic",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1764850685848-2a70be195304?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://www.cookedandloved.com/wp-content/uploads/2023/10/pan-fried-broccoli-with-garlic-4-1.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "d939789d-5a4a-4951-bff3-cec4eaa334f5",
+  "name": "Creamy Mushroom Pasta",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1585672840563-f2af2ced55c9?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://www.recipetineats.com/tachyon/2019/09/Creamy-Mushroom-Pasta_4.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "cc9ed737-40c0-4fe8-bfb8-f144095ce03a",
+  "name": "Mapo Tofu (Real Deal)",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1769065647078-f067eb768035?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://thewoksoflife.com/wp-content/uploads/2019/06/mapo-tofu-10.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "d00d4143-db1b-4d04-bb94-6b0e43d6bb55",
+  "name": "Fried Chicken & Cilantro Dumplings",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1638502521795-89107ac5e246?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://i.ytimg.com/vi/kg6dm8535TI/maxresdefault.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "501fa19a-1507-4322-9439-40cc4c60a17b",
+  "name": "Red Lentil Curry",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1736680056463-8b5e0fd9357e?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://rainbowplantlife.com/wp-content/uploads/2020/09/redlentilcurryflatstraight-2020update281of129-scaled.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "dcaf5663-73ad-44c2-90fa-f4b4e66f7ccb",
+  "name": "Homemade Meatballs (Oven-Baked)",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1529042410759-befb1204b468?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://www.iheartnaptime.net/wp-content/uploads/2019/01/meatballs-3.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "88e684bf-2c02-4f16-80f8-0fec01c00556",
+  "name": "Tandoori chicken",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1610057099431-d73a1c9d2f2f?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://www.indianhealthyrecipes.com/wp-content/uploads/2025/09/tandoori-chicken-recipe-new.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "5c80c042-ed56-4ca8-9b3e-2d50329c52f3",
+  "name": "Braised Pork Belly with Carrots (Hong Shao Rou)",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1785502108253-0ab0beea1ea8?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://i2.chuimg.com/62b8e6cfd9ab4a1ebe025eb27ca461fc_3024w_4032h.jpg?imageView2/1/w/640/h/520/q/75/format/jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "b50d84c7-f985-4f9f-b260-c4069a2294c5",
+  "name": "Lime Marinated Grilled Chicken",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://www.recipetineats.com/tachyon/2016/04/Lime-Chicken_2.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "a1001ae9-d9fa-413a-85ec-02f0bcadcf79",
+  "name": "Banh Mi",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1715925717150-2a6d181d8846?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://www.allrecipes.com/thmb/SxPBbmLB4NQyghl3I1fBRM5Z9rI=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/AR-187342-Banh-Mi-2x1-89aa512386ac460f90c1edd4aec83216.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "15937d29-fb1a-4dc7-be81-db54d708a29d",
+  "name": "Butter Chicken",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1708782341807-ed35fc16b4ea?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://www.recipetineats.com/tachyon/2019/01/Butter-Chicken_5-SQ.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "86cbbf1f-ecbf-4966-b713-8a77811dbcd7",
+  "name": "Instant Pot Lemon Garlic Chicken",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1730900737724-5b752e1ed3dd?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://therecipecritic.com/wp-content/uploads/2020/01/Instant-Pot-Lemon-Garlic-Chicken.png",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "96ff7075-f71b-4c72-9a08-a8d796e4cfd3",
+  "name": "Instant Pot Chicken Tikka Masala",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1708782344490-9026aaa5eec7?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://cookingwithcoit.com/wp-content/uploads/2021/09/FEATURED_Instant-Pot-Chicken-Tikka-Masala.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "2e695c6d-26b4-80ee-9fc1-e80264c92245",
+  "name": "Taco Al Pastor",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1660180750968-4fbc84789a96?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "http://www.fogocharcoal.com/cdn/shop/articles/alpastor.jpg?v=1665065959",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "2e695c6d-26b4-80b2-9f21-d4d90e489599",
+  "name": "Smoked Carrots",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1550411294-b3b1bd5fce1b?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://alicensetogrill.com/wp-content/uploads/2023/05/smoked-carrots-hero.jpg",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "170e42f9-e556-445e-beb3-34be70784397",
+  "name": "Easy Almond Flour Banana Cookies",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1557310717-d6bea9f36682?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://i0.wp.com/splurgewithella.com/wp-content/uploads/2021/01/IMG_9904-scaled.jpg?fit=2560%2C1707&ssl=1",
+  "oldCover": null,
+  "coverReplaced": false
+ },
+ {
+  "id": "e8e58fa0-2f94-4f25-844c-aa0c7ff18232",
+  "name": "Smoked Tofu",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1759922252179-428bb68f13e7?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://fullofplants.com/wp-content/uploads/2024/02/how-to-smoke-tofu-in-a-stovetop-smoker-12.jpg",
+  "oldCover": "https://prod-files-secure.s3.us-west-2.amazonaws.com/9c394bed-633d-4bd9-826f-c8806ade5b5d/ea00b82f-0882-47ee-83d3-09fcfea58765/Smoky-tofu-on-white-dinner-plate-with-chopsticks.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB4665XLU6K74%2F20260905%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260905T125859Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEEIaCXVzLXdlc3QtMiJHMEUCIQDEJG9biGFVMF9fYWIEy3DA4R4j8vviTgGc%2F4OhrSovWwIgToA6EElInTIr0AOOr6B3y%2FtKpoXMfL77ERxokAgzz2Qq%2FwMICxAAGgw2Mzc0MjMxODM4MDUiDBvlUhBOwFJB85VPDSrcA%2FbgWKnkeHo8o%2B%2BrvEbhFFP3z9Obui8p86YBcWNEBB%2FKpZ6prn%2BeH139xie%2Fjc4Yd%2BkhdNgtKTGTfAdQq27sg68StU8vJPXjZcc%2BTOdIgym%2FC6sgeVh0KrX60LZ6JjyImCY5xcQBiO6lQ2aw5fx0dnMk6oB%2FEiJADobyEm8Hqy4rDxTEzgktubaEUdWdEQuwdI3lWX2v5MGEZQ1IoKn6eehiz7FqB5HtCTlzmTNpJOF%2FzP2EnnHttxjpmaJPGxJXTLzmrQOyLmq1e6SJoN1J546LGheRktk7KQcuSSmsrM2A4JDrCbZ5Z1KQSp0DxBh4JWBgYG6aneelG9%2FooMROpid2nz%2BGl0g%2BmOJim%2FOrfGMX0K6NYo1aZc1B0BeIg4PMYt6SqESIDhGFI5veZIyUJrcI%2FxGjisaQSrrk2gxs3ir7rE5Cjjf9mZVnG%2F3ZvUXcrlEXErLTwhS3rhPhIkPIBitEaRhymbtfII38LFXTShlTai9uE5g4GVaU3ATMXXqe2%2BEpSGGLOkQSQdkWFddM%2Fl%2B4QGe8NSPBYV4Kd6%2BsVhfOxuD1WXiRoqSJ%2BcGr6ZXw4taAV9r4w6%2FLFYZi1BDv9VfPJVLHAT3h1veTF7vvDd8I9Y1%2B0%2FS%2BV1Ajs1hkMLrW79QGOqUBf%2BMoXKIwdsaAkZR6IgX%2BgpMXHLkOUnsyymZAUDYDq8w4%2Fkwglk8BFaSCe7V6HGn47TdUqzpjDj5VEMCjk6rkZ%2B5Y0sx8T0na4GS8hvgZV137ING6R5IQgf%2FFs5x5RXPWJVi8qY%2Fc7z5quKblIQP0moFLtoidGZTPUrOLACeEOzCVfKKqyjZIFsOMt6iVf8ZlFgoX34PgNew%2FyjPMyH0BjwXMMi0R&X-Amz-Signature=83b6f06a54faad6201e3e05f737eb2da9b410f8c7a38895c7e23b5625a08a845&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+  "coverReplaced": false
+ },
+ {
+  "id": "65b674a4-e10e-4cec-acc5-fb7ce5008f93",
+  "name": "Mighty mushroom curry",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1631292784640-2b24be784d5d?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://cdn.sanity.io/images/cq7w2e71/production/ddd1c955c3bd069bfaf73004645ad19c5caec41e-958x1280.jpg",
+  "oldCover": "https://prod-files-secure.s3.us-west-2.amazonaws.com/9c394bed-633d-4bd9-826f-c8806ade5b5d/d3d899d7-be66-4517-848a-00d4d9b50e12/159996294.webp?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB4665XLU6K74%2F20260905%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260905T125859Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEEIaCXVzLXdlc3QtMiJHMEUCIQDEJG9biGFVMF9fYWIEy3DA4R4j8vviTgGc%2F4OhrSovWwIgToA6EElInTIr0AOOr6B3y%2FtKpoXMfL77ERxokAgzz2Qq%2FwMICxAAGgw2Mzc0MjMxODM4MDUiDBvlUhBOwFJB85VPDSrcA%2FbgWKnkeHo8o%2B%2BrvEbhFFP3z9Obui8p86YBcWNEBB%2FKpZ6prn%2BeH139xie%2Fjc4Yd%2BkhdNgtKTGTfAdQq27sg68StU8vJPXjZcc%2BTOdIgym%2FC6sgeVh0KrX60LZ6JjyImCY5xcQBiO6lQ2aw5fx0dnMk6oB%2FEiJADobyEm8Hqy4rDxTEzgktubaEUdWdEQuwdI3lWX2v5MGEZQ1IoKn6eehiz7FqB5HtCTlzmTNpJOF%2FzP2EnnHttxjpmaJPGxJXTLzmrQOyLmq1e6SJoN1J546LGheRktk7KQcuSSmsrM2A4JDrCbZ5Z1KQSp0DxBh4JWBgYG6aneelG9%2FooMROpid2nz%2BGl0g%2BmOJim%2FOrfGMX0K6NYo1aZc1B0BeIg4PMYt6SqESIDhGFI5veZIyUJrcI%2FxGjisaQSrrk2gxs3ir7rE5Cjjf9mZVnG%2F3ZvUXcrlEXErLTwhS3rhPhIkPIBitEaRhymbtfII38LFXTShlTai9uE5g4GVaU3ATMXXqe2%2BEpSGGLOkQSQdkWFddM%2Fl%2B4QGe8NSPBYV4Kd6%2BsVhfOxuD1WXiRoqSJ%2BcGr6ZXw4taAV9r4w6%2FLFYZi1BDv9VfPJVLHAT3h1veTF7vvDd8I9Y1%2B0%2FS%2BV1Ajs1hkMLrW79QGOqUBf%2BMoXKIwdsaAkZR6IgX%2BgpMXHLkOUnsyymZAUDYDq8w4%2Fkwglk8BFaSCe7V6HGn47TdUqzpjDj5VEMCjk6rkZ%2B5Y0sx8T0na4GS8hvgZV137ING6R5IQgf%2FFs5x5RXPWJVi8qY%2Fc7z5quKblIQP0moFLtoidGZTPUrOLACeEOzCVfKKqyjZIFsOMt6iVf8ZlFgoX34PgNew%2FyjPMyH0BjwXMMi0R&X-Amz-Signature=4666211d55f48265e357748be522c488ffdd08c0aaac8b9a57f1bcdddedaa8d0&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+  "coverReplaced": false
+ },
+ {
+  "id": "26395c6d-26b4-80a3-94da-e5f17a26a208",
+  "name": "Over The Top Chili Texas Style",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1666819632298-fe15dc7d4c34?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "http://www.fogocharcoal.com/cdn/shop/articles/blog_3093d306-bca3-48e8-a85d-d083f8200557.jpg?v=1709047861",
+  "oldCover": "https://prod-files-secure.s3.us-west-2.amazonaws.com/9c394bed-633d-4bd9-826f-c8806ade5b5d/cac644bd-d7e7-475e-b008-eb2bf27c87fc/blog_3093d306-bca3-48e8-a85d-d083f8200557_1728x.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB4665XLU6K74%2F20260905%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260905T125859Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEEIaCXVzLXdlc3QtMiJHMEUCIQDEJG9biGFVMF9fYWIEy3DA4R4j8vviTgGc%2F4OhrSovWwIgToA6EElInTIr0AOOr6B3y%2FtKpoXMfL77ERxokAgzz2Qq%2FwMICxAAGgw2Mzc0MjMxODM4MDUiDBvlUhBOwFJB85VPDSrcA%2FbgWKnkeHo8o%2B%2BrvEbhFFP3z9Obui8p86YBcWNEBB%2FKpZ6prn%2BeH139xie%2Fjc4Yd%2BkhdNgtKTGTfAdQq27sg68StU8vJPXjZcc%2BTOdIgym%2FC6sgeVh0KrX60LZ6JjyImCY5xcQBiO6lQ2aw5fx0dnMk6oB%2FEiJADobyEm8Hqy4rDxTEzgktubaEUdWdEQuwdI3lWX2v5MGEZQ1IoKn6eehiz7FqB5HtCTlzmTNpJOF%2FzP2EnnHttxjpmaJPGxJXTLzmrQOyLmq1e6SJoN1J546LGheRktk7KQcuSSmsrM2A4JDrCbZ5Z1KQSp0DxBh4JWBgYG6aneelG9%2FooMROpid2nz%2BGl0g%2BmOJim%2FOrfGMX0K6NYo1aZc1B0BeIg4PMYt6SqESIDhGFI5veZIyUJrcI%2FxGjisaQSrrk2gxs3ir7rE5Cjjf9mZVnG%2F3ZvUXcrlEXErLTwhS3rhPhIkPIBitEaRhymbtfII38LFXTShlTai9uE5g4GVaU3ATMXXqe2%2BEpSGGLOkQSQdkWFddM%2Fl%2B4QGe8NSPBYV4Kd6%2BsVhfOxuD1WXiRoqSJ%2BcGr6ZXw4taAV9r4w6%2FLFYZi1BDv9VfPJVLHAT3h1veTF7vvDd8I9Y1%2B0%2FS%2BV1Ajs1hkMLrW79QGOqUBf%2BMoXKIwdsaAkZR6IgX%2BgpMXHLkOUnsyymZAUDYDq8w4%2Fkwglk8BFaSCe7V6HGn47TdUqzpjDj5VEMCjk6rkZ%2B5Y0sx8T0na4GS8hvgZV137ING6R5IQgf%2FFs5x5RXPWJVi8qY%2Fc7z5quKblIQP0moFLtoidGZTPUrOLACeEOzCVfKKqyjZIFsOMt6iVf8ZlFgoX34PgNew%2FyjPMyH0BjwXMMi0R&X-Amz-Signature=f3d081028a2c469cf57fdf8300b696e2a23d8a19c1f84386684848faec304e6f&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+  "coverReplaced": false
+ },
+ {
+  "id": "26395c6d-26b4-8097-a90a-e1c6966007a2",
+  "name": "3 Hour St. Louis Ribs",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1700077103134-17a454ee5f09?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://www.recipetineats.com/tachyon/2016/01/Oven-Pork-Ribs-with-Barbecue-Sauce_4.jpg",
+  "oldCover": "https://prod-files-secure.s3.us-west-2.amazonaws.com/9c394bed-633d-4bd9-826f-c8806ade5b5d/6d604bd2-dc1b-4e5e-b465-95919b7852a4/KJ_Website_Recipe_Images_0055_3HourRibs_web.webp?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB4665XLU6K74%2F20260905%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260905T125859Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEEIaCXVzLXdlc3QtMiJHMEUCIQDEJG9biGFVMF9fYWIEy3DA4R4j8vviTgGc%2F4OhrSovWwIgToA6EElInTIr0AOOr6B3y%2FtKpoXMfL77ERxokAgzz2Qq%2FwMICxAAGgw2Mzc0MjMxODM4MDUiDBvlUhBOwFJB85VPDSrcA%2FbgWKnkeHo8o%2B%2BrvEbhFFP3z9Obui8p86YBcWNEBB%2FKpZ6prn%2BeH139xie%2Fjc4Yd%2BkhdNgtKTGTfAdQq27sg68StU8vJPXjZcc%2BTOdIgym%2FC6sgeVh0KrX60LZ6JjyImCY5xcQBiO6lQ2aw5fx0dnMk6oB%2FEiJADobyEm8Hqy4rDxTEzgktubaEUdWdEQuwdI3lWX2v5MGEZQ1IoKn6eehiz7FqB5HtCTlzmTNpJOF%2FzP2EnnHttxjpmaJPGxJXTLzmrQOyLmq1e6SJoN1J546LGheRktk7KQcuSSmsrM2A4JDrCbZ5Z1KQSp0DxBh4JWBgYG6aneelG9%2FooMROpid2nz%2BGl0g%2BmOJim%2FOrfGMX0K6NYo1aZc1B0BeIg4PMYt6SqESIDhGFI5veZIyUJrcI%2FxGjisaQSrrk2gxs3ir7rE5Cjjf9mZVnG%2F3ZvUXcrlEXErLTwhS3rhPhIkPIBitEaRhymbtfII38LFXTShlTai9uE5g4GVaU3ATMXXqe2%2BEpSGGLOkQSQdkWFddM%2Fl%2B4QGe8NSPBYV4Kd6%2BsVhfOxuD1WXiRoqSJ%2BcGr6ZXw4taAV9r4w6%2FLFYZi1BDv9VfPJVLHAT3h1veTF7vvDd8I9Y1%2B0%2FS%2BV1Ajs1hkMLrW79QGOqUBf%2BMoXKIwdsaAkZR6IgX%2BgpMXHLkOUnsyymZAUDYDq8w4%2Fkwglk8BFaSCe7V6HGn47TdUqzpjDj5VEMCjk6rkZ%2B5Y0sx8T0na4GS8hvgZV137ING6R5IQgf%2FFs5x5RXPWJVi8qY%2Fc7z5quKblIQP0moFLtoidGZTPUrOLACeEOzCVfKKqyjZIFsOMt6iVf8ZlFgoX34PgNew%2FyjPMyH0BjwXMMi0R&X-Amz-Signature=8ce12254b6789b1534e119fc4d2b52df41e1290eb5cf4949ddd5d3da1d2a855f&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+  "coverReplaced": false
+ },
+ {
+  "id": "26395c6d-26b4-80c6-af66-f50640247448",
+  "name": "Shiitake Potato Minced Pork Rice (香菇土豆肉沫拌饭)",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1652265540600-a319e0e4fd81?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://i2.chuimg.com/159a930a837e44ad9def1a9ea93e04e9_4033w_3024h.jpg?imageView2/1/w/640/h/520/q/75/format/jpg",
+  "oldCover": "https://prod-files-secure.s3.us-west-2.amazonaws.com/9c394bed-633d-4bd9-826f-c8806ade5b5d/989509df-745b-4e7d-94a5-bb2bb1821f19/27952e744dad41c9b45fe65b50683eec.webp?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB4665XLU6K74%2F20260905%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260905T125859Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEEIaCXVzLXdlc3QtMiJHMEUCIQDEJG9biGFVMF9fYWIEy3DA4R4j8vviTgGc%2F4OhrSovWwIgToA6EElInTIr0AOOr6B3y%2FtKpoXMfL77ERxokAgzz2Qq%2FwMICxAAGgw2Mzc0MjMxODM4MDUiDBvlUhBOwFJB85VPDSrcA%2FbgWKnkeHo8o%2B%2BrvEbhFFP3z9Obui8p86YBcWNEBB%2FKpZ6prn%2BeH139xie%2Fjc4Yd%2BkhdNgtKTGTfAdQq27sg68StU8vJPXjZcc%2BTOdIgym%2FC6sgeVh0KrX60LZ6JjyImCY5xcQBiO6lQ2aw5fx0dnMk6oB%2FEiJADobyEm8Hqy4rDxTEzgktubaEUdWdEQuwdI3lWX2v5MGEZQ1IoKn6eehiz7FqB5HtCTlzmTNpJOF%2FzP2EnnHttxjpmaJPGxJXTLzmrQOyLmq1e6SJoN1J546LGheRktk7KQcuSSmsrM2A4JDrCbZ5Z1KQSp0DxBh4JWBgYG6aneelG9%2FooMROpid2nz%2BGl0g%2BmOJim%2FOrfGMX0K6NYo1aZc1B0BeIg4PMYt6SqESIDhGFI5veZIyUJrcI%2FxGjisaQSrrk2gxs3ir7rE5Cjjf9mZVnG%2F3ZvUXcrlEXErLTwhS3rhPhIkPIBitEaRhymbtfII38LFXTShlTai9uE5g4GVaU3ATMXXqe2%2BEpSGGLOkQSQdkWFddM%2Fl%2B4QGe8NSPBYV4Kd6%2BsVhfOxuD1WXiRoqSJ%2BcGr6ZXw4taAV9r4w6%2FLFYZi1BDv9VfPJVLHAT3h1veTF7vvDd8I9Y1%2B0%2FS%2BV1Ajs1hkMLrW79QGOqUBf%2BMoXKIwdsaAkZR6IgX%2BgpMXHLkOUnsyymZAUDYDq8w4%2Fkwglk8BFaSCe7V6HGn47TdUqzpjDj5VEMCjk6rkZ%2B5Y0sx8T0na4GS8hvgZV137ING6R5IQgf%2FFs5x5RXPWJVi8qY%2Fc7z5quKblIQP0moFLtoidGZTPUrOLACeEOzCVfKKqyjZIFsOMt6iVf8ZlFgoX34PgNew%2FyjPMyH0BjwXMMi0R&X-Amz-Signature=65cdc1bb7ed7ad00865da15881b1d71c7cc9fc1d9de19e249457e261dd8dd14a&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+  "coverReplaced": false
+ },
+ {
+  "id": "25095c6d-26b4-8004-992d-c976e9d6f0ef",
+  "name": "Beef Jerky",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1652209695374-7a91c243f12f?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": null,
+  "oldCover": "https://www.allrecipes.com/thmb/1G4zcBjIINU4cTpXogVDBsV-FA4=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/142948-docs-best-beef-jerky-DDMFS-4x3-1e55e285782844cd82756628d579a6dd.jpg",
+  "coverReplaced": true
+ },
+ {
+  "id": "23f95c6d-26b4-8069-9df5-e8149d762d3e",
+  "name": "Flying Dutchman Burger",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://moribyan.com/wp-content/uploads/2024/01/IMG_0806.jpg",
+  "oldCover": "https://moribyan.com/wp-content/uploads/2024/01/IMG_0806.jpg",
+  "coverReplaced": true
+ },
+ {
+  "id": "23f95c6d-26b4-8067-836c-cd9076082c79",
+  "name": "Mushroom Cream Sauce",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1624633431700-b0912297c13a?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": null,
+  "oldCover": "https://kochkarussell.com/wp-content/uploads/2023/02/Pilzrahmsosse-selber-machen.jpg",
+  "coverReplaced": true
+ },
+ {
+  "id": "23f95c6d-26b4-80cc-ac68-ce76ad71f427",
+  "name": "Beef Bulgogi",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1564836235910-c3055ca0f912?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://i.ytimg.com/vi/srHw4xQj1I0/maxresdefault.jpg",
+  "oldCover": "https://s23209.pcdn.co/wp-content/uploads/2019/04/240124_DD_korean-beef-bulgogi_274.jpg",
+  "coverReplaced": true
+ },
+ {
+  "id": "21f95c6d-26b4-80c6-be51-f243d32c5dd0",
+  "name": "Bolognese",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1692071097529-320eb2b32292?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/the-best-spaghetti-bolognese-7e83155.jpg?resize=440%2C230",
+  "oldCover": "https://images.themodernproper.com/production/posts/2019/Easy-Bolognese-10.jpg?w=960&h=960&q=82&fm=jpg&fit=crop&dm=1599767200&s=9f773cc3bda3f6acc5382b6904113739",
+  "coverReplaced": true
+ },
+ {
+  "id": "16995c6d-26b4-80be-b114-c35bc9882d84",
+  "name": "Bibimbap",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1713047203705-44dd7d762d0c?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://www.recipetineats.com/tachyon/2019/05/Bibimbap_5.jpg",
+  "oldCover": "https://www.recipetineats.com/tachyon/2019/05/Bibimbap_3.jpg?resize=900%2C1260&zoom=1",
+  "coverReplaced": true
+ },
+ {
+  "id": "16795c6d-26b4-8066-8d20-f858d5d12db1",
+  "name": "Beef Wellington",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1683223073459-17df6bce0c38?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://www.recipetineats.com/tachyon/2022/10/Beef-Wellington-take-4_5.jpg",
+  "oldCover": "https://www.sainsburysmagazine.co.uk/uploads/media/720x770/07/11157-Wellington.jpg?v=1-0",
+  "coverReplaced": true
+ },
+ {
+  "id": "10295c6d-26b4-808b-b97d-cd41d79c4390",
+  "name": "Lasagna",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1629115916087-7e8c114a24ed?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://cafedelites.com/wp-content/uploads/2018/01/Mamas-Best-Lasagna-IMAGE-38.jpg",
+  "oldCover": "https://thecozycook.com/wp-content/uploads/2022/04/Lasagna-Recipe-F5.jpg",
+  "coverReplaced": true
+ },
+ {
+  "id": "2f86b9a0-1961-4c91-8c04-24280ef32a25",
+  "name": "Lentil salad",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1702650657375-934239d8b472?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://cdn.loveandlemons.com/wp-content/uploads/opengraph/2022/08/lentil-salad-1.jpg",
+  "oldCover": "https://cdn.loveandlemons.com/wp-content/uploads/2022/08/lentil-salad-1-580x866.jpg",
+  "coverReplaced": true
+ },
+ {
+  "id": "18b6d11c-2b23-4f37-abcd-86d2e6159492",
+  "name": "Creamy chicken pesto pasta",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://littlesunnykitchen.com/wp-content/uploads/2022/11/Chicken-Pesto-Pasta-1.jpg",
+  "oldCover": "https://images.unsplash.com/photo-1605590955562-be1a5fda4161?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb",
+  "coverReplaced": false
+ },
+ {
+  "id": "8e434f90-cb77-42d2-a475-90c228dfec7d",
+  "name": "Teriyaki salmon",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1641898378716-1f38ec04bb0f?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://natashaskitchen.com/wp-content/uploads/2016/01/Teriyaki-Salmon-Recipe-4.jpg",
+  "oldCover": "https://images.unsplash.com/photo-1509402308-817902776267?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb",
+  "coverReplaced": false
+ },
+ {
+  "id": "352954c7-ab04-4924-a25b-fc27361ee259",
+  "name": "Pumpkin Miso Ramen",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1591814468924-caf88d1232e1?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://cdn77-s3.lazycatkitchen.com/wp-content/uploads/2023/01/pumpkin-ramen-bowl.jpg",
+  "oldCover": "https://cdn77-s3.lazycatkitchen.com/wp-content/uploads/2023/01/pumpkin-ramen-bowl-800x1200.jpg",
+  "coverReplaced": true
+ },
+ {
+  "id": "ec6f2a90-3986-4214-b24a-556d23ce21c1",
+  "name": "Prawns & Feta Omelette",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1668283653825-37b80f055b05?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://i.ytimg.com/vi/NyEHfNMY6Tg/maxresdefault.jpg",
+  "oldCover": "https://images.unsplash.com/photo-1510693206972-df098062cb71?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb",
+  "coverReplaced": false
+ },
+ {
+  "id": "ae01f80a-85b3-4523-bc9b-80c13812bb88",
+  "name": "Shakshuka",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1614570218825-c2a3be79b0fd?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://www.seriouseats.com/thmb/GGe7ElpAahWNo9W6c6mAx0utvFg=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/__opt__aboutcom__coeus__resources__content_migration__serious_eats__seriouseats.com__recipes__images__2016__09__20160926-shakshuka-17-a2b1d35f5ce146d1b8f5e2851e73b487.jpg",
+  "oldCover": "https://images.unsplash.com/photo-1584278859380-c94d92e083dd?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb",
+  "coverReplaced": false
+ },
+ {
+  "id": "f17b0999-80c9-4298-b919-95a805fe8df0",
+  "name": "Lentil Chicken Curry",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://veenaazmanov.com/wp-content/uploads/2020/07/Lentils-Chicken-Curry-with-Curry-Powder-Spice-Mix26.jpg",
+  "oldCover": "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb",
+  "coverReplaced": false
+ },
+ {
+  "id": "c1d87c09-414b-4028-8529-68e0196c28c4",
+  "name": "Tabouli Salad",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1594040815645-5442fb6d48f6?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://www.themediterraneandish.com/wp-content/uploads/2016/03/Tabouli-Recipe-9.jpg",
+  "oldCover": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb",
+  "coverReplaced": false
+ },
+ {
+  "id": "74ed86f0-64c6-459e-b614-77461f68588a",
+  "name": "Cinnamon Stars with Liqueur",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1513519683267-4ee6761728ac?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": null,
+  "oldCover": "https://img.chefkoch-cdn.de/rezepte/37481012562226/bilder/526583/crop-600x400/zimtsterne.jpg",
+  "coverReplaced": true
+ },
+ {
+  "id": "cb9fcbc7-18d3-4ad7-ab6d-b912b1e8696c",
+  "name": "Halloumi Pasta",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1691200007743-0652bbbc1d7d?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://ichef.bbci.co.uk/food/ic/food_16x9_448/recipes/pennewithhaloumiandc_92783_16x9.jpg",
+  "oldCover": "https://prod-files-secure.s3.us-west-2.amazonaws.com/9c394bed-633d-4bd9-826f-c8806ade5b5d/86a51ed7-adb0-47d8-8235-0fb1b9136720/pennewithhaloumiandc_92783_16x9.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB4665XLU6K74%2F20260905%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260905T125859Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEEIaCXVzLXdlc3QtMiJHMEUCIQDEJG9biGFVMF9fYWIEy3DA4R4j8vviTgGc%2F4OhrSovWwIgToA6EElInTIr0AOOr6B3y%2FtKpoXMfL77ERxokAgzz2Qq%2FwMICxAAGgw2Mzc0MjMxODM4MDUiDBvlUhBOwFJB85VPDSrcA%2FbgWKnkeHo8o%2B%2BrvEbhFFP3z9Obui8p86YBcWNEBB%2FKpZ6prn%2BeH139xie%2Fjc4Yd%2BkhdNgtKTGTfAdQq27sg68StU8vJPXjZcc%2BTOdIgym%2FC6sgeVh0KrX60LZ6JjyImCY5xcQBiO6lQ2aw5fx0dnMk6oB%2FEiJADobyEm8Hqy4rDxTEzgktubaEUdWdEQuwdI3lWX2v5MGEZQ1IoKn6eehiz7FqB5HtCTlzmTNpJOF%2FzP2EnnHttxjpmaJPGxJXTLzmrQOyLmq1e6SJoN1J546LGheRktk7KQcuSSmsrM2A4JDrCbZ5Z1KQSp0DxBh4JWBgYG6aneelG9%2FooMROpid2nz%2BGl0g%2BmOJim%2FOrfGMX0K6NYo1aZc1B0BeIg4PMYt6SqESIDhGFI5veZIyUJrcI%2FxGjisaQSrrk2gxs3ir7rE5Cjjf9mZVnG%2F3ZvUXcrlEXErLTwhS3rhPhIkPIBitEaRhymbtfII38LFXTShlTai9uE5g4GVaU3ATMXXqe2%2BEpSGGLOkQSQdkWFddM%2Fl%2B4QGe8NSPBYV4Kd6%2BsVhfOxuD1WXiRoqSJ%2BcGr6ZXw4taAV9r4w6%2FLFYZi1BDv9VfPJVLHAT3h1veTF7vvDd8I9Y1%2B0%2FS%2BV1Ajs1hkMLrW79QGOqUBf%2BMoXKIwdsaAkZR6IgX%2BgpMXHLkOUnsyymZAUDYDq8w4%2Fkwglk8BFaSCe7V6HGn47TdUqzpjDj5VEMCjk6rkZ%2B5Y0sx8T0na4GS8hvgZV137ING6R5IQgf%2FFs5x5RXPWJVi8qY%2Fc7z5quKblIQP0moFLtoidGZTPUrOLACeEOzCVfKKqyjZIFsOMt6iVf8ZlFgoX34PgNew%2FyjPMyH0BjwXMMi0R&X-Amz-Signature=3d3d9c47fe246478da6363dd30e22e81d5f9b1e06f892f83e94049bf0fecedd0&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+  "coverReplaced": false
+ },
+ {
+  "id": "206104c7-bf3e-449d-9230-5e9747eca646",
+  "name": "Salmon Filet in Champagne-Cream-Sauce",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1611564297748-4e39b96e0cf3?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": null,
+  "oldCover": "https://images.lecker.de/lachsfilet-in-champagner-sahne-sosse-1651846_936867,id=19971484,b=lecker,w=610,cg=c.jpg",
+  "coverReplaced": true
+ },
+ {
+  "id": "02c171cb-dcce-4b07-9a68-346e8bcd4338",
+  "name": "Instant Pot Carnitas",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1760322328049-91bb196d41d9?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://www.pressurecookrecipes.com/wp-content/uploads/2023/02/instant-pot-carnitas-fb.jpg",
+  "oldCover": "https://prod-files-secure.s3.us-west-2.amazonaws.com/9c394bed-633d-4bd9-826f-c8806ade5b5d/810056f4-76bb-4de3-a675-05579a0edaeb/carnitas-instant-pot.webp?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB4665XLU6K74%2F20260905%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260905T125859Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEEIaCXVzLXdlc3QtMiJHMEUCIQDEJG9biGFVMF9fYWIEy3DA4R4j8vviTgGc%2F4OhrSovWwIgToA6EElInTIr0AOOr6B3y%2FtKpoXMfL77ERxokAgzz2Qq%2FwMICxAAGgw2Mzc0MjMxODM4MDUiDBvlUhBOwFJB85VPDSrcA%2FbgWKnkeHo8o%2B%2BrvEbhFFP3z9Obui8p86YBcWNEBB%2FKpZ6prn%2BeH139xie%2Fjc4Yd%2BkhdNgtKTGTfAdQq27sg68StU8vJPXjZcc%2BTOdIgym%2FC6sgeVh0KrX60LZ6JjyImCY5xcQBiO6lQ2aw5fx0dnMk6oB%2FEiJADobyEm8Hqy4rDxTEzgktubaEUdWdEQuwdI3lWX2v5MGEZQ1IoKn6eehiz7FqB5HtCTlzmTNpJOF%2FzP2EnnHttxjpmaJPGxJXTLzmrQOyLmq1e6SJoN1J546LGheRktk7KQcuSSmsrM2A4JDrCbZ5Z1KQSp0DxBh4JWBgYG6aneelG9%2FooMROpid2nz%2BGl0g%2BmOJim%2FOrfGMX0K6NYo1aZc1B0BeIg4PMYt6SqESIDhGFI5veZIyUJrcI%2FxGjisaQSrrk2gxs3ir7rE5Cjjf9mZVnG%2F3ZvUXcrlEXErLTwhS3rhPhIkPIBitEaRhymbtfII38LFXTShlTai9uE5g4GVaU3ATMXXqe2%2BEpSGGLOkQSQdkWFddM%2Fl%2B4QGe8NSPBYV4Kd6%2BsVhfOxuD1WXiRoqSJ%2BcGr6ZXw4taAV9r4w6%2FLFYZi1BDv9VfPJVLHAT3h1veTF7vvDd8I9Y1%2B0%2FS%2BV1Ajs1hkMLrW79QGOqUBf%2BMoXKIwdsaAkZR6IgX%2BgpMXHLkOUnsyymZAUDYDq8w4%2Fkwglk8BFaSCe7V6HGn47TdUqzpjDj5VEMCjk6rkZ%2B5Y0sx8T0na4GS8hvgZV137ING6R5IQgf%2FFs5x5RXPWJVi8qY%2Fc7z5quKblIQP0moFLtoidGZTPUrOLACeEOzCVfKKqyjZIFsOMt6iVf8ZlFgoX34PgNew%2FyjPMyH0BjwXMMi0R&X-Amz-Signature=7f5b8a46ead9be4f45bd2a9226aef5edb61ffdcf4889b00c0190baab1eda6081&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+  "coverReplaced": false
+ },
+ {
+  "id": "38431921-d128-4b7e-b561-78c1d2141125",
+  "name": "Cinnamon Stars",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1512668033346-09cfb0d8597b?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": null,
+  "oldCover": "https://img.chefkoch-cdn.de/rezepte/570771155723405/bilder/854144/crop-600x400/omas-zimtsterne.jpg",
+  "coverReplaced": true
+ },
+ {
+  "id": "44dae5c8-631f-48ae-9ed2-556fae86ad34",
+  "name": "Waffles",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1568051243851-f9b136146e97?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://img.chefkoch-cdn.de/rezepte/448991137121794/bilder/1486243/crop-960x540/waffeln.jpg",
+  "oldCover": "https://prod-files-secure.s3.us-west-2.amazonaws.com/9c394bed-633d-4bd9-826f-c8806ade5b5d/3be19e0e-a3fe-425d-ad07-70c11390eeee/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB4665XLU6K74%2F20260905%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260905T125859Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEEIaCXVzLXdlc3QtMiJHMEUCIQDEJG9biGFVMF9fYWIEy3DA4R4j8vviTgGc%2F4OhrSovWwIgToA6EElInTIr0AOOr6B3y%2FtKpoXMfL77ERxokAgzz2Qq%2FwMICxAAGgw2Mzc0MjMxODM4MDUiDBvlUhBOwFJB85VPDSrcA%2FbgWKnkeHo8o%2B%2BrvEbhFFP3z9Obui8p86YBcWNEBB%2FKpZ6prn%2BeH139xie%2Fjc4Yd%2BkhdNgtKTGTfAdQq27sg68StU8vJPXjZcc%2BTOdIgym%2FC6sgeVh0KrX60LZ6JjyImCY5xcQBiO6lQ2aw5fx0dnMk6oB%2FEiJADobyEm8Hqy4rDxTEzgktubaEUdWdEQuwdI3lWX2v5MGEZQ1IoKn6eehiz7FqB5HtCTlzmTNpJOF%2FzP2EnnHttxjpmaJPGxJXTLzmrQOyLmq1e6SJoN1J546LGheRktk7KQcuSSmsrM2A4JDrCbZ5Z1KQSp0DxBh4JWBgYG6aneelG9%2FooMROpid2nz%2BGl0g%2BmOJim%2FOrfGMX0K6NYo1aZc1B0BeIg4PMYt6SqESIDhGFI5veZIyUJrcI%2FxGjisaQSrrk2gxs3ir7rE5Cjjf9mZVnG%2F3ZvUXcrlEXErLTwhS3rhPhIkPIBitEaRhymbtfII38LFXTShlTai9uE5g4GVaU3ATMXXqe2%2BEpSGGLOkQSQdkWFddM%2Fl%2B4QGe8NSPBYV4Kd6%2BsVhfOxuD1WXiRoqSJ%2BcGr6ZXw4taAV9r4w6%2FLFYZi1BDv9VfPJVLHAT3h1veTF7vvDd8I9Y1%2B0%2FS%2BV1Ajs1hkMLrW79QGOqUBf%2BMoXKIwdsaAkZR6IgX%2BgpMXHLkOUnsyymZAUDYDq8w4%2Fkwglk8BFaSCe7V6HGn47TdUqzpjDj5VEMCjk6rkZ%2B5Y0sx8T0na4GS8hvgZV137ING6R5IQgf%2FFs5x5RXPWJVi8qY%2Fc7z5quKblIQP0moFLtoidGZTPUrOLACeEOzCVfKKqyjZIFsOMt6iVf8ZlFgoX34PgNew%2FyjPMyH0BjwXMMi0R&X-Amz-Signature=a9154196f314a7f3e55698c9fca00c4d5c2c8e1ff765fb7939a231506a28b4bc&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+  "coverReplaced": false
+ },
+ {
+  "id": "b1d4907d-2fdd-4935-afa3-571d4d03e4d7",
+  "name": "Tomato Soup",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1659480150417-25f9f0d5ca2e?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://img.chefkoch-cdn.de/rezepte/1373751242290581/bilder/1499747/crop-960x540/frische-tomatensuppe.jpg",
+  "oldCover": "https://img.chefkoch-cdn.de/ck.de/rezepte/137/137375/1175490-960x720-frische-tomatensuppe.jpg",
+  "coverReplaced": true
+ },
+ {
+  "id": "33064b82-2b0d-4296-a574-77aece43103c",
+  "name": "Chicken Shawarma",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1719282431565-3b30bb7d2658?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://www.recipetineats.com/tachyon/2017/01/Chicken-Shawarma-Wrap_3.jpg",
+  "oldCover": "https://prod-files-secure.s3.us-west-2.amazonaws.com/9c394bed-633d-4bd9-826f-c8806ade5b5d/6d6c7c48-e72a-4ef0-bd8f-cd370827e0af/Chicken-Shawarma_6.webp?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB4665XLU6K74%2F20260905%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260905T125859Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEEIaCXVzLXdlc3QtMiJHMEUCIQDEJG9biGFVMF9fYWIEy3DA4R4j8vviTgGc%2F4OhrSovWwIgToA6EElInTIr0AOOr6B3y%2FtKpoXMfL77ERxokAgzz2Qq%2FwMICxAAGgw2Mzc0MjMxODM4MDUiDBvlUhBOwFJB85VPDSrcA%2FbgWKnkeHo8o%2B%2BrvEbhFFP3z9Obui8p86YBcWNEBB%2FKpZ6prn%2BeH139xie%2Fjc4Yd%2BkhdNgtKTGTfAdQq27sg68StU8vJPXjZcc%2BTOdIgym%2FC6sgeVh0KrX60LZ6JjyImCY5xcQBiO6lQ2aw5fx0dnMk6oB%2FEiJADobyEm8Hqy4rDxTEzgktubaEUdWdEQuwdI3lWX2v5MGEZQ1IoKn6eehiz7FqB5HtCTlzmTNpJOF%2FzP2EnnHttxjpmaJPGxJXTLzmrQOyLmq1e6SJoN1J546LGheRktk7KQcuSSmsrM2A4JDrCbZ5Z1KQSp0DxBh4JWBgYG6aneelG9%2FooMROpid2nz%2BGl0g%2BmOJim%2FOrfGMX0K6NYo1aZc1B0BeIg4PMYt6SqESIDhGFI5veZIyUJrcI%2FxGjisaQSrrk2gxs3ir7rE5Cjjf9mZVnG%2F3ZvUXcrlEXErLTwhS3rhPhIkPIBitEaRhymbtfII38LFXTShlTai9uE5g4GVaU3ATMXXqe2%2BEpSGGLOkQSQdkWFddM%2Fl%2B4QGe8NSPBYV4Kd6%2BsVhfOxuD1WXiRoqSJ%2BcGr6ZXw4taAV9r4w6%2FLFYZi1BDv9VfPJVLHAT3h1veTF7vvDd8I9Y1%2B0%2FS%2BV1Ajs1hkMLrW79QGOqUBf%2BMoXKIwdsaAkZR6IgX%2BgpMXHLkOUnsyymZAUDYDq8w4%2Fkwglk8BFaSCe7V6HGn47TdUqzpjDj5VEMCjk6rkZ%2B5Y0sx8T0na4GS8hvgZV137ING6R5IQgf%2FFs5x5RXPWJVi8qY%2Fc7z5quKblIQP0moFLtoidGZTPUrOLACeEOzCVfKKqyjZIFsOMt6iVf8ZlFgoX34PgNew%2FyjPMyH0BjwXMMi0R&X-Amz-Signature=cb346a902c643622a434ff1cbb0820b8ee4292722a0d7fe5560c4b7cdb19232c&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+  "coverReplaced": false
+ },
+ {
+  "id": "43fe3973-050b-4d25-85dd-e560d0f5ec5d",
+  "name": "Thai Green Curry Chicken",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1716959669858-11d415bdead6?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://img.chefkoch-cdn.de/rezepte/1412871246169628/bilder/231126/crop-960x540/thai-green-curry-chicken.jpg",
+  "oldCover": "https://prod-files-secure.s3.us-west-2.amazonaws.com/9c394bed-633d-4bd9-826f-c8806ade5b5d/101999b1-a7b3-49c3-88ed-b7958083bbf3/thai-green-curry-chicken.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB4665XLU6K74%2F20260905%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260905T125859Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEEIaCXVzLXdlc3QtMiJHMEUCIQDEJG9biGFVMF9fYWIEy3DA4R4j8vviTgGc%2F4OhrSovWwIgToA6EElInTIr0AOOr6B3y%2FtKpoXMfL77ERxokAgzz2Qq%2FwMICxAAGgw2Mzc0MjMxODM4MDUiDBvlUhBOwFJB85VPDSrcA%2FbgWKnkeHo8o%2B%2BrvEbhFFP3z9Obui8p86YBcWNEBB%2FKpZ6prn%2BeH139xie%2Fjc4Yd%2BkhdNgtKTGTfAdQq27sg68StU8vJPXjZcc%2BTOdIgym%2FC6sgeVh0KrX60LZ6JjyImCY5xcQBiO6lQ2aw5fx0dnMk6oB%2FEiJADobyEm8Hqy4rDxTEzgktubaEUdWdEQuwdI3lWX2v5MGEZQ1IoKn6eehiz7FqB5HtCTlzmTNpJOF%2FzP2EnnHttxjpmaJPGxJXTLzmrQOyLmq1e6SJoN1J546LGheRktk7KQcuSSmsrM2A4JDrCbZ5Z1KQSp0DxBh4JWBgYG6aneelG9%2FooMROpid2nz%2BGl0g%2BmOJim%2FOrfGMX0K6NYo1aZc1B0BeIg4PMYt6SqESIDhGFI5veZIyUJrcI%2FxGjisaQSrrk2gxs3ir7rE5Cjjf9mZVnG%2F3ZvUXcrlEXErLTwhS3rhPhIkPIBitEaRhymbtfII38LFXTShlTai9uE5g4GVaU3ATMXXqe2%2BEpSGGLOkQSQdkWFddM%2Fl%2B4QGe8NSPBYV4Kd6%2BsVhfOxuD1WXiRoqSJ%2BcGr6ZXw4taAV9r4w6%2FLFYZi1BDv9VfPJVLHAT3h1veTF7vvDd8I9Y1%2B0%2FS%2BV1Ajs1hkMLrW79QGOqUBf%2BMoXKIwdsaAkZR6IgX%2BgpMXHLkOUnsyymZAUDYDq8w4%2Fkwglk8BFaSCe7V6HGn47TdUqzpjDj5VEMCjk6rkZ%2B5Y0sx8T0na4GS8hvgZV137ING6R5IQgf%2FFs5x5RXPWJVi8qY%2Fc7z5quKblIQP0moFLtoidGZTPUrOLACeEOzCVfKKqyjZIFsOMt6iVf8ZlFgoX34PgNew%2FyjPMyH0BjwXMMi0R&X-Amz-Signature=b1e3645031bc416d75759628044f81d1283e0d39056be0de1ef38a66c5202c57&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+  "coverReplaced": false
+ },
+ {
+  "id": "9f172a00-a4bc-4d5d-8204-ffc415da8db2",
+  "name": "Chocolate Honey Stars",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1702744217578-109f77831534?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": null,
+  "oldCover": "https://blog.tagesanzeiger.ch/sweethome/wp-content/uploads/sites/16/2016/11/eatlittlebird.jpg",
+  "coverReplaced": true
+ },
+ {
+  "id": "c9980790-13dd-4e7e-af0d-ad25937e37eb",
+  "name": "Stuffed Tomatoes with Roasted Couscous Vegetables",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1761315631944-237e17cf108e?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": null,
+  "oldCover": "https://img.hellofresh.com/f_auto,fl_lossy,q_auto,w_2600/hellofresh_s3/image/gefullte-tomaten-n-988828c8.jpg",
+  "coverReplaced": true
+ },
+ {
+  "id": "3e98be51-a57e-4147-ac3d-2f3f3b047a90",
+  "name": "Dan Dan Noodles",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1565976469791-9cbef1241c1f?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://www.chinasichuanfood.com/wp-content/uploads/2017/08/dan-dan-noodles-17.jpg",
+  "oldCover": "https://prod-files-secure.s3.us-west-2.amazonaws.com/9c394bed-633d-4bd9-826f-c8806ade5b5d/26d9fd79-85f0-491d-a64e-56c11d08f55c/dan-dan-noodles-12-copy.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB4665XLU6K74%2F20260905%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260905T125859Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEEIaCXVzLXdlc3QtMiJHMEUCIQDEJG9biGFVMF9fYWIEy3DA4R4j8vviTgGc%2F4OhrSovWwIgToA6EElInTIr0AOOr6B3y%2FtKpoXMfL77ERxokAgzz2Qq%2FwMICxAAGgw2Mzc0MjMxODM4MDUiDBvlUhBOwFJB85VPDSrcA%2FbgWKnkeHo8o%2B%2BrvEbhFFP3z9Obui8p86YBcWNEBB%2FKpZ6prn%2BeH139xie%2Fjc4Yd%2BkhdNgtKTGTfAdQq27sg68StU8vJPXjZcc%2BTOdIgym%2FC6sgeVh0KrX60LZ6JjyImCY5xcQBiO6lQ2aw5fx0dnMk6oB%2FEiJADobyEm8Hqy4rDxTEzgktubaEUdWdEQuwdI3lWX2v5MGEZQ1IoKn6eehiz7FqB5HtCTlzmTNpJOF%2FzP2EnnHttxjpmaJPGxJXTLzmrQOyLmq1e6SJoN1J546LGheRktk7KQcuSSmsrM2A4JDrCbZ5Z1KQSp0DxBh4JWBgYG6aneelG9%2FooMROpid2nz%2BGl0g%2BmOJim%2FOrfGMX0K6NYo1aZc1B0BeIg4PMYt6SqESIDhGFI5veZIyUJrcI%2FxGjisaQSrrk2gxs3ir7rE5Cjjf9mZVnG%2F3ZvUXcrlEXErLTwhS3rhPhIkPIBitEaRhymbtfII38LFXTShlTai9uE5g4GVaU3ATMXXqe2%2BEpSGGLOkQSQdkWFddM%2Fl%2B4QGe8NSPBYV4Kd6%2BsVhfOxuD1WXiRoqSJ%2BcGr6ZXw4taAV9r4w6%2FLFYZi1BDv9VfPJVLHAT3h1veTF7vvDd8I9Y1%2B0%2FS%2BV1Ajs1hkMLrW79QGOqUBf%2BMoXKIwdsaAkZR6IgX%2BgpMXHLkOUnsyymZAUDYDq8w4%2Fkwglk8BFaSCe7V6HGn47TdUqzpjDj5VEMCjk6rkZ%2B5Y0sx8T0na4GS8hvgZV137ING6R5IQgf%2FFs5x5RXPWJVi8qY%2Fc7z5quKblIQP0moFLtoidGZTPUrOLACeEOzCVfKKqyjZIFsOMt6iVf8ZlFgoX34PgNew%2FyjPMyH0BjwXMMi0R&X-Amz-Signature=5561e3c2e7caee8986d8f86530e0c87f0df277cedffa05b71ccfd9fcdf8a60ba&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+  "coverReplaced": false
+ },
+ {
+  "id": "56783b70-868b-43d6-945e-80f3f7f71c7f",
+  "name": "Oven-Roasted Pulled Pork",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1523986490752-c28064f26be3?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": null,
+  "oldCover": "https://hips.hearstapps.com/del.h-cdn.co/assets/18/08/1519157896-pulled-pork-vertical.jpg?crop=1.0xw:1xh;center,top&resize=768:*",
+  "coverReplaced": true
+ },
+ {
+  "id": "e91063c8-a092-4ff6-9fce-3c2748a0efe0",
+  "name": "Cream Cheese Tartare with Radishes, Pickles and Dill",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1777299721812-87fb82f5e84b?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": null,
+  "oldCover": "https://images.lecker.de/frischkaese-tatar-mit-radieschen-gewuerzgurke-und-dill-F3662801,id=7ac1cdcd,b=lecker,w=440,h=440,cg=c.jpg",
+  "coverReplaced": true
+ },
+ {
+  "id": "2d6a0694-e6f8-4662-8df0-da05c62515f2",
+  "name": "Onion Cake with Parma Ham",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1588798569668-74249ff82df6?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": null,
+  "oldCover": "data:image/jpeg;base64,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",
+  "coverReplaced": true
+ },
+ {
+  "id": "bbdaf5a4-d7a7-40d5-8252-42a289237b16",
+  "name": "Pancakes",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1612182062966-c8fe45ecbf73?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://i0.wp.com/recipesbycarina.com/wp-content/uploads/2020/08/Pancakes-1.png?fit=4368%2C2912&ssl=1",
+  "oldCover": "https://prod-files-secure.s3.us-west-2.amazonaws.com/9c394bed-633d-4bd9-826f-c8806ade5b5d/1604018e-a4fa-4355-bf2c-858ecf23d677/easy-pancakes3-resize-10-500x500.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB4665XLU6K74%2F20260905%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260905T125859Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEEIaCXVzLXdlc3QtMiJHMEUCIQDEJG9biGFVMF9fYWIEy3DA4R4j8vviTgGc%2F4OhrSovWwIgToA6EElInTIr0AOOr6B3y%2FtKpoXMfL77ERxokAgzz2Qq%2FwMICxAAGgw2Mzc0MjMxODM4MDUiDBvlUhBOwFJB85VPDSrcA%2FbgWKnkeHo8o%2B%2BrvEbhFFP3z9Obui8p86YBcWNEBB%2FKpZ6prn%2BeH139xie%2Fjc4Yd%2BkhdNgtKTGTfAdQq27sg68StU8vJPXjZcc%2BTOdIgym%2FC6sgeVh0KrX60LZ6JjyImCY5xcQBiO6lQ2aw5fx0dnMk6oB%2FEiJADobyEm8Hqy4rDxTEzgktubaEUdWdEQuwdI3lWX2v5MGEZQ1IoKn6eehiz7FqB5HtCTlzmTNpJOF%2FzP2EnnHttxjpmaJPGxJXTLzmrQOyLmq1e6SJoN1J546LGheRktk7KQcuSSmsrM2A4JDrCbZ5Z1KQSp0DxBh4JWBgYG6aneelG9%2FooMROpid2nz%2BGl0g%2BmOJim%2FOrfGMX0K6NYo1aZc1B0BeIg4PMYt6SqESIDhGFI5veZIyUJrcI%2FxGjisaQSrrk2gxs3ir7rE5Cjjf9mZVnG%2F3ZvUXcrlEXErLTwhS3rhPhIkPIBitEaRhymbtfII38LFXTShlTai9uE5g4GVaU3ATMXXqe2%2BEpSGGLOkQSQdkWFddM%2Fl%2B4QGe8NSPBYV4Kd6%2BsVhfOxuD1WXiRoqSJ%2BcGr6ZXw4taAV9r4w6%2FLFYZi1BDv9VfPJVLHAT3h1veTF7vvDd8I9Y1%2B0%2FS%2BV1Ajs1hkMLrW79QGOqUBf%2BMoXKIwdsaAkZR6IgX%2BgpMXHLkOUnsyymZAUDYDq8w4%2Fkwglk8BFaSCe7V6HGn47TdUqzpjDj5VEMCjk6rkZ%2B5Y0sx8T0na4GS8hvgZV137ING6R5IQgf%2FFs5x5RXPWJVi8qY%2Fc7z5quKblIQP0moFLtoidGZTPUrOLACeEOzCVfKKqyjZIFsOMt6iVf8ZlFgoX34PgNew%2FyjPMyH0BjwXMMi0R&X-Amz-Signature=3f476772efb3516fbba502021a09597bc0df0c5ded70e7ef73d053cb15a3098e&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+  "coverReplaced": false
+ },
+ {
+  "id": "2299aafa-118c-4365-8519-d4f337ed052c",
+  "name": "Homemade Tzatziki Sauce",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1627308595127-d9acf19107ce?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://joyfoodsunshine.com/wp-content/uploads/2020/04/homemade-tzatziki-sauce-recipe-16x9-1.jpg",
+  "oldCover": "https://prod-files-secure.s3.us-west-2.amazonaws.com/9c394bed-633d-4bd9-826f-c8806ade5b5d/624c230d-d16f-4259-a876-0b790152f4c3/tzatziki-sauce-recipe-3.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB4665XLU6K74%2F20260905%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260905T125859Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEEIaCXVzLXdlc3QtMiJHMEUCIQDEJG9biGFVMF9fYWIEy3DA4R4j8vviTgGc%2F4OhrSovWwIgToA6EElInTIr0AOOr6B3y%2FtKpoXMfL77ERxokAgzz2Qq%2FwMICxAAGgw2Mzc0MjMxODM4MDUiDBvlUhBOwFJB85VPDSrcA%2FbgWKnkeHo8o%2B%2BrvEbhFFP3z9Obui8p86YBcWNEBB%2FKpZ6prn%2BeH139xie%2Fjc4Yd%2BkhdNgtKTGTfAdQq27sg68StU8vJPXjZcc%2BTOdIgym%2FC6sgeVh0KrX60LZ6JjyImCY5xcQBiO6lQ2aw5fx0dnMk6oB%2FEiJADobyEm8Hqy4rDxTEzgktubaEUdWdEQuwdI3lWX2v5MGEZQ1IoKn6eehiz7FqB5HtCTlzmTNpJOF%2FzP2EnnHttxjpmaJPGxJXTLzmrQOyLmq1e6SJoN1J546LGheRktk7KQcuSSmsrM2A4JDrCbZ5Z1KQSp0DxBh4JWBgYG6aneelG9%2FooMROpid2nz%2BGl0g%2BmOJim%2FOrfGMX0K6NYo1aZc1B0BeIg4PMYt6SqESIDhGFI5veZIyUJrcI%2FxGjisaQSrrk2gxs3ir7rE5Cjjf9mZVnG%2F3ZvUXcrlEXErLTwhS3rhPhIkPIBitEaRhymbtfII38LFXTShlTai9uE5g4GVaU3ATMXXqe2%2BEpSGGLOkQSQdkWFddM%2Fl%2B4QGe8NSPBYV4Kd6%2BsVhfOxuD1WXiRoqSJ%2BcGr6ZXw4taAV9r4w6%2FLFYZi1BDv9VfPJVLHAT3h1veTF7vvDd8I9Y1%2B0%2FS%2BV1Ajs1hkMLrW79QGOqUBf%2BMoXKIwdsaAkZR6IgX%2BgpMXHLkOUnsyymZAUDYDq8w4%2Fkwglk8BFaSCe7V6HGn47TdUqzpjDj5VEMCjk6rkZ%2B5Y0sx8T0na4GS8hvgZV137ING6R5IQgf%2FFs5x5RXPWJVi8qY%2Fc7z5quKblIQP0moFLtoidGZTPUrOLACeEOzCVfKKqyjZIFsOMt6iVf8ZlFgoX34PgNew%2FyjPMyH0BjwXMMi0R&X-Amz-Signature=d9f0847b92257ea04957d42732b84e2447b8230899d549391067ab57576c9ab0&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+  "coverReplaced": false
+ },
+ {
+  "id": "a40d2b01-c92a-46f0-b02a-0d3ffc5d4e56",
+  "name": "Guacamole with Tomatoes and Coriander",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1595016111459-799a195e7452?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://www.highfoodality.de/wp-content/uploads/2013/08/guacamole.jpg",
+  "oldCover": "https://www.highfoodality.de/wp-content/uploads/2013/08/guacamole.jpg",
+  "coverReplaced": true
+ },
+ {
+  "id": "7d25dc26-1308-4d6b-89ae-80cc99380c09",
+  "name": "Chicken Kebab",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1594266063697-304befca9629?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://www.tamingtwins.com/wp-content/uploads/2026/06/ChickenKebabs3.jpg",
+  "oldCover": "https://prod-files-secure.s3.us-west-2.amazonaws.com/9c394bed-633d-4bd9-826f-c8806ade5b5d/9662c093-3826-453f-872e-1cfe1f3da157/chicken-kebabs-3.webp?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB4665XLU6K74%2F20260905%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260905T125859Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEEIaCXVzLXdlc3QtMiJHMEUCIQDEJG9biGFVMF9fYWIEy3DA4R4j8vviTgGc%2F4OhrSovWwIgToA6EElInTIr0AOOr6B3y%2FtKpoXMfL77ERxokAgzz2Qq%2FwMICxAAGgw2Mzc0MjMxODM4MDUiDBvlUhBOwFJB85VPDSrcA%2FbgWKnkeHo8o%2B%2BrvEbhFFP3z9Obui8p86YBcWNEBB%2FKpZ6prn%2BeH139xie%2Fjc4Yd%2BkhdNgtKTGTfAdQq27sg68StU8vJPXjZcc%2BTOdIgym%2FC6sgeVh0KrX60LZ6JjyImCY5xcQBiO6lQ2aw5fx0dnMk6oB%2FEiJADobyEm8Hqy4rDxTEzgktubaEUdWdEQuwdI3lWX2v5MGEZQ1IoKn6eehiz7FqB5HtCTlzmTNpJOF%2FzP2EnnHttxjpmaJPGxJXTLzmrQOyLmq1e6SJoN1J546LGheRktk7KQcuSSmsrM2A4JDrCbZ5Z1KQSp0DxBh4JWBgYG6aneelG9%2FooMROpid2nz%2BGl0g%2BmOJim%2FOrfGMX0K6NYo1aZc1B0BeIg4PMYt6SqESIDhGFI5veZIyUJrcI%2FxGjisaQSrrk2gxs3ir7rE5Cjjf9mZVnG%2F3ZvUXcrlEXErLTwhS3rhPhIkPIBitEaRhymbtfII38LFXTShlTai9uE5g4GVaU3ATMXXqe2%2BEpSGGLOkQSQdkWFddM%2Fl%2B4QGe8NSPBYV4Kd6%2BsVhfOxuD1WXiRoqSJ%2BcGr6ZXw4taAV9r4w6%2FLFYZi1BDv9VfPJVLHAT3h1veTF7vvDd8I9Y1%2B0%2FS%2BV1Ajs1hkMLrW79QGOqUBf%2BMoXKIwdsaAkZR6IgX%2BgpMXHLkOUnsyymZAUDYDq8w4%2Fkwglk8BFaSCe7V6HGn47TdUqzpjDj5VEMCjk6rkZ%2B5Y0sx8T0na4GS8hvgZV137ING6R5IQgf%2FFs5x5RXPWJVi8qY%2Fc7z5quKblIQP0moFLtoidGZTPUrOLACeEOzCVfKKqyjZIFsOMt6iVf8ZlFgoX34PgNew%2FyjPMyH0BjwXMMi0R&X-Amz-Signature=3444d4429461f6dc97548661a2eb24083cc3d623c876926d5915ca56ebcbcab9&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+  "coverReplaced": false
+ },
+ {
+  "id": "8c657527-7dcd-48cb-9965-b824fc10b9fe",
+  "name": "Korean Beef Bulgogi",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1677029969065-c9f4003a9ad5?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://damndelicious.net/wp-content/uploads/2019/04/240124_DD_korean-beef-bulgogi_274-760x1140.jpg",
+  "oldCover": "https://prod-files-secure.s3.us-west-2.amazonaws.com/9c394bed-633d-4bd9-826f-c8806ade5b5d/9c2b2165-1382-4d2b-a019-07e8b0b7b624/Korean-Beef-BulgogiIMG_9246.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB4665XLU6K74%2F20260905%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260905T125859Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEEIaCXVzLXdlc3QtMiJHMEUCIQDEJG9biGFVMF9fYWIEy3DA4R4j8vviTgGc%2F4OhrSovWwIgToA6EElInTIr0AOOr6B3y%2FtKpoXMfL77ERxokAgzz2Qq%2FwMICxAAGgw2Mzc0MjMxODM4MDUiDBvlUhBOwFJB85VPDSrcA%2FbgWKnkeHo8o%2B%2BrvEbhFFP3z9Obui8p86YBcWNEBB%2FKpZ6prn%2BeH139xie%2Fjc4Yd%2BkhdNgtKTGTfAdQq27sg68StU8vJPXjZcc%2BTOdIgym%2FC6sgeVh0KrX60LZ6JjyImCY5xcQBiO6lQ2aw5fx0dnMk6oB%2FEiJADobyEm8Hqy4rDxTEzgktubaEUdWdEQuwdI3lWX2v5MGEZQ1IoKn6eehiz7FqB5HtCTlzmTNpJOF%2FzP2EnnHttxjpmaJPGxJXTLzmrQOyLmq1e6SJoN1J546LGheRktk7KQcuSSmsrM2A4JDrCbZ5Z1KQSp0DxBh4JWBgYG6aneelG9%2FooMROpid2nz%2BGl0g%2BmOJim%2FOrfGMX0K6NYo1aZc1B0BeIg4PMYt6SqESIDhGFI5veZIyUJrcI%2FxGjisaQSrrk2gxs3ir7rE5Cjjf9mZVnG%2F3ZvUXcrlEXErLTwhS3rhPhIkPIBitEaRhymbtfII38LFXTShlTai9uE5g4GVaU3ATMXXqe2%2BEpSGGLOkQSQdkWFddM%2Fl%2B4QGe8NSPBYV4Kd6%2BsVhfOxuD1WXiRoqSJ%2BcGr6ZXw4taAV9r4w6%2FLFYZi1BDv9VfPJVLHAT3h1veTF7vvDd8I9Y1%2B0%2FS%2BV1Ajs1hkMLrW79QGOqUBf%2BMoXKIwdsaAkZR6IgX%2BgpMXHLkOUnsyymZAUDYDq8w4%2Fkwglk8BFaSCe7V6HGn47TdUqzpjDj5VEMCjk6rkZ%2B5Y0sx8T0na4GS8hvgZV137ING6R5IQgf%2FFs5x5RXPWJVi8qY%2Fc7z5quKblIQP0moFLtoidGZTPUrOLACeEOzCVfKKqyjZIFsOMt6iVf8ZlFgoX34PgNew%2FyjPMyH0BjwXMMi0R&X-Amz-Signature=d9a0a3ec8a6ee15ad7a7be45651cc6aa792f259929f00212887f7a543d18600f&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+  "coverReplaced": false
+ },
+ {
+  "id": "d726df2c-e291-4568-99ea-10535ffbb0b1",
+  "name": "Chili Con Carne",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1729450412050-6c00ec592e34?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/recipe-image-legacy-id-1001451_6-c8d72b8.jpg?resize=440%2C230",
+  "oldCover": "https://prod-files-secure.s3.us-west-2.amazonaws.com/9c394bed-633d-4bd9-826f-c8806ade5b5d/35c24d84-2515-40e4-bf99-0891742aee53/12JPCHILI2-superJumbo-v3.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB4665XLU6K74%2F20260905%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260905T125859Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEEIaCXVzLXdlc3QtMiJHMEUCIQDEJG9biGFVMF9fYWIEy3DA4R4j8vviTgGc%2F4OhrSovWwIgToA6EElInTIr0AOOr6B3y%2FtKpoXMfL77ERxokAgzz2Qq%2FwMICxAAGgw2Mzc0MjMxODM4MDUiDBvlUhBOwFJB85VPDSrcA%2FbgWKnkeHo8o%2B%2BrvEbhFFP3z9Obui8p86YBcWNEBB%2FKpZ6prn%2BeH139xie%2Fjc4Yd%2BkhdNgtKTGTfAdQq27sg68StU8vJPXjZcc%2BTOdIgym%2FC6sgeVh0KrX60LZ6JjyImCY5xcQBiO6lQ2aw5fx0dnMk6oB%2FEiJADobyEm8Hqy4rDxTEzgktubaEUdWdEQuwdI3lWX2v5MGEZQ1IoKn6eehiz7FqB5HtCTlzmTNpJOF%2FzP2EnnHttxjpmaJPGxJXTLzmrQOyLmq1e6SJoN1J546LGheRktk7KQcuSSmsrM2A4JDrCbZ5Z1KQSp0DxBh4JWBgYG6aneelG9%2FooMROpid2nz%2BGl0g%2BmOJim%2FOrfGMX0K6NYo1aZc1B0BeIg4PMYt6SqESIDhGFI5veZIyUJrcI%2FxGjisaQSrrk2gxs3ir7rE5Cjjf9mZVnG%2F3ZvUXcrlEXErLTwhS3rhPhIkPIBitEaRhymbtfII38LFXTShlTai9uE5g4GVaU3ATMXXqe2%2BEpSGGLOkQSQdkWFddM%2Fl%2B4QGe8NSPBYV4Kd6%2BsVhfOxuD1WXiRoqSJ%2BcGr6ZXw4taAV9r4w6%2FLFYZi1BDv9VfPJVLHAT3h1veTF7vvDd8I9Y1%2B0%2FS%2BV1Ajs1hkMLrW79QGOqUBf%2BMoXKIwdsaAkZR6IgX%2BgpMXHLkOUnsyymZAUDYDq8w4%2Fkwglk8BFaSCe7V6HGn47TdUqzpjDj5VEMCjk6rkZ%2B5Y0sx8T0na4GS8hvgZV137ING6R5IQgf%2FFs5x5RXPWJVi8qY%2Fc7z5quKblIQP0moFLtoidGZTPUrOLACeEOzCVfKKqyjZIFsOMt6iVf8ZlFgoX34PgNew%2FyjPMyH0BjwXMMi0R&X-Amz-Signature=29a447a1ee3198589ec1a05ab87566926398fd216e640bc2a7070a7c4ee2a75a&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+  "coverReplaced": false
+ },
+ {
+  "id": "238a62c9-0e29-4812-9ff1-28fc3292caf8",
+  "name": "Fresh Salsa (Pico de Gallo)",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1690944253646-d37b0515f769?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://www.simplyrecipes.com/thmb/inUqPVgIg8k3bmH3H-zFmPEMejI=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/Simply-Recipes-Pico-de-Gallo-LEAD-1-ede3527f9fae4a2d88810a8779ca22c2.jpg",
+  "oldCover": "https://prod-files-secure.s3.us-west-2.amazonaws.com/9c394bed-633d-4bd9-826f-c8806ade5b5d/093d7bc0-879d-4ae4-9314-0a2cb033bd63/__opt__aboutcom__coeus__resources__content_migration__simply_recipes__uploads__2019__07__Fresh-Tomato-Salsa-LEAD-2-2699ad8059ba4067b222c742bcf318da.webp?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB4665XLU6K74%2F20260905%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260905T125859Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEEIaCXVzLXdlc3QtMiJHMEUCIQDEJG9biGFVMF9fYWIEy3DA4R4j8vviTgGc%2F4OhrSovWwIgToA6EElInTIr0AOOr6B3y%2FtKpoXMfL77ERxokAgzz2Qq%2FwMICxAAGgw2Mzc0MjMxODM4MDUiDBvlUhBOwFJB85VPDSrcA%2FbgWKnkeHo8o%2B%2BrvEbhFFP3z9Obui8p86YBcWNEBB%2FKpZ6prn%2BeH139xie%2Fjc4Yd%2BkhdNgtKTGTfAdQq27sg68StU8vJPXjZcc%2BTOdIgym%2FC6sgeVh0KrX60LZ6JjyImCY5xcQBiO6lQ2aw5fx0dnMk6oB%2FEiJADobyEm8Hqy4rDxTEzgktubaEUdWdEQuwdI3lWX2v5MGEZQ1IoKn6eehiz7FqB5HtCTlzmTNpJOF%2FzP2EnnHttxjpmaJPGxJXTLzmrQOyLmq1e6SJoN1J546LGheRktk7KQcuSSmsrM2A4JDrCbZ5Z1KQSp0DxBh4JWBgYG6aneelG9%2FooMROpid2nz%2BGl0g%2BmOJim%2FOrfGMX0K6NYo1aZc1B0BeIg4PMYt6SqESIDhGFI5veZIyUJrcI%2FxGjisaQSrrk2gxs3ir7rE5Cjjf9mZVnG%2F3ZvUXcrlEXErLTwhS3rhPhIkPIBitEaRhymbtfII38LFXTShlTai9uE5g4GVaU3ATMXXqe2%2BEpSGGLOkQSQdkWFddM%2Fl%2B4QGe8NSPBYV4Kd6%2BsVhfOxuD1WXiRoqSJ%2BcGr6ZXw4taAV9r4w6%2FLFYZi1BDv9VfPJVLHAT3h1veTF7vvDd8I9Y1%2B0%2FS%2BV1Ajs1hkMLrW79QGOqUBf%2BMoXKIwdsaAkZR6IgX%2BgpMXHLkOUnsyymZAUDYDq8w4%2Fkwglk8BFaSCe7V6HGn47TdUqzpjDj5VEMCjk6rkZ%2B5Y0sx8T0na4GS8hvgZV137ING6R5IQgf%2FFs5x5RXPWJVi8qY%2Fc7z5quKblIQP0moFLtoidGZTPUrOLACeEOzCVfKKqyjZIFsOMt6iVf8ZlFgoX34PgNew%2FyjPMyH0BjwXMMi0R&X-Amz-Signature=10f2e023698d62929b5bdaf3db0a67ebf6202e37588a4a91984585e055552a53&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+  "coverReplaced": false
+ },
+ {
+  "id": "4f6cb691-e2b4-47f0-8d59-a940ae5298c0",
+  "name": "One-Pan Chicken Parmesan Pasta",
+  "ok": true,
+  "newUrl": "https://images.unsplash.com/photo-1630151317550-db97d275ce2d?auto=format&fit=max&w=1600&q=80",
+  "oldImageUrl": "https://www.eatingwell.com/thmb/2r8dS3e4LJbxX8uZaHbmP-9NK58=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/one-pan-chicken-parmesan-pasta-262254-3x2-5d3585c9974d4833952f8baeee86c4ea.jpg",
+  "oldCover": "https://prod-files-secure.s3.us-west-2.amazonaws.com/9c394bed-633d-4bd9-826f-c8806ade5b5d/11d4edbd-1f57-470a-a5ff-266b8b84089d/One-Pan-Chicken-Parmesan-Pasta-a58cfaf953204678828abbd3849fea2a.webp?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466XXPXFH5Z%2F20260905%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260905T125859Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEEIaCXVzLXdlc3QtMiJHMEUCIQCAzaFCDRgxjS4qU9aKNVu82nxChTHBfmbQw3NzSmPR7gIgav%2FXqRopNRKyBNyazgdDmuHn5nB1AuYkcmilEdR33A4q%2FwMICxAAGgw2Mzc0MjMxODM4MDUiDBZprKq%2BFrR4ySXIHircA96NQQv9fJhO4T%2B0QsZm4F%2B8eudOXXu5lcbMQ%2BwDXMlpo6%2BE1hCjuK%2B8e1ifpTeZNEoYdBw7LL5pT32ODuapQKN3BI6EoPBftLV1rXD%2BK7T2LcDjH9SLZHGWYgip7wGXjfbDgNtLY466IElvR1F6wXKOkU90QUoepiqag0A6ZgXchTEYtouNDweDz8ChSPfcUGdMInnswzbMyoVf1b8Z2QhkonABPDnxHVjxMmdzkm5tcMzb8ZhljWLSBHa84CJ48M32nC%2B1VSboCtS6eABGyArKLFlviWgertm3C61icwsWhTDz6b7ZzGuqfanz%2FMB1GidjqpJzAcCPpoIgvgLUCEU0TcnSHqdiX%2BlWUunKh%2FR7aFr%2Ff9SjelhFotIw8cQFi6Yd5Q9XLqefEN8%2Bdq9TnYwOxdILrXLfOElj8Er6BsD4fj3oIewnv5qXIqHjrup9DuxGnLIN582japvIq8pJTgng8iv89umY83Dsd%2FRmSyKhDpbmSwyeSp9OJk8SQuxQ%2BlOtILKMlT4JIdvlcEQINdpjDu9qB2I3VTSZCCc2lVFrL93fvGfq%2BJ4eSlh75t502D7Nouk4JEr9u9f9mIjo0S2g31Sto90D3Rwkk%2FavEGcSm2lpyAySGzR45e0vMIXY79QGOqUByb%2B3dgWEyDvDMc4K3Rh0L%2FP4gVenRxk9bIO0Cu8IH4BHONOVXIfeK60pCCV7gtqZlTn6NAxyAs6NxP5vtAPNLSGKIiobeqNNKQDJw9lzqEjgLnYX%2B89qnvPACPN%2F5bwyViw5Fb5roPMrwYZSFzlHGJT9z6v%2FmZ4hdEBWzk%2Fy0u5ZanxtCekYhITUw1RuzYNqG3k%2Fq4O45G9b3C1ZnoqiR9byDvAW&X-Amz-Signature=688c46e6737926fa5e6cfe74b765ca01c5a777804226c6becfdb1cf9ec4fc96b&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+  "coverReplaced": false
+ }
+]

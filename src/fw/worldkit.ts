@@ -288,6 +288,7 @@ export function flowingWaterMaterial(shallow = "#6ab3c2", deep = "#3f8fa4"): THR
         float glint = smoothstep(0.80, 0.9, noise(p*1.8 + vec2(uTime*0.5, -uTime*0.35)));
         col += glint*0.18;
         gl_FragColor = vec4(col, 1.0); }`,
+    side: THREE.DoubleSide,   // the shore shapes are mirrored into place, so their winding is reversed
   });
   return m;
 }

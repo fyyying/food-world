@@ -31,13 +31,13 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
   place(basilica(), -26, -21, 0.05).scale.setScalar(0.85);
   place(treviFountain(), -32, 5, Math.PI / 2);   // west end, facing the paddock and the piazza
   place(cafeTables(), -15, -4.6, 0);
-  for (const [x, z, rot, len] of [[-24, 2.2, 0, 6], [-24, 7.8, 0, 6], [-27, 5, Math.PI / 2, 5.6], [-21, 5, Math.PI / 2, 5.6]] as [number, number, number, number][]) { const f = new THREE.Group(); const n = Math.round(len / 1.1); for (let i = 0; i <= n; i++) add(f, new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.7, 0.09), mat("#6e4a2c")), -len / 2 + (i / n) * len, 0.35, 0); add(f, new THREE.Mesh(new THREE.BoxGeometry(len, 0.06, 0.05), mat("#8b5e3c")), 0, 0.55, 0); add(f, new THREE.Mesh(new THREE.BoxGeometry(len, 0.06, 0.05), mat("#8b5e3c")), 0, 0.3, 0); place(f, x, z, rot); }
+  for (const [x, z, rot, len] of [[-20, 8.2, 0, 6], [-20, 13.8, 0, 6], [-23, 11, Math.PI / 2, 5.6], [-17, 11, Math.PI / 2, 5.6]] as [number, number, number, number][]) { const f = new THREE.Group(); const n = Math.round(len / 1.1); for (let i = 0; i <= n; i++) add(f, new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.7, 0.09), mat("#6e4a2c")), -len / 2 + (i / n) * len, 0.35, 0); add(f, new THREE.Mesh(new THREE.BoxGeometry(len, 0.06, 0.05), mat("#8b5e3c")), 0, 0.55, 0); add(f, new THREE.Mesh(new THREE.BoxGeometry(len, 0.06, 0.05), mat("#8b5e3c")), 0, 0.3, 0); place(f, x, z, rot); }
   group.add(path([[-30, -10], [-22, -8], [-14, -8], [-6, -6], [2, -4], [8, -6]], 2.6, "#cdbfa2"));
   group.add(path([[-10, 8], [-9, 12], [-6, 18], [-2, 22]], 1.8, "#cdbfa2"));
   group.add(path([[-2, -4], [4, 0], [8, 6], [10, 10]], 1.6, "#cdbfa2"));
   place(colosseum(), -28, 12, 0.3);
   for (let i = 0; i < 7; i++) place(umbrellaPine(0.9 + (i % 3) * 0.15), -34 + i * 2.4, -2 + Math.sin(i) * 1.2, i);
-  for (let i = 0; i < 5; i++) place(umbrellaPine(1.0), -22 + i * 3, 16.5 + (i % 2) * 1.2, i);
+  for (let i = 0; i < 5; i++) place(umbrellaPine(1.0), -22 + i * 3, 18.4 + (i % 2) * 0.8, i);
   for (let i = 0; i < 5; i++) place(cypress(0.9 + (i % 2) * 0.2), -14 + i * 1.3, -22, i);
   for (let i = 0; i < 4; i++) place(cypress(1.0), -2 + i * 1.3, -22, i);
   // Roman streets of ochre houses around the piazza
@@ -110,7 +110,7 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
   place(etna(), 26.5, 9, 0.4).scale.setScalar(0.8);
   place(baroqueChurch(), 0, 19, 0.05);
   for (let i = 0; i < 4; i++) place(pricklyPear(), 29 + i * 1.9, 18.2 + (i % 2) * 1.0, i);
-  for (let i = 0; i < 5; i++) place(oliveTree(0.9), -7 + i * 2.2, 12 + (i % 2) * 1.6, i);
+
   // a small harbour mole with a lighthouse
   add(group, new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.6, 7), mat(IT.stone)), 14, 0.3, 24.5);
   add(group, new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.5, 2.6, 10), mat("#f4f1ea")), 14, 1.6, 27.5);

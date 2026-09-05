@@ -1,6 +1,6 @@
 /** Italian props: Roman stone and umbrella pines, Venetian canals and gondolas, Sicilian lava and citrus. */
 import * as THREE from "three";
-import { mat, add, rnd, C, chineseRoof, person, cow, chicken, awning, type P } from "./props";
+import { mat, add, rnd, C, chineseRoof, person, cow, chicken, awning, bubble, type P } from "./props";
 
 const group = (): P => new THREE.Group() as P;
 const box = (w: number, h: number, d: number, color: string) => new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat(color));
@@ -222,7 +222,7 @@ export function trattoria(): P {
   add(g, box(1.2, 0.7, 0.8, IT.stone), -2.4, 0.35, -0.2);
   g.userData.steam = new THREE.Vector3(-2.4, 1.3, -0.2);
   const re = reaction(0.6);
-  g.userData.poke = () => { re.poke(); };
+  g.userData.poke = () => { re.poke(); bubble(waiter, "Buon appetito!", 1.5, 1400); };
   g.userData.tick = (t, dt) => {
     const k = re.step(dt);
     diners.forEach((d, i) => { const up = (d.userData as { upper?: THREE.Group }).upper; if (up) { up.rotation.z = Math.sin(t * 0.9 + i) * 0.08; up.rotation.x = 0.1 + k * 0.3 * Math.sin(Math.min(1, k * 2) * Math.PI); up.rotation.y = Math.sin(t * 0.5 + i) * 0.15 + k * 0.5; } });
@@ -255,7 +255,7 @@ export function pizzeria(): P {
   add(g, box(1.6, 0.8, 0.8, IT.wood), -1.6, 0.4, 1.7);
   add(g, awning(3.0, 1.4, "#2f5d3f"), -0.6, 2.25, 1.9);
   const re = reaction(0.7);
-  g.userData.poke = () => re.poke();
+  g.userData.poke = () => { re.poke(); bubble(cook, "Pizza!", 1.5, 1300); };
   g.userData.tick = (t, dt) => {
     const k = re.step(dt);
     fire.scale.set(1 + k * 1.2, 1 + Math.sin(t * 20) * 0.3 + k * 1.5, 1 + k * 1.2);
@@ -286,7 +286,7 @@ export function gelateria(): P {
   add(g, cyl(0.28, 0.28, 0.7, "#2a2a2a", 10), 1.3, 0.35, 2.0); add(g, cyl(0.1, 0.1, 0.3, "#f7f2e6", 8), 1.3, 0.85, 2.0); // espresso machine on a cart
   g.userData.steam = new THREE.Vector3(1.3, 1.1, 2.0);
   const re = reaction(0.7);
-  g.userData.poke = () => re.poke();
+  g.userData.poke = () => { re.poke(); bubble(kids[0], "Gelato!", 1.9, 1300); };
   g.userData.tick = (t, dt) => { const k = re.step(dt); kids.forEach((kd, i) => { kd.position.y = k * Math.abs(Math.sin(t * 9 + i)) * 0.12; }); tickChildren(g)(t, dt); };
   return g;
 }
@@ -294,6 +294,7 @@ export function gelateria(): P {
 /** Rome's market on the piazza: stalls under umbrellas with tomatoes, cheese, salumi, herbs and oil. */
 export function italyMarket(): P {
   const g = group();
+  const vendors: P[] = [];
   add(g, new THREE.Mesh(new THREE.CircleGeometry(7, 24), mat("#cfc2a6")), 0, 0.02, 0).rotation.x = -Math.PI / 2;
   const stall = (kind: string, color: string) => {
     const s = group();
@@ -308,7 +309,7 @@ export function italyMarket(): P {
       case "herbs": for (let i = 0; i < 4; i++) { const b = add(goods, cyl(0.28, 0.22, 0.2, C.straw, 9), -0.9 + i * 0.6, 0.1, 0); for (let k = 0; k < 6; k++) add(b, cone(0.07, 0.25, ["#3f7a3a", "#6f9b57", "#8fbf6a", "#4f8a3c"][i], 4), (rnd() - 0.5) * 0.3, 0.25, (rnd() - 0.5) * 0.3); } for (let i = 0; i < 3; i++) add(goods, ball(0.08, "#e07aa0", 6), 0.6 + i * 0.2, 0.3, 0.3); break;
       case "oil": for (let i = 0; i < 5; i++) { add(goods, cyl(0.1, 0.12, 0.45, "#3f6b3f", 8), -0.8 + i * 0.4, 0.22, 0.1); add(goods, cyl(0.03, 0.03, 0.15, "#3f6b3f", 6), -0.8 + i * 0.4, 0.52, 0.1); } const bb = add(goods, cyl(0.3, 0.24, 0.2, C.straw, 9), 0.7, 0.1, -0.3); for (let k = 0; k < 8; k++) add(bb, ball(0.05, k % 2 ? "#2f3a2a" : "#6f9b57", 5), (rnd() - 0.5) * 0.4, 0.15, (rnd() - 0.5) * 0.4); break;
     }
-    add(s, person(pick(["#3f6b8f", "#c0392b", "#7a4a3a", "#2f5d3f"]), { apron: true }), 0.3, 0, -0.95);
+    vendors.push(add(s, person(pick(["#3f6b8f", "#c0392b", "#7a4a3a", "#2f5d3f"]), { apron: true }), 0.3, 0, -0.95));
     return s;
   };
   const layout: [string, string, number, number, number][] = [["tomato", "#c9413f", -4.2, -2.2, 0.5], ["cheese", "#e9c46a", 0, -2.8, 0], ["salumi", "#8e2a22", 4.2, -2.2, -0.5], ["herbs", "#2f5d3f", 4.2, 2.2, -2.6], ["oil", "#3f6b3f", -4.2, 2.2, 2.6]];
@@ -322,9 +323,10 @@ export function italyMarket(): P {
   const pigeons: THREE.Group[] = [];
   for (let i = 0; i < 5; i++) { const pg = new THREE.Group(); add(pg, ball(0.09, "#8c8f96", 7), 0, 0.09, 0).scale.set(1.3, 0.8, 1); add(pg, ball(0.05, "#6f7378", 6), 0.1, 0.16, 0); pg.position.set((rnd() - 0.5) * 6, 0, (rnd() - 0.5) * 4); g.add(pg); pigeons.push(pg); }
   const re = reaction(0.6);
-  g.userData.poke = () => re.poke();
+  g.userData.poke = () => { re.poke(); bubble(g, "Buongiorno!", 3.4, 1300); };
   g.userData.tick = (t, dt) => {
     const k = re.step(dt);
+    vendors.forEach((v, i) => { const up = (v.userData as { upper?: THREE.Group }).upper; if (up) up.rotation.z = k * Math.sin(t * 8 + i) * 0.25; });
     for (const sh of shoppers) {
       if (sh.wait > 0) { sh.wait -= dt; continue; }
       const to = sh.target.clone().sub(sh.pos); const d = to.length();
@@ -353,7 +355,7 @@ export function pastaWorkshop(): P {
   for (let i = 0; i < 3; i++) add(g, cyl(0.3, 0.3, 0.06, C.straw, 9), -1.6, 0.03 + i * 0.07, 1.5 + i * 0.1);
   add(g, ball(0.35, "#d9c5a3", 7), -1.6, 0.3, 0.6).scale.y = 0.8; // flour sack
   const re = reaction(0.8);
-  g.userData.poke = () => re.poke();
+  g.userData.poke = () => { re.poke(); bubble(nonna, "Al dente!", 1.5, 1300); };
   g.userData.tick = (t, dt) => {
     const k = re.step(dt);
     pin.position.z = 1.3 + k * Math.sin(t * 6) * 0.3; pin.rotation.x += dt * (1 + k * 10);        // rolling the sheet out
@@ -378,7 +380,7 @@ export function tomatoField(): P {
   add(g, person("#c0392b", { hat: true }), 3.4, 0, 0.5);
   const crate = add(g, box(0.6, 0.3, 0.45, "#a37a4f"), 3.6, 0.15, 1.4); for (let k = 0; k < 6; k++) add(crate, ball(0.08, "#e0483a", 6), (rnd() - 0.5) * 0.45, 0.18, (rnd() - 0.5) * 0.3);
   const re = reaction(0.6);
-  g.userData.poke = () => re.poke();
+  g.userData.poke = () => { re.poke(); bubble(g, "Pomodori!", 2.2, 1300); };
   g.userData.tick = (t, dt) => { const k = re.step(dt); plants.forEach((p) => { const s = 1 + k * Math.max(0, Math.sin((1 - k) * 9 - (p.position.x + 2.6) * 1.2)) * 0.3; p.scale.set(s, 1 + (s - 1) * 1.2, s); p.rotation.z = Math.sin(t * 1.2 + p.position.x) * 0.03; }); };
   return g;
 }
@@ -398,7 +400,7 @@ export function oliveGrove(): P {
   const falling: { m: THREE.Mesh; v: number; life: number }[] = [];
   let shake = 0;
   g.userData.poke = () => {
-    shake = 1;
+    shake = 1; bubble(g, "Olio nuovo!", 2.6, 1300);
     for (const tr of trees) { const ol = (tr.userData as { olives?: THREE.Mesh[] }).olives ?? []; for (let i = 0; i < 4; i++) { const src = ol[Math.floor(rnd() * ol.length)]; const m = ball(0.06, i % 3 ? "#2f3a2a" : "#6f9b57", 5); const wp = src.getWorldPosition(new THREE.Vector3()); g.worldToLocal(wp); m.position.copy(wp); g.add(m); falling.push({ m, v: 0, life: 0 }); } }
   };
   g.userData.tick = (t, dt) => {
@@ -424,7 +426,7 @@ export function dairy(): P {
   for (let s = 0; s < 3; s++) add(g, box(2.4, 0.05, 0.5, "#4a3222"), -0.5, 0.05 + s * 0.55, 1.4);
   add(g, cyl(0.35, 0.3, 0.3, "#f7f2e6", 10), 1.6, 0.15, 1.6); for (let i = 0; i < 4; i++) add(g, ball(0.11, "#fbf7ee", 8), 1.6 + Math.cos(i * 1.6) * 0.15, 0.36, 1.6 + Math.sin(i * 1.6) * 0.15);
   add(g, person("#f4f1ea", { apron: true }), 0.6, 0, 2.2);
-  const cows = [add(g, cow(false, false), -3.9, 0, 1.4), add(g, cow(false, false), 4.0, 0, 0.2)];
+  const cows = [add(g, cow(false, false, "Muuu!"), -3.9, 0, 1.4), add(g, cow(false, false, "Muuu!"), 4.0, 0, 0.2)];
   cows[0].rotation.y = 0.9; cows[1].rotation.y = -2.2;
   for (const [x, z, rot, len] of [[-3.9, -0.2, 0, 3], [-3.9, 3.0, 0, 3], [-5.4, 1.4, Math.PI / 2, 3.2], [-2.4, 1.4, Math.PI / 2, 3.2]] as [number, number, number, number][]) { const f = fenceRail(len); f.position.set(x, 0, z); f.rotation.y = rot; g.add(f); }
   cows.forEach((c) => c.scale.setScalar(0.85));
@@ -442,24 +444,35 @@ export function herbGarden(): P {
   for (let i = 0; i < 4; i++) add(g, cone(0.12, 0.6, "#2f5232", 5), -2.4 + i * 1.6, 0.55, 1.0);   // rosemary spears
   for (let i = 0; i < 3; i++) { add(g, cyl(0.16, 0.13, 0.2, "#c9603e", 8), 2.6, 0.35, -0.6 + i * 0.6); add(g, ball(0.16, "#6f9b57", 6), 2.6, 0.55, -0.6 + i * 0.6); }
   const re = reaction(0.7);
-  g.userData.poke = () => re.poke();
+  g.userData.poke = () => { re.poke(); bubble(g, "Basilico!", 1.6, 1300); };
   g.userData.tick = (t, dt) => { const k = re.step(dt); bushes.forEach((b, i) => { const s = 1 + k * Math.max(0, Math.sin(t * 6 + i * 0.5)) * 0.25; b.scale.set(s, 0.8 * s, s); }); };
   return g;
 }
 
 export function porciniWood(): P {
   const g = group();
-  for (let i = 0; i < 5; i++) { const tr = group(); add(tr, cyl(0.16, 0.24, 2.4, "#5a4030", 6), 0, 1.2, 0); add(tr, ball(1.0, i % 2 ? "#6f8f4a" : "#7fa05a", 8), 0, 2.6, 0).scale.y = 0.9; tr.position.set(-2.6 + i * 1.3, 0, (i % 2) * 1.6 - 0.6); g.add(tr); }
-  // big fat porcini you can actually see, with a forager and a basket
+  for (let i = 0; i < 4; i++) { const tr = group(); add(tr, cyl(0.16, 0.24, 2.4, "#5a4030", 6), 0, 1.2, 0); add(tr, ball(1.0, i % 2 ? "#6f8f4a" : "#7fa05a", 8), 0, 2.6, 0).scale.y = 0.9; tr.position.set(-2.2 + i * 1.5, 0, (i % 2) * 1.6 - 0.8); g.add(tr); }
+  // a tight cluster of porcini (two-tone caps, fat pale stems) and a few red spotted toadstools
   const caps: THREE.Mesh[] = [];
-  const spots: [number, number, number][] = [[-2.8, 1.4, 0.34], [-1.6, 1.9, 0.26], [-0.2, 1.5, 0.38], [1.2, 2.0, 0.3], [2.4, 1.3, 0.36], [-2.0, -1.6, 0.28], [0.6, -1.9, 0.32], [2.0, -1.4, 0.26]];
-  for (const [x, z, r] of spots) { add(g, cyl(r * 0.45, r * 0.6, r * 1.6, "#efe4cf", 8), x, r * 0.8, z); const cap = add(g, ball(r, "#8a5a3c", 10), x, r * 1.55, z); cap.scale.y = 0.55; caps.push(cap); add(g, ball(r * 0.9, "#a87048", 10), x, r * 1.5, z).scale.set(1, 0.35, 1); }
-  add(g, person("#2f5d3f", { hat: true }), 3.4, 0, 0.4).rotation.y = -0.6;
-  const bask = add(g, cyl(0.34, 0.26, 0.26, C.straw, 9), 3.9, 0.13, 1.1);
-  for (let i = 0; i < 4; i++) { const c = add(bask, ball(0.12, "#8a5a3c", 7), (rnd() - 0.5) * 0.35, 0.22, (rnd() - 0.5) * 0.35); c.scale.y = 0.55; }
+  const porcini: [number, number, number][] = [[-0.9, 0.9, 0.36], [-0.3, 1.2, 0.28], [0.3, 0.8, 0.4], [0.8, 1.3, 0.3], [-0.6, 0.2, 0.32], [0.6, 0.3, 0.26], [0.0, -0.3, 0.34]];
+  for (const [x, z, r] of porcini) {
+    add(g, cyl(r * 0.5, r * 0.7, r * 1.5, "#efe4cf", 8), x, r * 0.75, z);
+    const cap = add(g, ball(r, "#7a4a2a", 10), x, r * 1.45, z); cap.scale.y = 0.6; caps.push(cap);
+    add(g, ball(r * 0.98, "#c99a63", 10), x, r * 1.38, z).scale.set(1, 0.3, 1);   // pale underside rim
+    add(g, ball(r * 0.55, "#5a3520", 8), x, r * 1.75, z).scale.set(1, 0.4, 1);     // darker crown
+  }
+  const agaric: [number, number, number][] = [[1.4, -0.4, 0.22], [1.7, 0.2, 0.16], [-1.5, -0.3, 0.2]];
+  for (const [x, z, r] of agaric) {
+    add(g, cyl(r * 0.35, r * 0.45, r * 2.2, "#f7f2e6", 7), x, r * 1.1, z);
+    const cap = add(g, ball(r, "#d93a2f", 10), x, r * 2.0, z); cap.scale.y = 0.65; caps.push(cap);
+    for (let k = 0; k < 6; k++) { const a = (k / 6) * Math.PI * 2; add(g, ball(r * 0.16, "#f7f2e6", 5), x + Math.cos(a) * r * 0.6, r * 2.0 + r * 0.32, z + Math.sin(a) * r * 0.6); }
+  }
+  add(g, person("#2f5d3f", { hat: true }), 2.6, 0, 1.2).rotation.y = -0.9;
+  const bask = add(g, cyl(0.34, 0.26, 0.26, C.straw, 9), 3.0, 0.13, 1.9);
+  for (let i = 0; i < 4; i++) { const c = add(bask, ball(0.12, "#7a4a2a", 7), (rnd() - 0.5) * 0.35, 0.22, (rnd() - 0.5) * 0.35); c.scale.y = 0.55; }
   const re = reaction(0.8);
-  g.userData.poke = () => re.poke();
-  g.userData.tick = (t, dt) => { const k = re.step(dt); caps.forEach((c, i) => { const s2 = 1 + Math.max(0, Math.sin(k * Math.PI * 2 + i)) * 0.45 * k; c.scale.set(s2, 0.55 * s2, s2); }); };
+  g.userData.poke = () => { re.poke(); bubble(g, "Funghi!", 3.0, 1300); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); caps.forEach((c, i) => { const s2 = 1 + Math.max(0, Math.sin(k * Math.PI * 2 + i)) * 0.45 * k; c.scale.set(s2, c.scale.y / (c.userData.s2 ?? 1) * s2, s2); c.userData.s2 = s2; }); };
   return g;
 }
 
@@ -561,7 +574,7 @@ export function fishMarket(): P {
   const gulls: THREE.Group[] = [];
   for (let i = 0; i < 3; i++) { const gl = new THREE.Group(); add(gl, ball(0.1, "#f4f1ea", 7), 0, 0, 0).scale.set(1.3, 0.7, 1); for (const sd of [-1, 1]) add(gl, box(0.32, 0.03, 0.12, "#e6e2da"), sd * 0.2, 0.02, 0); gl.position.set(-2.5 + i * 2.5, 3.6, 0.3); g.add(gl); gulls.push(gl); }
   const re = reaction(0.6);
-  g.userData.poke = () => re.poke();
+  g.userData.poke = () => { re.poke(); bubble(g, "Pesce fresco!", 3.2, 1300); };
   g.userData.tick = (t, dt) => { const k = re.step(dt); gulls.forEach((gl, i) => { gl.position.y = 3.6 + Math.sin(t * 1.3 + i) * 0.2 + k * 1.8 * Math.abs(Math.sin(t * 5 + i)); gl.position.x += Math.sin(t * 0.8 + i) * dt * 0.4; gl.rotation.y = t * 0.5 + i; }); };
   return g;
 }
@@ -580,18 +593,26 @@ export function bacaro(): P {
   const standers = [add(inner, person("#e0a52c"), -1.2, 0, 2.2), add(inner, person("#3f6b8f"), 0.2, 0, 2.4), add(inner, person("#f4f1ea"), 1.3, 0, 2.1)];
   add(inner, person("#f4f1ea", { apron: true }), 0, 0, 0.5);
   const re = reaction(0.6);
-  g.userData.poke = () => re.poke();
+  g.userData.poke = () => { re.poke(); bubble(g, "Salute!", 3.0, 1300); };
   g.userData.tick = (t, dt) => { const k = re.step(dt); standers.forEach((p, i) => { const up = (p.userData as { upper?: THREE.Group }).upper; if (up) { up.rotation.y = Math.sin(t * 0.5 + i) * 0.3; up.rotation.x = -k * 0.3 * Math.sin(Math.min(1, k * 2) * Math.PI); } }); tickChildren(g)(t, dt); };
   return g;
 }
 
 export function riceFieldItaly(): P {
   const g = group();
-  for (let i = 0; i < 2; i++) { add(g, box(6, 0.18, 2.4, "#8fbfbd"), 0, 0.09, -1.4 + i * 2.8); for (let r = 0; r < 3; r++) for (let c = 0; c < 12; c++) add(g, cone(0.05, 0.42, "#8fcf6a", 4), -2.7 + c * 0.49, 0.3, -2.2 + i * 2.8 + r * 0.7); }
+  const seedlings: THREE.Mesh[] = [];
+  for (let i = 0; i < 2; i++) { add(g, box(6, 0.18, 2.4, "#8fbfbd"), 0, 0.09, -1.4 + i * 2.8); for (let r = 0; r < 3; r++) for (let c = 0; c < 12; c++) { const sd = add(g, cone(0.05, 0.42, "#8fcf6a", 4), -2.7 + c * 0.49, 0.3, -2.2 + i * 2.8 + r * 0.7); sd.geometry = sd.geometry.clone(); sd.geometry.translate(0, 0.21, 0); sd.position.y -= 0.21; seedlings.push(sd); } }
   add(g, box(6.4, 0.2, 0.3, "#a37a4f"), 0, 0.1, 0);
   add(g, person("#3f6b8f", { hat: true }), 3.4, 0, 0);
   const heron = group(); for (const z of [-0.05, 0.05]) add(heron, cyl(0.012, 0.012, 0.5, "#3a3a44", 4), 0, 0.25, z); add(heron, ball(0.16, "#cfd6d8", 8), 0, 0.6, 0).scale.set(1.5, 0.9, 1); add(heron, cyl(0.025, 0.03, 0.5, "#cfd6d8", 5), 0.25, 0.85, 0).rotation.z = -0.4; add(heron, ball(0.07, "#cfd6d8", 6), 0.36, 1.1, 0); add(heron, cone(0.02, 0.2, "#e0a52c", 4), 0.5, 1.08, 0).rotation.z = -Math.PI / 2;
   add(g, heron, -2.2, 0.1, 0.9);
+  const re = reaction(0.5);
+  g.userData.poke = () => { re.poke(); bubble(g, "Riso!", 2.2, 1300); };
+  g.userData.tick = (t, dt) => {
+    const k = re.step(dt);
+    seedlings.forEach((sd) => { sd.rotation.z = Math.sin(t * 1.5 + sd.position.x * 0.8) * 0.08 + k * Math.sin((1 - k) * 10 - sd.position.x * 1.5) * 0.5; });
+    heron.position.y = 0.1 + Math.sin(k * Math.PI) * 2.5; heron.position.x = -2.2 + Math.sin(k * Math.PI) * 1.5; heron.rotation.z = Math.sin(k * Math.PI) * 0.2;   // the heron lifts off and settles again
+  };
   return g;
 }
 
@@ -630,7 +651,7 @@ export function citrusGrove(): P {
   const falling: { m: THREE.Mesh; v: number; life: number }[] = [];
   let shake = 0;
   g.userData.poke = () => {
-    shake = 1;
+    shake = 1; bubble(g, "Limoni!", 2.6, 1300);
     for (const tr of trees) { const u = tr.userData as { fruits?: THREE.Mesh[]; kind?: string }; const fr = u.fruits ?? []; for (let i = 0; i < 2; i++) { const src = fr[Math.floor(rnd() * fr.length)]; const m = ball(0.09, u.kind === "lemon" ? IT.lemon : IT.orange, 6); const wp = src.getWorldPosition(new THREE.Vector3()); g.worldToLocal(wp); m.position.copy(wp); g.add(m); falling.push({ m, v: 0, life: 0 }); } }
   };
   g.userData.tick = (t, dt) => {
@@ -694,7 +715,7 @@ export function sicilyMarket(): P {
   add(g, vespa, -4.5, 0, 2.6).rotation.y = 0.8;
   const cats = [0, 1].map((i) => { const c = group(); add(c, ball(0.12, i ? "#e0a52c" : "#3a3a44", 7), 0, 0.14, 0).scale.set(1.5, 0.8, 0.9); add(c, ball(0.08, i ? "#e0a52c" : "#3a3a44", 6), 0.16, 0.24, 0); for (const sd of [-1, 1]) add(c, cone(0.03, 0.06, i ? "#e0a52c" : "#3a3a44", 4), 0.16, 0.32, sd * 0.05); add(c, cyl(0.015, 0.02, 0.3, i ? "#e0a52c" : "#3a3a44", 4), -0.2, 0.2, 0).rotation.z = 0.8; c.position.set(-1 + i * 3, 0, 2.6); g.add(c); return c; });
   const re = reaction(0.7);
-  g.userData.poke = () => re.poke();
+  g.userData.poke = () => { re.poke(); bubble(g, "Arancini!", 3.0, 1300); };
   g.userData.tick = (t, dt) => { const k = re.step(dt); cats.forEach((c, i) => { c.position.x += k * Math.sin(t * 2 + i) * dt * 2; c.rotation.y = Math.sin(t * 0.4 + i) * 0.5; }); tickChildren(g)(t, dt); };
   return g;
 }
@@ -707,14 +728,18 @@ export function pasticceria(): P {
   for (let i = 0; i < 4; i++) { const cn = add(g, cyl(0.07, 0.07, 0.4, "#d9a441", 8), -0.9 + i * 0.35, 1.02, 1.0); cn.rotation.z = Math.PI / 2; add(g, ball(0.06, "#fbf7ee", 6), -0.9 + i * 0.35 + 0.2, 1.02, 1.0); add(g, ball(0.03, "#8fbf6a", 5), -0.9 + i * 0.35 + 0.24, 1.02, 1.0); }
   add(g, cyl(0.3, 0.3, 0.16, "#8fbf6a", 12), 0.7, 1.02, 1.3); add(g, cyl(0.3, 0.3, 0.06, "#f4f1ea", 12), 0.7, 1.13, 1.3);
   for (let i = 0; i < 5; i++) add(g, ball(0.06, ["#e0483a", "#f2cf3a", "#f08a2a", "#8fbf6a", "#e07aa0"][i], 6), -0.6 + i * 0.25, 1.02, 1.45);   // marzipan fruits
-  add(g, person("#f4f1ea", { apron: true }), 0, 0, 0.4);
+  const baker = add(g, person("#f4f1ea", { apron: true }), 0, 0, 0.4);
   add(g, person("#3f6b8f"), 1.4, 0, 2.2).rotation.y = -0.6;
-  g.userData.tick = tickChildren(g);
+  const tray = add(g, box(1.0, 0.04, 0.5, "#c9a37a"), 0, 1.0, 0.3);
+  for (let i = 0; i < 3; i++) { const c = add(tray, cyl(0.06, 0.06, 0.32, "#d9a441", 8), -0.3 + i * 0.3, 0.06, 0); c.rotation.z = Math.PI / 2; add(tray, ball(0.05, "#fbf7ee", 6), -0.3 + i * 0.3 + 0.16, 0.06, 0); }
+  const re = reaction(0.7);
+  g.userData.poke = () => { re.poke(); bubble(baker, "Cannoli!", 1.5, 1300); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); tray.position.z = 0.3 + Math.sin(k * Math.PI) * 0.7; tray.position.y = 1.0 + k * Math.abs(Math.sin(t * 10)) * 0.06; const up = (baker.userData as { upper?: THREE.Group }).upper; if (up) up.rotation.z = k * Math.sin(t * 8) * 0.2; tickChildren(g)(t, dt); };
   return g;
 }
 
 export const ITALY_PROPS: Record<string, () => P> = {
-  tomatoField, pastaWorkshop, oliveGrove, dairy, herbGarden, cow: () => cow(false), chicken: () => chicken(), porciniWood, citrusGrove, fishMarket, riceFieldItaly,
+  tomatoField, pastaWorkshop, oliveGrove, dairy, herbGarden, cow: () => cow(false, true, "Muuu!"), chicken: () => chicken(C.white, "Coccodè!"), porciniWood, citrusGrove, fishMarket, riceFieldItaly,
   pizzeria, trattoria, italyMarket, gelateria, bacaro, sicilyMarket, pasticceria, none: () => group(),
 };
 

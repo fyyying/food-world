@@ -129,7 +129,7 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
   const loop = new THREE.CatmullRomCurve3([
     new THREE.Vector3(-26, 0, -9), new THREE.Vector3(-20, 0, -8), new THREE.Vector3(-13, 0, -8), new THREE.Vector3(-6, 0, -7), new THREE.Vector3(0, 0, -6.5), new THREE.Vector3(6, 0, -7.5),
     new THREE.Vector3(3, 0, -5), new THREE.Vector3(4, 0, 0), new THREE.Vector3(5.5, 0, 5), new THREE.Vector3(6, 0, 9), new THREE.Vector3(3, 0, 10.5), new THREE.Vector3(-2, 0, 8),
-    new THREE.Vector3(-7, 0, 7), new THREE.Vector3(-11, 0, 7.8), new THREE.Vector3(-16, 0, 8), new THREE.Vector3(-21, 0, 6.8), new THREE.Vector3(-25, 0, -1), new THREE.Vector3(-26.5, 0, -5),
+    new THREE.Vector3(-7, 0, 7), new THREE.Vector3(-11, 0, 7.8), new THREE.Vector3(-16, 0, 8), new THREE.Vector3(-21, 0, 6.8), new THREE.Vector3(-26.5, 0, 3), new THREE.Vector3(-28, 0, -2), new THREE.Vector3(-27, 0, -6),
   ], true);
   tickers.push((t) => walkers.forEach((w, i) => { const u = (t * 0.01 + i * 0.1) % 1; const p = loop.getPointAt(u), n = loop.getPointAt((u + 0.004) % 1); w.position.set(p.x, 0, p.z); w.rotation.y = Math.atan2(n.x - p.x, n.z - p.z); (w.userData as { walk?: (t: number) => void }).walk?.(t + i); }));
   // a second stroll: Pantheon, the arch, the basilica square

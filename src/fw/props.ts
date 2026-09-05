@@ -8,7 +8,7 @@ import { CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
 import { wobble } from "../world/noise";
 
 /** A little speech bubble that pops over an object for a moment. */
-function bubble(g: THREE.Object3D, text: string, y: number, ms = 1500) {
+export function bubble(g: THREE.Object3D, text: string, y: number, ms = 1500) {
   const el = document.createElement("div");
   el.className = "bubble";
   el.textContent = text;
@@ -666,7 +666,7 @@ export function path(points: [number, number][], width = 1.6, color = "#cdbb94")
 
 // ---------- animals ----------
 
-export function cow(dark = false, wander = true): P {
+export function cow(dark = false, wander = true, voice = "哞~ Moo~"): P {
   const g = group();
   const body = new THREE.Group();
   g.add(body);
@@ -691,7 +691,7 @@ export function cow(dark = false, wander = true): P {
   // wander: a slow amble around the origin with grazing pauses
   const ph = rnd() * 6, r = 1.1 + rnd() * 0.5;
   const re = reaction(0.6);
-  g.userData.poke = () => { re.poke(); bubble(body, dark ? "哞… Moo…" : "哞~ Moo~", 1.9); };
+  g.userData.poke = () => { re.poke(); bubble(body, voice, 1.9); };
   g.userData.tick = (t, dt) => {
     const k = re.step(dt);
     const cycle = wander ? (t * 0.05 + ph) % 1 : 0.9;   // one loop ≈ 20 s; a penned cow just grazes
@@ -729,7 +729,7 @@ export function pig(): P {
   return g;
 }
 
-export function chicken(color = C.white): P {
+export function chicken(color = C.white, voice = "咯咯! Cluck!"): P {
   const g = group();
   add(g, ball(0.22, color, 7), 0, 0.42, 0).scale.set(1.2, 0.9, 1);
   const head = add(g, ball(0.12, color, 6), 0.22, 0.62, 0);
@@ -741,7 +741,7 @@ export function chicken(color = C.white): P {
   const re = reaction(0.7);
   let egg: THREE.Mesh | null = null;
   g.userData.poke = () => {
-    re.poke(); bubble(g, "咯咯! Cluck!", 1.0, 1200);
+    re.poke(); bubble(g, voice, 1.0, 1200);
     if (egg) g.remove(egg);
     egg = add(g, ball(0.09, "#f6ecd8", 8), -0.3, 0.1, 0); egg.scale.set(1.2, 1, 1);
     const e = egg; setTimeout(() => { if (egg === e) { g.remove(e); egg = null; } }, 6000);

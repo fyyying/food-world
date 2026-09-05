@@ -241,7 +241,7 @@ export const ITALY_OBJECTS: WorldObject[] = [
   { id: "italyChicken", world: "italy", kind: "ingredient", name: "Chicken", zh: "Pollo", emoji: "🐓", area: "rome", pos: [-18, 14], prop: "chicken",
     tagline: "Roasted with lemon and rosemary, or breaded and baked.", blurb: "Italian chicken is simple: pollo arrosto with rosemary and garlic, or chicken alla parmigiana, the breaded-and-baked dish that Italian emigrants made famous in America. Most of the family's pasta-and-chicken dinners come from that second tradition.",
     partners: ["lemon", "rosemary", "tomato", "mozzarella"], match: (r) => has(r.protein, /chicken/) },
-  { id: "mushrooms", world: "italy", kind: "ingredient", name: "Mushrooms", zh: "Funghi", emoji: "🍄", area: "rome", pos: [-28, 2], prop: "porciniWood", rot: 0.3,
+  { id: "mushrooms", world: "italy", kind: "ingredient", name: "Mushrooms", zh: "Funghi", emoji: "🍄", area: "rome", pos: [-24, -1], prop: "porciniWood", rot: 0.3,
     tagline: "Porcini from the chestnut woods.", blurb: "Autumn in the Apennines means porcini, foraged under chestnut and oak and sold fresh at market or dried for the year. Dried porcini give a cream sauce its depth; fresh ones are sliced thin over pasta.",
     partners: ["cream", "garlic", "parmesan", "parsley"], match: (r) => has(r.core, /mushroom|porcini/) || has(r.mainIngredient, /Mushroom/) },
   { id: "lemon", world: "italy", kind: "ingredient", name: "Lemons & citrus", zh: "Limoni", emoji: "🍋", area: "sicily", pos: [23, 18], prop: "citrusGrove", rot: -0.2,

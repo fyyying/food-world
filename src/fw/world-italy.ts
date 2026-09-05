@@ -87,7 +87,12 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
   place(venetianBridge(3.5), 27.5, -9, Math.PI / 2).position.y = 0.45;
   for (const [x, z] of [[8, -14], [15, -12], [26, -16], [17, -4], [29, -6], [34, -14]]) place(mooringPole(), x, z).position.y = 0;
   // gondolas glide along a canal loop through the islands
-  const canal = new THREE.CatmullRomCurve3([new THREE.Vector3(6, 0, -12), new THREE.Vector3(12, 0, -13), new THREE.Vector3(18, 0, -13.5), new THREE.Vector3(22, 0, -14.5), new THREE.Vector3(28, 0, -14), new THREE.Vector3(34, 0, -8), new THREE.Vector3(30, 0, -4), new THREE.Vector3(24, 0, -3), new THREE.Vector3(14, 0, -4), new THREE.Vector3(8, 0, -6)], true);
+  // the canal route threads the water lanes between the four islands and never crosses a quay
+  const canal = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(5, 0, -12.5), new THREE.Vector3(12, 0, -12.6), new THREE.Vector3(18, 0, -12.5), new THREE.Vector3(18, 0, -18), new THREE.Vector3(18, 0, -24),
+    new THREE.Vector3(24, 0, -25.5), new THREE.Vector3(31, 0, -24.5), new THREE.Vector3(35.5, 0, -19), new THREE.Vector3(36.5, 0, -12), new THREE.Vector3(36, 0, -5),
+    new THREE.Vector3(30, 0, -3), new THREE.Vector3(26.6, 0, -6), new THREE.Vector3(26.6, 0, -11), new THREE.Vector3(22, 0, -12.6), new THREE.Vector3(10, 0, -12.8), new THREE.Vector3(6, 0, -10),
+  ], true);
   const gondolas = [0, 1, 2].map((i) => { const gd = gondola(); group.add(gd); tickers.push(gd.userData.tick!); return { gd, off: i / 3 }; });
   tickers.push((t) => gondolas.forEach(({ gd, off }) => { const u = (t * 0.008 + off) % 1; const p = canal.getPointAt(u), n = canal.getPointAt((u + 0.005) % 1); gd.position.set(p.x, TOP + 0.05, p.z); gd.rotation.y = Math.atan2(n.x - p.x, n.z - p.z) - Math.PI / 2; }));
   // people on the islands and a couple on a bridge
@@ -100,7 +105,7 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
   const sailer = fishingBoat("#e0a52c"); group.add(sailer); tickers.push(sailer.userData.tick!);
   const sail = new THREE.CatmullRomCurve3([new THREE.Vector3(32, 0, -3), new THREE.Vector3(36, 0, 6), new THREE.Vector3(35.5, 0, 16), new THREE.Vector3(30, 0, 25), new THREE.Vector3(18, 0, 26), new THREE.Vector3(24, 0, 23), new THREE.Vector3(34, 0, 20), new THREE.Vector3(36.5, 0, 10)], true);
   tickers.push((t) => { const u = (t * 0.006) % 1; const p = sail.getPointAt(u), n = sail.getPointAt((u + 0.005) % 1); sailer.position.set(p.x, TOP + 0.05, p.z); sailer.rotation.y = Math.atan2(n.x - p.x, n.z - p.z) - Math.PI / 2; });
-  place(etna(), 28.5, 8, 0.4).scale.setScalar(0.8);
+  place(etna(), 26.5, 9, 0.4).scale.setScalar(0.8);
   place(baroqueChurch(), 0, 19, 0.05);
   for (let i = 0; i < 4; i++) place(pricklyPear(), 22 + i * 2.2, 18 + (i % 2) * 1.2, i);
   for (let i = 0; i < 6; i++) place(oliveTree(0.9), -12 + i * 2.2, 12 + (i % 2) * 1.6, i);

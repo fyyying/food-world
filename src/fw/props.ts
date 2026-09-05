@@ -499,9 +499,10 @@ export function person(shirt = "#3f6b8f", opts: { hat?: boolean; pole?: boolean;
   add(upper, ball(0.14 * s, C.skin, 9), 0, U(1.04 * s), 0);
   add(upper, ball(0.145 * s, hair, 9), 0, U(1.08 * s), -0.02 * s).scale.set(1, 0.75, 1);
   for (const x of [-0.13, 0.13]) add(upper, ball(0.03 * s, C.skin, 5), x * s, U(1.03 * s), 0);
-  if (opts.hat) add(upper, cone(0.36 * s, 0.2, C.straw, 10), 0, U(1.18 * s), 0);
+  if (opts.hat) { add(upper, cone(0.4 * s, 0.28 * s, C.straw, 10), 0, U(1.15 * s), 0); add(upper, cyl(0.41 * s, 0.41 * s, 0.02, "#c9ad68", 12), 0, U(1.02 * s), 0); }
   if (opts.apron) { add(upper, box(0.24 * s, 0.42 * s, 0.04, C.white), 0, U(0.58 * s), 0.15 * s); add(upper, cyl(0.15 * s, 0.15 * s, 0.1 * s, C.white, 8), 0, U(1.18 * s), 0); }
   (g.userData as { upper?: THREE.Group }).upper = upper;
+  (g.userData as { arms?: { left: THREE.Group; right: THREE.Group; hand: number } }).arms = { left: armL, right: armR, hand: -0.37 * s };
   if (opts.pole) {
     // a shoulder pole the traditional way: resting on the right shoulder, running front to back, one hand steadying it
     const pole = add(upper, cyl(0.02, 0.02, 1.8, C.wood, 4), 0.17 * s, U(0.9 * s), 0.05 * s); pole.rotation.x = Math.PI / 2;

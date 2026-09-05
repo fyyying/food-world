@@ -66,7 +66,7 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
     ["sichuan", -20, -12, 0.25, 3.2, 2.6, 1.9, 2], ["sichuan", -24, -11, -0.2, 2.8, 2.4, 1.7, 1], ["sichuan", -12, -10.5, 0.15, 3.6, 2.6, 1.9, 1],
     ["sichuan", -16, -1.5, 0.5, 2.6, 2.2, 1.6, 1], ["sichuan", -12, 3.8, -0.3, 3.2, 2.6, 1.9, 2],
     ["jiangnan", 15, 11, -0.4, 3.2, 2.6, 2.1, 2], ["jiangnan", 20, 12.5, 0.2, 2.8, 2.4, 1.9, 1], ["jiangnan", 27, 11, -0.3, 3.4, 2.6, 2.2, 2],
-    ["jiangnan", 30, -3, 0.5, 3.0, 2.4, 2.0, 1], ["jiangnan", 19, -5, -0.2, 3.2, 2.6, 2.0, 2], ["jiangnan", 33, 3, 0.9, 2.6, 2.2, 1.8, 1],
+    ["jiangnan", 30, -3, 0.5, 3.0, 2.4, 2.0, 1], ["jiangnan", 19, -5, -0.2, 3.2, 2.6, 2.0, 2], ["jiangnan", 33, 1.2, 0.9, 2.6, 2.2, 1.8, 1],
     ["northern", 22, -19, 0.05, 3.8, 2.8, 1.7, 1], ["northern", 27, -16, -0.1, 2.8, 2.4, 1.6, 1], ["northern", 18, -15, 0.2, 3.0, 2.4, 1.6, 1],
   ];
   for (const [style, x, z, rot, w, d, h, st] of houses) place(house(style, w, d, h, st), x, z, rot);
@@ -134,7 +134,7 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   const jnPath = new THREE.CatmullRomCurve3([
     // north bank: behind the red-braising kitchen and around the eastern houses, never through a wall
     new THREE.Vector3(20.6, 0, -0.6), new THREE.Vector3(21.8, 0, -7.6), new THREE.Vector3(26, 0, -8.6), new THREE.Vector3(30.6, 0, -6.2), new THREE.Vector3(32.6, 0, -2),
-    new THREE.Vector3(31.2, 0, 1.2), new THREE.Vector3(27, 0, 0.9), new THREE.Vector3(23.5, 0, 0.9), northEnd.clone(),
+    new THREE.Vector3(31.5, 0, 1.0), new THREE.Vector3(27.5, 0, -1.6), new THREE.Vector3(23.5, 0, -2.2), northEnd.clone(),
     // over the bridge and along the south-bank lane
     new THREE.Vector3(bx, 0, bz), southEnd.clone(), new THREE.Vector3(17, 0, 9.4), new THREE.Vector3(13, 0, 13.2), new THREE.Vector3(17.5, 0, 14.4), new THREE.Vector3(23, 0, 12.6),
     southEnd.clone().add(new THREE.Vector3(0.3, 0, 0.6)), new THREE.Vector3(bx + 0.3, 0, bz),

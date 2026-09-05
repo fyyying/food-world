@@ -235,7 +235,7 @@ export const ITALY_OBJECTS: WorldObject[] = [
   { id: "basil", world: "italy", kind: "flavour", name: "Basil & herbs", zh: "Basilico", emoji: "🌿", area: "rome", pos: [-13, 9.5], prop: "herbGarden", rot: 0.2,
     tagline: "Torn, never chopped, added last.", blurb: "Basil arrived from India by way of the ancient trade routes and became Liguria's signature, pounded with pine nuts and pecorino into pesto. Oregano and rosemary grow wild across the south. Italian cooking uses one or two herbs at a time, added at the end so they stay bright.",
     flavour: ["sweet", "peppery", "fresh"], partners: ["tomato", "olive oil", "garlic", "pine nuts"], match: (r) => has(r.core, /basil|pesto|parsley|herb|oregano/) },
-  { id: "italyBeef", world: "italy", kind: "ingredient", name: "Beef & pork", zh: "Carne", emoji: "🐄", area: "rome", pos: [-20, 11], prop: "cow", rot: 0.5,
+  { id: "italyBeef", world: "italy", kind: "ingredient", name: "Beef & pork", zh: "Carne", emoji: "🐄", area: "rome", pos: [-20, 12], prop: "cow", rot: 0.5,
     tagline: "Minced and simmered for hours.", blurb: "Emilia's ragù is the reason: beef and pork minced together and simmered with soffritto, wine and milk for half a day. The same mince makes polpette. Pork also goes into prosciutto, cured for two years in Parma's dry hill air, and the guanciale that Rome's carbonara depends on.",
     partners: ["tomato", "soffritto", "red wine", "parmesan"], match: (r) => has(r.protein, /beef|pork/) || has(r.core, /salami|beef|pork/) },
   { id: "italyChicken", world: "italy", kind: "ingredient", name: "Chicken", zh: "Pollo", emoji: "🐓", area: "rome", pos: [-18, 14], prop: "chicken",
@@ -250,7 +250,7 @@ export const ITALY_OBJECTS: WorldObject[] = [
   { id: "seafood", world: "italy", kind: "ingredient", name: "Fish & seafood", zh: "Pesce", emoji: "🦐", area: "venice", pos: [22, -4], prop: "fishMarket", rot: 0.3, place: true,
     tagline: "The lagoon's catch, sold at dawn by the Rialto.", blurb: "Venice's fish market has stood by the Rialto bridge for a thousand years. Sardines marinated in onion and vinegar, cuttlefish cooked in their own ink over polenta, clams tossed with spaghetti. Sicily's tuna and swordfish come from the other end of the country.",
     partners: ["garlic", "white wine", "parsley", "lemon"], match: (r) => has(r.protein, /fish|prawn|shrimp|seafood|clam/) },
-  { id: "rice", world: "italy", kind: "ingredient", name: "Rice", zh: "Riso", emoji: "🍚", area: "venice", pos: [10, -18], prop: "riceFieldItaly", rot: 0.1,
+  { id: "rice", world: "italy", kind: "ingredient", name: "Rice", zh: "Riso", emoji: "🍚", area: "venice", pos: [2, -24], prop: "riceFieldItaly", rot: 0.1,
     tagline: "Risotto country.", blurb: "The Po valley has grown short-grain rice since the 1400s, in flooded fields around Vercelli and Pavia. Arborio and carnaroli release their starch slowly, which is what makes a risotto creamy without cream: stock added a ladle at a time, stirred, finished with butter and parmesan.",
     partners: ["stock", "butter", "parmesan", "saffron"], match: (r) => has(r.core, /risotto|\brice\b/) },
   // --- techniques ---

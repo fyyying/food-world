@@ -74,7 +74,12 @@ export function cypress(s = 1): P {
 export function oliveTree(s = 1): P {
   const g = group();
   const trunk = add(g, cyl(0.12 * s, 0.22 * s, 0.9 * s, "#7a6a55", 6), 0, 0.45 * s, 0); trunk.rotation.z = (rnd() - 0.5) * 0.3;
-  for (let i = 0; i < 4; i++) add(g, ball(0.55 * s, i % 2 ? "#8fa872" : "#7f9a68", 7), (rnd() - 0.5) * 1.0 * s, (1.0 + rnd() * 0.5) * s, (rnd() - 0.5) * 1.0 * s).scale.y = 0.75;
+  const crown = new THREE.Group(); g.add(crown);
+  for (let i = 0; i < 4; i++) add(crown, ball(0.55 * s, i % 2 ? "#8fa872" : "#7f9a68", 7), (rnd() - 0.5) * 1.0 * s, (1.0 + rnd() * 0.5) * s, (rnd() - 0.5) * 1.0 * s).scale.y = 0.75;
+  const olives: THREE.Mesh[] = [];
+  for (let i = 0; i < 16; i++) olives.push(add(crown, ball(0.06 * s, i % 3 ? "#2f3a2a" : "#6f9b57", 5), (rnd() - 0.5) * 1.5 * s, (0.75 + rnd() * 0.9) * s, (rnd() - 0.5) * 1.5 * s));
+  (g.userData as { crown?: THREE.Group; olives?: THREE.Mesh[] }).crown = crown;
+  (g.userData as { crown?: THREE.Group; olives?: THREE.Mesh[] }).olives = olives;
   return g;
 }
 
@@ -90,6 +95,24 @@ export function pricklyPear(): P {
   const g = group();
   for (let i = 0; i < 4; i++) { const pad = add(g, ball(0.28, "#6f9b57", 8), (i - 1.5) * 0.25, 0.35 + (i % 2) * 0.35, 0); pad.scale.set(0.9, 1.2, 0.35); pad.rotation.z = (i - 1.5) * 0.3; if (i % 2) add(g, ball(0.07, "#e0483a", 6), pad.position.x, pad.position.y + 0.32, 0); }
   return g;
+}
+
+/** Arcs of water: tubes along parabolas from a source, plus droplets that ride along them. */
+function waterArcs(g: THREE.Object3D, src: THREE.Vector3, n: number, reach: number, rise: number, drop: number, fan = false) {
+  const mat2 = new THREE.MeshStandardMaterial({ color: "#d9f0f4", transparent: true, opacity: 0.75, roughness: 0.2 });
+  const arcs: { m: THREE.Mesh; curve: THREE.CatmullRomCurve3; drops: THREE.Mesh[] }[] = [];
+  for (let i = 0; i < n; i++) {
+    const a = fan ? Math.PI / 2 + (i - (n - 1) / 2) * 0.35 : (i / n) * Math.PI * 2;
+    const dir = new THREE.Vector3(Math.cos(a), 0, Math.sin(a));
+    const curve = new THREE.CatmullRomCurve3([src.clone(), src.clone().addScaledVector(dir, reach * 0.45).add(new THREE.Vector3(0, rise, 0)), src.clone().addScaledVector(dir, reach * 0.85).add(new THREE.Vector3(0, rise * 0.6, 0)), src.clone().addScaledVector(dir, reach).add(new THREE.Vector3(0, -drop, 0))]);
+    const m = new THREE.Mesh(new THREE.TubeGeometry(curve, 16, 0.035, 6), mat2); g.add(m);
+    const drops: THREE.Mesh[] = [];
+    for (let k = 0; k < 3; k++) { const d = new THREE.Mesh(new THREE.SphereGeometry(0.035, 5, 4), mat2); g.add(d); drops.push(d); }
+    arcs.push({ m, curve, drops });
+  }
+  return {
+    tick: (t: number, _dt: number, k = 1) => arcs.forEach((arc, i) => { arc.m.scale.setScalar(0.96 + Math.sin(t * 7 + i) * 0.04 * k); arc.drops.forEach((d, j) => { const u = ((t * 0.9 + j / 3 + i * 0.1) % 1); d.position.copy(arc.curve.getPointAt(u)); d.scale.setScalar(0.6 + (1 - u) * 0.6); }); }),
+  };
 }
 
 // ---------- Rome ----------
@@ -158,11 +181,10 @@ export function fountain(): P {
   add(g, cyl(0.8, 0.9, 0.2, IT.travertine, 12), 0, 1.9, 0);
   add(g, cyl(0.7, 0.7, 0.05, "#8fc4c9", 12), 0, 2.02, 0);
   add(g, ball(0.3, IT.travertine, 8), 0, 2.4, 0);
-  // jets
-  const jets: THREE.Mesh[] = [];
-  for (let i = 0; i < 4; i++) { const a = (i / 4) * Math.PI * 2; const j = add(g, cyl(0.03, 0.05, 0.9, "#cfe7ea", 5), Math.cos(a) * 0.4, 2.7, Math.sin(a) * 0.4); j.rotation.z = Math.cos(a) * 0.5; j.rotation.x = -Math.sin(a) * 0.5; jets.push(j); }
+  // jets: arcs that rise from the top and fall into the upper bowl, with a few droplets
+  const jets = waterArcs(g, new THREE.Vector3(0, 2.6, 0), 4, 0.9, 0.7, 0.8);
   add(g, person("#e0a52c"), 2.6, 0, 0.4).rotation.y = -Math.PI / 2;
-  g.userData.tick = (t) => jets.forEach((j, i) => { j.scale.y = 0.85 + Math.sin(t * 6 + i) * 0.15; });
+  g.userData.tick = (t, dt) => jets.tick(t, dt);
   return g;
 }
 
@@ -251,8 +273,11 @@ export function gelateria(): P {
   flavours.forEach((c, i) => { add(g, cyl(0.16, 0.14, 0.12, "#d9ccb0", 10), -1.0 + i * 0.4, 0.98, 1.2); add(g, ball(0.14, c, 8), -1.0 + i * 0.4, 1.08, 1.2).scale.y = 0.6; });
   add(g, person("#f4f1ea", { apron: true }), 0, 0, 0.4);
   const kids = [add(g, person("#e0a52c"), -1.2, 0, 2.3), add(g, person("#3f6b8f"), -0.4, 0, 2.5)];
-  kids.forEach((k) => k.scale.setScalar(0.62));
-  for (let i = 0; i < 2; i++) { const cone2 = add(g, cone(0.06, 0.2, "#d9a441", 5), -1.2 + i * 0.8, 0.8, 2.5 + i * 0.2); cone2.rotation.x = Math.PI; add(g, ball(0.07, flavours[i * 3], 6), cone2.position.x, 0.93, cone2.position.z); }
+  kids.forEach((k, i) => {
+    k.scale.setScalar(0.62); k.rotation.y = Math.PI + (i ? -0.4 : 0.4);
+    const arms = (k.userData as { arms?: { right: THREE.Group; hand: number } }).arms;
+    if (arms) { arms.right.rotation.x = -1.6; const c = add(arms.right, cone(0.07, 0.22, "#d9a441", 5), 0, arms.hand - 0.02, 0.02); c.rotation.x = Math.PI; add(arms.right, ball(0.08, flavours[i * 3], 6), 0, arms.hand + 0.1, 0.02); }
+  });
   add(g, cyl(0.28, 0.28, 0.7, "#2a2a2a", 10), 1.3, 0.35, 2.0); add(g, cyl(0.1, 0.1, 0.3, "#f7f2e6", 8), 1.3, 0.85, 2.0); // espresso machine on a cart
   g.userData.steam = new THREE.Vector3(1.3, 1.1, 2.0);
   const re = reaction(0.7);
@@ -302,7 +327,8 @@ export function italyMarket(): P {
       to.normalize().multiplyScalar(Math.min(d, sh.speed * dt)); sh.pos.add(to); sh.p.position.copy(sh.pos); sh.p.rotation.y = Math.atan2(to.x, to.z);
       (sh.p.userData as { walk?: (t: number) => void }).walk?.(t);
     }
-    pigeons.forEach((pg, i) => { pg.position.x += Math.sin(t * 0.7 + i) * dt * 0.3; pg.position.z += Math.cos(t * 0.5 + i) * dt * 0.3; pg.position.y = k * Math.abs(Math.sin(t * 8 + i)) * 1.5; pg.rotation.y = t * 0.3 + i; });   // pigeons scatter on a click
+    void k;
+    pigeons.forEach((pg, i) => { pg.position.x += Math.sin(t * 0.7 + i) * dt * 0.3; pg.position.z += Math.cos(t * 0.5 + i) * dt * 0.3; pg.rotation.y = t * 0.3 + i; });   // pigeons potter about
     tickChildren(g)(t, dt);
   };
   return g;
@@ -354,18 +380,26 @@ export function tomatoField(): P {
 
 export function oliveGrove(): P {
   const g = group();
-  for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) add(g, oliveTree(0.9 + rnd() * 0.3), -3 + j * 3, 0, -2.5 + i * 2.5);
+  const trees: P[] = [];
+  for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) trees.push(add(g, oliveTree(0.9 + rnd() * 0.3), -3 + j * 3, 0, -2.5 + i * 2.5));
   // stone press and oil jars
   add(g, cyl(0.7, 0.7, 0.4, IT.stone, 12), 4.5, 0.2, 0); add(g, cyl(0.5, 0.5, 0.3, IT.stoneDark, 12), 4.5, 0.55, 0).rotation.z = Math.PI / 2;
   add(g, box(0.06, 0.06, 1.6, "#4a3222"), 4.5, 0.7, 0);
   for (let i = 0; i < 3; i++) add(g, ball(0.32, "#7a5a3c", 8), 3.4 + i * 0.5, 0.3, 1.6).scale.y = 1.2;
   add(g, person("#7a4a3a", { hat: true }), -1.5, 0, 0.6);
-  // nets under one tree
-  add(g, new THREE.Mesh(new THREE.CircleGeometry(1.4, 12), mat("#3f4a3a")), 0, 0.04, 0).rotation.x = -Math.PI / 2;
-  const olives: THREE.Mesh[] = [];
-  const re = reaction(0.7);
-  g.userData.poke = () => { re.poke(); for (let i = 0; i < 12; i++) { const o = add(g, ball(0.05, i % 2 ? "#2f3a2a" : "#6f9b57", 5), (rnd() - 0.5) * 1.6, 1.3 + rnd() * 0.5, (rnd() - 0.5) * 1.6); o.userData.v = 0; olives.push(o); } };
-  g.userData.tick = (t, dt) => { re.step(dt); for (let i = olives.length - 1; i >= 0; i--) { const o = olives[i]; o.userData.v += dt * 8; o.position.y = Math.max(0.08, o.position.y - o.userData.v * dt); o.userData.life = (o.userData.life ?? 0) + dt; if (o.userData.life > 4) { g.remove(o); olives.splice(i, 1); } } };
+  // harvest nets under the trees
+  for (const tr of trees) add(g, new THREE.Mesh(new THREE.CircleGeometry(1.3, 12), mat("#3f4a3a")), tr.position.x, 0.04, tr.position.z).rotation.x = -Math.PI / 2;
+  // click: the trees shake and olives rain into the nets, like the pepper tree
+  const falling: { m: THREE.Mesh; v: number; life: number }[] = [];
+  let shake = 0;
+  g.userData.poke = () => {
+    shake = 1;
+    for (const tr of trees) { const ol = (tr.userData as { olives?: THREE.Mesh[] }).olives ?? []; for (let i = 0; i < 4; i++) { const src = ol[Math.floor(rnd() * ol.length)]; const m = ball(0.06, i % 3 ? "#2f3a2a" : "#6f9b57", 5); const wp = src.getWorldPosition(new THREE.Vector3()); g.worldToLocal(wp); m.position.copy(wp); g.add(m); falling.push({ m, v: 0, life: 0 }); } }
+  };
+  g.userData.tick = (t, dt) => {
+    if (shake > 0) { shake = Math.max(0, shake - dt * 1.2); for (const tr of trees) { const c = (tr.userData as { crown?: THREE.Group }).crown; if (c) { c.rotation.z = Math.sin(t * 26 + tr.position.x) * 0.06 * shake; c.rotation.x = Math.cos(t * 21 + tr.position.z) * 0.05 * shake; } } }
+    for (let i = falling.length - 1; i >= 0; i--) { const f = falling[i]; f.v += dt * 8; f.life += dt; f.m.position.y = Math.max(0.08, f.m.position.y - f.v * dt); if (f.m.position.y <= 0.081) f.v = 0; if (f.life > 4) { g.remove(f.m); falling.splice(i, 1); } }
+  };
   return g;
 }
 
@@ -410,14 +444,17 @@ export function herbGarden(): P {
 
 export function porciniWood(): P {
   const g = group();
-  for (let i = 0; i < 5; i++) { const tr = group(); add(tr, cyl(0.16, 0.24, 2.2, "#5a4030", 6), 0, 1.1, 0); add(tr, ball(1.0, i % 2 ? "#6f8f4a" : "#7fa05a", 8), 0, 2.4, 0).scale.y = 0.9; tr.position.set(-2.4 + i * 1.3, 0, (i % 2) * 1.4 - 0.5); g.add(tr); }
+  for (let i = 0; i < 5; i++) { const tr = group(); add(tr, cyl(0.16, 0.24, 2.4, "#5a4030", 6), 0, 1.2, 0); add(tr, ball(1.0, i % 2 ? "#6f8f4a" : "#7fa05a", 8), 0, 2.6, 0).scale.y = 0.9; tr.position.set(-2.6 + i * 1.3, 0, (i % 2) * 1.6 - 0.6); g.add(tr); }
+  // big fat porcini you can actually see, with a forager and a basket
   const caps: THREE.Mesh[] = [];
-  for (let i = 0; i < 7; i++) { const x = -2.6 + rnd() * 5.6, z = -1.4 + rnd() * 2.8; add(g, cyl(0.07, 0.09, 0.22, "#e7d9c3", 6), x, 0.11, z); const cap = add(g, ball(0.16, "#8a5a3c", 8), x, 0.22, z); cap.scale.y = 0.5; caps.push(cap); }
-  add(g, person("#2f5d3f", { hat: true, pole: false }), 2.8, 0, 1.2);
-  add(g, cyl(0.3, 0.24, 0.24, C.straw, 9), 3.2, 0.12, 1.6);
+  const spots: [number, number, number][] = [[-2.8, 1.4, 0.34], [-1.6, 1.9, 0.26], [-0.2, 1.5, 0.38], [1.2, 2.0, 0.3], [2.4, 1.3, 0.36], [-2.0, -1.6, 0.28], [0.6, -1.9, 0.32], [2.0, -1.4, 0.26]];
+  for (const [x, z, r] of spots) { add(g, cyl(r * 0.45, r * 0.6, r * 1.6, "#efe4cf", 8), x, r * 0.8, z); const cap = add(g, ball(r, "#8a5a3c", 10), x, r * 1.55, z); cap.scale.y = 0.55; caps.push(cap); add(g, ball(r * 0.9, "#a87048", 10), x, r * 1.5, z).scale.set(1, 0.35, 1); }
+  add(g, person("#2f5d3f", { hat: true }), 3.4, 0, 0.4).rotation.y = -0.6;
+  const bask = add(g, cyl(0.34, 0.26, 0.26, C.straw, 9), 3.9, 0.13, 1.1);
+  for (let i = 0; i < 4; i++) { const c = add(bask, ball(0.12, "#8a5a3c", 7), (rnd() - 0.5) * 0.35, 0.22, (rnd() - 0.5) * 0.35); c.scale.y = 0.55; }
   const re = reaction(0.8);
   g.userData.poke = () => re.poke();
-  g.userData.tick = (t, dt) => { const k = re.step(dt); caps.forEach((c, i) => { const s = 1 + Math.max(0, Math.sin(k * Math.PI * 2 + i)) * 0.5 * k; c.scale.set(s, 0.5 * s, s); }); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); caps.forEach((c, i) => { const s2 = 1 + Math.max(0, Math.sin(k * Math.PI * 2 + i)) * 0.45 * k; c.scale.set(s2, 0.55 * s2, s2); }); };
   return g;
 }
 
@@ -728,8 +765,7 @@ export function treviFountain(): P {
   for (let i = 0; i < 9; i++) add(g, new THREE.Mesh(new THREE.DodecahedronGeometry(0.5 + (i % 3) * 0.25, 0), mat("#c9bda5")), -3.5 + i * 0.9, 0.6 + (i % 2) * 0.35, -0.4 + (i % 3) * 0.3);
   add(g, box(11, 0.5, 5, stone), 0, 0.25, 2);
   add(g, box(10.2, 0.2, 4.2, "#7fc4cc"), 0, 0.55, 2);
-  const jets: THREE.Mesh[] = [];
-  for (let i = 0; i < 5; i++) { const j = add(g, cyl(0.04, 0.06, 1.0, "#cfe7ea", 5), -2 + i, 1.5, 0.3); j.rotation.x = 0.5; jets.push(j); }
+  const jets = waterArcs(g, new THREE.Vector3(0, 1.6, -0.3), 5, 1.4, 1.1, 2.2, true);
   // crowd on the rim, backs to the water, one tossing a coin
   const rim: P[] = [];
   for (let i = 0; i < 7; i++) { const p = person(pick(["#3f6b8f", "#e0a52c", "#c0392b", "#f4f1ea", "#e07aa0", "#2f5d3f"])); (p.userData as { sit?: () => void }).sit?.(); add(g, p, -4.5 + i * 1.5, 0.4, 4.5).rotation.y = Math.PI; rim.push(p); }
@@ -740,7 +776,7 @@ export function treviFountain(): P {
   g.userData.poke = () => { re.poke(); coin.visible = true; coin.position.set(3.2, 1.3, 5.5); };
   g.userData.tick = (t, dt) => {
     const k = re.step(dt);
-    jets.forEach((j, i) => { j.scale.y = 0.85 + Math.sin(t * 6 + i) * 0.15 + k * 0.8; });
+    jets.tick(t, dt, 1 + k * 0.6);
     if (coin.visible) { const a = 1 - k; coin.position.set(3.2, 1.3 + Math.sin(a * Math.PI) * 1.4, 5.5 - a * 3.5); coin.rotation.x += dt * 12; if (k === 0) coin.visible = false; }
     const up = (tosser.userData as { upper?: THREE.Group }).upper; if (up) up.rotation.z = k * -0.8 * Math.sin(Math.min(1, k * 3) * Math.PI);
     rim.forEach((p, i) => { const u = (p.userData as { upper?: THREE.Group }).upper; if (u) u.rotation.y = Math.sin(t * 0.5 + i) * 0.3; });

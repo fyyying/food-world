@@ -29,12 +29,12 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
   place(pantheon(), -4, -17, 0.05);
   place(triumphalArch(), -26, -9, -0.1);
   place(basilica(), -26, -21, 0.05).scale.setScalar(0.85);
-  place(treviFountain(), -32, 5, Math.PI / 2);   // west end, facing the paddock and the piazza
+  place(treviFountain(), 12, 2, -Math.PI / 2);   // east of the piazza, facing it
   place(cafeTables(), -15, -4.6, 0);
-  for (const [x, z, rot, len] of [[-20, 8.2, 0, 6], [-20, 13.8, 0, 6], [-23, 11, Math.PI / 2, 5.6], [-17, 11, Math.PI / 2, 5.6]] as [number, number, number, number][]) { const f = new THREE.Group(); const n = Math.round(len / 1.1); for (let i = 0; i <= n; i++) add(f, new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.7, 0.09), mat("#6e4a2c")), -len / 2 + (i / n) * len, 0.35, 0); add(f, new THREE.Mesh(new THREE.BoxGeometry(len, 0.06, 0.05), mat("#8b5e3c")), 0, 0.55, 0); add(f, new THREE.Mesh(new THREE.BoxGeometry(len, 0.06, 0.05), mat("#8b5e3c")), 0, 0.3, 0); place(f, x, z, rot); }
+  for (const [x, z, rot, len] of [[-20, 9.2, 0, 6], [-20, 14.8, 0, 6], [-23, 12, Math.PI / 2, 5.6], [-17, 12, Math.PI / 2, 5.6]] as [number, number, number, number][]) { const f = new THREE.Group(); const n = Math.round(len / 1.1); for (let i = 0; i <= n; i++) add(f, new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.7, 0.09), mat("#6e4a2c")), -len / 2 + (i / n) * len, 0.35, 0); add(f, new THREE.Mesh(new THREE.BoxGeometry(len, 0.06, 0.05), mat("#8b5e3c")), 0, 0.55, 0); add(f, new THREE.Mesh(new THREE.BoxGeometry(len, 0.06, 0.05), mat("#8b5e3c")), 0, 0.3, 0); place(f, x, z, rot); }
   group.add(path([[-30, -10], [-22, -8], [-14, -8], [-6, -6], [2, -4], [8, -6]], 2.6, "#cdbfa2"));
   group.add(path([[-10, 8], [-9, 12], [-6, 18], [-2, 22]], 1.8, "#cdbfa2"));
-  group.add(path([[-2, -4], [4, 0], [8, 6], [10, 10]], 1.6, "#cdbfa2"));
+  group.add(path([[-2, -4], [4, 0], [5.5, 5], [6, 9]], 1.6, "#cdbfa2"));
   place(colosseum(), -28, 12, 0.3);
   for (let i = 0; i < 7; i++) place(umbrellaPine(0.9 + (i % 3) * 0.15), -34 + i * 2.4, -2 + Math.sin(i) * 1.2, i);
   for (let i = 0; i < 5; i++) place(umbrellaPine(1.0), -22 + i * 3, 18.4 + (i % 2) * 0.8, i);
@@ -43,10 +43,10 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
   // Roman streets of ochre houses around the piazza
   const houses: ["rome" | "venice" | "sicily", number, number, number, number, number, number, number][] = [
     ["rome", -16, -13, 0, 2.8, 2.4, 2.2, 3], ["rome", -12, -13, -0.1, 3.2, 2.6, 2.2, 2],
-    ["rome", 3, -10, 0.1, 3.4, 2.6, 2.2, 3], ["rome", 2, -3, 0.2, 3.0, 2.4, 2.2, 2],
+    ["rome", 3, -10, 0.1, 3.4, 2.6, 2.2, 3], ["rome", 20.5, 1.2, 0.2, 3.0, 2.4, 2.2, 2],
     ["rome", -33, -5, 0.3, 2.8, 2.4, 2.2, 2],
     ["sicily", -9, 20, 0.1, 3.0, 2.4, 2.2, 1], ["sicily", 7, 19.5, -0.2, 2.6, 2.2, 2.2, 2], ["sicily", 12, 18.5, 0.2, 3.2, 2.4, 2.2, 1],
-    ["sicily", 16, 12, 0.6, 2.8, 2.4, 2.2, 2], ["rome", 6, 4, 0.4, 2.8, 2.4, 2.2, 2],
+    ["sicily", 16, 12, 0.6, 2.8, 2.4, 2.2, 2], ["rome", 24.5, 0.6, 0.4, 2.8, 2.4, 2.2, 2],
   ];
   for (const [style, x, z, rot, w, d, h, st] of houses) place(italianHouse(style, w, d, h, st), x, z, rot);
   // a Roman ruin: broken columns
@@ -66,7 +66,7 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
   // natural shorelines: the lagoon and sea are one wobbly polygon reaching the table's edge, the channel a river ribbon
   // shoreline points wobble a little; points on the table edge (|x| = 38, |z| = 28) stay exactly on it so the fill is complete
   const shore = (pts: [number, number][]) => { const sh = new THREE.Shape(); pts.forEach(([x, z], i) => { const edge = Math.abs(x) >= 38 || Math.abs(z) >= 28; const wx = edge ? x : x + Math.sin(i * 2.7) * 0.6, wz = edge ? z : z + Math.cos(i * 1.9) * 0.6; if (i === 0) sh.moveTo(wx, wz); else sh.lineTo(wx, wz); }); sh.closePath(); return sh; };
-  const lagoonShape = shore([[2, -28], [38, -28], [38, 2], [36, 4], [33, 0], [30, -2], [24, -1], [18, -2], [12, -1], [8, -3], [4, -6], [2, -12], [3, -20]]);
+  const lagoonShape = shore([[7, -28], [38, -28], [38, 2], [36, 4], [33, 0], [30, -2], [24, -1], [18, -2], [12, -1], [9, -3], [7, -6], [6.5, -12], [7, -20]]);
   const seaShape = shore([[-38, 28], [38, 28], [38, 22], [34, 21], [26, 21.5], [18, 20.6], [10, 21.2], [2, 20.4], [-6, 21], [-14, 20.5], [-22, 21.2], [-30, 20.6], [-38, 21]]);
   for (const [shape, name] of [[lagoonShape, "lagoon"], [seaShape, "sea"]] as [THREE.Shape, string][]) {
     void name;
@@ -90,13 +90,13 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
   place(venetianBridge(6.2), 22, -14, Math.PI / 2).position.y = 0.45;   // campanile island ↔ fish-market island
   place(venetianBridge(4.2), 26.5, -9.2, 0).position.y = 0.45;          // fish-market island ↔ eastern quay
   place(venetianBridge(3.6), 15.8, -12.7, Math.PI / 2).position.y = 0.45;   // west island ↔ fish-market island
-  for (const [x, z] of [[8, -14], [15, -12], [26, -16], [17, -4], [29, -6], [34, -14]]) place(mooringPole(), x, z).position.y = 0;
+  for (const [x, z] of [[9.5, -14], [15, -12], [26, -16], [17, -4], [29, -6], [34, -14]]) place(mooringPole(), x, z).position.y = 0;
   // gondolas glide along a canal loop through the islands
   // the canal route threads the water lanes between the four islands and never crosses a quay
   const canal = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(5, 0, -12.5), new THREE.Vector3(12, 0, -12.6), new THREE.Vector3(18, 0, -12.5), new THREE.Vector3(18, 0, -18), new THREE.Vector3(18, 0, -24),
+    new THREE.Vector3(9, 0, -12.5), new THREE.Vector3(12, 0, -12.6), new THREE.Vector3(18, 0, -12.5), new THREE.Vector3(18, 0, -18), new THREE.Vector3(18, 0, -24),
     new THREE.Vector3(24, 0, -25.5), new THREE.Vector3(31, 0, -24.5), new THREE.Vector3(35.5, 0, -19), new THREE.Vector3(36.5, 0, -12), new THREE.Vector3(36, 0, -5),
-    new THREE.Vector3(30, 0, -3), new THREE.Vector3(26.6, 0, -6), new THREE.Vector3(26.6, 0, -11), new THREE.Vector3(22, 0, -12.6), new THREE.Vector3(10, 0, -12.8), new THREE.Vector3(6, 0, -10),
+    new THREE.Vector3(30, 0, -3), new THREE.Vector3(26.6, 0, -6), new THREE.Vector3(26.6, 0, -11), new THREE.Vector3(22, 0, -12.6), new THREE.Vector3(10, 0, -12.8), new THREE.Vector3(9, 0, -10),
   ], true);
   const gondolas = [0, 1, 2].map((i) => { const gd = gondola(); group.add(gd); tickers.push(gd.userData.tick!); return { gd, off: i / 3 }; });
   tickers.push((t) => gondolas.forEach(({ gd, off }) => { const u = (t * 0.008 + off) % 1; const p = canal.getPointAt(u), n = canal.getPointAt((u + 0.005) % 1); gd.position.set(p.x, TOP + 0.05, p.z); gd.rotation.y = Math.atan2(n.x - p.x, n.z - p.z) - Math.PI / 2; }));
@@ -127,19 +127,26 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
   // ---------- life: a stroll around the piazza and down to the sea, butterflies, koi in the fountain? no, in the lagoon ----------
   const walkers = ["#3f6b8f", "#e0a52c", "#c0392b", "#f4f1ea", "#2f5d3f", "#e07aa0", "#7a4a3a", "#2a2a2e", "#6a7fb0", "#e9d7b8"].map((c, i) => person(c, { hat: i % 4 === 1 }));
   walkers.forEach((w) => group.add(w));
-  const loop = new THREE.CatmullRomCurve3([new THREE.Vector3(-28, 0, -9), new THREE.Vector3(-20, 0, -7.5), new THREE.Vector3(-13, 0, -7.6), new THREE.Vector3(-6, 0, -6), new THREE.Vector3(1, 0, -4.4), new THREE.Vector3(4, 0, 0), new THREE.Vector3(8, 0, 6), new THREE.Vector3(6, 0, 9), new THREE.Vector3(-2, 0, 7), new THREE.Vector3(-8.5, 0, 8.5), new THREE.Vector3(-9.5, 0, 13), new THREE.Vector3(-12, 0, 8), new THREE.Vector3(-17, 0, 2), new THREE.Vector3(-22, 0, -2), new THREE.Vector3(-27, 0, -5)], true);
+  const loop = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(-26, 0, -9), new THREE.Vector3(-20, 0, -8), new THREE.Vector3(-13, 0, -8), new THREE.Vector3(-6, 0, -7), new THREE.Vector3(0, 0, -6.5), new THREE.Vector3(6, 0, -7.5),
+    new THREE.Vector3(3, 0, -5), new THREE.Vector3(4, 0, 0), new THREE.Vector3(5.5, 0, 5), new THREE.Vector3(6, 0, 9), new THREE.Vector3(3, 0, 10.5), new THREE.Vector3(-2, 0, 8),
+    new THREE.Vector3(-7, 0, 7), new THREE.Vector3(-11, 0, 7.8), new THREE.Vector3(-16, 0, 8), new THREE.Vector3(-21, 0, 6.8), new THREE.Vector3(-25, 0, -1), new THREE.Vector3(-26.5, 0, -5),
+  ], true);
   tickers.push((t) => walkers.forEach((w, i) => { const u = (t * 0.01 + i * 0.1) % 1; const p = loop.getPointAt(u), n = loop.getPointAt((u + 0.004) % 1); w.position.set(p.x, 0, p.z); w.rotation.y = Math.atan2(n.x - p.x, n.z - p.z); (w.userData as { walk?: (t: number) => void }).walk?.(t + i); }));
   // a second stroll: Pantheon, the arch, the basilica square
   const sight = ["#c0392b", "#f4f1ea", "#3f6b8f", "#e0a52c", "#2a2a2e", "#e07aa0"].map((c) => person(c));
   sight.forEach((w) => group.add(w));
-  const loop2 = new THREE.CatmullRomCurve3([new THREE.Vector3(-4, 0, -10), new THREE.Vector3(-10, 0, -9.5), new THREE.Vector3(-18, 0, -9), new THREE.Vector3(-26, 0, -9), new THREE.Vector3(-30, 0, -12), new THREE.Vector3(-26, 0, -14), new THREE.Vector3(-20, 0, -15), new THREE.Vector3(-14, 0, -16.5), new THREE.Vector3(-8, 0, -12), new THREE.Vector3(0, 0, -11)], true);
+  const loop2 = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(-3, 0, -9.4), new THREE.Vector3(-9, 0, -9.6), new THREE.Vector3(-15, 0, -9.8), new THREE.Vector3(-21, 0, -9.4), new THREE.Vector3(-26, 0, -9), new THREE.Vector3(-29, 0, -11.5),
+    new THREE.Vector3(-26, 0, -14.5), new THREE.Vector3(-23, 0, -12), new THREE.Vector3(-19, 0, -10.4), new THREE.Vector3(-12, 0, -10.3), new THREE.Vector3(-6, 0, -10.5),
+  ], true);
   tickers.push((t) => sight.forEach((w, i) => { const u = (t * 0.008 + i * 0.17) % 1; const p = loop2.getPointAt(u), n = loop2.getPointAt((u + 0.004) % 1); w.position.set(p.x, 0, p.z); w.rotation.y = Math.atan2(n.x - p.x, n.z - p.z); (w.userData as { walk?: (t: number) => void }).walk?.(t + i); }));
   // Vespas buzzing round the street loop, faster than anyone on foot
   const scooters = [vespa("#8fc4c9"), vespa("#c0392b")];
   scooters.forEach((v) => group.add(v));
   tickers.push((t) => scooters.forEach((v, i) => { const u = (t * 0.03 + i * 0.5) % 1; const p = loop.getPointAt(u), n = loop.getPointAt((u + 0.003) % 1); v.position.set(p.x, 0, p.z); v.rotation.y = Math.atan2(n.x - p.x, n.z - p.z) - Math.PI / 2; v.rotation.z = Math.sin(t * 3 + i) * 0.03; }));
   // standing groups chatting on the piazza
-  for (const [x, z, n] of [[-13, -3, 3], [-7, -4, 2], [-12, 5, 3], [-5, 1, 2]] as [number, number, number][]) for (let i = 0; i < n; i++) { const a = (i / n) * Math.PI * 2; place(person(["#3f6b8f", "#e0a52c", "#c0392b", "#f4f1ea", "#e07aa0", "#7a4a3a"][(x + i) % 6 < 0 ? -((x + i) % 6) : (x + i) % 6]), x + Math.cos(a) * 0.6, z + Math.sin(a) * 0.6, -a - Math.PI / 2); }
+  for (const [x, z, n] of [[-13, -3, 3], [-7, -4, 2], [-12, 5, 3], [-1, -1, 2]] as [number, number, number][]) for (let i = 0; i < n; i++) { const a = (i / n) * Math.PI * 2; place(person(["#3f6b8f", "#e0a52c", "#c0392b", "#f4f1ea", "#e07aa0", "#7a4a3a"][(x + i) % 6 < 0 ? -((x + i) % 6) : (x + i) % 6]), x + Math.cos(a) * 0.6, z + Math.sin(a) * 0.6, -a - Math.PI / 2); }
   const flies = [[-24, 12], [20, 18], [-6, 8]].map(([x, z], i) => { const b = butterfly(["#f2b64d", "#ffffff", "#f4a6b8"][i]); group.add(b); tickers.push(b.userData.tick!); return { b, x, z, ph: i * 2 }; });
   tickers.push((t) => flies.forEach(({ b, x, z, ph }) => { b.position.set(x + Math.sin(t * 0.6 + ph) * 2.4, TOP + 1.8 + Math.sin(t * 1.7 + ph) * 0.4, z + Math.cos(t * 0.45 + ph) * 2); b.rotation.y = t * 0.6 + ph; }));
   // seagulls over the Venetian lagoon and the Sicilian harbour

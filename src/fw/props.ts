@@ -503,9 +503,10 @@ export function person(shirt = "#3f6b8f", opts: { hat?: boolean; pole?: boolean;
   if (opts.apron) { add(upper, box(0.24 * s, 0.42 * s, 0.04, C.white), 0, U(0.58 * s), 0.15 * s); add(upper, cyl(0.15 * s, 0.15 * s, 0.1 * s, C.white, 8), 0, U(1.18 * s), 0); }
   (g.userData as { upper?: THREE.Group }).upper = upper;
   if (opts.pole) {
-    armL.rotation.z = -2.6; armR.rotation.z = 2.6; // hands up holding the pole
-    const pole = add(upper, cyl(0.02, 0.02, 1.7, C.wood, 4), 0, U(1.1 * s), 0); pole.rotation.z = Math.PI / 2;
-    for (const x of [-0.8, 0.8]) { add(upper, cyl(0.01, 0.01, 0.35, C.woodDark, 3), x, U(0.82 * s), 0); const b = add(upper, cyl(0.22, 0.16, 0.16, C.straw, 8), x, U(0.63 * s), 0); for (let k = 0; k < 4; k++) add(b, ball(0.09, pick(["#7fb069", "#e8563f", "#e0a52c", "#8fc26a"]), 6), (rnd() - 0.5) * 0.2, 0.12, (rnd() - 0.5) * 0.2); }
+    // a shoulder pole the traditional way: resting on the right shoulder, running front to back, one hand steadying it
+    const pole = add(upper, cyl(0.02, 0.02, 1.8, C.wood, 4), 0.17 * s, U(0.9 * s), 0.05 * s); pole.rotation.x = Math.PI / 2;
+    armR.rotation.x = -1.45;                                    // right arm forward, hand on the pole
+    for (const z of [-0.8, 0.8]) { add(upper, cyl(0.01, 0.01, 0.4, C.woodDark, 3), 0.17 * s, U(0.72 * s), z); const b = add(upper, cyl(0.22, 0.16, 0.16, C.straw, 8), 0.17 * s, U(0.5 * s), z); for (let k = 0; k < 4; k++) add(b, ball(0.09, pick(["#7fb069", "#e8563f", "#e0a52c", "#8fc26a"]), 6), (rnd() - 0.5) * 0.2, 0.12, (rnd() - 0.5) * 0.2); }
   }
   // seated pose: legs forward, hands on the lap
   (g.userData as { sit?: () => void }).sit = () => { for (const l of [legL, legR]) { l.thigh.rotation.x = -1.5; l.shin.rotation.x = 1.45; } armL.rotation.x = armR.rotation.x = -0.9; };
@@ -514,7 +515,7 @@ export function person(shirt = "#3f6b8f", opts: { hat?: boolean; pole?: boolean;
     const sw = Math.sin(t * 7) * 0.5;
     legL.thigh.rotation.x = sw; legR.thigh.rotation.x = -sw;
     legL.shin.rotation.x = Math.max(0, -sw) * 0.9; legR.shin.rotation.x = Math.max(0, sw) * 0.9;   // knee bends as the leg swings back
-    if (!opts.pole) { armL.rotation.x = -sw * 0.7; armR.rotation.x = sw * 0.7; }
+    if (!opts.pole) { armL.rotation.x = -sw * 0.7; armR.rotation.x = sw * 0.7; } else armL.rotation.x = -sw * 0.7;   // the free arm swings
     g.position.y = Math.abs(Math.cos(t * 7)) * 0.02;
   };
   return g;
@@ -664,7 +665,7 @@ export function path(points: [number, number][], width = 1.6, color = "#cdbb94")
 
 // ---------- animals ----------
 
-export function cow(dark = false): P {
+export function cow(dark = false, wander = true): P {
   const g = group();
   const body = new THREE.Group();
   g.add(body);
@@ -692,7 +693,7 @@ export function cow(dark = false): P {
   g.userData.poke = () => { re.poke(); bubble(body, dark ? "哞… Moo…" : "哞~ Moo~", 1.9); };
   g.userData.tick = (t, dt) => {
     const k = re.step(dt);
-    const cycle = (t * 0.05 + ph) % 1;               // one loop ≈ 20 s
+    const cycle = wander ? (t * 0.05 + ph) % 1 : 0.9;   // one loop ≈ 20 s; a penned cow just grazes
     const walking = cycle < 0.55 && k === 0;
     const a = (walking ? cycle / 0.55 : cycle < 0.55 ? cycle / 0.55 : 1) * Math.PI * 2 + ph;
     body.position.set(Math.cos(a) * r, 0, Math.sin(a) * r * 0.7);

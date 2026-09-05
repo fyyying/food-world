@@ -60,7 +60,8 @@ function switchScene(scene: THREE.Scene) {
 }
 
 function resize() {
-  const w = canvas.clientWidth, h = canvas.clientHeight;
+  // a hidden pane reports 0×0, which would poison the camera with NaN; fall back to a sane size until it is shown
+  const w = canvas.clientWidth || 800, h = canvas.clientHeight || 882;
   renderer.setSize(w, h, false); labelRenderer.setSize(w, h);
   camera.aspect = w / h; camera.updateProjectionMatrix();
 }
@@ -398,7 +399,11 @@ renderer.setAnimationLoop(() => frame());
 void toast;
 const dbg = () => ({ level, flying: Boolean(flight), diorama: Boolean(diorama), map: Boolean(mapWorld) });
 // debug: advance n frames even when the tab is hidden and requestAnimationFrame is paused
-(dbg as unknown as { step: (n: number) => void }).step = (n: number) => { for (let i = 0; i < n; i++) frame(1 / 60); };
+(dbg as unknown as { step: (n: number) => void }).step = (n: number) => {
+  if (canvas.clientWidth === 0) { renderer.setSize(800, 882, false); labelRenderer.setSize(800, 882); camera.aspect = 800 / 882; camera.updateProjectionMatrix(); }  // hidden pane: give it a size
+  for (let i = 0; i < n; i++) frame(1 / 60);
+};
+(dbg as unknown as { look: (x: number, z: number, dist: number) => void }).look = (x: number, z: number, dist: number) => { glideTo(new THREE.Vector3(x, 0.5, z), dist, 0.3); };
 (dbg as unknown as { open: (id: string) => void }).open = (id: string) => { const p = diorama?.placed.find((x) => x.obj.id === id); if (p) openObject(p); };
 (window as unknown as { __fw: typeof dbg }).__fw = dbg;
 boot();

@@ -340,6 +340,14 @@ export function oliveGrove(): P {
   return g;
 }
 
+function fenceRail(len: number): THREE.Group {
+  const g = new THREE.Group();
+  const n = Math.max(2, Math.round(len / 1.1));
+  for (let i = 0; i <= n; i++) add(g, box(0.09, 0.7, 0.09, "#6e4a2c"), -len / 2 + (i / n) * len, 0.35, 0);
+  add(g, box(len, 0.06, 0.05, "#8b5e3c"), 0, 0.55, 0); add(g, box(len, 0.06, 0.05, "#8b5e3c"), 0, 0.3, 0);
+  return g;
+}
+
 export function dairy(): P {
   const g = group();
   add(g, italianHouse("rome", 4.0, 3.0, 2.2, 1), 0, 0, -0.5);
@@ -348,7 +356,9 @@ export function dairy(): P {
   for (let s = 0; s < 3; s++) add(g, box(2.4, 0.05, 0.5, "#4a3222"), -0.5, 0.05 + s * 0.55, 1.4);
   add(g, cyl(0.35, 0.3, 0.3, "#f7f2e6", 10), 1.6, 0.15, 1.6); for (let i = 0; i < 4; i++) add(g, ball(0.11, "#fbf7ee", 8), 1.6 + Math.cos(i * 1.6) * 0.15, 0.36, 1.6 + Math.sin(i * 1.6) * 0.15);
   add(g, person("#f4f1ea", { apron: true }), 0.6, 0, 2.2);
-  const cows = [add(g, cow(false), -3.6, 0, 1.2), add(g, cow(false), 3.8, 0, -0.4)];
+  const cows = [add(g, cow(false, false), -3.9, 0, 1.4), add(g, cow(false, false), 4.0, 0, 0.2)];
+  cows[0].rotation.y = 0.9; cows[1].rotation.y = -2.2;
+  for (const [x, z, rot, len] of [[-3.9, -0.2, 0, 3], [-3.9, 3.0, 0, 3], [-5.4, 1.4, Math.PI / 2, 3.2], [-2.4, 1.4, Math.PI / 2, 3.2]] as [number, number, number, number][]) { const f = fenceRail(len); f.position.set(x, 0, z); f.rotation.y = rot; g.add(f); }
   cows.forEach((c) => c.scale.setScalar(0.85));
   g.userData.tick = tickChildren(g);
   g.userData.poke = () => cows.forEach((c) => c.userData.poke?.());
@@ -610,3 +620,126 @@ export const ITALY_ICONS: Record<string, () => P> = {
   "stall-arancini": () => { const g = group(); for (let i = 0; i < 3; i++) add(g, ball(0.16, "#e0a52c", 9), -0.3 + i * 0.3, 0.16, (i - 1) * 0.1).scale.y = 1.15; return g; },
   pastry: () => { const g = group(); for (let i = 0; i < 2; i++) { const cn = add(g, cyl(0.09, 0.09, 0.5, "#d9a441", 8), -0.1, 0.1 + i * 0.16, (i - 0.5) * 0.25); cn.rotation.z = Math.PI / 2; add(g, ball(0.085, "#fbf7ee", 7), 0.16, 0.1 + i * 0.16, (i - 0.5) * 0.25); add(g, ball(0.04, "#8fbf6a", 5), 0.22, 0.1 + i * 0.16, (i - 0.5) * 0.25); } return g; },
 };
+
+// ---------- grand Rome ----------
+
+/** The Pantheon: a columned portico with a pediment in front of a great drum and dome with an oculus. */
+export function pantheon(): P {
+  const g = group();
+  add(g, box(9, 0.5, 8, IT.travertine), 0, 0.25, 2);
+  const drum = add(g, cyl(4.2, 4.2, 4.2, "#c9b89a", 24), 0, 2.6, -1.5);
+  void drum;
+  add(g, cyl(4.4, 4.4, 0.3, "#b9ad98", 24), 0, 4.85, -1.5);
+  const dome = add(g, ball(4.1, "#8a8478", 24), 0, 4.9, -1.5); dome.scale.y = 0.62;
+  for (let i = 1; i < 5; i++) add(g, cyl(4.15 - i * 0.55, 4.15 - i * 0.55, 0.08, "#7a7468", 24), 0, 4.95 + i * 0.5, -1.5);
+  add(g, cyl(0.7, 0.7, 0.2, "#5a554c", 16), 0, 7.45, -1.5);
+  // portico: two rows of columns, a pediment
+  for (let r = 0; r < 2; r++) for (let i = 0; i < 8; i++) { const c = add(g, cyl(0.28, 0.32, 4.0, "#d9ccb0", 12), -3.5 + i * 1.0, 2.5, 4.6 - r * 1.6); add(c, box(0.8, 0.22, 0.8, "#e9dcc3"), 0, 2.05, 0); }
+  add(g, box(8.4, 0.5, 4, "#d9ccb0"), 0, 4.75, 3.8);
+  const ped = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 6.2, 1.6, 3, 1), mat("#e9dcc3"));
+  ped.rotation.x = Math.PI / 2; ped.rotation.z = Math.PI; ped.scale.set(1, 1, 0.7); ped.position.set(0, 5.8, 5.6);
+  ped.geometry.computeVertexNormals(); ped.castShadow = true; g.add(ped);
+  add(g, box(8.4, 0.5, 4, "#d9ccb0"), 0, 4.75, 3.8);
+  add(g, box(2.2, 3.2, 0.2, "#4a3222"), 0, 2.1, 2.2);  // bronze doors
+  for (let i = 0; i < 4; i++) add(g, person(pick(["#3f6b8f", "#e0a52c", "#c0392b", "#f4f1ea"])), -3 + i * 2, 0.5, 6.4).rotation.y = Math.PI;
+  return g;
+}
+
+/** A triumphal arch over the street. */
+export function triumphalArch(): P {
+  const g = group();
+  const stone = "#d9ccb0";
+  for (const x of [-2.6, 2.6]) { add(g, box(2.0, 5.2, 2.2, stone), x, 2.6, 0); for (const z of [-1.2, 1.2]) add(g, cyl(0.22, 0.26, 4.4, "#e9dcc3", 10), x + 0.9 * Math.sign(x), 2.3, z); }
+  add(g, box(7.4, 1.6, 2.4, stone), 0, 6.0, 0);
+  add(g, box(7.0, 0.5, 2.2, "#b9ad98"), 0, 6.95, 0);
+  const arch = new THREE.Mesh(new THREE.TorusGeometry(1.7, 0.45, 8, 16, Math.PI), mat(stone)); arch.position.set(0, 3.6, 0); g.add(arch);
+  for (const x of [-2.6, 2.6]) add(g, box(0.9, 1.3, 0.9, "#c9b89a"), x, 7.8, 0);
+  for (let i = 0; i < 3; i++) add(g, cyl(0.25, 0.25, 0.12, "#7a7468", 10), -2 + i * 2, 6.2, 1.25).rotation.x = Math.PI / 2;
+  return g;
+}
+
+/** St Peter's: a great dome on a drum with a colonnaded front and two sweeping colonnades around the square. */
+export function basilica(): P {
+  const g = group();
+  add(g, box(14, 0.5, 8, IT.travertine), 0, 0.25, 0);
+  add(g, box(12, 3.6, 6, "#e9dcc3"), 0, 2.3, -1);
+  for (let i = 0; i < 8; i++) { const c = add(g, cyl(0.26, 0.3, 3.6, "#f1e6d0", 12), -5.25 + i * 1.5, 2.3, 2.3); add(c, box(0.7, 0.22, 0.7, "#f6ede0"), 0, 1.85, 0); }
+  add(g, box(12.6, 0.7, 6.8, "#f1e6d0"), 0, 4.45, -1);
+  add(g, box(4, 1.2, 1.0, "#f1e6d0"), 0, 5.4, 2.3);
+  for (let i = 0; i < 7; i++) add(g, cyl(0.16, 0.16, 1.0, "#f6ede0", 8), -4.5 + i * 1.5, 5.3, 2.3).scale.set(1, 1, 1);
+  add(g, cyl(3.4, 3.4, 2.8, "#e9dcc3", 20), 0, 6.2, -1.5);
+  for (let i = 0; i < 16; i++) { const a = (i / 16) * Math.PI * 2; add(g, cyl(0.16, 0.16, 2.6, "#f6ede0", 8), Math.cos(a) * 3.5, 6.2, -1.5 + Math.sin(a) * 3.5); }
+  const dome = add(g, ball(3.5, "#6f8f8a", 24), 0, 7.6, -1.5); dome.scale.y = 0.95;
+  for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI; const rib = add(g, box(0.1, 3.4, 0.1, "#e9dcc3"), 0, 9.6, -1.5); rib.rotation.y = a; rib.position.set(Math.cos(a) * 2.0, 9.4, -1.5 + Math.sin(a) * 2.0); rib.rotation.z = 0.6; void rib; }
+  add(g, cyl(0.6, 0.6, 1.2, "#f1e6d0", 10), 0, 11.5, -1.5); add(g, ball(0.25, C.gold, 8), 0, 12.3, -1.5); add(g, box(0.06, 0.6, 0.06, C.gold), 0, 12.7, -1.5);
+  for (const x of [-5, 5]) { add(g, ball(1.3, "#6f8f8a", 14), x, 4.8, -2).scale.y = 0.8; add(g, cyl(0.25, 0.25, 0.8, "#f1e6d0", 8), x, 5.9, -2); }
+  // the colonnades curving around the square, with an obelisk in the middle
+  for (const sd of [-1, 1]) for (let i = 0; i < 12; i++) { const a = Math.PI / 2 + sd * (0.35 + i * 0.16); const x = Math.cos(a) * 9.5, z = 3.5 + Math.sin(a) * 9.5 - 3; add(g, cyl(0.2, 0.22, 3.0, "#e9dcc3", 8), x, 1.5, z + 6); add(g, cyl(0.2, 0.22, 3.0, "#e9dcc3", 8), x * 1.12, 1.5, (z + 3) * 1.12 + 3); }
+  for (const sd of [-1, 1]) { const arc = new THREE.Mesh(new THREE.TorusGeometry(10.1, 0.5, 6, 24, 1.9), mat("#f1e6d0")); arc.rotation.x = Math.PI / 2; arc.rotation.z = Math.PI / 2 + sd * 0.35 + (sd < 0 ? -1.9 : 0); arc.position.set(0, 3.2, 6.5); g.add(arc); }
+  add(g, obelisk(), 0, 0, 9).scale.setScalar(0.8);
+  for (let i = 0; i < 8; i++) add(g, person(pick(["#3f6b8f", "#e0a52c", "#c0392b", "#f4f1ea", "#2a2a2e"])), -6 + i * 1.7, 0, 5.5 + (i % 2) * 2.5).rotation.y = Math.PI - (i % 3) * 0.5;
+  return g;
+}
+
+/** A Trevi-style fountain: palace façade with statues in niches, rocks, and a wide pool people sit around. */
+export function treviFountain(): P {
+  const g = group();
+  const stone = "#e9dcc3";
+  add(g, box(10, 6.5, 2.2, stone), 0, 3.25, -2.5);
+  for (let i = 0; i < 4; i++) add(g, cyl(0.22, 0.26, 4.2, "#f1e6d0", 10), -3.9 + i * 2.6, 2.4, -1.3);
+  add(g, box(10.4, 0.5, 2.6, "#f1e6d0"), 0, 4.8, -2.5);
+  add(g, box(3.6, 1.6, 0.4, "#f1e6d0"), 0, 5.9, -1.6);
+  add(g, box(0.9, 1.6, 0.4, "#d9ccb0"), 0, 3.0, -1.35);   // Oceanus niche
+  add(g, ball(0.28, "#d9ccb0", 8), 0, 3.6, -1.15); add(g, box(0.5, 0.9, 0.35, "#d9ccb0"), 0, 2.9, -1.15);
+  for (const x of [-2.4, 2.4]) { add(g, box(0.4, 1.1, 0.3, "#d9ccb0"), x, 2.6, -1.3); add(g, ball(0.2, "#d9ccb0", 7), x, 3.35, -1.3); }
+  // rocks and the pool
+  for (let i = 0; i < 9; i++) add(g, new THREE.Mesh(new THREE.DodecahedronGeometry(0.5 + (i % 3) * 0.25, 0), mat("#c9bda5")), -3.5 + i * 0.9, 0.6 + (i % 2) * 0.35, -0.4 + (i % 3) * 0.3);
+  add(g, box(11, 0.5, 5, stone), 0, 0.25, 2);
+  add(g, box(10.2, 0.2, 4.2, "#7fc4cc"), 0, 0.55, 2);
+  const jets: THREE.Mesh[] = [];
+  for (let i = 0; i < 5; i++) { const j = add(g, cyl(0.04, 0.06, 1.0, "#cfe7ea", 5), -2 + i, 1.5, 0.3); j.rotation.x = 0.5; jets.push(j); }
+  // crowd on the rim, backs to the water, one tossing a coin
+  const rim: P[] = [];
+  for (let i = 0; i < 7; i++) { const p = person(pick(["#3f6b8f", "#e0a52c", "#c0392b", "#f4f1ea", "#e07aa0", "#2f5d3f"])); (p.userData as { sit?: () => void }).sit?.(); add(g, p, -4.5 + i * 1.5, 0.4, 4.5).rotation.y = Math.PI; rim.push(p); }
+  const tosser = add(g, person("#e0a52c"), 3.2, 0, 6.2); tosser.rotation.y = Math.PI;
+  const coin = add(g, cyl(0.06, 0.06, 0.02, C.gold, 8), 3.2, 1.3, 5.5); coin.visible = false;
+  add(g, person("#2a2a2e"), -4.5, 0, 6.5).rotation.y = 0.5; add(g, person("#2a2a2e"), -3.8, 0, 6.8).rotation.y = 0.3;   // two nuns
+  const re = reaction(0.7);
+  g.userData.poke = () => { re.poke(); coin.visible = true; coin.position.set(3.2, 1.3, 5.5); };
+  g.userData.tick = (t, dt) => {
+    const k = re.step(dt);
+    jets.forEach((j, i) => { j.scale.y = 0.85 + Math.sin(t * 6 + i) * 0.15 + k * 0.8; });
+    if (coin.visible) { const a = 1 - k; coin.position.set(3.2, 1.3 + Math.sin(a * Math.PI) * 1.4, 5.5 - a * 3.5); coin.rotation.x += dt * 12; if (k === 0) coin.visible = false; }
+    const up = (tosser.userData as { upper?: THREE.Group }).upper; if (up) up.rotation.z = k * -0.8 * Math.sin(Math.min(1, k * 3) * Math.PI);
+    rim.forEach((p, i) => { const u = (p.userData as { upper?: THREE.Group }).upper; if (u) u.rotation.y = Math.sin(t * 0.5 + i) * 0.3; });
+  };
+  return g;
+}
+
+export function vespa(color = "#8fc4c9"): P {
+  const g = group();
+  add(g, box(0.9, 0.35, 0.35, color), 0, 0.45, 0);
+  add(g, cyl(0.16, 0.16, 0.1, "#2a2a2a", 10), -0.35, 0.16, 0).rotation.x = Math.PI / 2;
+  add(g, cyl(0.16, 0.16, 0.1, "#2a2a2a", 10), 0.4, 0.16, 0).rotation.x = Math.PI / 2;
+  add(g, box(0.4, 0.1, 0.3, "#3b2a22"), -0.1, 0.65, 0);
+  add(g, cyl(0.02, 0.02, 0.5, "#8c9096", 4), 0.35, 0.8, 0).rotation.z = 0.3;
+  add(g, box(0.06, 0.06, 0.5, "#8c9096"), 0.4, 1.0, 0);
+  const rider = add(g, person(pick(["#c0392b", "#3f6b8f", "#e0a52c"])), -0.05, 0.3, 0);
+  (rider.userData as { sit?: () => void }).sit?.(); rider.rotation.y = Math.PI / 2; rider.scale.setScalar(0.85);
+  add(rider, ball(0.17, "#f4f1ea", 9), 0, 1.06, 0).scale.set(1, 0.8, 1);  // helmet
+  return g;
+}
+
+/** A few café tables on the piazza edge with people at them. */
+export function cafeTables(): P {
+  const g = group();
+  for (let i = 0; i < 3; i++) {
+    const x = i * 1.9;
+    add(g, cyl(0.45, 0.45, 0.05, "#f4f1ea", 10), x, 0.75, 0); add(g, cyl(0.04, 0.06, 0.72, "#4a3222", 6), x, 0.36, 0);
+    add(g, cyl(0.06, 0.05, 0.08, "#f4f1ea", 8), x - 0.1, 0.82, 0.1); add(g, cyl(0.05, 0.05, 0.06, "#f4f1ea", 8), x + 0.15, 0.81, -0.1);
+    for (const sd of [-1, 1]) { add(g, cyl(0.18, 0.18, 0.42, "#4a3222", 8), x, 0.21, sd * 0.75); const p = person(pick(["#3f6b8f", "#e0a52c", "#c0392b", "#f4f1ea", "#e07aa0"])); (p.userData as { sit?: () => void }).sit?.(); add(g, p, x, 0.04, sd * 0.75).rotation.y = sd > 0 ? Math.PI : 0; }
+  }
+  add(g, awning(6.4, 1.6, "#8e2a22"), 1.9, 2.3, -1.2);
+  for (const x of [-1.2, 5.0]) add(g, cyl(0.05, 0.05, 2.3, "#4a3222", 6), x, 1.15, -0.5);
+  return g;
+}

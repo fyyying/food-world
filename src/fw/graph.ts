@@ -306,17 +306,17 @@ export type MapRegion = {
 };
 
 export const MAP_REGIONS: MapRegion[] = [
-  { id: "north-america", name: "North America", cuisines: ["American"], pos: [-46, -12], size: 9, color: "#d8c27b", emoji: ["🍔", "🥞", "🔥", "🌽"], built: false, seed: 11 },
-  { id: "mexico", name: "Mexico", cuisines: ["Mexican"], pos: [-38, 8], size: 6, color: "#e0a06a", emoji: ["🌽", "🌵", "🥑", "🌮"], built: false, seed: 12 },
-  { id: "italy", name: "Italy", cuisines: ["Italian"], pos: [-10, -2], size: 6.5, color: "#a8c07a", emoji: ["🍝", "🍅", "🫒", "🧀"], built: true, seed: 13 },
-  { id: "central-europe", name: "Central Europe", cuisines: ["British", "Hungarian", "Georgian", "German", "Swiss", "French", "Swedish"], pos: [-8, -18], size: 7, color: "#93b48a", emoji: ["🥧", "🍲", "🥔", "🧈"], built: false, seed: 14 },
-  { id: "mediterranean", name: "Mediterranean", cuisines: ["Mediterranean", "Greek", "Spanish", "North African"], pos: [-16, 11], size: 6, color: "#b9cf94", emoji: ["🫒", "🍋", "🐟", "🧆"], built: false, seed: 15 },
-  { id: "middle-east", name: "Middle East", cuisines: ["Middle Eastern", "Lebanese", "Turkish"], pos: [6, 3], size: 6, color: "#e2cf9b", emoji: ["🧆", "🍢", "🫓", "🌿"], built: false, seed: 16 },
-  { id: "india", name: "India", cuisines: ["Indian"], pos: [18, 13], size: 6, color: "#e0b25e", emoji: ["🍛", "🫚", "🌶️", "🫓"], built: false, seed: 17 },
-  { id: "china", name: "China", cuisines: ["Chinese"], pos: [28, -8], size: 10, color: "#c9a26a", emoji: ["🌶️", "🥟", "🍜", "🏮"], built: true, seed: 18 },
-  { id: "southeast-asia", name: "Southeast Asia", cuisines: ["Thai", "Vietnamese"], pos: [33, 14], size: 6, color: "#9cc27f", emoji: ["🥥", "🌿", "🍜", "🦐"], built: false, seed: 19 },
-  { id: "korea", name: "Korea", cuisines: ["Korean"], pos: [43, -12], size: 4, color: "#d7a7a0", emoji: ["🥬", "🍚", "🔥", "🥢"], built: false, seed: 20 },
-  { id: "japan", name: "Japan", cuisines: ["Japanese"], pos: [49, 0], size: 4.5, color: "#e8b8c4", emoji: ["🍣", "🍙", "🍵", "🐟"], built: false, seed: 21 },
+  { id: "north-america", name: "North America", cuisines: ["American"], pos: [-50, -14], size: 9, color: "#d8c27b", emoji: ["🍔", "🥞", "🔥", "🌽"], built: false, seed: 11 },
+  { id: "mexico", name: "Mexico", cuisines: ["Mexican"], pos: [-40, 10], size: 6, color: "#e0a06a", emoji: ["🌽", "🌵", "🥑", "🌮"], built: false, seed: 12 },
+  { id: "italy", name: "Italy", cuisines: ["Italian"], pos: [-8, -4], size: 6.5, color: "#a8c07a", emoji: ["🍝", "🍅", "🫒", "🧀"], built: true, seed: 13 },
+  { id: "central-europe", name: "Central Europe", cuisines: ["British", "Hungarian", "Georgian", "German", "Swiss", "French", "Swedish"], pos: [-12, -26], size: 7, color: "#93b48a", emoji: ["🥧", "🍲", "🥔", "🧈"], built: false, seed: 14 },
+  { id: "mediterranean", name: "Mediterranean", cuisines: ["Mediterranean", "Greek", "Spanish", "North African"], pos: [-20, 14], size: 6, color: "#b9cf94", emoji: ["🫒", "🍋", "🐟", "🧆"], built: false, seed: 15 },
+  { id: "middle-east", name: "Middle East", cuisines: ["Middle Eastern", "Lebanese", "Turkish"], pos: [10, 8], size: 6, color: "#e2cf9b", emoji: ["🧆", "🍢", "🫓", "🌿"], built: false, seed: 16 },
+  { id: "india", name: "India", cuisines: ["Indian"], pos: [22, 20], size: 6, color: "#e0b25e", emoji: ["🍛", "🫚", "🌶️", "🫓"], built: false, seed: 17 },
+  { id: "china", name: "China", cuisines: ["Chinese"], pos: [26, -8], size: 10, color: "#c9a26a", emoji: ["🌶️", "🥟", "🍜", "🏮"], built: true, seed: 18 },
+  { id: "southeast-asia", name: "Southeast Asia", cuisines: ["Thai", "Vietnamese"], pos: [38, 16], size: 6, color: "#9cc27f", emoji: ["🥥", "🌿", "🍜", "🦐"], built: false, seed: 19 },
+  { id: "korea", name: "Korea", cuisines: ["Korean"], pos: [44, -16], size: 4, color: "#d7a7a0", emoji: ["🥬", "🍚", "🔥", "🥢"], built: false, seed: 20 },
+  { id: "japan", name: "Japan", cuisines: ["Japanese"], pos: [52, -4], size: 4.5, color: "#e8b8c4", emoji: ["🍣", "🍙", "🍵", "🐟"], built: false, seed: 21 },
 ];
 
 export const SPICE = ["mild", "a little heat", "spicy", "very spicy"];

@@ -68,8 +68,11 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
   const shore = (pts: [number, number][]) => { const sh = new THREE.Shape(); pts.forEach(([x, z], i) => { const edge = Math.abs(x) >= 38 || Math.abs(z) >= 28; const wx = edge ? x : x + Math.sin(i * 2.7) * 0.6, wz = edge ? z : z + Math.cos(i * 1.9) * 0.6; if (i === 0) sh.moveTo(wx, wz); else sh.lineTo(wx, wz); }); sh.closePath(); return sh; };
   const lagoonShape = shore([[7, -28], [38, -28], [38, 2], [36, 4], [33, 0], [30, -2], [24, -1], [18, -2], [12, -1], [9, -3], [7, -6], [6.5, -12], [7, -20]]);
   const seaShape = shore([[-38, 28], [38, 28], [38, 22], [34, 21], [26, 21.5], [18, 20.6], [10, 21.2], [2, 20.4], [-6, 21], [-14, 20.5], [-22, 21.2], [-30, 20.6], [-38, 21]]);
-  for (const [shape, name] of [[lagoonShape, "lagoon"], [seaShape, "sea"]] as [THREE.Shape, string][]) {
-    void name;
+  // a sand rim that follows each shoreline (the same outline, pushed 1.2 inland), then the water on top
+  const rimShape = shore([[-38, 28], [38, 28], [38, 20.8], [34, 19.8], [26, 20.3], [18, 19.4], [10, 20], [2, 19.2], [-6, 19.8], [-14, 19.3], [-22, 20], [-30, 19.4], [-38, 19.8]]);
+  const lagoonRim = shore([[6, -28], [38, -28], [38, 3], [36, 5.2], [33, 1.2], [30, -0.8], [24, 0.2], [18, -0.8], [12, 0.2], [9, -1.8], [6, -4.8], [5.3, -12], [6, -20]]);
+  for (const shape of [rimShape, lagoonRim]) { const rimM = new THREE.Mesh(new THREE.ShapeGeometry(shape), mat("#efe0bb")); rimM.rotation.x = -Math.PI / 2; rimM.scale.y = -1; rimM.position.y = TOP + 0.03; rimM.receiveShadow = true; group.add(rimM); }
+  for (const shape of [lagoonShape, seaShape]) {
     const topM = new THREE.Mesh(new THREE.ShapeGeometry(shape), waterMat); topM.rotation.x = -Math.PI / 2; topM.scale.y = -1; topM.position.y = TOP + 0.06; topM.receiveShadow = true; group.add(topM);
   }
   const channel = new THREE.CatmullRomCurve3([new THREE.Vector3(34, 0, 1), new THREE.Vector3(36.5, 0, 6), new THREE.Vector3(35, 0, 12), new THREE.Vector3(36, 0, 18), new THREE.Vector3(33, 0, 23)]);
@@ -108,7 +111,6 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
   addFish({ group, tickers, place, tint, TOP }, seaLane, [["#3f8fa4", "#dfe3e6"], ["#8a949c", "#c9d0d4"], ["#e8912a", "#f4f1ea"], ["#5c7f9a", "#dfe3e6"], ["#b3bfc9", "#8a949c"], ["#3f8fa4", "#c9d0d4"], ["#8a949c", "#dfe3e6"], ["#5c7f9a", "#c9d0d4"]], 1.6, 0.36);
 
   // ---------- Sicily: the coast, Etna, citrus, a baroque church ----------
-  add(group, new THREE.Mesh(new THREE.PlaneGeometry(64, 1.6), mat("#efe0bb")), -8, TOP + 0.02, 20.6).rotation.x = -Math.PI / 2;   // beach
   const boats = [fishingBoat("#3f6b8f"), fishingBoat("#c0392b"), fishingBoat("#f4f1ea")];
   boats.forEach((b, i) => { place(b, -12 + i * 14, 24 + (i % 2) * 1.5, 0.3 - i * 0.5); });
   const sailer = fishingBoat("#e0a52c"); group.add(sailer); tickers.push(sailer.userData.tick!);

@@ -29,11 +29,11 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
   place(pantheon(), -4, -17, 0.05);
   place(triumphalArch(), -26, -9, -0.1);
   place(basilica(), -26, -21, 0.05).scale.setScalar(0.85);
-  place(treviFountain(), -12, 11, Math.PI);
+  place(treviFountain(), -32, 5, Math.PI / 2);   // west end, facing the paddock and the piazza
   place(cafeTables(), -3, 4.5, 0.5);
   for (const [x, z, rot, len] of [[-24, 2.2, 0, 6], [-24, 7.8, 0, 6], [-27, 5, Math.PI / 2, 5.6], [-21, 5, Math.PI / 2, 5.6]] as [number, number, number, number][]) { const f = new THREE.Group(); const n = Math.round(len / 1.1); for (let i = 0; i <= n; i++) add(f, new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.7, 0.09), mat("#6e4a2c")), -len / 2 + (i / n) * len, 0.35, 0); add(f, new THREE.Mesh(new THREE.BoxGeometry(len, 0.06, 0.05), mat("#8b5e3c")), 0, 0.55, 0); add(f, new THREE.Mesh(new THREE.BoxGeometry(len, 0.06, 0.05), mat("#8b5e3c")), 0, 0.3, 0); place(f, x, z, rot); }
   group.add(path([[-30, -10], [-22, -8], [-14, -8], [-6, -6], [2, -4], [8, -6]], 2.6, "#cdbfa2"));
-  group.add(path([[-16, 6], [-18, 12], [-14, 17], [-6, 18], [-2, 22]], 1.8, "#cdbfa2"));
+  group.add(path([[-10, 8], [-9, 12], [-6, 18], [-2, 22]], 1.8, "#cdbfa2"));
   group.add(path([[-2, -4], [4, 0], [8, 6], [10, 10]], 1.6, "#cdbfa2"));
   place(colosseum(), -28, 12, 0.3);
   for (let i = 0; i < 7; i++) place(umbrellaPine(0.9 + (i % 3) * 0.15), -34 + i * 2.4, -2 + Math.sin(i) * 1.2, i);
@@ -44,7 +44,7 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
   const houses: ["rome" | "venice" | "sicily", number, number, number, number, number, number, number][] = [
     ["rome", -16, -13, 0, 2.8, 2.4, 2.2, 3], ["rome", -12, -13, -0.1, 3.2, 2.6, 2.2, 2],
     ["rome", 3, -10, 0.1, 3.4, 2.6, 2.2, 3], ["rome", 2, -3, 0.2, 3.0, 2.4, 2.2, 2],
-    ["rome", -30, 4, -0.5, 3.2, 2.6, 2.2, 2], ["rome", -33, -4, 0.3, 2.8, 2.4, 2.2, 2],
+    ["rome", -33, -5, 0.3, 2.8, 2.4, 2.2, 2],
     ["sicily", -9, 20, 0.1, 3.0, 2.4, 2.2, 1], ["sicily", 7, 19.5, -0.2, 2.6, 2.2, 2.2, 2], ["sicily", 12, 18.5, 0.2, 3.2, 2.4, 2.2, 1],
     ["sicily", 16, 12, 0.6, 2.8, 2.4, 2.2, 2], ["rome", 6, 4, 0.4, 2.8, 2.4, 2.2, 2],
   ];

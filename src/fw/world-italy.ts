@@ -29,14 +29,14 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
   place(pantheon(), -4, -17, 0.05);
   place(triumphalArch(), -26, -9, -0.1);
   place(basilica(), -26, -21, 0.05).scale.setScalar(0.85);
-  place(treviFountain(), 12, 2, -Math.PI / 2);   // east of the piazza, facing it
+  place(treviFountain(), -32, 2, Math.PI / 2).scale.setScalar(0.7);   // smaller, at the quiet west end, facing the piazza
   place(cafeTables(), -15, -4.6, 0);
   for (const [x, z, rot, len] of [[-20, 9.2, 0, 6], [-20, 14.8, 0, 6], [-23, 12, Math.PI / 2, 5.6], [-17, 12, Math.PI / 2, 5.6]] as [number, number, number, number][]) { const f = new THREE.Group(); const n = Math.round(len / 1.1); for (let i = 0; i <= n; i++) add(f, new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.7, 0.09), mat("#6e4a2c")), -len / 2 + (i / n) * len, 0.35, 0); add(f, new THREE.Mesh(new THREE.BoxGeometry(len, 0.06, 0.05), mat("#8b5e3c")), 0, 0.55, 0); add(f, new THREE.Mesh(new THREE.BoxGeometry(len, 0.06, 0.05), mat("#8b5e3c")), 0, 0.3, 0); place(f, x, z, rot); }
   group.add(path([[-30, -10], [-22, -8], [-14, -8], [-6, -6], [2, -4], [8, -6]], 2.6, "#cdbfa2"));
   group.add(path([[-10, 8], [-9, 12], [-6, 18], [-2, 22]], 1.8, "#cdbfa2"));
   group.add(path([[-2, -4], [4, 0], [5.5, 5], [6, 9]], 1.6, "#cdbfa2"));
   place(colosseum(), -28, 12, 0.3);
-  for (let i = 0; i < 7; i++) place(umbrellaPine(0.9 + (i % 3) * 0.15), -34 + i * 2.4, -2 + Math.sin(i) * 1.2, i);
+  for (let i = 0; i < 6; i++) place(umbrellaPine(0.9 + (i % 3) * 0.15), -30 + i * 2.4, -4.6 + Math.sin(i) * 0.8, i);
   for (let i = 0; i < 5; i++) place(umbrellaPine(1.0), -22 + i * 3, 18.4 + (i % 2) * 0.8, i);
   for (let i = 0; i < 5; i++) place(cypress(0.9 + (i % 2) * 0.2), -14 + i * 1.3, -22, i);
   for (let i = 0; i < 4; i++) place(cypress(1.0), -2 + i * 1.3, -22, i);

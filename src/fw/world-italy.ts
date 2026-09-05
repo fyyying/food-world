@@ -85,9 +85,11 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
     [17, -8, 0.3, 2.6, 2.2, 2], [23, -6, 0, 2.6, 2.2, 2], [31, -12, 0.2, 2.4, 2.0, 2],
   ];
   for (const [x, z, rot, w, d, st] of vHouses) place(italianHouse("venice", w, d, 2.2, st), x, z, rot).position.y = 0.45;
-  place(venetianBridge(4), 18, -13.5, Math.PI / 2 + 0.1).position.y = 0.45;
-  place(venetianBridge(4), 24, -14, 0.2).position.y = 0.45;
-  place(venetianBridge(3.5), 27.5, -9, Math.PI / 2).position.y = 0.45;
+  // bridges span the actual gaps between the four quays
+  place(venetianBridge(4.2), 18, -18, 0).position.y = 0.45;            // west island ↔ campanile island
+  place(venetianBridge(6.2), 22, -14, Math.PI / 2).position.y = 0.45;   // campanile island ↔ fish-market island
+  place(venetianBridge(4.2), 26.5, -9.2, 0).position.y = 0.45;          // fish-market island ↔ eastern quay
+  place(venetianBridge(3.6), 15.8, -12.7, Math.PI / 2).position.y = 0.45;   // west island ↔ fish-market island
   for (const [x, z] of [[8, -14], [15, -12], [26, -16], [17, -4], [29, -6], [34, -14]]) place(mooringPole(), x, z).position.y = 0;
   // gondolas glide along a canal loop through the islands
   // the canal route threads the water lanes between the four islands and never crosses a quay

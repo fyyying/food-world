@@ -116,7 +116,6 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
   tickers.push((t) => { const u = (t * 0.006) % 1; const p = sail.getPointAt(u), n = sail.getPointAt((u + 0.005) % 1); sailer.position.set(p.x, TOP + 0.05, p.z); sailer.rotation.y = Math.atan2(n.x - p.x, n.z - p.z) - Math.PI / 2; });
   place(etna(), 26.5, 9, 0.4).scale.setScalar(0.8);
   place(baroqueChurch(), 0, 19, 0.05);
-  for (let i = 0; i < 4; i++) place(pricklyPear(), 29 + i * 1.9, 18.2 + (i % 2) * 1.0, i);
 
   // a small harbour mole with a lighthouse
   add(group, new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.6, 7), mat(IT.stone)), 14, 0.3, 24.5);

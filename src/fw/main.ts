@@ -258,6 +258,7 @@ function openObject(p: Placed) {
   else ui.showObject(obj, recipes, OBJECTS_NOW());
   diorama!.highlight(new Set([obj.id]), null);   // the card is enough; plates only rise at a place or on "Explore dishes"
   diorama!.poke(p);
+  if (p.obj.alias) { const real = diorama!.placed.find((x) => x.obj.id === p.obj.alias); if (real) diorama!.poke(real); }
   glideTo(p.anchor.clone().add(new THREE.Vector3(0, 0.8, 0)), p.obj.hitOnly ? 16 : 28, 1.0, undefined, p.obj.hitOnly ? 3 : 5);
 }
 

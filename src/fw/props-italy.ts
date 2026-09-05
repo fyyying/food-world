@@ -86,8 +86,13 @@ export function oliveTree(s = 1): P {
 export function citrusTree(kind: "lemon" | "orange" = "lemon", s = 1): P {
   const g = group();
   add(g, cyl(0.09 * s, 0.13 * s, 0.7 * s, "#6b4a2c", 6), 0, 0.35 * s, 0);
-  add(g, ball(0.7 * s, "#3f7a3a", 9), 0, 1.15 * s, 0).scale.y = 0.95;
-  for (let i = 0; i < 9; i++) { const a = rnd() * Math.PI * 2, r = 0.55 * s; const f = add(g, ball(0.09 * s, kind === "lemon" ? IT.lemon : IT.orange, 7), Math.cos(a) * r, (0.8 + rnd() * 0.7) * s, Math.sin(a) * r); if (kind === "lemon") f.scale.set(0.8, 1.15, 0.8); }
+  const crown = new THREE.Group(); g.add(crown);
+  add(crown, ball(0.7 * s, "#3f7a3a", 9), 0, 1.15 * s, 0).scale.y = 0.95;
+  const fruits: THREE.Mesh[] = [];
+  for (let i = 0; i < 9; i++) { const a = rnd() * Math.PI * 2, r = 0.55 * s; const f = add(crown, ball(0.09 * s, kind === "lemon" ? IT.lemon : IT.orange, 7), Math.cos(a) * r, (0.8 + rnd() * 0.7) * s, Math.sin(a) * r); if (kind === "lemon") f.scale.set(0.8, 1.15, 0.8); fruits.push(f); }
+  (g.userData as { crown?: THREE.Group; fruits?: THREE.Mesh[]; kind?: string }).crown = crown;
+  (g.userData as { crown?: THREE.Group; fruits?: THREE.Mesh[]; kind?: string }).fruits = fruits;
+  (g.userData as { crown?: THREE.Group; fruits?: THREE.Mesh[]; kind?: string }).kind = kind;
   return g;
 }
 
@@ -504,17 +509,55 @@ export function mooringPole(): P {
   return g;
 }
 
+/** Bits of seafood for the market slabs and the card picture. */
+function shrimp(g: THREE.Object3D, x: number, y: number, z: number, rot = 0) {
+  const curve = new THREE.CatmullRomCurve3([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0.12, 0.09, 0), new THREE.Vector3(0.24, 0.06, 0), new THREE.Vector3(0.3, -0.04, 0)]);
+  const m = new THREE.Mesh(new THREE.TubeGeometry(curve, 8, 0.045, 6), mat("#f08a6a", { roughness: 0.5 })); m.position.set(x, y, z); m.rotation.y = rot; m.castShadow = true; g.add(m);
+  const tail = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.12, 3), mat("#e06a52")); tail.position.set(0.32, -0.05, 0); tail.rotation.z = -1.3; m.add(tail);
+  for (const sd of [-1, 1]) { const w = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.3, 3), mat("#e06a52")); w.position.set(-0.05, 0.03, sd * 0.03); w.rotation.z = 1.2; w.rotation.x = sd * 0.4; m.add(w); }
+}
+function octopus(g: THREE.Object3D, x: number, y: number, z: number, s = 1) {
+  const o = new THREE.Group(); o.position.set(x, y, z); g.add(o);
+  add(o, ball(0.22 * s, "#8a5a8a", 10), 0, 0.18 * s, 0).scale.set(1, 1.2, 1);
+  for (const sd of [-1, 1]) { add(o, ball(0.05 * s, "#f4f1ea", 6), sd * 0.1 * s, 0.2 * s, 0.17 * s); add(o, ball(0.025 * s, "#1f1f1f", 5), sd * 0.1 * s, 0.2 * s, 0.21 * s); }
+  for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2; const curve = new THREE.CatmullRomCurve3([new THREE.Vector3(0, 0.05 * s, 0), new THREE.Vector3(Math.cos(a) * 0.2 * s, 0.02 * s, Math.sin(a) * 0.2 * s), new THREE.Vector3(Math.cos(a) * 0.36 * s, 0.03 * s, Math.sin(a) * 0.36 * s), new THREE.Vector3(Math.cos(a + 0.6) * 0.42 * s, 0.09 * s, Math.sin(a + 0.6) * 0.42 * s)]); const t = new THREE.Mesh(new THREE.TubeGeometry(curve, 10, 0.035 * s, 6), mat("#8a5a8a")); t.castShadow = true; o.add(t); }
+}
+function crab(g: THREE.Object3D, x: number, y: number, z: number) {
+  const c = new THREE.Group(); c.position.set(x, y, z); g.add(c);
+  add(c, ball(0.16, "#d9533a", 9), 0, 0.06, 0).scale.set(1.3, 0.5, 1);
+  for (let i = 0; i < 4; i++) for (const sd of [-1, 1]) { const l = add(c, cyl(0.012, 0.012, 0.18, "#d9533a", 4), sd * 0.2, 0.04, -0.12 + i * 0.08); l.rotation.z = sd * 1.2; }
+  for (const sd of [-1, 1]) add(c, ball(0.05, "#d9533a", 6), sd * 0.18, 0.08, 0.16).scale.set(1.4, 0.8, 1.2);
+}
+function fishOnIce(g: THREE.Object3D, x: number, y: number, z: number, color: string, len = 0.45) {
+  const f = new THREE.Group(); f.position.set(x, y, z); g.add(f);
+  add(f, ball(0.1, color, 9), 0, 0, 0).scale.set(len / 0.1 * 0.45, 0.55, 0.9);
+  add(f, cone(0.08, 0.18, color, 4), -len * 0.55, 0, 0).rotation.z = Math.PI / 2;
+  add(f, cone(0.04, 0.1, color, 3), 0, 0.06, 0);
+  add(f, ball(0.02, "#1f1f1f", 5), len * 0.35, 0.03, 0.05);
+}
+
 export function fishMarket(): P {
   const g = group();
   // an open loggia with columns and a red-tiled roof, the Pescheria
-  add(g, box(6, 0.3, 4, IT.venCream), 0, 0.15, 0);
-  for (const x of [-2.6, -0.9, 0.9, 2.6]) for (const z of [-1.6, 1.6]) add(g, cyl(0.14, 0.16, 2.6, "#d9ccb0", 8), x, 1.6, z);
-  add(g, tiledRoof(6.8, 4.8, 1.1, "#a8433a"), 0, 2.9, 0);
-  // slabs of fish on ice, crates, a lobster
-  for (const x of [-1.6, 0, 1.6]) { add(g, box(1.3, 0.7, 0.9, IT.stone), x, 0.65, 0.2); add(g, box(1.3, 0.1, 0.9, "#eef4f4"), x, 1.05, 0.2); for (let i = 0; i < 4; i++) { const f = add(g, ball(0.12, i % 2 ? "#7f93a6" : "#b3bfc9", 7), x - 0.4 + i * 0.27, 1.14, 0.2 + (i % 2) * 0.25 - 0.12); f.scale.set(1.9, 0.6, 0.9); } }
-  add(g, ball(0.16, "#c9413f", 8), 1.6, 1.16, 0.45).scale.set(1.8, 0.7, 0.8);
-  for (let i = 0; i < 5; i++) add(g, ball(0.06, "#3b3f45", 6), -1.9 + i * 0.12, 1.14, -0.15); // mussels
-  add(g, person("#3f6b8f", { apron: true }), -0.8, 0, -0.9); add(g, person("#7a4a3a", { apron: true }), 1.2, 0, -0.9);
+  add(g, box(7, 0.3, 4.4, IT.venCream), 0, 0.15, 0);
+  for (const x of [-3.1, -1.05, 1.05, 3.1]) for (const z of [-1.8, 1.8]) add(g, cyl(0.14, 0.16, 2.6, "#d9ccb0", 8), x, 1.6, z);
+  add(g, tiledRoof(7.8, 5.2, 1.1, "#a8433a"), 0, 2.9, 0);
+  add(g, box(2.0, 0.4, 0.06, "#f3e6c8"), 0, 2.4, 2.25); add(g, box(0.12, 0.4, 0.06, "#3f6b8f"), -0.7, 2.4, 2.29); add(g, box(0.12, 0.4, 0.06, "#3f6b8f"), 0.7, 2.4, 2.29);
+  // three slabs of ice: whole fish, shellfish, and the octopus and crab
+  for (const x of [-2.2, 0, 2.2]) { add(g, box(1.8, 0.7, 1.1, IT.stone), x, 0.65, 0.3); add(g, box(1.8, 0.12, 1.1, "#eef4f4"), x, 1.06, 0.3); }
+  fishOnIce(g, -2.6, 1.18, 0.05, "#b3bfc9", 0.55); fishOnIce(g, -2.0, 1.18, 0.4, "#7f93a6", 0.5); fishOnIce(g, -1.5, 1.18, 0.0, "#c9d0d4", 0.42); fishOnIce(g, -2.4, 1.2, 0.65, "#e07a3a", 0.3);
+  for (let i = 0; i < 7; i++) shrimp(g, -0.7 + (i % 4) * 0.28, 1.14 + (i > 3 ? 0.06 : 0), -0.05 + Math.floor(i / 4) * 0.35, (i % 3) * 0.6);
+  for (let i = 0; i < 9; i++) add(g, ball(0.05, "#2f3540", 6), -0.55 + (i % 5) * 0.2, 1.13, 0.62 + Math.floor(i / 5) * 0.15).scale.set(1.3, 0.7, 0.8);   // mussels
+  for (let i = 0; i < 5; i++) add(g, ball(0.06, "#e8dcc3", 7), 0.35 + i * 0.13, 1.14, 0.2).scale.y = 0.5;   // clams
+  octopus(g, 1.9, 1.12, 0.1, 1.0);
+  crab(g, 2.8, 1.12, 0.55);
+  add(g, ball(0.16, "#c9413f", 8), 2.6, 1.18, -0.2).scale.set(1.8, 0.7, 0.8);   // lobster
+  // dried cod hanging from the eave, a bucket of eels, a scale
+  for (let i = 0; i < 3; i++) { add(g, cyl(0.01, 0.01, 0.4, "#4a3222", 3), -2.6 + i * 0.5, 2.15, -1.6); add(g, box(0.16, 0.7, 0.05, "#e9dcc3"), -2.6 + i * 0.5, 1.6, -1.6); }
+  add(g, cyl(0.28, 0.24, 0.4, "#5a5a66", 10), 2.9, 0.5, -1.4); for (let i = 0; i < 3; i++) add(g, cyl(0.02, 0.02, 0.5, "#3f4a3a", 4), 2.8 + i * 0.08, 0.72, -1.4 + i * 0.05).rotation.z = 0.5;
+  add(g, cyl(0.02, 0.02, 0.8, "#8c9096", 5), 0, 1.5, -1.6); add(g, cyl(0.18, 0.18, 0.04, "#8c9096", 10), 0, 1.9, -1.6);
+  add(g, person("#3f6b8f", { apron: true }), -1.6, 0.3, -1.0); add(g, person("#7a4a3a", { apron: true }), 1.2, 0.3, -1.0);
+  add(g, person("#e0a52c"), -0.6, 0.3, 1.9).rotation.y = Math.PI; add(g, person("#f4f1ea"), 1.8, 0.3, 2.0).rotation.y = Math.PI + 0.3;
   const gulls: THREE.Group[] = [];
   for (let i = 0; i < 3; i++) { const gl = new THREE.Group(); add(gl, ball(0.1, "#f4f1ea", 7), 0, 0, 0).scale.set(1.3, 0.7, 1); for (const sd of [-1, 1]) add(gl, box(0.32, 0.03, 0.12, "#e6e2da"), sd * 0.2, 0.02, 0); gl.position.set(-2.5 + i * 2.5, 3.6, 0.3); g.add(gl); gulls.push(gl); }
   const re = reaction(0.6);
@@ -571,21 +614,29 @@ export function etna(): P {
   add(g, cyl(1.2, 1.6, 0.6, "#2a2528", 12), 0, 10.9, 0);
   const glow = add(g, cyl(0.9, 0.9, 0.1, "#ff6a2a", 12), 0, 11.2, 0);
   g.userData.smoke = new THREE.Vector3(0, 11.4, 0);
-  for (let i = 0; i < 6; i++) { const a = rnd() * Math.PI * 2, d = 6 + rnd() * 4; add(g, pricklyPear(), Math.cos(a) * d, 0.2 + Math.max(0, (9.5 - d)) * 0.6, Math.sin(a) * d); }
+  for (let i = 0; i < 6; i++) { const a = Math.PI * (0.55 + rnd() * 0.9), d = 6 + rnd() * 3; add(g, pricklyPear(), Math.cos(a) * d, 0.2 + Math.max(0, (9.5 - d)) * 0.6, Math.sin(a) * d); }   // landward side only
   g.userData.tick = (t) => { (glow.material as THREE.MeshStandardMaterial).emissive = new THREE.Color("#ff4a1a"); (glow.material as THREE.MeshStandardMaterial).emissiveIntensity = 0.5 + Math.sin(t * 3) * 0.3; };
   return g;
 }
 
 export function citrusGrove(): P {
   const g = group();
-  for (let i = 0; i < 3; i++) for (let j = 0; j < 4; j++) add(g, citrusTree(j % 2 ? "lemon" : "orange", 0.9 + rnd() * 0.25), -4 + j * 2.6, 0, -2.4 + i * 2.4);
+  const trees: P[] = [];
+  for (let i = 0; i < 3; i++) for (let j = 0; j < 4; j++) trees.push(add(g, citrusTree(j % 2 ? "lemon" : "orange", 0.9 + rnd() * 0.25), -4 + j * 2.6, 0, -2.4 + i * 2.4));
   add(g, box(9.5, 0.3, 0.3, IT.stone), 0, 0.15, 3.0);
   add(g, person("#e0a52c", { hat: true }), 3.2, 0, -3.4);
   const crate = add(g, box(0.6, 0.3, 0.45, "#a37a4f"), 4.2, 0.15, -3.4); for (let k = 0; k < 6; k++) add(crate, ball(0.09, k % 2 ? IT.lemon : IT.orange, 6), (rnd() - 0.5) * 0.45, 0.18, (rnd() - 0.5) * 0.3);
-  const falling: THREE.Mesh[] = [];
-  const re = reaction(0.7);
-  g.userData.poke = () => { re.poke(); for (let i = 0; i < 8; i++) { const f = add(g, ball(0.09, i % 2 ? IT.lemon : IT.orange, 6), -4 + Math.floor(rnd() * 4) * 2.6 + (rnd() - 0.5) * 0.8, 1.2 + rnd() * 0.5, -2.4 + Math.floor(rnd() * 3) * 2.4 + (rnd() - 0.5) * 0.8); f.userData.v = 0; f.userData.life = 0; falling.push(f); } };
-  g.userData.tick = (t, dt) => { re.step(dt); for (let i = falling.length - 1; i >= 0; i--) { const f = falling[i]; f.userData.v += dt * 8; f.position.y = Math.max(0.09, f.position.y - f.userData.v * dt); f.userData.life += dt; if (f.userData.life > 4) { g.remove(f); falling.splice(i, 1); } } };
+  // click: the trees shake and lemons and oranges drop from the branches
+  const falling: { m: THREE.Mesh; v: number; life: number }[] = [];
+  let shake = 0;
+  g.userData.poke = () => {
+    shake = 1;
+    for (const tr of trees) { const u = tr.userData as { fruits?: THREE.Mesh[]; kind?: string }; const fr = u.fruits ?? []; for (let i = 0; i < 2; i++) { const src = fr[Math.floor(rnd() * fr.length)]; const m = ball(0.09, u.kind === "lemon" ? IT.lemon : IT.orange, 6); const wp = src.getWorldPosition(new THREE.Vector3()); g.worldToLocal(wp); m.position.copy(wp); g.add(m); falling.push({ m, v: 0, life: 0 }); } }
+  };
+  g.userData.tick = (t, dt) => {
+    if (shake > 0) { shake = Math.max(0, shake - dt * 1.2); for (const tr of trees) { const c = (tr.userData as { crown?: THREE.Group }).crown; if (c) { c.rotation.z = Math.sin(t * 26 + tr.position.x) * 0.06 * shake; c.rotation.x = Math.cos(t * 21 + tr.position.z) * 0.05 * shake; } } }
+    for (let i = falling.length - 1; i >= 0; i--) { const f = falling[i]; f.v += dt * 8; f.life += dt; f.m.position.y = Math.max(0.09, f.m.position.y - f.v * dt); if (f.m.position.y <= 0.091) f.v = 0; if (f.life > 4) { g.remove(f.m); falling.splice(i, 1); } }
+  };
   return g;
 }
 
@@ -676,7 +727,7 @@ export const ITALY_ICONS: Record<string, () => P> = {
   italyBeef: () => cow(false), italyChicken: () => chicken(),
   mushrooms: () => { const g = group(); for (const [x, z, r] of [[-0.25, 0, 0.3], [0.3, 0.1, 0.22]]) { add(g, cyl(r * 0.5, r * 0.55, 0.32, "#e7d9c3", 7), x, 0.16, z); add(g, ball(r, "#8a5a3c", 9), x, 0.36, z).scale.y = 0.65; } return g; },
   lemon: () => { const g = group(); for (let i = 0; i < 3; i++) { const l = add(g, ball(0.2, i === 1 ? IT.orange : IT.lemon, 12), -0.3 + i * 0.32, 0.2, (i - 1) * 0.12); l.scale.set(1, i === 1 ? 1 : 1.2, 1); } add(g, ball(0.1, "#3f7a3a", 6), 0.05, 0.4, 0.15).scale.set(1, 0.3, 1.6); return g; },
-  seafood: () => { const g = group(); add(g, box(1.2, 0.1, 0.8, "#eef4f4"), 0, 0.05, 0); const f = add(g, ball(0.16, "#7f93a6", 9), -0.2, 0.2, 0); f.scale.set(2.0, 0.6, 0.9); add(g, cone(0.1, 0.24, "#7f93a6", 4), -0.62, 0.2, 0).rotation.z = Math.PI / 2; for (let i = 0; i < 3; i++) { const p = add(g, ball(0.06, "#f08a6a", 6), 0.3 + i * 0.15, 0.16, 0.25); p.scale.set(1.5, 0.7, 0.8); } for (let i = 0; i < 4; i++) add(g, ball(0.05, "#3b3f45", 5), 0.2 + i * 0.12, 0.14, -0.25); return g; },
+  seafood: () => { const g = group(); add(g, box(1.4, 0.1, 0.9, "#eef4f4"), 0, 0.05, 0); fishOnIce(g, -0.35, 0.16, -0.2, "#7f93a6", 0.5); for (let i = 0; i < 3; i++) shrimp(g, 0.05 + i * 0.15, 0.14, 0.3, 0.4 + i * 0.3); octopus(g, 0.4, 0.1, -0.15, 0.55); for (let i = 0; i < 4; i++) add(g, ball(0.045, "#2f3540", 5), -0.5 + i * 0.12, 0.13, 0.32).scale.set(1.3, 0.7, 0.8); return g; },
   rice: () => { const g = group(); add(g, cyl(0.42, 0.28, 0.32, "#f7f2e6", 12), 0, 0.16, 0); add(g, ball(0.38, "#f4ecc8", 9), 0, 0.36, 0).scale.y = 0.45; for (let i = 0; i < 6; i++) add(g, ball(0.03, "#e0a52c", 5), (rnd() - 0.5) * 0.4, 0.5, (rnd() - 0.5) * 0.4); return g; },
   oven: () => { const g = group(); const d = add(g, ball(0.5, "#b8654a", 12), 0, 0.4, 0); d.scale.y = 0.75; add(g, box(0.4, 0.25, 0.1, "#1f1a18"), 0, 0.3, 0.45); add(g, cone(0.12, 0.2, "#ff9a3c", 6), 0, 0.28, 0.42); add(g, cyl(0.3, 0.3, 0.05, "#e9c46a", 14), 0.5, 0.05, 0.45); add(g, cyl(0.25, 0.25, 0.03, "#c9413f", 14), 0.5, 0.09, 0.45); add(g, cyl(0.2, 0.2, 0.03, "#f7f2e6", 14), 0.5, 0.12, 0.45); return g; },
   ragu: () => { const g = group(); add(g, cyl(0.42, 0.38, 0.4, "#8c2f2a", 14), 0, 0.2, 0); add(g, cyl(0.38, 0.38, 0.04, "#a63d2a", 14), 0, 0.41, 0); for (let i = 0; i < 6; i++) add(g, ball(0.04, i % 2 ? "#e0483a" : "#5a3a2a", 5), (rnd() - 0.5) * 0.5, 0.44, (rnd() - 0.5) * 0.5); add(g, cyl(0.03, 0.03, 0.5, "#c9a37a", 5), 0.3, 0.55, 0.1).rotation.z = -0.8; return g; },

@@ -665,9 +665,12 @@ export function pantheon(): P {
   // portico: two rows of columns, a pediment
   for (let r = 0; r < 2; r++) for (let i = 0; i < 8; i++) { const c = add(g, cyl(0.28, 0.32, 4.0, "#d9ccb0", 12), -3.5 + i * 1.0, 2.5, 4.6 - r * 1.6); add(c, box(0.8, 0.22, 0.8, "#e9dcc3"), 0, 2.05, 0); }
   add(g, box(8.4, 0.5, 4, "#d9ccb0"), 0, 4.75, 3.8);
-  const ped = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 6.2, 1.6, 3, 1), mat("#e9dcc3"));
-  ped.rotation.x = Math.PI / 2; ped.rotation.z = Math.PI; ped.scale.set(1, 1, 0.7); ped.position.set(0, 5.8, 5.6);
-  ped.geometry.computeVertexNormals(); ped.castShadow = true; g.add(ped);
+  // the pediment: a shallow triangular gable sitting on the portico's entablature
+  const tri = new THREE.Shape(); tri.moveTo(-4.4, 0); tri.lineTo(4.4, 0); tri.lineTo(0, 1.6); tri.closePath();
+  const ped = new THREE.Mesh(new THREE.ExtrudeGeometry(tri, { depth: 0.6, bevelEnabled: false }), mat("#e9dcc3"));
+  ped.position.set(0, 5.0, 5.3); ped.castShadow = true; g.add(ped);
+  const gable = new THREE.Mesh(new THREE.ExtrudeGeometry(tri, { depth: 3.2, bevelEnabled: false }), mat("#d9ccb0"));
+  gable.position.set(0, 5.0, 2.1); g.add(gable);
   add(g, box(8.4, 0.5, 4, "#d9ccb0"), 0, 4.75, 3.8);
   add(g, box(2.2, 3.2, 0.2, "#4a3222"), 0, 2.1, 2.2);  // bronze doors
   for (let i = 0; i < 4; i++) add(g, person(pick(["#3f6b8f", "#e0a52c", "#c0392b", "#f4f1ea"])), -3 + i * 2, 0.5, 6.4).rotation.y = Math.PI;

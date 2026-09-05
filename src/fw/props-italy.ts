@@ -505,12 +505,16 @@ export function gondola(): P {
   return g;
 }
 
+/** A Venetian footbridge: a stone arch boats can pass under, with steps up each side and iron railings. */
 export function venetianBridge(len = 4): P {
   const g = group();
-  const steps = 5;
-  for (let i = 0; i < steps; i++) { const w = len * (0.5 + i * 0.12); add(g, box(w, 0.2, 1.6, IT.venCream), 0, 0.1 + i * 0.2, 0); }
-  add(g, box(len * 0.55, 0.16, 1.6, IT.venCream), 0, 0.1 + steps * 0.2, 0);
-  for (const z of [-0.7, 0.7]) { add(g, box(len * 1.1, 0.08, 0.08, "#5a5a66"), 0, 1.35, z); for (let i = 0; i <= 5; i++) add(g, box(0.06, 0.4, 0.06, "#5a5a66"), -len * 0.55 + i * len * 0.22, 1.15, z); }
+  const R = len * 0.5;
+  const arch = new THREE.Mesh(new THREE.TorusGeometry(R, 0.42, 8, 18, Math.PI), mat(IT.venCream)); arch.scale.y = 0.75; arch.castShadow = true; arch.receiveShadow = true; g.add(arch);
+  // stepped deck following the arch, then a flat crown
+  for (let i = 0; i < 4; i++) for (const sd of [-1, 1]) add(g, box(0.34, 0.16, 1.5, i % 2 ? IT.venCream : "#e6dcc6"), sd * (R - 0.15 - i * 0.34), R * 0.75 - 0.5 + i * 0.16, 0);
+  add(g, box(len * 0.4, 0.16, 1.5, IT.venCream), 0, R * 0.75 + 0.2, 0);
+  for (const sd of [-1, 1]) add(g, box(0.9, 0.9, 1.6, IT.venCream), sd * (R + 0.3), 0.45, 0);   // abutments on the quays
+  for (const z of [-0.7, 0.7]) { add(g, box(len * 1.1, 0.06, 0.06, "#5a5a66"), 0, R * 0.75 + 0.75, z); for (let i = 0; i <= 5; i++) add(g, box(0.05, 0.5, 0.05, "#5a5a66"), -len * 0.55 + i * len * 0.22, R * 0.75 + 0.5, z); }
   return g;
 }
 

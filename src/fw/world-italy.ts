@@ -43,10 +43,10 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
   // Roman streets of ochre houses around the piazza
   const houses: ["rome" | "venice" | "sicily", number, number, number, number, number, number, number][] = [
     ["rome", -16, -13, 0, 2.8, 2.4, 2.2, 3], ["rome", -12, -13, -0.1, 3.2, 2.6, 2.2, 2],
-    ["rome", 3, -10, 0.1, 3.4, 2.6, 2.2, 3], ["rome", 20.5, 1.2, 0.2, 3.0, 2.4, 2.2, 2],
+    ["rome", 3, -10, 0.1, 3.4, 2.6, 2.2, 3],
     ["rome", -33, -5, 0.3, 2.8, 2.4, 2.2, 2],
     ["sicily", -9, 20, 0.1, 3.0, 2.4, 2.2, 1], ["sicily", 7, 19.5, -0.2, 2.6, 2.2, 2.2, 2], ["sicily", 12, 18.5, 0.2, 3.2, 2.4, 2.2, 1],
-    ["sicily", 16, 12, 0.6, 2.8, 2.4, 2.2, 2], ["rome", 24.5, 0.6, 0.4, 2.8, 2.4, 2.2, 2],
+    ["sicily", 16, 12, 0.6, 2.8, 2.4, 2.2, 2],
   ];
   for (const [style, x, z, rot, w, d, h, st] of houses) place(italianHouse(style, w, d, h, st), x, z, rot);
   // a Roman ruin: broken columns

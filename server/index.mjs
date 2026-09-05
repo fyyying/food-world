@@ -119,6 +119,17 @@ async function loadRecipes(force = false) {
   }
 }
 
+// dev helper: the browser posts a JPEG data URL of the 3D canvas and it lands in .data/shots/<name>.jpg
+app.post("/api/debug/shot", express.text({ limit: "40mb", type: "*/*" }), async (req, res) => {
+  const name = String(req.query.name ?? "shot").replace(/[^a-z0-9_-]/gi, "_");
+  const m = /^data:image\/jpeg;base64,(.+)$/.exec(req.body ?? "");
+  if (!m) return res.status(400).json({ error: "expected a jpeg data url" });
+  const { mkdirSync, writeFileSync } = await import("node:fs");
+  mkdirSync(".data/shots", { recursive: true });
+  writeFileSync(`.data/shots/${name}.jpg`, Buffer.from(m[1], "base64"));
+  res.json({ ok: true, file: `.data/shots/${name}.jpg` });
+});
+
 app.get("/api/recipes", async (req, res) => {
   try {
     const data = await loadRecipes(req.query.refresh === "1");

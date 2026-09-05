@@ -3,11 +3,12 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer.js";
 import { fetchRecipes } from "../data";
-import { MAP_REGIONS, AREAS, WORLDS, areasOf, objectsOf, worldRecipes, enrich, isChinaRecipe, isItalyRecipe, isKoreaRecipe, objectById, type Area, type EnrichedRecipe, type MapRegion, type WorldId } from "./graph";
+import { MAP_REGIONS, AREAS, WORLDS, areasOf, objectsOf, worldRecipes, enrich, isChinaRecipe, isItalyRecipe, isKoreaRecipe, isMexicoRecipe, objectById, type Area, type EnrichedRecipe, type MapRegion, type WorldId } from "./graph";
 import { buildMap, type MapWorld, type PlacedRegion } from "./map";
 import { buildChina } from "./world-china";
 import { buildItaly } from "./world-italy";
 import { buildKorea } from "./world-korea";
+import { buildMexico } from "./world-mexico";
 import { type Diorama, type DishMarker, type Placed } from "./worldkit";
 const areaCenter = (a: Area) => new THREE.Vector3(AREAS[a].center[0], 0, AREAS[a].center[1]);
 import { mountUi, showRecipePage, setCrumbs, hint, toast } from "./ui";
@@ -140,10 +141,11 @@ async function boot() {
     counts.set("china", recipes.filter(isChinaRecipe).length);
     counts.set("italy", recipes.filter(isItalyRecipe).length);
     counts.set("korea", recipes.filter(isKoreaRecipe).length);
+    counts.set("mexico", recipes.filter(isMexicoRecipe).length);
     mapWorld = buildMap(counts);
     mapScene.add(mapWorld.group);
     for (const r of mapWorld.regions) r.labelEl.addEventListener("click", () => { if (level !== "map" || flight) return; if (r.region.built) enterRegion(r.region); else ui.showRegion(r.region, r.count, "/"); });
-    status.textContent = `${recipes.length} dishes · ${counts.get("china")} in China · ${counts.get("italy")} in Italy · ${counts.get("korea")} in Korea`;
+    status.textContent = `${recipes.length} dishes · ${counts.get("china")} in China · ${counts.get("italy")} in Italy · ${counts.get("korea")} in Korea · ${counts.get("mexico")} in Mexico`;
   } catch (e) {
     status.textContent = `Couldn't load the cookbook: ${(e as Error).message}`;
     return;
@@ -201,7 +203,7 @@ function getWorld(id: WorldId): Diorama {
   let d = worlds[id];
   if (!d) {
     const recipes = worldRecipes(id, allRecipes).map(enrich);
-    d = id === "china" ? buildChina(recipes) : id === "italy" ? buildItaly(recipes) : buildKorea(recipes);
+    d = id === "china" ? buildChina(recipes) : id === "italy" ? buildItaly(recipes) : id === "korea" ? buildKorea(recipes) : buildMexico(recipes);
     worlds[id] = d;
     for (const p of d.placed) p.labelEl.addEventListener("click", () => { if (p.labelEl.classList.contains("pinned")) openObject(p); });
   }
@@ -426,5 +428,13 @@ const dbg = () => ({ level, flying: Boolean(flight), diorama: Boolean(diorama), 
 };
 (dbg as unknown as { open: (id: string) => void }).open = (id: string) => { const p = diorama?.placed.find((x) => x.obj.id === id); if (p) openObject(p); };
 (dbg as unknown as { enter: (id: string) => void }).enter = (id: string) => { const r = MAP_REGIONS.find((x) => x.id === id); if (r) enterRegion(r); };
+// debug: render a frame and post the canvas to the dev API as .data/shots/<name>.jpg (works while the pane is hidden)
+(dbg as unknown as { shot: (name: string) => Promise<string> }).shot = async (name: string) => {
+  (dbg as unknown as { step: (n: number) => void }).step(2);
+  renderer.render(level === "map" ? mapScene : worldScene, camera);
+  const url = canvas.toDataURL("image/jpeg", 0.8);
+  const r = await fetch(`/api/debug/shot?name=${encodeURIComponent(name)}`, { method: "POST", body: url });
+  return (await r.json()).file;
+};
 (window as unknown as { __fw: typeof dbg }).__fw = dbg;
 boot();

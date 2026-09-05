@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { ICONS, PROPS } from "./props";
 import { ITALY_ICONS, ITALY_PROPS } from "./props-italy";
 import { KOREA_ICONS, KOREA_PROPS } from "./props-korea";
+import { MEXICO_ICONS, MEXICO_PROPS } from "./props-mexico";
 
 let renderer: THREE.WebGLRenderer | null = null;
 const cache = new Map<string, string>();
@@ -10,7 +11,7 @@ const cache = new Map<string, string>();
 export function snapshot(key: string, size = 192): string | null {
   const hit = cache.get(key);
   if (hit) return hit;
-  const build = ICONS[key] ?? ITALY_ICONS[key] ?? KOREA_ICONS[key] ?? PROPS[key] ?? ITALY_PROPS[key] ?? KOREA_PROPS[key];
+  const build = ICONS[key] ?? ITALY_ICONS[key] ?? KOREA_ICONS[key] ?? MEXICO_ICONS[key] ?? PROPS[key] ?? ITALY_PROPS[key] ?? KOREA_PROPS[key] ?? MEXICO_PROPS[key];
   if (!build) return null;
   const url = snapshotObject(build(), size);
   cache.set(key, url);

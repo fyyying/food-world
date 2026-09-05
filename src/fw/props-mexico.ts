@@ -1,6 +1,7 @@
 /** Mexican props: colonial houses, the cathedral and pyramids, the mercado with papel picado, the taquería's trompo, milpa, agave, trajineras, a cenote and a Maya pyramid. Text is Spanish + English only. */
 import * as THREE from "three";
 import { mat, add, rnd, C, person, cow, bubble, wear, tree, type P } from "./props";
+import { flowingWaterMaterial } from "./worldkit";
 
 const group = (): P => new THREE.Group() as P;
 const box = (w: number, h: number, d: number, color: string) => new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat(color));
@@ -421,8 +422,8 @@ export function agaveField(): P {
   const plants: THREE.Group[] = [];
   for (let r = 0; r < 3; r++) for (let c = 0; c < 6; c++) {
     const a = new THREE.Group(); a.position.set(-3.5 + c * 1.4, 0, -2 + r * 1.6); g.add(a); plants.push(a);
-    for (let l = 0; l < 10; l++) { const leaf = add(a, cone(0.09, 0.9, MX.agave, 4), 0, 0.45, 0); leaf.geometry.translate(0, 0.45, 0); leaf.position.y = 0; leaf.rotation.y = (l / 10) * Math.PI * 2; leaf.rotation.x = 0.7 + (l % 2) * 0.25; }
-    add(a, ball(0.18, "#e9d7a8", 6), 0, 0.15, 0);
+    for (let l = 0; l < 12; l++) { const leaf = add(a, cone(0.13, 1.3, l % 3 ? "#5f8fa0" : "#6f9fb0", 4), 0, 0, 0); leaf.geometry.translate(0, 0.65, 0); leaf.rotation.y = (l / 12) * Math.PI * 2; leaf.rotation.x = 0.55 + (l % 2) * 0.35; leaf.rotation.z = (l % 3) * 0.05; }
+    add(a, ball(0.22, "#7fa8b8", 7), 0, 0.2, 0);
   }
   const jim = mexican("#f4f1ea", { hat: true }); add(g, jim, 4.2, 0, -0.5); jim.rotation.y = -1.6;
   add(g, cyl(0.02, 0.02, 1.4, MX.wood, 4), 4.5, 0.7, -0.2).rotation.z = 0.3; add(g, box(0.3, 0.02, 0.2, "#c9cfd6"), 4.7, 1.35, -0.2);   // the coa
@@ -561,8 +562,9 @@ export function pibOven(): P {
 }
 
 /** A cenote: a round sinkhole of turquoise water in the limestone, with a wooden ladder and swimmers. */
-export function cenote(waterMat: THREE.Material): P {
+export function cenote(): P {
   const g = group();
+  const waterMat = flowingWaterMaterial("#5fc4cf", "#2f8fa4");
   add(g, new THREE.Mesh(new THREE.RingGeometry(3.0, 4.2, 24), mat("#c9c2b0")), 0, 0.04, 0).rotation.x = -Math.PI / 2;
   add(g, new THREE.Mesh(new THREE.RingGeometry(2.6, 3.1, 24), mat("#8f857a")), 0, 0.05, 0).rotation.x = -Math.PI / 2;
   const w = new THREE.Mesh(new THREE.CircleGeometry(2.9, 24), waterMat); w.rotation.x = -Math.PI / 2; w.position.y = 0.06; w.renderOrder = 2; g.add(w);
@@ -573,7 +575,7 @@ export function cenote(waterMat: THREE.Material): P {
   add(g, tree("round", 1.1), -3.8, 0, -2.4); add(g, tree("round", 0.9), 3.4, 0, 3.0);
   const re = reaction(0.6);
   g.userData.poke = () => { re.poke(); bubble(g, "¡Al agua! Splash!", 1.4, 1300); };
-  g.userData.tick = (t, dt) => { const k = re.step(dt); swimmers.forEach((s, i) => { const a = t * 0.3 + i * 2.1; s.position.set(Math.cos(a) * 1.4, Math.sin(t * 2 + i) * 0.04 - k * Math.max(0, Math.sin(k * Math.PI)) * 0.3, Math.sin(a) * 1.4); s.rotation.y = -a; }); };
+  g.userData.tick = (t, dt) => { waterMat.uniforms.uTime.value = t; const k = re.step(dt); swimmers.forEach((s, i) => { const a = t * 0.3 + i * 2.1; s.position.set(Math.cos(a) * 1.4, Math.sin(t * 2 + i) * 0.04 - k * Math.max(0, Math.sin(k * Math.PI)) * 0.3, Math.sin(a) * 1.4); s.rotation.y = -a; }); };
   return g;
 }
 
@@ -586,8 +588,57 @@ export function flamingo(): P {
   return g;
 }
 
+
+/** Tomatoes and tomatillos in their papery husks, staked in rows, with a picker. */
+export function tomatoPatch(): P {
+  const g = group();
+  add(g, box(6, 0.2, 4, "#7a5a3a"), 0, 0.1, 0);
+  const plants: THREE.Group[] = [];
+  for (let i = 0; i < 4; i++) for (let j = 0; j < 8; j++) {
+    const x = -2.6 + j * 0.75, z = -1.4 + i * 0.95;
+    const pl = new THREE.Group(); pl.position.set(x, 0.2, z); g.add(pl); plants.push(pl);
+    add(pl, cyl(0.02, 0.02, 0.9, "#a37a4f", 4), 0, 0.45, 0);
+    add(pl, ball(0.22, "#4f9a4a", 6), 0, 0.5, 0).scale.set(1, 1.3, 1);
+    if (i < 2) for (let k = 0; k < 3; k++) add(pl, ball(0.07, k ? "#c9302a" : "#e07a3a", 6), Math.cos(k * 2.1) * 0.15, 0.3 + k * 0.2, Math.sin(k * 2.1) * 0.15);
+    else for (let k = 0; k < 3; k++) { add(pl, ball(0.06, "#7fbf3a", 6), Math.cos(k * 2.1) * 0.15, 0.3 + k * 0.2, Math.sin(k * 2.1) * 0.15); add(pl, cone(0.08, 0.14, "#c9d6a0", 5), Math.cos(k * 2.1) * 0.15, 0.36 + k * 0.2, Math.sin(k * 2.1) * 0.15); }   // tomatillos in their husks
+  }
+  const picker = mexican("#e8558a", { rebozo: "#3f6fb5" }); add(g, picker, 3.4, 0, 0.4); picker.rotation.y = -1.4;
+  const crate = add(g, box(0.6, 0.3, 0.45, "#a37a4f"), 3.8, 0.15, 1.2); for (let k = 0; k < 6; k++) add(crate, ball(0.08, k % 2 ? "#c9302a" : "#7fbf3a", 6), (rnd() - 0.5) * 0.45, 0.18, (rnd() - 0.5) * 0.3);
+  const re = reaction(0.6);
+  g.userData.poke = () => { re.poke(); bubble(picker, "¡Jitomates! Tomatoes!", 1.5, 1300); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); plants.forEach((p) => { const s2 = 1 + k * Math.max(0, Math.sin((1 - k) * 9 - (p.position.x + 2.6) * 1.2)) * 0.5; p.scale.set(s2, 1 + (s2 - 1) * 1.2, s2); }); if (picker.userData.upper) picker.userData.upper.rotation.z = k * Math.sin(t * 8) * 0.2; };
+  return g;
+}
+
+/** Xochimilco: two canals between chinampas, trajineras poled along them, flowers on the banks. */
+export function xochimilco(): P {
+  const g = group();
+  const waterMat = flowingWaterMaterial("#6fb0a4", "#3f8a7a");
+  // the boats circle the chinampa: along the south canal, up the east channel, back along the north canal and down the west one
+  const loop = new THREE.CatmullRomCurve3([new THREE.Vector3(-5.5, 0, 2), new THREE.Vector3(0, 0, 2.1), new THREE.Vector3(5.5, 0, 2), new THREE.Vector3(7.2, 0, 0), new THREE.Vector3(5.5, 0, -2), new THREE.Vector3(0, 0, -2.1), new THREE.Vector3(-5.5, 0, -2), new THREE.Vector3(-7.2, 0, 0)], true);
+  const strip = (w: number, d: number, x: number, z: number, m: THREE.Material, y: number) => { const s = new THREE.Mesh(new THREE.PlaneGeometry(w, d), m); s.rotation.x = -Math.PI / 2; s.position.set(x, y, z); s.receiveShadow = true; g.add(s); return s; };
+  const bank = mat("#c9b98a");
+  for (const z of [-2, 2]) { strip(15.4, 3.4, 0, z, bank, 0.03); strip(15, 2.4, 0, z, waterMat, 0.06).renderOrder = 2; }
+  for (const x of [-7.2, 7.2]) { strip(3.4, 7.4, x, 0, bank, 0.03); strip(2.4, 6.4, x, 0, waterMat, 0.06).renderOrder = 2; }
+  // the chinampa between the canals: flowers and vegetables
+  add(g, box(12, 0.3, 1.6, "#5f8f4f"), 0, 0.15, 0);
+  for (let i = 0; i < 12; i++) { add(g, cyl(0.02, 0.02, 0.35, "#3f7a3a", 4), -5.5 + i * 1.0, 0.45, (i % 2) * 0.6 - 0.3); add(g, ball(0.1, MX.papel[i % 6], 6), -5.5 + i * 1.0, 0.65, (i % 2) * 0.6 - 0.3); }
+  for (let i = 0; i < 3; i++) add(g, tree("willow", 0.8), -4 + i * 4, 0.3, 0.2);
+  const boats = [trajinera(MX.pink), trajinera(MX.yellow), trajinera(MX.blue)];
+  boats.forEach((b) => g.add(b));
+  const mariachiBoat = boats[1]; add(mariachiBoat, cone(0.07, 0.3, "#e0a52c", 6), 0.3, 1.2, 0.5).rotation.x = -Math.PI / 2;
+  const re = reaction(0.5);
+  g.userData.poke = () => { re.poke(); bubble(boats[0], "¡Viva Xochimilco!", 2.2, 1500); };
+  g.userData.tick = (t, dt) => {
+    waterMat.uniforms.uTime.value = t;
+    const k = re.step(dt);
+    boats.forEach((b, i) => { const u = (t * 0.012 + i / 3) % 1; const p = loop.getPointAt(u), n = loop.getPointAt((u + 0.006) % 1); b.position.set(p.x, 0.06 + k * Math.abs(Math.sin(t * 6 + i)) * 0.25, p.z); b.rotation.y = Math.atan2(n.x - p.x, n.z - p.z) - Math.PI / 2; b.userData.tick?.(t, dt); });
+  };
+  return g;
+}
+
 export const MEXICO_PROPS: Record<string, () => P> = {
-  milpa, tortilleria, chilliRacks, moleKitchen, agaveField, avocadoOrchard, rancho, carnitasStand, cacaoGrove, pibOven, mercado, taqueria, fonda, molcajeteStand, churrosCart, mariachi, none: () => group(),
+  milpa, tortilleria, chilliRacks, moleKitchen, agaveField, avocadoOrchard, rancho, carnitasStand, cacaoGrove, pibOven, mercado, taqueria, fonda, molcajeteStand, churrosCart, mariachi, tomatoPatch, xochimilco, cenote, none: () => group(),
 };
 
 export const MEXICO_ICONS: Record<string, () => P> = {

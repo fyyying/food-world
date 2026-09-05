@@ -9,7 +9,7 @@ mkdirSync(join(OUT, "bodies"), { recursive: true });
 mkdirSync(join(OUT, "images"), { recursive: true });
 
 const { recipes } = await fetch(`${API}/api/recipes?refresh=1`).then((r) => r.json());
-const isChina = (r) => r.cuisine === "Chinese" || /mapo|sichuan|szechuan|hong shao/i.test(r.title) || r.cuisine === "Italian" || /italian|caprese|bolognese|lasagn|pizza|pesto/i.test(r.title) || r.cuisine === "Korean" || /korean|bulgogi|bibimbap|kimchi/i.test(r.title);
+const isChina = (r) => r.cuisine === "Chinese" || /mapo|sichuan|szechuan|hong shao/i.test(r.title) || r.cuisine === "Italian" || /italian|caprese|bolognese|lasagn|pizza|pesto/i.test(r.title) || r.cuisine === "Korean" || /korean|bulgogi|bibimbap|kimchi/i.test(r.title) || r.cuisine === "Mexican" || /mexican|taco|salsa|guacamole|carnitas|chili con carne/i.test(r.title);
 // full list for the world-map counts (no photo URLs leak), bodies and photos only for the China world
 const slim = recipes.map((r) => ({ ...r, imageUrl: isChina(r) && r.imageUrl ? `static/images/${r.id}.jpg` : null }));
 writeFileSync(join(OUT, "recipes.json"), JSON.stringify({ recipes: slim, fetchedAt: Date.now(), stale: false }));

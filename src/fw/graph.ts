@@ -6,8 +6,8 @@
 import type { Recipe } from "../data";
 
 export type Kind = "ingredient" | "flavour" | "technique" | "landmark" | "place" | "dish";
-export type WorldId = "china" | "italy" | "korea";
-export type Area = "sichuan" | "jiangnan" | "northern" | "everyday" | "rome" | "venice" | "sicily" | "seoul" | "jeonju" | "busan" | "jeju";
+export type WorldId = "china" | "italy" | "korea" | "mexico";
+export type Area = "sichuan" | "jiangnan" | "northern" | "everyday" | "rome" | "venice" | "sicily" | "seoul" | "jeonju" | "busan" | "jeju" | "cdmx" | "oaxaca" | "jalisco" | "yucatan";
 
 export type EnrichedRecipe = Recipe & {
   zh?: string;
@@ -71,11 +71,16 @@ export const AREAS: Record<Area, AreaInfo> = {
   jeonju: { world: "korea", name: "Jeonju", zh: "전주", blurb: "hanok village, rice paddies and the home of bibimbap", center: [-16, 12] },
   busan: { world: "korea", name: "Busan", zh: "부산", blurb: "the port: fish market, beach and boats", center: [10, 6] },
   jeju: { world: "korea", name: "Jeju", zh: "제주", blurb: "volcanic island: tangerines, black pigs and diving women", center: [28, 16] },
+  cdmx: { world: "mexico", name: "Mexico City", zh: "CDMX", blurb: "the zócalo, the mercado, taquerías and the canals of Xochimilco", center: [-4, -9] },
+  oaxaca: { world: "mexico", name: "Oaxaca", zh: "Oaxaca", blurb: "corn, chillies, mole and the comal", center: [-18, 15] },
+  jalisco: { world: "mexico", name: "Jalisco & Michoacán", zh: "El Bajío", blurb: "agave, avocados, ranchos and carnitas", center: [-28, -10] },
+  yucatan: { world: "mexico", name: "Yucatán", zh: "Yucatán", blurb: "Maya pyramids, cenotes, cacao and the pib", center: [24, -6] },
 };
 export const WORLDS: Record<WorldId, { name: string; zh: string; regionId: string }> = {
   china: { name: "China", zh: "中国", regionId: "china" },
   italy: { name: "Italy", zh: "Italia", regionId: "italy" },
   korea: { name: "Korea", zh: "한국", regionId: "korea" },
+  mexico: { name: "Mexico", zh: "México", regionId: "mexico" },
 };
 export const areasOf = (world: WorldId) => (Object.keys(AREAS) as Area[]).filter((a) => AREAS[a].world === world);
 
@@ -107,6 +112,13 @@ const ENRICH: { test: RegExp; data: Enrichment }[] = [
   // ---- Korea ----
   { test: /bulgogi/i, data: { zh: "불고기", world: "korea", area: "seoul", spice: 0, flavours: ["sweet-savoury", "garlicky", "smoky", "sesame"], core: ["beef", "soy sauce", "pear", "garlic", "scallion", "sesame oil", "lettuce"], techniques: ["grill"], place: "grill" } },
   { test: /bibimbap/i, data: { zh: "비빔밥", world: "korea", area: "jeonju", spice: 1, flavours: ["gochujang", "sesame", "fresh", "savoury"], core: ["rice", "beef", "egg", "namul", "gochujang", "sesame oil", "spinach", "carrot"], techniques: ["dolsot"], place: "dolsot" } },
+  // ---- Mexico ----
+  { test: /mexican rice/i, data: { zh: "Arroz rojo", world: "mexico", area: "cdmx", spice: 0, flavours: ["tomato", "savoury", "comforting"], core: ["rice", "tomato", "onion", "garlic", "stock"], techniques: ["cazuela"], place: "fonda" } },
+  { test: /pico de gallo|fresh salsa/i, data: { zh: "Pico de gallo", world: "mexico", area: "cdmx", spice: 1, flavours: ["fresh", "tangy", "spicy"], core: ["tomato", "onion", "cilantro", "lime", "jalapeño"], techniques: ["molcajete", "raw"], place: "molcajete" } },
+  { test: /al pastor/i, data: { zh: "Tacos al pastor", world: "mexico", area: "cdmx", spice: 1, flavours: ["smoky", "sweet", "spicy"], core: ["pork", "achiote", "dried chillies", "pineapple", "corn tortillas", "onion", "cilantro"], techniques: ["trompo"], place: "trompo" } },
+  { test: /carnitas/i, data: { zh: "Carnitas", world: "mexico", area: "jalisco", spice: 0, flavours: ["rich", "crisp", "citrus"], core: ["pork", "orange", "garlic", "cumin", "lard", "corn tortillas"], techniques: ["carnitas"], place: "carnitas" } },
+  { test: /guacamole/i, data: { zh: "Guacamole", world: "mexico", area: "cdmx", spice: 1, flavours: ["creamy", "fresh", "tangy"], core: ["avocado", "tomato", "cilantro", "lime", "onion"], techniques: ["molcajete"], place: "molcajete" } },
+  { test: /chili con carne/i, data: { zh: "Chili con carne", world: "mexico", area: "jalisco", spice: 2, flavours: ["smoky", "hearty", "spicy"], core: ["beef", "beans", "dried chillies", "cumin", "tomato", "onion"], techniques: ["cazuela"], place: "beefMx" } },
 ];
 
 export function enrich(r: Recipe): EnrichedRecipe {
@@ -115,13 +127,13 @@ export function enrich(r: Recipe): EnrichedRecipe {
   return {
     ...r,
     zh: hit.zh,
-    world: hit.world ?? (r.cuisine === "Italian" ? "italy" : r.cuisine === "Korean" ? "korea" : "china"),
-    area: hit.area ?? (r.cuisine === "Italian" ? "rome" : r.cuisine === "Korean" ? "seoul" : "everyday"),
+    world: hit.world ?? (r.cuisine === "Italian" ? "italy" : r.cuisine === "Korean" ? "korea" : r.cuisine === "Mexican" ? "mexico" : "china"),
+    area: hit.area ?? (r.cuisine === "Italian" ? "rome" : r.cuisine === "Korean" ? "seoul" : r.cuisine === "Mexican" ? "cdmx" : "everyday"),
     spice: hit.spice ?? (spicy ? 2 : 0),
     flavours: hit.flavours ?? [],
     core: hit.core ?? [...r.protein, ...r.mainIngredient.map((m) => m.toLowerCase())],
     techniques: hit.techniques ?? (r.method === "Pan" ? ["wok"] : r.method === "Pot" ? ["braise"] : []),
-    place: hit.place ?? (r.cuisine === "Italian" ? "trattoria" : r.cuisine === "Korean" ? "grill" : "wok"),
+    place: hit.place ?? (r.cuisine === "Italian" ? "trattoria" : r.cuisine === "Korean" ? "grill" : r.cuisine === "Mexican" ? "fonda" : "wok"),
     weeknight: (r.totalMin !== null && r.totalMin <= 40) || r.tags.includes("busy_day") || r.tags.includes("quick"),
   };
 }
@@ -136,7 +148,10 @@ export function isItalyRecipe(r: Recipe): boolean {
 export function isKoreaRecipe(r: Recipe): boolean {
   return r.cuisine === "Korean" || /korean|bulgogi|bibimbap|kimchi|tteok|japchae|galbi/i.test(r.title);
 }
-export const worldRecipes = (world: WorldId, all: Recipe[]) => all.filter(world === "china" ? isChinaRecipe : world === "italy" ? isItalyRecipe : isKoreaRecipe);
+export function isMexicoRecipe(r: Recipe): boolean {
+  return r.cuisine === "Mexican" || /mexican|taco|salsa|guacamole|carnitas|burrito|enchilada|quesadilla|chili con carne/i.test(r.title);
+}
+export const worldRecipes = (world: WorldId, all: Recipe[]) => all.filter(world === "china" ? isChinaRecipe : world === "italy" ? isItalyRecipe : world === "korea" ? isKoreaRecipe : isMexicoRecipe);
 
 const has = (list: string[], re: RegExp) => list.some((x) => re.test(x));
 
@@ -349,7 +364,75 @@ export const KOREA_OBJECTS: WorldObject[] = [
     tagline: "Jeju's diving women, who harvest the sea without air tanks.", blurb: "The haenyeo dive to ten metres on one breath for abalone, sea urchin and octopus, whistling as they surface. Records of women divers on Jeju go back to the 1600s, when the men were away fishing or conscripted; most are now over sixty. UNESCO listed them as heritage in 2016. What they catch is eaten raw with gochujang or stewed into abalone porridge.", match: () => false },
 ];
 
-export const ALL_OBJECTS = [...OBJECTS, ...ITALY_OBJECTS, ...KOREA_OBJECTS];
+
+// ---------- the Mexico world ----------
+
+const MK: [number, number] = [-14, -13];
+export const MEXICO_OBJECTS: WorldObject[] = [
+  // --- ingredients ---
+  { id: "corn", world: "mexico", kind: "ingredient", name: "Corn (maize)", zh: "Maíz", emoji: "🌽", area: "oaxaca", pos: [-27, 13], prop: "milpa", rot: 0.1,
+    tagline: "The plant Mexico bred from a grass, nine thousand years ago.", blurb: "Maize was domesticated from teosinte, a wild grass, in the Balsas valley of southern Mexico around 7000 BC. The milpa plants it with beans, which climb the stalks and fix nitrogen, and squash, which shades the soil; the three together fed the Olmec, the Maya and the Aztecs. Soaking the kernels in lime water, nixtamalisation, dates to about 1500 BC and unlocks the niacin that makes corn a complete food. Tortillas, tamales, pozole and atole all start there.",
+    partners: ["beans", "chillies", "lime", "pork"], match: (r) => has(r.core, /corn|tortilla|masa|bean|taco/) },
+  { id: "tomatoMx", world: "mexico", kind: "ingredient", name: "Tomatoes & tomatillos", zh: "Jitomate y tomate verde", emoji: "🍅", area: "oaxaca", pos: [-17, 20], prop: "tomatoPatch", rot: 0.05,
+    tagline: "Both are Mexican; the world's tomato came from here.", blurb: "The tomato was domesticated in Mexico from a wild Andean ancestor; the Aztecs called it xitomatl and were selling it in Tenochtitlan's markets when Cortés arrived in 1519. The tomatillo, tomatl, is a different plant in a papery husk, tart and green, and it makes salsa verde. Red salsas and pico de gallo are tomato, onion, chilli, cilantro and lime; the Spanish carried the tomato to Europe, where Italy took two centuries to trust it.",
+    partners: ["chillies", "onion", "cilantro", "lime"], match: (r) => has(r.core, /tomato|tomatillo/) },
+  { id: "avocado", world: "mexico", kind: "ingredient", name: "Avocados", zh: "Aguacate", emoji: "🥑", area: "jalisco", pos: [-31, 4], prop: "avocadoOrchard", rot: 0.1,
+    tagline: "Ahuacatl, from Michoacán's volcanic hills.", blurb: "Avocados have been eaten in Mexico for at least ten thousand years and cultivated since about 5000 BC; the Aztec word ahuacatl became aguacate, and guacamole is ahuacamolli, avocado sauce. Michoacán's volcanic soil now grows most of the world's supply, and the Hass variety, every one descended from a single tree planted in California in 1926, is the one you buy. Mashed in the molcajete with lime, onion, cilantro and chilli, it is eaten the day it is made.",
+    partners: ["lime", "cilantro", "onion", "tomatoes"], match: (r) => has(r.core, /avocado/) },
+  { id: "limes", world: "mexico", kind: "flavour", name: "Lime, onion & cilantro", zh: "Limón, cebolla y cilantro", emoji: "🍋", area: "cdmx", pos: [MK[0] - 3, MK[1] + 2.4], prop: "none", hitOnly: true, parent: "mercado",
+    tagline: "The squeeze and the sprinkle that finish every taco.", blurb: "Limes, onions and cilantro all came with the Spanish after 1521, and Mexico made them its own: the small, sharp Key lime is limón here, squeezed over everything. Onion and cilantro, chopped fine, go on tacos, into salsas and over soups. Cumin and oregano came the same way, from Spain's Moorish kitchens, and season chili con carne and carnitas.",
+    flavour: ["sour", "sharp", "herby"], partners: ["tomatoes", "avocado", "chillies", "pork"], match: (r) => has(r.core, /lime|onion|cilantro|garlic|cumin/) },
+  { id: "cacao", world: "mexico", kind: "ingredient", name: "Cacao & chocolate", zh: "Cacao", emoji: "🍫", area: "yucatan", pos: [26, -4], prop: "cacaoGrove", rot: -0.2,
+    tagline: "The bean that was money, drunk bitter and frothed.", blurb: "Cacao was drunk by the Olmec by 1500 BC and the Maya by 500 BC: ground, mixed with water, chilli and cornmeal and poured from a height to raise a froth. The Aztecs used the beans as currency, a turkey costing about a hundred, and Moctezuma drank it from gold cups. Sugar and milk were added in Europe after 1528. In Oaxaca the beans are still ground with cinnamon and almonds for hot chocolate whipped with a molinillo, and a little goes into a mole.",
+    partners: ["chillies", "cinnamon", "corn"], match: (r) => has(r.core, /cacao|chocolate/) },
+  { id: "beefMx", world: "mexico", kind: "ingredient", name: "Beef & beans (the rancho)", zh: "Res y frijoles", emoji: "🐂", area: "jalisco", pos: [-29, -21], prop: "rancho", rot: 0.1, place: true, placeName: "Rancho",
+    tagline: "Cattle came in 1521, and the vaqueros with them.", blurb: "There were no cattle in the Americas until the Spanish landed them in 1521; within a century Mexico's ranchos ran huge herds and the charros, its horsemen, invented the cowboy. Beans had been here for seven thousand years. Chili con carne, beef stewed with dried chillies and cumin, is border food: it was sold by the chili queens of San Antonio in the 1880s and is Texas's state dish, but its chillies, cumin and beans are Mexico's. Carne asada, thin beef grilled over mesquite, is the north's own.",
+    partners: ["dried chillies", "cumin", "beans", "tomatoes", "tortillas"], match: (r) => has(r.protein, /beef/) },
+  // --- flavours ---
+  { id: "chilliesMx", world: "mexico", kind: "flavour", name: "Chillies", zh: "Chiles", emoji: "🌶️", area: "oaxaca", pos: [-9, 12], prop: "chilliRacks", rot: 0.1,
+    tagline: "Fresh, dried or smoked: sixty kinds, and every one has a job.", blurb: "Chillies were domesticated in Mexico around 6000 BC and every chilli in the world descends from these. Fresh, they are jalapeño, serrano and the Yucatán's habanero; dried, they change name: a ripe jalapeño smoked becomes chipotle, a poblano dried becomes an ancho, and guajillo, pasilla and mulato are the base of a mole. Dried chillies are toasted on the comal, soaked and ground; that paste marinates al pastor and deepens chili con carne. Heat is only part of it; most bring smoke, raisin and earth.",
+    flavour: ["hot", "smoky", "fruity"], partners: ["tomatoes", "corn", "pork", "cacao"], match: (r) => has(r.core, /chilli|chili|jalapeño|habanero|chipotle/) },
+  // --- techniques ---
+  { id: "comal", world: "mexico", kind: "technique", name: "Nixtamal & the comal", zh: "Nixtamal y comal", emoji: "🫓", area: "oaxaca", pos: [-17, 13], prop: "tortilleria", rot: 0.1, placeName: "Tortillería",
+    tagline: "Corn soaked in lime, ground on stone, patted onto a clay griddle.", blurb: "Nixtamalisation, cooking corn in water with lime or wood ash, was practised by 1500 BC; it loosens the hull, adds calcium and frees the niacin. The wet kernels are ground on a metate, a sloping stone, into masa, and the masa is patted into tortillas and cooked on a comal, the flat clay griddle the Aztecs already used. A tortilla puffs when it is right. Chillies and tomatoes are toasted on the same comal for salsas, which is where their smokiness comes from.",
+    partners: ["corn", "chillies", "tomatoes"], match: (r) => has(r.techniques, /comal|nixtamal/) },
+  { id: "molcajete", world: "mexico", kind: "technique", name: "The molcajete", zh: "Molcajete", emoji: "🪨", area: "cdmx", pos: [5, -5], prop: "molcajeteStand", rot: -0.3, place: true, placeName: "Salsa stand",
+    tagline: "A basalt mortar that bruises rather than chops.", blurb: "The molcajete, a three-legged mortar of volcanic rock with its pestle the tejolote, has been in Mexican kitchens for about six thousand years; the Aztec word is molcaxitl, sauce bowl. Grinding garlic, chilli and salt to a paste, then crushing tomato and avocado into it, releases oils a knife never does, which is why guacamole and pico de gallo taste better made this way. A new molcajete is seasoned by grinding rice in it until the grit stops coming off.",
+    partners: ["avocado", "tomatoes", "lime", "chillies"], match: (r) => has(r.techniques, /molcajete/) },
+  { id: "trompo", world: "mexico", kind: "technique", name: "Al pastor on the trompo", zh: "Al pastor", emoji: "🌮", area: "cdmx", pos: [-10, -3], prop: "taqueria", rot: 0.2, place: true, placeName: "Taquería",
+    tagline: "Lebanese shawarma, turned Mexican with chillies and pineapple.", blurb: "Lebanese immigrants brought the vertical spit to Puebla in the 1920s and 1930s and sold lamb shawarma in pita as tacos árabes. Mexico City's taqueros swapped the lamb for pork, the pita for corn tortillas and the spices for a marinade of dried guajillo chillies, achiote and vinegar, and by the 1960s al pastor, shepherd-style, was the city's taco. The taquero slices the trompo straight onto the tortilla and flicks a piece of the pineapple on top from the spit's crown.",
+    partners: ["pork", "chillies", "pineapple", "corn", "lime"], match: (r) => has(r.techniques, /trompo/) },
+  { id: "carnitas", world: "mexico", kind: "technique", name: "Copper-pot carnitas", zh: "Carnitas", emoji: "🐖", area: "jalisco", pos: [-26, -6], prop: "carnitasStand", rot: 0.05, place: true, placeName: "Carnitas stand",
+    tagline: "Pork cooked slowly in its own fat until it falls apart.", blurb: "Pigs came with the Spanish in the 1520s, and Michoacán, especially the town of Quiroga, made carnitas its trade: pork simmered for hours in a copper cazo of lard, sometimes with orange, milk or cola, until it is soft inside and crisp at the edges. Every part goes in, and you order surtidas, mixed, or ask for maciza, the lean. It is chopped on a block, folded into a tortilla with salsa verde and onion, and eaten on Sunday mornings.",
+    partners: ["orange", "garlic", "cumin", "corn", "salsa verde"], match: (r) => has(r.techniques, /carnitas/) },
+  { id: "fonda", world: "mexico", kind: "technique", name: "Clay cazuelas (the fonda)", zh: "Fonda", emoji: "🍛", area: "cdmx", pos: [-2, -4], prop: "fonda", rot: -0.1, place: true, placeName: "Fonda",
+    tagline: "Home cooking in clay pots, at a fixed price, at lunchtime.", blurb: "A fonda is the neighbourhood lunch place, a family kitchen with a few tables and a comida corrida: soup, rice, a stew, tortillas and an agua fresca for one price. The cooking is in cazuelas, glazed clay pots that hold heat gently; arroz rojo, rice fried in oil then simmered in blended tomato and onion, is the second course in nearly every one. Frijoles de la olla bubble all day in a clay olla beside it.",
+    partners: ["rice", "tomatoes", "beans", "chillies"], match: (r) => has(r.techniques, /cazuela|pot/) },
+  // --- places ---
+  { id: "mercado", world: "mexico", kind: "place", name: "The mercado", zh: "Mercado", emoji: "🧺", area: "cdmx", pos: MK, prop: "mercado", rot: 0, place: true, open: "reveal",
+    tagline: "Chillies, tortillas, avocados and limes under papel picado.", blurb: "Tenochtitlan's market at Tlatelolco astonished the Spanish in 1519 with sixty thousand people a day; Mexico City's mercados still work the same way, stall by stall: dried chillies by the sack, fresh tortillas by the kilo, avocados, limes, herbs and sweets.", match: () => false },
+  { id: "stall-chillies", world: "mexico", kind: "flavour", name: "Chillies", zh: "Chiles", emoji: "🌶️", area: "cdmx", pos: [MK[0] - 5, MK[1] - 2.4], prop: "none", hitOnly: true, parent: "mercado", alias: "chilliesMx", tagline: "", blurb: "", match: () => false },
+  { id: "stall-tortillas", world: "mexico", kind: "ingredient", name: "Corn & tortillas", zh: "Maíz", emoji: "🌽", area: "cdmx", pos: [MK[0], MK[1] - 2.4], prop: "none", hitOnly: true, parent: "mercado", alias: "corn", tagline: "", blurb: "", match: () => false },
+  { id: "stall-avocados", world: "mexico", kind: "ingredient", name: "Avocados & tomatoes", zh: "Aguacate", emoji: "🥑", area: "cdmx", pos: [MK[0] + 5, MK[1] - 2.4], prop: "none", hitOnly: true, parent: "mercado", alias: "avocado", tagline: "", blurb: "", match: () => false },
+  { id: "stall-sweets", world: "mexico", kind: "dish", name: "Dulces", zh: "Dulces", emoji: "🍬", area: "cdmx", pos: [MK[0] + 3, MK[1] + 2.4], prop: "none", hitOnly: true, parent: "mercado",
+    tagline: "Sweets from the convents and the sugar cane.", blurb: "Sugar cane arrived with the Spanish and the convent kitchens of Puebla turned it into camotes, alegrías of amaranth and honey (an Aztec sweet the friars adopted), tamarind candies rolled in chilli, piloncillo cones of raw sugar, and cajeta, goat's milk boiled to caramel in Celaya since the 1800s.", match: () => false },
+  { id: "churros", world: "mexico", kind: "dish", name: "Churros & chocolate", zh: "Churros", emoji: "🥖", area: "cdmx", pos: [3, -7.5], prop: "churrosCart", rot: -0.4, placeName: "Churros cart",
+    tagline: "Fried dough, sugar, and a cup of thick chocolate.", blurb: "Churros came from Spain, where shepherds fried them over open fires; Mexico City's El Moro has been frying them since 1935, open all night. The dough is piped through a star nozzle into hot oil, rolled in sugar and cinnamon, and dunked in chocolate thickened with cornstarch, an old marriage between Spanish flour and Mexican cacao.", match: () => false },
+  { id: "mariachi", world: "mexico", kind: "landmark", name: "Mariachi", zh: "Mariachi", emoji: "🎺", area: "cdmx", pos: [7, -11], prop: "mariachi", rot: -0.5,
+    tagline: "Trumpet, guitar and guitarrón, in charro suits.", blurb: "Mariachi began as string bands in the ranchos of Jalisco in the 1800s; the trumpet joined in the 1930s when radio wanted more noise, and the charro suit came with the cinema. Since 1925 the bands have waited for hire in Mexico City's Plaza Garibaldi, and no serenade, wedding or birthday is complete without one. UNESCO listed mariachi in 2011.", match: () => false },
+  { id: "xochimilco", world: "mexico", kind: "landmark", name: "Xochimilco", zh: "Xochimilco", emoji: "🛶", area: "cdmx", pos: [14, 5], prop: "xochimilco", rot: 0,
+    tagline: "The last canals of the Aztec lake, and the gardens that fed the city.", blurb: "Tenochtitlan was built on a lake, and the Aztecs fed it from chinampas: rafts of mud and reeds anchored by willows that became floating fields, yielding up to seven harvests a year. Xochimilco's canals are what is left, still farmed for flowers and vegetables, and the painted trajineras have carried picnics and mariachis along them since the 1900s. UNESCO listed the canals in 1987.", match: () => false },
+  { id: "tequila", world: "mexico", kind: "dish", name: "Tequila & mezcal", zh: "Tequila y mezcal", emoji: "🥃", area: "jalisco", pos: [-31, -14], prop: "agaveField", rot: 0, placeName: "Distillery",
+    tagline: "Agave, roasted, crushed and distilled.", blurb: "The Aztecs fermented agave sap into pulque, a milky beer; the Spanish brought distilling, and by the 1600s mezcal was being made near the town of Tequila. A blue agave takes seven years to grow; the jimador cuts away the leaves with a coa to reach the piña, which is roasted (in a pit, for mezcal, which is where the smoke comes from), crushed, fermented and distilled twice. Tequila has had a protected name since 1974, and Oaxaca makes most of the mezcal.", match: () => false },
+  { id: "mole", world: "mexico", kind: "dish", name: "Mole", zh: "Mole", emoji: "🍲", area: "oaxaca", pos: [-25, 21], prop: "moleKitchen", rot: 0.1, placeName: "Cocina de humo",
+    tagline: "Thirty ingredients, ground by hand, simmered for a day.", blurb: "Mole, from the Nahuatl molli, sauce, is Oaxaca's pride and it claims seven of them. Mole negro takes chilhuacle and mulato chillies toasted almost black, tomatoes, onion, garlic, nuts, seeds, spices, charred tortilla and a little chocolate, all ground on the metate and simmered for hours. Legend puts mole poblano's invention in a Puebla convent in the 1680s; it is served at weddings and on the Day of the Dead, over turkey or chicken.", match: () => false },
+  { id: "pib", world: "mexico", kind: "dish", name: "Cochinita pibil", zh: "Cochinita pibil", emoji: "🍖", area: "yucatan", pos: [24, 3], prop: "pibOven", rot: 0.3, placeName: "The pib",
+    tagline: "Pork in achiote and sour orange, buried with hot stones.", blurb: "A pib is the Maya pit oven: a hole dug in the ground, lined with stones heated on a fire, the food wrapped in banana leaves, then earth shovelled over it for the night. Cochinita pibil marinates a whole young pig in achiote (the red seed of the annatto tree) and Seville orange, and comes out shredded, eaten in tortillas with pickled red onion and habanero. Before pigs arrived in the 1500s the Maya cooked deer and turkey the same way.", match: () => false },
+  { id: "cenote", world: "mexico", kind: "landmark", name: "Cenote", zh: "Cenote", emoji: "💧", area: "yucatan", pos: [18, -9], prop: "cenote", rot: 0,
+    tagline: "A sinkhole to the underworld, and the only fresh water for miles.", blurb: "Yucatán is a limestone slab with no rivers; its water is underground, reached through the cenotes, ts'onot, where the roof of a cave has fallen in. The Maya built Chichén Itzá beside one and threw gold, jade and people into it as offerings to Chaac, the rain god. Today they are for swimming, cold and clear, with tree roots hanging to the water.", match: () => false },
+];
+
+export const ALL_OBJECTS = [...OBJECTS, ...ITALY_OBJECTS, ...KOREA_OBJECTS, ...MEXICO_OBJECTS];
 export const objectsOf = (world: WorldId) => ALL_OBJECTS.filter((o) => o.world === world);
 export const objectById = (id: string) => ALL_OBJECTS.find((o) => o.id === id)!;
 
@@ -369,7 +452,7 @@ export type MapRegion = {
 
 export const MAP_REGIONS: MapRegion[] = [
   { id: "north-america", name: "North America", cuisines: ["American"], pos: [-50, -14], size: 9, color: "#d8c27b", emoji: ["🍔", "🥞", "🔥", "🌽"], built: false, seed: 11 },
-  { id: "mexico", name: "Mexico", cuisines: ["Mexican"], pos: [-40, 10], size: 6, color: "#e0a06a", emoji: ["🌽", "🌵", "🥑", "🌮"], built: false, seed: 12 },
+  { id: "mexico", name: "Mexico", cuisines: ["Mexican"], pos: [-40, 10], size: 6, color: "#e0a06a", emoji: ["🌽", "🌵", "🥑", "🌮"], built: true, seed: 12 },
   { id: "italy", name: "Italy", cuisines: ["Italian"], pos: [-8, -4], size: 6.5, color: "#a8c07a", emoji: ["🍝", "🍅", "🫒", "🧀"], built: true, seed: 13 },
   { id: "central-europe", name: "Central Europe", cuisines: ["British", "Hungarian", "Georgian", "German", "Swiss", "French", "Swedish"], pos: [-12, -26], size: 7, color: "#93b48a", emoji: ["🥧", "🍲", "🥔", "🧈"], built: false, seed: 14 },
   { id: "mediterranean", name: "Mediterranean", cuisines: ["Mediterranean", "Greek", "Spanish", "North African"], pos: [-20, 14], size: 6, color: "#b9cf94", emoji: ["🫒", "🍋", "🐟", "🧆"], built: false, seed: 15 },

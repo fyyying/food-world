@@ -283,7 +283,7 @@ export function flowingWaterMaterial(shallow = "#6ab3c2", deep = "#3f8fa4"): THR
       void main(){
         vec2 p = vPos.xz;
         float n = noise(p*0.35 + vec2(uTime*0.12, -uTime*0.08))*0.6 + noise(p*0.9 - vec2(uTime*0.2, uTime*0.1))*0.4;
-        float wave = 0.5 + 0.5*sin(p.x*1.6 + p.z*0.9 + uTime*1.4 + n*3.0);
+        float wave = 0.5 + 0.5*sin(p.x*1.6 + p.y*0.9 + uTime*1.4 + n*3.0);
         vec3 col = mix(uDeep, uShallow, wave*0.55 + n*0.25);
         float glint = smoothstep(0.80, 0.9, noise(p*1.8 + vec2(uTime*0.5, -uTime*0.35)));
         col += glint*0.18;
@@ -313,7 +313,7 @@ export function addFish(ctx: LayoutCtx, curve: THREE.CatmullRomCurve3, palette: 
       const ahead = curve.getPointAt((k.u + 0.01) % 1).addScaledVector(n, k.targetSide);
       const want = Math.atan2(ahead.x - pos.x, ahead.z - pos.z);
       let d = want - k.heading; d = Math.atan2(Math.sin(d), Math.cos(d)); k.heading += d * Math.min(1, dt * 1.6);
-      k.g.position.set(pos.x, TOP + 0.03 + Math.sin(t * 1.3 + k.ph) * 0.012, pos.z);
+      k.g.position.set(pos.x, TOP + 0.09 + Math.sin(t * 1.3 + k.ph) * 0.012, pos.z);   // on top of the (opaque) surface
       k.g.rotation.set(0, k.heading - Math.PI / 2, 0);
       (k.g.userData as { swim?: (t: number, k: number) => void }).swim?.(t + k.ph, glide);
     }

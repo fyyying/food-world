@@ -404,6 +404,7 @@ const dbg = () => ({ level, flying: Boolean(flight), diorama: Boolean(diorama), 
   for (let i = 0; i < n; i++) frame(1 / 60);
 };
 (dbg as unknown as { look: (x: number, z: number, dist: number) => void }).look = (x: number, z: number, dist: number) => { glideTo(new THREE.Vector3(x, 0.5, z), dist, 0.3); };
+(dbg as unknown as { scene: () => THREE.Scene }).scene = () => worldScene;
 (dbg as unknown as { open: (id: string) => void }).open = (id: string) => { const p = diorama?.placed.find((x) => x.obj.id === id); if (p) openObject(p); };
 (window as unknown as { __fw: typeof dbg }).__fw = dbg;
 boot();

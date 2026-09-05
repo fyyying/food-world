@@ -24,7 +24,7 @@ function tiledRoof(w: number, d: number, h: number, color = IT.terracotta): THRE
   const g = new THREE.Group();
   const geo = new THREE.ConeGeometry(1, h, 4);
   geo.rotateY(Math.PI / 4); geo.scale(w * 0.74, 1, d * 0.74);
-  const m = new THREE.Mesh(geo, mat(color)); m.position.y = h / 2; add(g, m);
+  const m = new THREE.Mesh(geo, mat(color)); add(g, m, 0, h / 2, 0);
   add(g, box(w * 1.06, 0.1, d * 1.06, "#a55a42"), 0, 0.02, 0);
   add(g, box(w * 0.5, 0.12, 0.16, "#a55a42"), 0, h, 0);
   return g;

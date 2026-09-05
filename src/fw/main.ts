@@ -10,6 +10,8 @@ import { buildItaly } from "./world-italy";
 import { type Diorama, type DishMarker, type Placed } from "./worldkit";
 const areaCenter = (a: Area) => new THREE.Vector3(AREAS[a].center[0], 0, AREAS[a].center[1]);
 import { mountUi, showRecipePage, setCrumbs, hint, toast } from "./ui";
+import { person } from "./props";
+import { snapshotObject } from "./snapshot";
 
 // ---------- renderer ----------
 const canvas = document.getElementById("stage") as HTMLCanvasElement;
@@ -405,6 +407,20 @@ const dbg = () => ({ level, flying: Boolean(flight), diorama: Boolean(diorama), 
 };
 (dbg as unknown as { look: (x: number, z: number, dist: number) => void }).look = (x: number, z: number, dist: number) => { glideTo(new THREE.Vector3(x, 0.5, z), dist, 0.3); };
 (dbg as unknown as { scene: () => THREE.Scene }).scene = () => worldScene;
+// debug: render figures in poses to inspect the rig
+(dbg as unknown as { figures: () => void }).figures = () => {
+  const poses: [string, () => THREE.Object3D][] = [
+    ["stand", () => person("#3f6b8f")],
+    ["walk", () => { const p = person("#c0392b"); (p.userData as { walk?: (t: number) => void }).walk?.(0.35); return p; }],
+    ["walk2", () => { const p = person("#e0a52c"); (p.userData as { walk?: (t: number) => void }).walk?.(0.8); return p; }],
+    ["sit", () => { const p = person("#2f5d3f"); (p.userData as { sit?: () => void }).sit?.(); return p; }],
+    ["pole", () => { const p = person("#7a4a3a", { pole: true }); (p.userData as { walk?: (t: number) => void }).walk?.(0.35); return p; }],
+    ["hat+apron", () => person("#e9d7b8", { hat: true, apron: true })],
+  ];
+  const wrap = document.createElement("div"); wrap.id = "figdbg"; wrap.style.cssText = "position:fixed;inset:0;background:#fff;z-index:999;display:flex;flex-wrap:wrap;gap:8px;padding:8px";
+  for (const [name, build] of poses) for (const az of [0.9, 0.05]) { const img = document.createElement("img"); img.src = snapshotObject(build(), 256, az); img.title = name; img.style.cssText = "width:256px;height:256px;border:1px solid #ccc;background:#eee"; wrap.appendChild(img); }
+  document.body.appendChild(wrap);
+};
 (dbg as unknown as { open: (id: string) => void }).open = (id: string) => { const p = diorama?.placed.find((x) => x.obj.id === id); if (p) openObject(p); };
 (window as unknown as { __fw: typeof dbg }).__fw = dbg;
 boot();

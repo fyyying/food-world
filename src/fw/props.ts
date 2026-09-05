@@ -477,10 +477,10 @@ export function person(shirt = "#3f6b8f", opts: { hat?: boolean; pole?: boolean;
   add(g, cyl(0.14 * s, 0.13 * s, 0.1 * s, trousers, 8), 0, hipY - 0.03 * s, 0);
   const makeLeg = (x: number) => {
     const thigh = new THREE.Group(); thigh.position.set(x, hipY, 0); g.add(thigh);
-    const t = cyl(0.065 * s, 0.06 * s, thighLen, trousers, 6); t.position.y = -thighLen / 2; add(thigh, t);
+    const t = cyl(0.065 * s, 0.06 * s, thighLen, trousers, 6); add(thigh, t, 0, -thighLen / 2, 0);
     add(thigh, ball(0.065 * s, trousers, 6), 0, 0, 0);
     const shin = new THREE.Group(); shin.position.y = -thighLen; thigh.add(shin);
-    const sh = cyl(0.06 * s, 0.05 * s, shinLen, trousers, 6); sh.position.y = -shinLen / 2; add(shin, sh);
+    const sh = cyl(0.06 * s, 0.05 * s, shinLen, trousers, 6); add(shin, sh, 0, -shinLen / 2, 0);
     add(shin, ball(0.06 * s, trousers, 6), 0, 0, 0);
     add(shin, box(0.1 * s, 0.05 * s, 0.17 * s, "#1f1a18"), 0, -shinLen, 0.035 * s);
     return { thigh, shin };
@@ -493,7 +493,7 @@ export function person(shirt = "#3f6b8f", opts: { hat?: boolean; pole?: boolean;
   add(upper, ball(0.17 * s, shirt, 8), 0, U(0.82 * s), 0).scale.set(1, 0.45, 0.85);
   const armL = new THREE.Group(); armL.position.set(-0.17 * s, U(0.79 * s), 0); upper.add(armL);
   const armR = new THREE.Group(); armR.position.set(0.17 * s, U(0.79 * s), 0); upper.add(armR);
-  for (const a of [armL, armR]) { const m = cyl(0.045 * s, 0.04 * s, 0.36 * s, shirt, 6); m.position.y = -0.18 * s; add(a, m); add(a, ball(0.055 * s, shirt, 6), 0, 0, 0); add(a, ball(0.045 * s, C.skin, 6), 0, -0.38 * s, 0); }
+  for (const a of [armL, armR]) { const m = cyl(0.045 * s, 0.04 * s, 0.36 * s, shirt, 6); add(a, m, 0, -0.18 * s, 0); add(a, ball(0.055 * s, shirt, 6), 0, 0, 0); add(a, ball(0.045 * s, C.skin, 6), 0, -0.37 * s, 0); }
   // head, hair, ears
   add(upper, cyl(0.045 * s, 0.05 * s, 0.08 * s, C.skin, 6), 0, U(0.9 * s), 0);
   add(upper, ball(0.14 * s, C.skin, 9), 0, U(1.04 * s), 0);

@@ -15,7 +15,7 @@ export type UiHandlers = {
 };
 
 const card = () => document.getElementById("card")!;
-const ICON_KEYS: Record<string, true> = { tomato: true, pasta: true, olive: true, cheese: true, basil: true, italyBeef: true, italyChicken: true, mushrooms: true, lemon: true, seafood: true, oven: true, ragu: true, dough: true, gelateria: true, bacaro: true, "stall-arancini": true, pastry: true, garlic: true, spices: true, fish: true, chilli: true, pepper: true, jars: true, tofu: true, veg: true, mushroom: true, rice: true, wheat: true, cow: true, pig: true, chicken: true, aromatics: true, wok: true, claypot: true, griddle: true, prep: true, noodle: true, dumpling: true, hotpot: true, teahouse: true };
+const ICON_KEYS: Record<string, true> = { tomato: true, pasta: true, olive: true, cheese: true, basil: true, italyBeef: true, italyChicken: true, mushrooms: true, lemon: true, seafood: true, oven: true, ragu: true, gelateria: true, bacaro: true, "stall-arancini": true, pastry: true, garlic: true, spices: true, fish: true, chilli: true, pepper: true, jars: true, tofu: true, veg: true, mushroom: true, rice: true, wheat: true, cow: true, pig: true, chicken: true, aromatics: true, wok: true, claypot: true, griddle: true, prep: true, noodle: true, dumpling: true, hotpot: true, teahouse: true };
 
 /** Which world object a "paired with" word points at, so every partner that exists in the world is clickable. */
 const PARTNER_ALIASES: [RegExp, string][] = [

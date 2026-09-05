@@ -39,7 +39,7 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
 
   // ---------- mountains: a western wall and a northern backdrop ----------
   const peaks: [number, number, number, number, boolean][] = [
-    [-35, -22, 5.5, 12, false], [-33, -9, 4.5, 9, true], [-36, 12, 5, 12, false], [-35, 26.5, 3.2, 6, true],
+    [-35, -22, 5.5, 12, false], [-33, -9, 4.5, 9, true], [-36.5, 17, 4.5, 11, false], [-35, 26.5, 3.2, 6, true],
     [-27, -25, 4, 9, true], [-18, -26, 3.4, 7, false], [-8, -27, 4, 9, true], [2, -27, 3.2, 6, false], [12, -27, 3.8, 8, true], [22, -26, 3, 6, false],
     [31, -23, 3.6, 7, true], [36, -14, 3.2, 6, false],
   ];

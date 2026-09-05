@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Little Kitchens · Recipe Food Tour</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23fff7ec' stroke='%23e8836a' stroke-width='6'/><circle cx='50' cy='50' r='22' fill='%23e8836a'/></svg>" />
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="world" aria-label="3D map of recipe islands"></canvas>
+      <div id="labels"></div>
+      <header id="topbar"></header>
+      <aside id="inspector" hidden></aside>
+      <section id="tray"></section>
+      <div id="toasts"></div>
+      <div id="intro">
+        <div class="intro-card">
+          <p class="eyebrow">Recipe food tour</p>
+          <h1>Little Kitchens</h1>
+          <p class="lede">Seven islands, every dish you cook. Wander, pick, and set the week.</p>
+          <p class="status" id="intro-status">Setting the table…</p>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

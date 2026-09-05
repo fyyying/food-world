@@ -55,24 +55,26 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
 
   // ---------- Venice: lagoon with three islands, canals, bridges, gondolas, the campanile ----------
   // one body of water: the lagoon, a channel down the east edge, and the sea along the south
-  const waterMat = new THREE.MeshStandardMaterial({ color: "#5fa8b8", roughness: 0.25, transparent: true, opacity: 0.86, depthWrite: false });
-  const bedMat = mat("#3f7a86");
+  const waterMat = new THREE.MeshStandardMaterial({ color: "#5aa4b6", roughness: 0.3 });   // solid fill, right to the table edge
+  const bedMat = mat("#3f7a86"); void bedMat;
   const water = (w: number, d: number, x: number, z: number) => {
     const bed = new THREE.Mesh(new THREE.PlaneGeometry(w, d), bedMat); bed.rotation.x = -Math.PI / 2; bed.position.set(x, TOP + 0.012, z); bed.receiveShadow = true; group.add(bed);
     const top = new THREE.Mesh(new THREE.PlaneGeometry(w, d), waterMat); top.rotation.x = -Math.PI / 2; top.position.set(x, TOP + 0.06, z); top.renderOrder = 2; group.add(top);
   };
   void water;
   // natural shorelines: the lagoon and sea are one wobbly polygon reaching the table's edge, the channel a river ribbon
-  const shore = (pts: [number, number][]) => { const sh = new THREE.Shape(); pts.forEach(([x, z], i) => { const wx = x + Math.sin(i * 2.7) * 0.6, wz = z + Math.cos(i * 1.9) * 0.6; if (i === 0) sh.moveTo(wx, wz); else sh.lineTo(wx, wz); }); sh.closePath(); return sh; };
-  const lagoonShape = shore([[2, -28], [40, -28], [40, 2], [36, 4], [33, 0], [30, -2], [24, -1], [18, -2], [12, -1], [8, -3], [4, -6], [2, -12], [3, -20]]);
-  const seaShape = shore([[-40, 30], [40, 30], [40, 22], [34, 21], [26, 21.5], [18, 20.6], [10, 21.2], [2, 20.4], [-6, 21], [-14, 20.5], [-22, 21.2], [-30, 20.6], [-40, 21]]);
+  // shoreline points wobble a little; points on the table edge (|x| = 38, |z| = 28) stay exactly on it so the fill is complete
+  const shore = (pts: [number, number][]) => { const sh = new THREE.Shape(); pts.forEach(([x, z], i) => { const edge = Math.abs(x) >= 38 || Math.abs(z) >= 28; const wx = edge ? x : x + Math.sin(i * 2.7) * 0.6, wz = edge ? z : z + Math.cos(i * 1.9) * 0.6; if (i === 0) sh.moveTo(wx, wz); else sh.lineTo(wx, wz); }); sh.closePath(); return sh; };
+  const lagoonShape = shore([[2, -28], [38, -28], [38, 2], [36, 4], [33, 0], [30, -2], [24, -1], [18, -2], [12, -1], [8, -3], [4, -6], [2, -12], [3, -20]]);
+  const seaShape = shore([[-38, 28], [38, 28], [38, 22], [34, 21], [26, 21.5], [18, 20.6], [10, 21.2], [2, 20.4], [-6, 21], [-14, 20.5], [-22, 21.2], [-30, 20.6], [-38, 21]]);
   for (const [shape, name] of [[lagoonShape, "lagoon"], [seaShape, "sea"]] as [THREE.Shape, string][]) {
     void name;
-    const bedM = new THREE.Mesh(new THREE.ShapeGeometry(shape), bedMat); bedM.rotation.x = -Math.PI / 2; bedM.scale.y = -1; bedM.position.y = TOP + 0.012; bedM.receiveShadow = true; group.add(bedM);
-    const topM = new THREE.Mesh(new THREE.ShapeGeometry(shape), waterMat); topM.rotation.x = -Math.PI / 2; topM.scale.y = -1; topM.position.y = TOP + 0.06; topM.renderOrder = 2; group.add(topM);
+    const topM = new THREE.Mesh(new THREE.ShapeGeometry(shape), waterMat); topM.rotation.x = -Math.PI / 2; topM.scale.y = -1; topM.position.y = TOP + 0.06; topM.receiveShadow = true; group.add(topM);
   }
   const channel = new THREE.CatmullRomCurve3([new THREE.Vector3(34, 0, 1), new THREE.Vector3(36.5, 0, 6), new THREE.Vector3(35, 0, 12), new THREE.Vector3(36, 0, 18), new THREE.Vector3(33, 0, 23)]);
-  for (const [w, yy, m] of [[7.5, 0.012, bedMat], [7.5, 0.06, waterMat]] as [number, number, THREE.Material][]) { const rib = new THREE.Mesh(riverGeometry(channel, w), m); rib.position.y = yy; if (m === waterMat) rib.renderOrder = 2; group.add(rib); }
+  const rib = new THREE.Mesh(riverGeometry(channel, 9), waterMat); rib.position.y = 0.06; group.add(rib);
+  // and a straight strip along the eastern edge so the channel fills to the rim
+  const east = new THREE.Mesh(new THREE.PlaneGeometry(4.5, 26), waterMat); east.rotation.x = -Math.PI / 2; east.position.set(35.75, TOP + 0.06, 11); group.add(east);
   const island = (x: number, z: number, w: number, d: number) => { add(group, new THREE.Mesh(new THREE.BoxGeometry(w, 0.5, d), mat(IT.venCream)), x, 0.2, z); add(group, new THREE.Mesh(new THREE.BoxGeometry(w + 0.4, 0.25, d + 0.4), mat("#b9ad98")), x, 0.05, z); };
   island(12, -18, 9, 8); island(24, -20, 9, 7); island(20, -8, 10, 7); island(31, -10, 6, 6);
   place(campanile(), 24, -22).scale.setScalar(0.75);

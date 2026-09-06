@@ -8,6 +8,7 @@ import { colosseum, baroqueChurch, campanile, umbrellaPine, cypress, italianHous
 import { palaceGate, hanok, seoulTower } from "./props-korea";
 import { cathedral, aztecPyramid, casa, saguaro, palm, MX } from "./props-mexico";
 import { mosque, casaMe, datePalm, camel, ME } from "./props-mideast";
+import { blueDomeChurch, cycladicHouse, windmill, sailboat, koutoubia } from "./props-med";
 
 export type PlacedRegion = {
   region: MapRegion;
@@ -80,6 +81,15 @@ export function buildMap(counts: Map<string, number>): MapWorld {
       const hs = italianHouse("rome", 2.2 * s, 1.8 * s, 1.3 * s, 2); hs.position.set(-5 * s, h, -1 * s); hs.rotation.y = 0.5; g.add(hs);
       const bd = birds(4, 5 * s, 5 * s); bd.position.set(0, h, 0); bd.scale.setScalar(s * 0.9); g.add(bd);
       g.userData.tick = (t: number, dt: number) => { bd.userData.tick?.(t, dt); };
+    } else if (region.built && region.id === "mediterranean") {
+      const s = region.size / 10;
+      const ch = blueDomeChurch(); ch.position.set(2.5 * s, h, -2 * s); ch.scale.setScalar(s * 0.5); ch.rotation.y = 0.3; g.add(ch);
+      for (let i = 0; i < 3; i++) { const hs = cycladicHouse(2.2 * s, 1.8 * s, 1.4 * s, { dome: i === 1 }); hs.position.set((3 + i * 1.6) * s, h, (1 + i * 1.4) * s); hs.rotation.y = -0.4; g.add(hs); }
+      const wm = windmill(); wm.position.set(5.5 * s, h, -4 * s); wm.scale.setScalar(s * 0.4); g.add(wm);
+      const kt = koutoubia(); kt.position.set(-4.5 * s, h, 2.5 * s); kt.scale.setScalar(s * 0.28); g.add(kt);
+      const sb = sailboat(); sb.position.set(-2 * s, h, -3 * s); sb.scale.setScalar(s * 0.6); sb.rotation.y = 0.6; g.add(sb);
+      const bd = birds(4, 5 * s, 5 * s); bd.position.set(0, h, 0); bd.scale.setScalar(s * 0.9); g.add(bd);
+      g.userData.tick = (t: number, dt: number) => { bd.userData.tick?.(t, dt); wm.userData.tick?.(t, dt); sb.userData.tick?.(t, dt); };
     } else if (region.built && region.id === "middle-east") {
       const s = region.size / 10;
       const mq = mosque(); mq.position.set(-1 * s, h, -1.5 * s); mq.scale.setScalar(s * 0.3); mq.rotation.y = 0.3; g.add(mq);

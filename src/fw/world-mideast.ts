@@ -28,10 +28,10 @@ function layoutMideast({ group, tickers, place, tint, TOP }: LayoutCtx) {
   const medRim = shore([[-38, -9], [-32.8, -6.8], [-33.3, 0], [-32.8, 8], [-33.3, 16], [-32.8, 24], [-33.3, 28], [-38, 28]]);
   const rimM = new THREE.Mesh(new THREE.ShapeGeometry(medRim), mat("#eadfbd")); rimM.rotation.x = -Math.PI / 2; rimM.scale.y = -1; rimM.position.y = TOP + 0.03; group.add(rimM);
   const seaM = new THREE.Mesh(new THREE.ShapeGeometry(medShape), sea); seaM.rotation.x = -Math.PI / 2; seaM.scale.y = -1; seaM.position.y = TOP + 0.06; group.add(seaM);
-  const bosphorus = new THREE.CatmullRomCurve3([new THREE.Vector3(16, 0, -31), new THREE.Vector3(8, 0, -26), new THREE.Vector3(0, 0, -24), new THREE.Vector3(-8, 0, -22), new THREE.Vector3(-16, 0, -20), new THREE.Vector3(-24, 0, -19), new THREE.Vector3(-32, 0, -18), new THREE.Vector3(-40, 0, -17)]);
+  const bosphorus = new THREE.CatmullRomCurve3([new THREE.Vector3(14, 0, -28), new THREE.Vector3(13.5, 0, -26.8), new THREE.Vector3(8, 0, -26), new THREE.Vector3(0, 0, -24), new THREE.Vector3(-8, 0, -22), new THREE.Vector3(-16, 0, -20), new THREE.Vector3(-24, 0, -19), new THREE.Vector3(-32, 0, -18), new THREE.Vector3(-36.5, 0, -17.3), new THREE.Vector3(-38, 0, -17.2)]);
   add(group, new THREE.Mesh(riverGeometry(bosphorus, 7.4), mat("#d9cdaa")), 0, 0.03, 0);
   add(group, new THREE.Mesh(riverGeometry(bosphorus, 5.6), sea), 0, 0.06, 0);
-  const zayandeh = new THREE.CatmullRomCurve3([new THREE.Vector3(40, 0, 8), new THREE.Vector3(30, 0, 9), new THREE.Vector3(20, 0, 9.5), new THREE.Vector3(12, 0, 11), new THREE.Vector3(8, 0, 14), new THREE.Vector3(6.5, 0, 16)]);
+  const zayandeh = new THREE.CatmullRomCurve3([new THREE.Vector3(38, 0, 8), new THREE.Vector3(36.5, 0, 8.1), new THREE.Vector3(30, 0, 9), new THREE.Vector3(20, 0, 9.5), new THREE.Vector3(12, 0, 11), new THREE.Vector3(8, 0, 14), new THREE.Vector3(6.5, 0, 16)]);
   add(group, new THREE.Mesh(riverGeometry(zayandeh, 5.4), mat("#d9cdaa")), 0, 0.03, 0);
   add(group, new THREE.Mesh(riverGeometry(zayandeh, 3.6), fresh), 0, 0.06, 0);
   add(group, new THREE.Mesh(new THREE.CircleGeometry(3.4, 20), mat("#d9cdaa")), 6.5, TOP + 0.03, 16.5).rotation.x = -Math.PI / 2;

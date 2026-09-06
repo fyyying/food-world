@@ -6,8 +6,8 @@
 import type { Recipe } from "../data";
 
 export type Kind = "ingredient" | "flavour" | "technique" | "landmark" | "place" | "dish";
-export type WorldId = "china" | "italy" | "korea" | "mexico" | "middle-east";
-export type Area = "sichuan" | "jiangnan" | "northern" | "everyday" | "rome" | "venice" | "sicily" | "seoul" | "jeonju" | "busan" | "jeju" | "cdmx" | "oaxaca" | "jalisco" | "yucatan" | "istanbul" | "levant" | "arabia" | "persia";
+export type WorldId = "china" | "italy" | "korea" | "mexico" | "middle-east" | "mediterranean";
+export type Area = "sichuan" | "jiangnan" | "northern" | "everyday" | "rome" | "venice" | "sicily" | "seoul" | "jeonju" | "busan" | "jeju" | "cdmx" | "oaxaca" | "jalisco" | "yucatan" | "istanbul" | "levant" | "arabia" | "persia" | "greece" | "spain" | "morocco" | "dalmatia";
 
 export type EnrichedRecipe = Recipe & {
   zh?: string;
@@ -79,6 +79,10 @@ export const AREAS: Record<Area, AreaInfo> = {
   levant: { world: "middle-east", name: "The Levant", zh: "بلاد الشام", blurb: "Beirut and Damascus: mezze, bread, herbs and olives", center: [-20, 0] },
   arabia: { world: "middle-east", name: "Arabia", zh: "الجزيرة العربية", blurb: "dunes, dates, coffee and the caravan", center: [-14, 20] },
   persia: { world: "middle-east", name: "Persia", zh: "ایران", blurb: "Isfahan: saffron, pomegranates and rice", center: [24, 8] },
+  greece: { world: "mediterranean", name: "Greece", zh: "Ελλάδα", blurb: "islands: tavernas, feta, olives and the Acropolis", center: [25, 4] },
+  spain: { world: "mediterranean", name: "Spain", zh: "España", blurb: "the port, the tapas bar, oranges and the Alhambra", center: [-27, -2] },
+  morocco: { world: "mediterranean", name: "Morocco", zh: "المغرب", blurb: "the souk, the square, tagines and mint tea", center: [-8, 20] },
+  dalmatia: { world: "mediterranean", name: "Dalmatia", zh: "Dalmacija", blurb: "a walled harbour, the konoba, cabbage and lentils", center: [6, -21] },
 };
 export const WORLDS: Record<WorldId, { name: string; zh: string; regionId: string }> = {
   china: { name: "China", zh: "中国", regionId: "china" },
@@ -86,6 +90,7 @@ export const WORLDS: Record<WorldId, { name: string; zh: string; regionId: strin
   korea: { name: "Korea", zh: "한국", regionId: "korea" },
   mexico: { name: "Mexico", zh: "México", regionId: "mexico" },
   "middle-east": { name: "Middle East", zh: "الشرق الأوسط", regionId: "middle-east" },
+  mediterranean: { name: "Mediterranean", zh: "Mare Nostrum", regionId: "mediterranean" },
 };
 export const areasOf = (world: WorldId) => (Object.keys(AREAS) as Area[]).filter((a) => AREAS[a].world === world);
 
@@ -130,22 +135,34 @@ const ENRICH: { test: RegExp; data: Enrichment }[] = [
   { test: /tabouli|tabbouleh/i, data: { zh: "تبولة", world: "middle-east", area: "levant", spice: 0, flavours: ["herby", "lemony", "fresh"], core: ["parsley", "mint", "bulgur", "tomato", "lemon", "olive oil"], techniques: ["mezze"], place: "mezze" } },
   { test: /chicken kebab/i, data: { zh: "Tavuk şiş", world: "middle-east", area: "istanbul", spice: 1, flavours: ["charred", "yogurt-marinated", "spiced"], core: ["chicken", "yogurt", "garlic", "paprika", "cumin", "lemon"], techniques: ["mangal"], place: "mangal" } },
   { test: /shakshuka/i, data: { zh: "شكشوكة", world: "middle-east", area: "levant", spice: 1, flavours: ["tomato", "spicy", "eggy"], core: ["eggs", "tomato", "peppers", "onion", "cumin", "paprika", "feta"], techniques: ["taboon", "pan"], place: "taboon" } },
+  // ---- Mediterranean ----
+  { test: /tagine/i, data: { zh: "طاجين", world: "mediterranean", area: "morocco", spice: 1, flavours: ["sweet-spiced", "warm", "slow"], core: ["chickpeas", "vegetables", "ras el hanout", "preserved lemon", "apricots", "couscous"], techniques: ["tagine"], place: "tagine" } },
+  { test: /baked salmon/i, data: { zh: "Salmón al horno", world: "mediterranean", area: "spain", spice: 0, flavours: ["briny", "tomato", "herby"], core: ["salmon", "tomato", "olives", "capers", "olive oil", "garlic"], techniques: ["oven"], place: "fishMed" } },
+  { test: /greek salad/i, data: { zh: "Χωριάτικη", world: "mediterranean", area: "greece", spice: 0, flavours: ["fresh", "salty", "tangy"], core: ["tomato", "cucumber", "feta", "olives", "red onion", "oregano", "olive oil"], techniques: ["raw"], place: "taverna" } },
+  { test: /spanish simmered/i, data: { zh: "Pescado con garbanzos", world: "mediterranean", area: "spain", spice: 0, flavours: ["saffron", "garlicky", "brothy"], core: ["white fish", "chickpeas", "tomato", "garlic", "paprika", "saffron"], techniques: ["plancha", "pot"], place: "plancha" } },
+  { test: /kupus/i, data: { zh: "Kupus salata", world: "mediterranean", area: "dalmatia", spice: 0, flavours: ["crunchy", "sour", "peppery"], core: ["cabbage", "vinegar", "oil", "black pepper", "salt"], techniques: ["raw"], place: "konoba" } },
+  { test: /everyday salad/i, data: { zh: "Σαλάτα", world: "mediterranean", area: "greece", spice: 0, flavours: ["fresh", "simple"], core: ["lettuce", "tomato", "cucumber", "olive oil", "lemon"], techniques: ["raw"], place: "taverna" } },
+  { test: /lentil salad/i, data: { zh: "Salata od leće", world: "mediterranean", area: "dalmatia", spice: 0, flavours: ["earthy", "tangy", "herby"], core: ["lentils", "feta", "tomato", "herbs", "olive oil", "lemon"], techniques: ["raw"], place: "konoba" } },
+  { test: /prawns & feta|prawn.*omelette/i, data: { zh: "Ομελέτα", world: "mediterranean", area: "greece", spice: 0, flavours: ["savoury", "briny"], core: ["prawns", "eggs", "feta", "herbs"], techniques: ["pan"], place: "taverna" } },
+  { test: /halloumi/i, data: { zh: "Μακαρόνια με χαλούμι", world: "mediterranean", area: "greece", spice: 0, flavours: ["salty", "cheesy"], core: ["pasta", "halloumi", "tomato", "olive oil", "herbs"], techniques: ["pot"], place: "taverna" } },
+  { test: /tzatziki/i, data: { zh: "Τζατζίκι", world: "mediterranean", area: "greece", spice: 0, flavours: ["cool", "garlicky", "tangy"], core: ["yogurt", "cucumber", "garlic", "dill", "olive oil"], techniques: ["raw"], place: "taverna" } },
 ];
 
 const ME_CUISINES = new Set(["Middle Eastern", "Lebanese", "Turkish"]);
+const MED_CUISINES = new Set(["Mediterranean", "Greek", "Spanish", "North African"]);
 export function enrich(r: Recipe): EnrichedRecipe {
   const hit = ENRICH.find((e) => e.test.test(r.title))?.data ?? {};
   const spicy = r.tags.some((t) => /spicy/.test(t));
   return {
     ...r,
     zh: hit.zh,
-    world: hit.world ?? (r.cuisine === "Italian" ? "italy" : r.cuisine === "Korean" ? "korea" : r.cuisine === "Mexican" ? "mexico" : ME_CUISINES.has(r.cuisine ?? "") ? "middle-east" : "china"),
-    area: hit.area ?? (r.cuisine === "Italian" ? "rome" : r.cuisine === "Korean" ? "seoul" : r.cuisine === "Mexican" ? "cdmx" : r.cuisine === "Turkish" ? "istanbul" : ME_CUISINES.has(r.cuisine ?? "") ? "levant" : "everyday"),
+    world: hit.world ?? (r.cuisine === "Italian" ? "italy" : r.cuisine === "Korean" ? "korea" : r.cuisine === "Mexican" ? "mexico" : ME_CUISINES.has(r.cuisine ?? "") ? "middle-east" : MED_CUISINES.has(r.cuisine ?? "") ? "mediterranean" : "china"),
+    area: hit.area ?? (r.cuisine === "Italian" ? "rome" : r.cuisine === "Korean" ? "seoul" : r.cuisine === "Mexican" ? "cdmx" : r.cuisine === "Turkish" ? "istanbul" : ME_CUISINES.has(r.cuisine ?? "") ? "levant" : r.cuisine === "Spanish" ? "spain" : r.cuisine === "North African" ? "morocco" : MED_CUISINES.has(r.cuisine ?? "") ? "greece" : "everyday"),
     spice: hit.spice ?? (spicy ? 2 : 0),
     flavours: hit.flavours ?? [],
     core: hit.core ?? [...r.protein, ...r.mainIngredient.map((m) => m.toLowerCase())],
     techniques: hit.techniques ?? (r.method === "Pan" ? ["wok"] : r.method === "Pot" ? ["braise"] : []),
-    place: hit.place ?? (r.cuisine === "Italian" ? "trattoria" : r.cuisine === "Korean" ? "grill" : r.cuisine === "Mexican" ? "fonda" : ME_CUISINES.has(r.cuisine ?? "") ? "mezze" : "wok"),
+    place: hit.place ?? (r.cuisine === "Italian" ? "trattoria" : r.cuisine === "Korean" ? "grill" : r.cuisine === "Mexican" ? "fonda" : ME_CUISINES.has(r.cuisine ?? "") ? "mezze" : MED_CUISINES.has(r.cuisine ?? "") ? "taverna" : "wok"),
     weeknight: (r.totalMin !== null && r.totalMin <= 40) || r.tags.includes("busy_day") || r.tags.includes("quick"),
   };
 }
@@ -166,7 +183,10 @@ export function isMexicoRecipe(r: Recipe): boolean {
 export function isMideastRecipe(r: Recipe): boolean {
   return ME_CUISINES.has(r.cuisine ?? "") || /shawarma|falafel|hummus|kebab|kofta|tabouli|tabbouleh|shakshuka|pita|baklava/i.test(r.title);
 }
-export const worldRecipes = (world: WorldId, all: Recipe[]) => all.filter(world === "china" ? isChinaRecipe : world === "italy" ? isItalyRecipe : world === "korea" ? isKoreaRecipe : world === "mexico" ? isMexicoRecipe : isMideastRecipe);
+export function isMedRecipe(r: Recipe): boolean {
+  return (MED_CUISINES.has(r.cuisine ?? "") || /greek|tzatziki|halloumi|tagine|paella|kupus|moussaka|souvlaki/i.test(r.title)) && !/shakshuka/i.test(r.title);
+}
+export const worldRecipes = (world: WorldId, all: Recipe[]) => all.filter(world === "china" ? isChinaRecipe : world === "italy" ? isItalyRecipe : world === "korea" ? isKoreaRecipe : world === "mexico" ? isMexicoRecipe : world === "middle-east" ? isMideastRecipe : isMedRecipe);
 
 const has = (list: string[], re: RegExp) => list.some((x) => re.test(x));
 
@@ -513,7 +533,64 @@ export const MIDEAST_OBJECTS: WorldObject[] = [
     tagline: "Half the world, the Persians said.", blurb: "Shah Abbas made Isfahan his capital in 1598 and built the great square, the turquoise-tiled mosques and the Si-o-se-pol, the bridge of thirty-three arches, over the Zayandeh river between 1599 and 1602. Persia gave the region its cooking words, pilaf, kebab and mezze among them, and its sweet-and-sour pairings of fruit with meat.", match: () => false },
 ];
 
-export const ALL_OBJECTS = [...OBJECTS, ...ITALY_OBJECTS, ...KOREA_OBJECTS, ...MEXICO_OBJECTS, ...MIDEAST_OBJECTS];
+
+// ---------- the Mediterranean world ----------
+
+const SK: [number, number] = [-16, 20];
+export const MED_OBJECTS: WorldObject[] = [
+  // --- ingredients ---
+  { id: "saladVeg", world: "mediterranean", kind: "ingredient", name: "Tomatoes, cucumbers & peppers", zh: "Ντομάτα, αγγούρι, πιπεριά", emoji: "🥗", area: "greece", pos: [26, 17.5], prop: "saladGarden", rot: -0.1,
+    tagline: "The summer garden that becomes a horiatiki.", blurb: "Cucumbers came from India by way of Persia and were eaten in Greece by 500 BC; tomatoes and peppers only arrived from the Americas in the 1500s and were treated with suspicion for two centuries. The village salad, horiatiki, was fixed in the 1960s: tomato, cucumber, green pepper, red onion and olives under a slab of feta, oregano and oil, never lettuce. Everyday salads across the sea are the same garden with lemon and whatever herb is nearest.",
+    partners: ["feta", "olive oil", "oregano", "lemon"], match: (r) => has(r.core, /tomato|cucumber|pepper|lettuce/) },
+  { id: "feta", world: "mediterranean", kind: "ingredient", name: "Feta, yogurt & goats", zh: "Φέτα και γιαούρτι", emoji: "🐐", area: "greece", pos: [32, -6], prop: "goatDairy", rot: 0.3,
+    tagline: "Sheep and goats on the rocks, cheese in brine, yogurt strained thick.", blurb: "Feta is sheep's milk (with up to 30 % goat) cured in brine, and the Odyssey has the Cyclops making cheese much like it in the 700s BC; the name, slice, is Venetian, from the 1600s, and it has been a protected Greek name since 2002. Greek yogurt is strained through cloth until it is thick enough to hold a spoon; tzatziki mixes it with grated cucumber, garlic, dill and oil. Halloumi is the Cypriot cousin, a cheese that squeaks and grills without melting.",
+    partners: ["cucumber", "garlic", "dill", "olive oil", "honey"], match: (r) => has(r.protein, /cheese|yogurt/) || has(r.core, /feta|halloumi|yogurt/) },
+  { id: "olivesGr", world: "mediterranean", kind: "ingredient", name: "Olives & oil", zh: "Ελιές", emoji: "🫒", area: "greece", pos: [25, 12], prop: "oliveGroveGr", rot: 0.1,
+    tagline: "Athena's gift to Athens, and the fat of the whole sea.", blurb: "The olive was domesticated in the eastern Mediterranean around 4000 BC, and the Greeks say Athena won the city by planting one on the Acropolis. Kalamata olives are cured in brine and vinegar; Cretan oil, pressed the day the fruit is picked, is the greenest. Greeks use more oil per head than anyone, about twenty litres a year: on salad, over beans, in every stew, and on bread with a pinch of salt.",
+    partners: ["lemon", "oregano", "garlic", "feta"], match: (r) => has(r.core, /olive|caper/) },
+  { id: "fishMed", world: "mediterranean", kind: "ingredient", name: "Fish & prawns", zh: "Pescado y gambas", emoji: "🐟", area: "spain", pos: [-17, 1], prop: "fishingPort", rot: -Math.PI / 2, place: true, placeName: "The port",
+    tagline: "Landed at dawn, on the grill or in the pan by noon.", blurb: "The Phoenicians were salting Atlantic tuna at Cádiz by 800 BC and Rome's favourite sauce, garum, came from the same coast. Spain still eats more fish than any country in Europe: hake and monkfish simmered with chickpeas, sardines grilled on skewers on the beach, prawns flashed on the plancha with garlic, and salt-baked bream. Salmon is the northern guest, roasted with tomato, olives and capers.",
+    partners: ["garlic", "olive oil", "lemon", "chickpeas", "tomato"], match: (r) => has(r.protein, /fish|prawn|shrimp|salmon/) },
+  { id: "oranges", world: "mediterranean", kind: "ingredient", name: "Oranges & almonds", zh: "Naranjas y almendras", emoji: "🍊", area: "spain", pos: [-31, 9], prop: "orangeGrove", rot: 0.05,
+    tagline: "Seville's bitter oranges and the almond blossom of February.", blurb: "The Moors planted bitter oranges along Seville's streets in the 900s for their scent, and the English turned the fruit into marmalade; the sweet orange came later, from China by way of Portugal in the 1500s. Almonds arrived earlier still, from the Levant, and blossom pink across Andalusia in February. Together they make turrón, marzipan and the almond sauces of the south, and orange goes into salads with fennel and olives.",
+    partners: ["honey", "cinnamon", "olive oil"], match: (r) => has(r.core, /orange|almond/) },
+  { id: "cabbage", world: "mediterranean", kind: "ingredient", name: "Cabbage & paprika", zh: "Kupus i paprika", emoji: "🥬", area: "dalmatia", pos: [16, -23], prop: "cabbageField", rot: 0.1,
+    tagline: "Shredded fine, salted, and dressed with vinegar and pepper.", blurb: "Cabbage has fed the Balkans through every winter since the Romans planted it; the Croatian kupus salata is cabbage sliced hair-thin, salted and squeezed, then dressed with oil, vinegar and black pepper, and it comes with every grill. Whole heads sour in barrels for sarma in autumn. Paprika, dried and ground from the peppers the Ottomans brought in the 1500s, is the other winter colour, sweet or hot, on everything.",
+    partners: ["vinegar", "black pepper", "lentils", "olive oil"], match: (r) => has(r.core, /cabbage|paprika/) },
+  { id: "pulses", world: "mediterranean", kind: "ingredient", name: "Chickpeas & lentils", zh: "حمص وعدس", emoji: "🫘", area: "morocco", pos: [SK[0] - 0.5, SK[1] - 2.6], prop: "none", hitOnly: true, parent: "souk",
+    tagline: "The sacks at the front of every souk.", blurb: "Lentils were among the first crops of the Fertile Crescent, farmed by 8000 BC, and chickpeas followed; both crossed the sea with the Phoenicians and Greeks. Morocco's tagines and harira soup rest on them, Spain simmers chickpeas with fish and spinach, Greece bakes them slow in clay on Sifnos, and the Balkans dress lentils with vinegar and onion. Cheap, keeping, and the protein of Lent and Ramadan alike.",
+    partners: ["cumin", "olive oil", "lemon", "tomato"], match: (r) => has(r.core, /chickpea|lentil|bean/) || has(r.protein, /beans|lentils/) },
+  // --- flavours ---
+  { id: "spicesMed", world: "mediterranean", kind: "flavour", name: "Ras el hanout, saffron & preserved lemon", zh: "رأس الحانوت", emoji: "🧂", area: "morocco", pos: [SK[0] - 5.5, SK[1] - 2.6], prop: "none", hitOnly: true, parent: "souk",
+    tagline: "The head of the shop: the merchant's best blend.", blurb: "Ras el hanout means head of the shop, the mix each spice seller is proudest of: cumin, coriander, cinnamon, ginger, turmeric, black pepper, sometimes rose petals and two dozen more. Saffron grows around Taliouine in the Atlas. Lemons are salted whole in jars for a month until the rind turns soft and sweet, and go chopped into tagines with olives. Harissa, chilli pounded with garlic and caraway, is Tunisia's gift to the whole coast.",
+    flavour: ["warm", "sweet", "sour"], partners: ["chickpeas", "lamb", "couscous", "olives"], match: (r) => has(r.core, /ras el hanout|saffron|preserved lemon|cumin|paprika|harissa/) },
+  // --- techniques ---
+  { id: "tagine", world: "mediterranean", kind: "technique", name: "The tagine", zh: "الطاجين", emoji: "🍲", area: "morocco", pos: [7, 21], prop: "riadKitchen", rot: -0.15, place: true, placeName: "Riad kitchen",
+    tagline: "A cone of clay that returns every drop of steam to the pot.", blurb: "The tagine is both the pot and what cooks in it: a shallow clay dish under a conical lid, set over charcoal, where steam rises, cools on the cone and drips back, so vegetables, chickpeas or lamb stew slowly in almost no water. Berbers were cooking this way before the Arabs arrived in the 600s. Sweet meets savoury in it: apricots or prunes with meat, honey and cinnamon, preserved lemon and olives. Couscous, steamed three times over the broth, is Friday's dish.",
+    partners: ["chickpeas", "preserved lemon", "ras el hanout", "apricots", "couscous"], match: (r) => has(r.techniques, /tagine/) },
+  { id: "taverna", world: "mediterranean", kind: "technique", name: "The taverna table", zh: "Ταβέρνα", emoji: "🍽️", area: "greece", pos: [27, -2.5], prop: "taverna", rot: 0.1, place: true, placeName: "Taverna",
+    tagline: "Blue chairs, a vine overhead, plates that arrive as they are ready.", blurb: "A taverna is the family place with paper on the table and a vine over the yard, where the meal is a run of shared plates: a horiatiki and tzatziki first, then whatever came off the grill or out of the oven, with bread to wipe the oil. Souvlaki has been grilled on skewers since Homer; ouzo, the anise spirit, came from Lesbos in the 1800s. Greeks still cook pasta with halloumi or feta and call it their own, as they have since Byzantine times.",
+    partners: ["feta", "olives", "tomato", "olive oil", "lemon"], match: (r) => has(r.techniques, /raw|pan|pot/) && r.area === "greece" },
+  { id: "plancha", world: "mediterranean", kind: "technique", name: "Plancha & paella", zh: "Plancha y paella", emoji: "🥘", area: "spain", pos: [-25, 4], prop: "tapasBar", rot: 0.2, place: true, placeName: "Tapas bar",
+    tagline: "A hot iron plate, a wide pan, and a plate on top of the glass.", blurb: "Tapa means lid: the slice of ham a Andalusian barman laid on a glass of sherry to keep the flies off, sometime in the 1800s, which became the small plate that comes with every drink. The plancha is a slab of hot iron for prawns, fish and chorizo in seconds; the paella is the wide, shallow pan of Valencia, where rice was planted by the Moors in the 700s and cooked outdoors over orange-wood fires with saffron. Chickpeas simmered with fish and paprika are the everyday version of the same kitchen.",
+    partners: ["prawns", "chickpeas", "saffron", "paprika", "garlic"], match: (r) => has(r.techniques, /plancha/) },
+  { id: "konoba", world: "mediterranean", kind: "technique", name: "The konoba", zh: "Konoba", emoji: "🔥", area: "dalmatia", pos: [-10, -21], prop: "konoba", rot: 0.1, place: true, placeName: "Konoba",
+    tagline: "A stone cellar, a bell of iron over embers, salads to cut the fat.", blurb: "A konoba was the cellar where Dalmatian families kept wine and salted fish; now it is the tavern. Under the peka, an iron bell buried in embers for two hours, octopus or lamb bakes with potatoes and rosemary. Ćevapi, the small skinless sausages the Ottomans left behind, come off the grill with onion and flatbread, and there is always a cabbage salad, a lentil salad and a glass of rakija. Everything is finished with the island's oil.",
+    partners: ["cabbage", "lentils", "olive oil", "rosemary", "garlic"], match: (r) => has(r.techniques, /raw|pot/) && r.area === "dalmatia" },
+  // --- places ---
+  { id: "souk", world: "mediterranean", kind: "place", name: "The souk", zh: "السوق", emoji: "🧺", area: "morocco", pos: SK, prop: "souk", rot: 0, place: true, open: "reveal",
+    tagline: "Lanes under reed shade: spice cones, pulses, mint, olives, slippers and lamps.", blurb: "Marrakech's souks have run behind the great square since the city was founded in 1070, each trade in its own lane: the spice sellers with their cones of colour, sacks of chickpeas and lentils, mint by the armful for tea, olives in a dozen cures, then leather, carpets and lanterns deeper in.", match: () => false },
+  { id: "mintTea", world: "mediterranean", kind: "dish", name: "Mint tea", zh: "أتاي", emoji: "🫖", area: "morocco", pos: [SK[0] + 4.5, SK[1] - 2.6], prop: "none", hitOnly: true, parent: "souk",
+    tagline: "Gunpowder tea, a fistful of mint, a brick of sugar, poured from a height.", blurb: "Tea reached Morocco late, in the 1850s, when British merchants cut off from the Baltic by the Crimean War unloaded green gunpowder tea in Tangier. Moroccans added fresh spearmint and a great deal of sugar and made it the national drink: brewed in a silver pot, poured from high to raise a foam, three glasses, each a little sweeter. It is offered before any bargaining begins.", match: () => false },
+  { id: "stall-olives-mo", world: "mediterranean", kind: "ingredient", name: "Olives", zh: "زيتون", emoji: "🫒", area: "morocco", pos: [SK[0] - 4, SK[1] + 2.6], prop: "none", hitOnly: true, parent: "souk", alias: "olivesGr", tagline: "", blurb: "", match: () => false },
+  { id: "stall-slippers", world: "mediterranean", kind: "landmark", name: "Slippers & lamps", zh: "بلغة", emoji: "🪔", area: "morocco", pos: [SK[0] + 1, SK[1] + 2.6], prop: "none", hitOnly: true, parent: "souk", alias: "mintTea", tagline: "", blurb: "", match: () => false },
+  { id: "jemaa", world: "mediterranean", kind: "landmark", name: "Jemaa el-Fna", zh: "جامع الفنا", emoji: "🐍", area: "morocco", pos: [-2, 18], prop: "jemaaSquare", rot: 0.1,
+    tagline: "Storytellers, snake charmers, orange juice and, at dusk, a hundred kitchens.", blurb: "The square has been Marrakech's stage since the 1000s: storytellers, snake charmers, water sellers in red with brass cups, and orange juice from carts. At sunset the food stalls roll in, grilling merguez and sardines, ladling harira and snails in broth, under smoke and gas lamps. UNESCO listed the square's living culture in 2001, the first place of its kind.", match: () => false },
+  { id: "flamenco", world: "mediterranean", kind: "landmark", name: "Flamenco", zh: "Flamenco", emoji: "💃", area: "spain", pos: [-30, -24], prop: "flamenco", rot: 0.2,
+    tagline: "Guitar, palms and a stamping heel, from the Gitano quarters of Andalusia.", blurb: "Flamenco grew among the Gitanos of Seville, Jerez and Cádiz in the 1700s and 1800s, in the tablaos and the patios: a singer, a guitar, hands clapping the rhythm and a dancer whose heels are the drum. Sherry, aged in Jerez since the 1400s, and a plate of jamón are what come with it. UNESCO listed it in 2010.", match: () => false },
+];
+
+export const ALL_OBJECTS = [...OBJECTS, ...ITALY_OBJECTS, ...KOREA_OBJECTS, ...MEXICO_OBJECTS, ...MIDEAST_OBJECTS, ...MED_OBJECTS];
 export const objectsOf = (world: WorldId) => ALL_OBJECTS.filter((o) => o.world === world);
 export const objectById = (id: string) => ALL_OBJECTS.find((o) => o.id === id)!;
 
@@ -536,7 +613,7 @@ export const MAP_REGIONS: MapRegion[] = [
   { id: "mexico", name: "Mexico", cuisines: ["Mexican"], pos: [-40, 10], size: 6, color: "#e0a06a", emoji: ["🌽", "🌵", "🥑", "🌮"], built: true, seed: 12 },
   { id: "italy", name: "Italy", cuisines: ["Italian"], pos: [-8, -4], size: 6.5, color: "#a8c07a", emoji: ["🍝", "🍅", "🫒", "🧀"], built: true, seed: 13 },
   { id: "central-europe", name: "Central Europe", cuisines: ["British", "Hungarian", "Georgian", "German", "Swiss", "French", "Swedish"], pos: [-12, -26], size: 7, color: "#93b48a", emoji: ["🥧", "🍲", "🥔", "🧈"], built: false, seed: 14 },
-  { id: "mediterranean", name: "Mediterranean", cuisines: ["Mediterranean", "Greek", "Spanish", "North African"], pos: [-20, 14], size: 6, color: "#b9cf94", emoji: ["🫒", "🍋", "🐟", "🧆"], built: false, seed: 15 },
+  { id: "mediterranean", name: "Mediterranean", cuisines: ["Mediterranean", "Greek", "Spanish", "North African"], pos: [-20, 14], size: 6, color: "#b9cf94", emoji: ["🫒", "🍋", "🐟", "🧆"], built: true, seed: 15 },
   { id: "middle-east", name: "Middle East", cuisines: ["Middle Eastern", "Lebanese", "Turkish"], pos: [10, 8], size: 6, color: "#e2cf9b", emoji: ["🧆", "🍢", "🫓", "🌿"], built: true, seed: 16 },
   { id: "india", name: "India", cuisines: ["Indian"], pos: [22, 20], size: 6, color: "#e0b25e", emoji: ["🍛", "🫚", "🌶️", "🫓"], built: false, seed: 17 },
   { id: "china", name: "China", cuisines: ["Chinese"], pos: [26, -8], size: 10, color: "#c9a26a", emoji: ["🌶️", "🥟", "🍜", "🏮"], built: true, seed: 18 },

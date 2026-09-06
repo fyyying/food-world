@@ -74,7 +74,7 @@ function layoutIndia({ group, tickers, place, tint, TOP }: LayoutCtx) {
   for (const [x, z, s] of [[20, 20.5, 1.0], [29, 21, 1.1], [36, 19, 0.9], [36, 4, 1.0], [10, 12, 0.9], [20, -4, 0.9]] as [number, number, number][]) { const p = datePalm(s); const cr = (p.userData as { dates?: THREE.Mesh[] }).dates ?? []; cr.forEach((d) => { (d.material as THREE.MeshStandardMaterial).color.set("#6fa84a"); d.scale.set(1.4, 1.2, 1.4); }); place(p, x, z, x); tickers.push(p.userData.tick!); }
   const gp = gopuram(); place(gp, 33, -1.2, 0).scale.setScalar(0.75); tickers.push(gp.userData.tick!);
   for (const [x, z, sc] of [[8, 9, 1.1], [11, 16, 1.0], [18, 22, 1.2], [23, 22.5, 1.0], [27, 20.5, 1.1], [33, 20, 1.0], [36, 14, 1.2], [35, 9, 1.0], [30, 5.5, 0.9], [20, 12.5, 1.1], [13, 9.5, 0.9], [25, -1, 1.0], [-6, 15.5, 1.0], [-15, 14.5, 1.1], [-3, 7, 0.9], [-30, -18, 1.0], [-18, -19, 1.1], [14, -18, 1.0], [26, -12, 1.1]] as [number, number, number][]) { const b = bananaTree(sc); place(b, x, z, x + z); tickers.push(b.userData.tick!); }
-  group.add(path([[12, 12], [20, 13.5], [21.5, 19.5], [19.5, 21], [11, 17], [12, 12]], 1.6, "#d3c8ad"));
+  group.add(path([[11, 11], [20, 12.5], [21.5, 19.5], [19.5, 21], [10.5, 18.5], [11, 11]], 1.6, "#d3c8ad"));
   const streetCow = cow(false, true, "हम्बा! Moo!"); place(streetCow, -15, 12.5, 0.5); tickers.push((t, dt) => streetCow.userData.tick?.(t, dt));   // a sacred cow ambling through Mumbai
   for (const [x, z] of [[-4, 4.5], [-12, 2]]) { const m = marigoldString(5, 2.2); place(m, x, z, Math.PI / 2); }
 
@@ -83,7 +83,7 @@ function layoutIndia({ group, tickers, place, tint, TOP }: LayoutCtx) {
     [new THREE.CatmullRomCurve3([[-16, -8], [-8, -8], [2, -8], [10, -8], [15, -12], [15, -16], [9, -16], [2, -14.5], [-8, -16], [-16, -16]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), [["#f4f1ea", "turban"], ["#3f6fb5", ""], ["#e8558a", "sari"], ["#2f7f4a", "turban"], ["#e0b34c", "sari"], ["#2a2a2e", ""], ["#c0392b", "turban"]], 0.008],
     [new THREE.CatmullRomCurve3([[-18, -1], [-12, -1], [-9.5, 2], [-13, 7.5], [-18, 8], [-25, 8], [-26, 2], [-24, -2]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), [["#f4f1ea", "turban"], ["#c0392b", "sari"], ["#e0b34c", "turban"], ["#9b59b6", "sari"], ["#2f7f4a", ""]], 0.007],
     [new THREE.CatmullRomCurve3([[-13, 6], [-13, 15], [-6, 16], [2, 16], [4.3, 9], [5, 4], [-2, 4]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), [["#3f6fb5", "cap"], ["#f4f1ea", ""], ["#e8558a", "sari"], ["#2a2a2e", ""], ["#2a8f8f", "sari"], ["#e0b34c", "cap"]], 0.009],
-    [new THREE.CatmullRomCurve3([[12, 12], [20, 13.5], [21.5, 19.5], [19.5, 21], [11, 17]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), [["#f4f1ea", "dhoti"], ["#e8558a", "sari"], ["#3f6fb5", ""], ["#2a8f8f", "sari"]], 0.007],
+    [new THREE.CatmullRomCurve3([[11, 11], [20, 12.5], [21.5, 19.5], [19.5, 21], [10.5, 18.5]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), [["#f4f1ea", "dhoti"], ["#e8558a", "sari"], ["#3f6fb5", ""], ["#2a8f8f", "sari"]], 0.007],
   ];
   for (const [curve, people, speed] of loops) {
     const walkers = people.map(([c, kind]) => indian(c, { turban: kind === "turban" ? ["#f08a2a", "#2f6fb5", "#e8558a"][c.length % 3] : undefined, sari: kind === "sari" ? ["#e8558a", "#2a8f8f", "#9b59b6", "#f2c14e"][c.length % 4] : undefined, cap: kind === "cap", dhoti: kind === "dhoti" }));

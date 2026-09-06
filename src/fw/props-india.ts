@@ -482,6 +482,7 @@ export function fishingNets(): P {
   const fishers: Fig[] = [];
   for (let i = 0; i < 2; i++) { const f = indian("#3f6fb5", { dhoti: true }); add(g, f, -2 + i * 3, 0.4, 2.0); f.rotation.y = 0.3; fishers.push(f); }
   add(g, box(0.6, 0.3, 0.45, "#a37a4f"), 3.4, 0.55, 2.0); for (let k = 0; k < 4; k++) add(g, ball(0.06, "#b3bfc9", 5), 3.4 + (k % 2) * 0.2 - 0.1, 0.75, 2.0 + Math.floor(k / 2) * 0.15).scale.set(1.8, 0.5, 1);
+  g.userData.hitBox = new THREE.Box3(new THREE.Vector3(-4.8, 0, -0.6), new THREE.Vector3(4.8, 3.6, 2.8));   // click the quay and frames, not the arms reaching over the water and the spice garden
   const re = reaction(0.4);
   g.userData.poke = () => { re.poke(); bubble(fishers[0], "വല! The nets!", 1.5, 1400); };
   g.userData.tick = (t, dt) => { const k = re.step(dt); nets.forEach((n, i) => { n.rotation.x = 0.12 + Math.sin(t * 0.5 + i) * 0.02 - k * Math.max(0, Math.sin(k * Math.PI)) * 0.45; }); fishers.forEach((f) => { if (f.userData.upper) f.userData.upper.rotation.x = 0.1 + k * Math.abs(Math.sin(t * 4)) * 0.3; }); };

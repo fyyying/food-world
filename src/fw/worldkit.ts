@@ -121,7 +121,9 @@ export function buildWorld(spec: WorldSpec): Diorama {
     prop.updateMatrixWorld(true);
     if (prop.userData.tick) tickers.push(prop.userData.tick);
     for (const key of ["steam", "smoke"] as const) { const local = prop.userData[key]; if (local) steamSources.push(/market/i.test(obj.prop) ? local.clone() : prop.localToWorld(local.clone())); }
-    const box = new THREE.Box3().setFromObject(prop);
+    // a prop may declare its own clickable footprint (local space) when parts of it reach over other things, like the fishing nets' arms
+    const own = prop.userData.hitBox as THREE.Box3 | undefined;
+    const box = own ? own.clone().applyMatrix4(prop.matrixWorld) : new THREE.Box3().setFromObject(prop);
     const size = box.getSize(new THREE.Vector3()), center = box.getCenter(new THREE.Vector3());
     const roam = obj.prop === "cow" ? 1.8 : 0;
     const hit = new THREE.Mesh(new THREE.BoxGeometry(Math.max(2.2, size.x + 0.4 + roam), Math.max(2, size.y + 0.6), Math.max(2.2, size.z + 0.4 + roam)), new THREE.MeshBasicMaterial({ visible: false }));

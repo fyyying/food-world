@@ -4,7 +4,7 @@ import { KOREA_OBJECTS, type EnrichedRecipe } from "./graph";
 import { mat, add, person, tree, butterfly, path, birds, fence, bridge, cow, type P } from "./props";
 import { KOREA_PROPS, KR, hanok, stoneWall, palaceGate, palaceHall, templeKorea, seoulTower, dolHareubang } from "./props-korea";
 import { fishingBoat } from "./props-italy";
-import { buildWorld, riverGeometry, seaWater, freshWater, addFish, type Diorama, type LayoutCtx } from "./worldkit";
+import { buildWorld, riverGeometry, seaWater, estuaryWater, addFish, type Diorama, type LayoutCtx } from "./worldkit";
 
 export function buildKorea(recipes: EnrichedRecipe[]): Diorama {
   return buildWorld({
@@ -21,7 +21,7 @@ function layoutKorea({ group, tickers, place, tint, TOP }: LayoutCtx) {
   tint(10, 6, 9, 8, "#c4b98a", 0.1);
 
   // ---------- water: the East Sea and the south coast as one shoreline, the Han river through the middle ----------
-  const waterMat = seaWater(), riverMat = freshWater();
+  const waterMat = seaWater(), riverMat = estuaryWater(-1.5, 22, 9);   // the Han turns the sea's colour as it reaches the coast
   tickers.push((t) => { waterMat.uniforms.uTime.value = t; riverMat.uniforms.uTime.value = t; });
   const shore = (pts: [number, number][]) => { const sh = new THREE.Shape(); pts.forEach(([x, z], i) => { const edge = Math.abs(x) >= 38 || Math.abs(z) >= 28; const wx = edge ? x : x + Math.sin(i * 2.7) * 0.5, wz = edge ? z : z + Math.cos(i * 1.9) * 0.5; if (i === 0) sh.moveTo(wx, wz); else sh.lineTo(wx, wz); }); sh.closePath(); return sh; };
   const seaShape = shore([[17, -28], [38, -28], [38, 28], [-2, 28], [-2, 22], [2, 19], [8, 16], [15, 12.5], [17, 6], [17.5, 0], [18, -10], [17, -20]]);
@@ -33,7 +33,7 @@ function layoutKorea({ group, tickers, place, tint, TOP }: LayoutCtx) {
     new THREE.Vector3(0, 0, 5), new THREE.Vector3(1, 0, 10), new THREE.Vector3(0.5, 0, 15), new THREE.Vector3(-1, 0, 20), new THREE.Vector3(-2, 0, 25),
   ]);
   const bank = new THREE.Mesh(riverGeometry(han, 7), mat("#e9dcb4")); bank.position.y = 0.03; bank.receiveShadow = true; group.add(bank);
-  const river = new THREE.Mesh(riverGeometry(han, 5), riverMat); river.position.y = 0.06; group.add(river);
+  const river = new THREE.Mesh(riverGeometry(han, 5), riverMat); river.position.y = 0.068; river.renderOrder = 2; group.add(river);   // a hair above the sea so the two sheets never flicker
   addFish({ group, tickers, place, tint, TOP }, han, [["#8fa3b5", "#d9dee3"], ["#d9a441", "#f4e1a1"], ["#6f8f6f", "#c9d6b0"]], 1.3, 0.34);
   // two stone bridges over the Han
   place(bridge(6), -12, -0.4, Math.PI / 2);

@@ -312,11 +312,17 @@ export function addWater(ctx: LayoutCtx, curve: THREE.CatmullRomCurve3, width = 
 export const seaWater = () => flowingWaterMaterial("#4f95b8", "#245f88");
 export const freshWater = () => flowingWaterMaterial("#a8dfe6", "#6fc0cf");
 
-export function flowingWaterMaterial(shallow = "#6ab3c2", deep = "#3f8fa4"): THREE.ShaderMaterial {
+/** A river that meets the sea: fresh water upstream, fading into the sea's colours within `radius` of the mouth. */
+export const estuaryWater = (x: number, z: number, radius: number) => flowingWaterMaterial("#a8dfe6", "#6fc0cf", { x, z, radius, shallow: "#4f95b8", deep: "#245f88" });
+
+export function flowingWaterMaterial(shallow = "#6ab3c2", deep = "#3f8fa4", mouth?: { x: number; z: number; radius: number; shallow: string; deep: string }): THREE.ShaderMaterial {
   const m = new THREE.ShaderMaterial({
-    uniforms: { uTime: { value: 0 }, uShallow: { value: new THREE.Color(shallow) }, uDeep: { value: new THREE.Color(deep) } },
+    uniforms: {
+      uTime: { value: 0 }, uShallow: { value: new THREE.Color(shallow) }, uDeep: { value: new THREE.Color(deep) },
+      uMouth: { value: new THREE.Vector3(mouth?.x ?? 0, mouth?.z ?? 0, mouth?.radius ?? 0) }, uSeaShallow: { value: new THREE.Color(mouth?.shallow ?? shallow) }, uSeaDeep: { value: new THREE.Color(mouth?.deep ?? deep) },
+    },
     vertexShader: `varying vec3 vPos; void main(){ vec4 wp = modelMatrix * vec4(position,1.0); vPos = wp.xyz; gl_Position = projectionMatrix * viewMatrix * wp; }`,
-    fragmentShader: `uniform float uTime; uniform vec3 uShallow; uniform vec3 uDeep; varying vec3 vPos;
+    fragmentShader: `uniform float uTime; uniform vec3 uShallow; uniform vec3 uDeep; uniform vec3 uMouth; uniform vec3 uSeaShallow; uniform vec3 uSeaDeep; varying vec3 vPos;
       float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7))) * 43758.5453); }
       float noise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f);
         return mix(mix(hash(i), hash(i+vec2(1,0)), f.x), mix(hash(i+vec2(0,1)), hash(i+vec2(1,1)), f.x), f.y); }
@@ -324,7 +330,9 @@ export function flowingWaterMaterial(shallow = "#6ab3c2", deep = "#3f8fa4"): THR
         vec2 p = vPos.xz;
         float n = noise(p*0.35 + vec2(uTime*0.12, -uTime*0.08))*0.6 + noise(p*0.9 - vec2(uTime*0.2, uTime*0.1))*0.4;
         float wave = 0.5 + 0.5*sin(p.x*1.6 + p.y*0.9 + uTime*1.4 + n*3.0);
-        vec3 col = mix(uDeep, uShallow, wave*0.55 + n*0.25);
+        float toSea = uMouth.z > 0.0 ? 1.0 - smoothstep(0.0, uMouth.z, distance(p, uMouth.xy)) : 0.0;   // 1 at the river mouth, 0 upstream
+        vec3 shallow = mix(uShallow, uSeaShallow, toSea), deep = mix(uDeep, uSeaDeep, toSea);
+        vec3 col = mix(deep, shallow, wave*0.55 + n*0.25);
         float glint = smoothstep(0.80, 0.9, noise(p*1.8 + vec2(uTime*0.5, -uTime*0.35)));
         col += glint*0.18;
         gl_FragColor = vec4(col, 1.0); }`,

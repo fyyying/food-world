@@ -6,8 +6,8 @@
 import type { Recipe } from "../data";
 
 export type Kind = "ingredient" | "flavour" | "technique" | "landmark" | "place" | "dish";
-export type WorldId = "china" | "italy" | "korea" | "mexico" | "middle-east" | "mediterranean" | "india";
-export type Area = "sichuan" | "jiangnan" | "northern" | "everyday" | "rome" | "venice" | "sicily" | "seoul" | "jeonju" | "busan" | "jeju" | "cdmx" | "oaxaca" | "jalisco" | "yucatan" | "istanbul" | "levant" | "arabia" | "persia" | "greece" | "spain" | "morocco" | "dalmatia" | "punjab" | "rajasthan" | "mumbai" | "kerala";
+export type WorldId = "china" | "italy" | "korea" | "mexico" | "middle-east" | "mediterranean" | "india" | "southeast-asia";
+export type Area = "sichuan" | "jiangnan" | "northern" | "everyday" | "rome" | "venice" | "sicily" | "seoul" | "jeonju" | "busan" | "jeju" | "cdmx" | "oaxaca" | "jalisco" | "yucatan" | "istanbul" | "levant" | "arabia" | "persia" | "greece" | "spain" | "morocco" | "dalmatia" | "punjab" | "rajasthan" | "mumbai" | "kerala" | "bangkok" | "andaman" | "hanoi" | "mekong";
 
 export type EnrichedRecipe = Recipe & {
   zh?: string;
@@ -87,6 +87,10 @@ export const AREAS: Record<Area, AreaInfo> = {
   rajasthan: { world: "india", name: "Rajasthan", zh: "राजस्थान", blurb: "a hill fort, chillies drying, dal and camels", center: [-24, 5] },
   mumbai: { world: "india", name: "Mumbai", zh: "मुंबई", blurb: "the market, the beach, chaat and dabbawalas", center: [-2, 12] },
   kerala: { world: "india", name: "Kerala", zh: "കേരളം", blurb: "backwaters, spices, coconut, rice and fishing nets", center: [24, 10] },
+  bangkok: { world: "southeast-asia", name: "Bangkok", zh: "กรุงเทพฯ", blurb: "the wat, the floating market, curry paste and tuk-tuks", center: [0, -8] },
+  andaman: { world: "southeast-asia", name: "Andaman coast", zh: "อันดามัน", blurb: "karsts, longtails, coconuts and the beach", center: [18, 10] },
+  hanoi: { world: "southeast-asia", name: "Hanoi", zh: "Hà Nội", blurb: "the old quarter, pho, banh mi, herbs and motorbikes", center: [14, -19] },
+  mekong: { world: "southeast-asia", name: "Mekong delta", zh: "Đồng bằng sông Cửu Long", blurb: "paddies, buffalo, stilt houses and fish sauce", center: [-25, 10] },
 };
 export const WORLDS: Record<WorldId, { name: string; zh: string; regionId: string }> = {
   china: { name: "China", zh: "中国", regionId: "china" },
@@ -96,6 +100,7 @@ export const WORLDS: Record<WorldId, { name: string; zh: string; regionId: strin
   "middle-east": { name: "Middle East", zh: "الشرق الأوسط", regionId: "middle-east" },
   mediterranean: { name: "Mediterranean", zh: "Mare Nostrum", regionId: "mediterranean" },
   india: { name: "India", zh: "भारत", regionId: "india" },
+  "southeast-asia": { name: "Southeast Asia", zh: "เอเชียตะวันออกเฉียงใต้", regionId: "southeast-asia" },
 };
 export const areasOf = (world: WorldId) => (Object.keys(AREAS) as Area[]).filter((a) => AREAS[a].world === world);
 
@@ -158,6 +163,10 @@ const ENRICH: { test: RegExp; data: Enrichment }[] = [
   { test: /tikka masala/i, data: { zh: "चिकन टिक्का मसाला", world: "india", area: "punjab", spice: 2, flavours: ["creamy", "spiced", "tomato"], core: ["chicken", "yogurt", "tomato", "cream", "garam masala", "cumin", "coriander"], techniques: ["karahi"], place: "dhaba" } },
   { test: /mushroom curry/i, data: { zh: "മഷ്റൂം കറി", world: "india", area: "kerala", spice: 1, flavours: ["coconut", "nutty", "aromatic"], core: ["mushrooms", "coconut", "cashews", "onion", "curry leaves", "turmeric", "chilli"], techniques: ["coconut"], place: "southKitchen" } },
   { test: /lentil chicken curry/i, data: { zh: "दाल चिकन", world: "india", area: "punjab", spice: 1, flavours: ["hearty", "warm-spiced"], core: ["chicken", "lentils", "onion", "tomato", "ginger", "garlic", "cumin"], techniques: ["karahi"], place: "dhaba" } },
+  // ---- Southeast Asia ----
+  { test: /goi ga|chicken salad/i, data: { zh: "Gỏi gà", world: "southeast-asia", area: "hanoi", spice: 1, flavours: ["fresh", "tangy", "herby"], core: ["chicken", "cabbage", "herbs", "peanuts", "lime", "fish sauce", "chilli"], techniques: ["salad"], place: "hanoiKitchen" } },
+  { test: /banh mi/i, data: { zh: "Bánh mì", world: "southeast-asia", area: "hanoi", spice: 1, flavours: ["crusty", "pickled", "savoury"], core: ["baguette", "chicken", "pâté", "pickled carrot", "cucumber", "coriander", "chilli"], techniques: ["banhMi"], place: "banhMi" } },
+  { test: /thai green curry/i, data: { zh: "แกงเขียวหวาน", world: "southeast-asia", area: "bangkok", spice: 2, flavours: ["coconut", "hot", "fragrant"], core: ["chicken", "green curry paste", "coconut milk", "Thai basil", "aubergine", "lime leaf", "fish sauce"], techniques: ["curryPaste"], place: "curryPaste" } },
 ];
 
 const ME_CUISINES = new Set(["Middle Eastern", "Lebanese", "Turkish"]);
@@ -168,13 +177,13 @@ export function enrich(r: Recipe): EnrichedRecipe {
   return {
     ...r,
     zh: hit.zh,
-    world: hit.world ?? (r.cuisine === "Italian" ? "italy" : r.cuisine === "Korean" ? "korea" : r.cuisine === "Mexican" ? "mexico" : ME_CUISINES.has(r.cuisine ?? "") ? "middle-east" : MED_CUISINES.has(r.cuisine ?? "") ? "mediterranean" : r.cuisine === "Indian" ? "india" : "china"),
-    area: hit.area ?? (r.cuisine === "Italian" ? "rome" : r.cuisine === "Korean" ? "seoul" : r.cuisine === "Mexican" ? "cdmx" : r.cuisine === "Turkish" ? "istanbul" : ME_CUISINES.has(r.cuisine ?? "") ? "levant" : r.cuisine === "Spanish" ? "spain" : r.cuisine === "North African" ? "morocco" : MED_CUISINES.has(r.cuisine ?? "") ? "greece" : r.cuisine === "Indian" ? "punjab" : "everyday"),
+    world: hit.world ?? (r.cuisine === "Italian" ? "italy" : r.cuisine === "Korean" ? "korea" : r.cuisine === "Mexican" ? "mexico" : ME_CUISINES.has(r.cuisine ?? "") ? "middle-east" : MED_CUISINES.has(r.cuisine ?? "") ? "mediterranean" : r.cuisine === "Indian" ? "india" : r.cuisine === "Thai" || r.cuisine === "Vietnamese" ? "southeast-asia" : "china"),
+    area: hit.area ?? (r.cuisine === "Italian" ? "rome" : r.cuisine === "Korean" ? "seoul" : r.cuisine === "Mexican" ? "cdmx" : r.cuisine === "Turkish" ? "istanbul" : ME_CUISINES.has(r.cuisine ?? "") ? "levant" : r.cuisine === "Spanish" ? "spain" : r.cuisine === "North African" ? "morocco" : MED_CUISINES.has(r.cuisine ?? "") ? "greece" : r.cuisine === "Indian" ? "punjab" : r.cuisine === "Thai" ? "bangkok" : r.cuisine === "Vietnamese" ? "hanoi" : "everyday"),
     spice: hit.spice ?? (spicy ? 2 : 0),
     flavours: hit.flavours ?? [],
     core: hit.core ?? [...r.protein, ...r.mainIngredient.map((m) => m.toLowerCase())],
     techniques: hit.techniques ?? (r.method === "Pan" ? ["wok"] : r.method === "Pot" ? ["braise"] : []),
-    place: hit.place ?? (r.cuisine === "Italian" ? "trattoria" : r.cuisine === "Korean" ? "grill" : r.cuisine === "Mexican" ? "fonda" : ME_CUISINES.has(r.cuisine ?? "") ? "mezze" : MED_CUISINES.has(r.cuisine ?? "") ? "taverna" : r.cuisine === "Indian" ? "dhaba" : "wok"),
+    place: hit.place ?? (r.cuisine === "Italian" ? "trattoria" : r.cuisine === "Korean" ? "grill" : r.cuisine === "Mexican" ? "fonda" : ME_CUISINES.has(r.cuisine ?? "") ? "mezze" : MED_CUISINES.has(r.cuisine ?? "") ? "taverna" : r.cuisine === "Indian" ? "dhaba" : r.cuisine === "Thai" ? "curryPaste" : r.cuisine === "Vietnamese" ? "hanoiKitchen" : "wok"),
     weeknight: (r.totalMin !== null && r.totalMin <= 40) || r.tags.includes("busy_day") || r.tags.includes("quick"),
   };
 }
@@ -201,7 +210,10 @@ export function isMedRecipe(r: Recipe): boolean {
 export function isIndiaRecipe(r: Recipe): boolean {
   return r.cuisine === "Indian" || /tandoori|tikka|masala|dal\b|dahl|paneer|biryani|korma|naan/i.test(r.title);
 }
-export const worldRecipes = (world: WorldId, all: Recipe[]) => all.filter(world === "china" ? isChinaRecipe : world === "italy" ? isItalyRecipe : world === "korea" ? isKoreaRecipe : world === "mexico" ? isMexicoRecipe : world === "middle-east" ? isMideastRecipe : world === "mediterranean" ? isMedRecipe : isIndiaRecipe);
+export function isSeasiaRecipe(r: Recipe): boolean {
+  return r.cuisine === "Thai" || r.cuisine === "Vietnamese" || /pho\b|banh mi|pad thai|laksa|satay|goi ga|larb|tom yum/i.test(r.title);
+}
+export const worldRecipes = (world: WorldId, all: Recipe[]) => all.filter(world === "china" ? isChinaRecipe : world === "italy" ? isItalyRecipe : world === "korea" ? isKoreaRecipe : world === "mexico" ? isMexicoRecipe : world === "middle-east" ? isMideastRecipe : world === "mediterranean" ? isMedRecipe : world === "india" ? isIndiaRecipe : isSeasiaRecipe);
 
 const has = (list: string[], re: RegExp) => list.some((x) => re.test(x));
 
@@ -666,7 +678,69 @@ export const INDIA_OBJECTS: WorldObject[] = [
     tagline: "Caparisoned in gold for the festival, fed rice and jaggery.", blurb: "Kerala's temples keep elephants for their festivals; at Thrissur Pooram, held since the 1790s, thirty stand in a line in golden nettipattam headdresses under silk parasols. A temple elephant eats about 200 kilos a day, palm fronds mostly, with rice and jaggery balls at feast time. The mahout's family often keeps the same animal for a lifetime.", match: () => false },
 ];
 
-export const ALL_OBJECTS = [...OBJECTS, ...ITALY_OBJECTS, ...KOREA_OBJECTS, ...MEXICO_OBJECTS, ...MIDEAST_OBJECTS, ...MED_OBJECTS, ...INDIA_OBJECTS];
+
+// ---------- the Southeast Asia world ----------
+
+const FM: [number, number] = [-4, 2];
+export const SEASIA_OBJECTS: WorldObject[] = [
+  // --- ingredients ---
+  { id: "riceSea", world: "southeast-asia", kind: "ingredient", name: "Rice & rice noodles", zh: "Gạo · ข้าว", emoji: "🍚", area: "mekong", pos: [-26, 4], prop: "paddySea", rot: 0.05,
+    tagline: "Three harvests a year from the delta, eaten as grain, noodle, paper and wine.", blurb: "Rice was domesticated in the Yangtze valley around 8000 BC and reached the Mekong and Chao Phraya deltas by 2000 BC; Thailand and Vietnam are now the world's biggest exporters. Jasmine rice is Thailand's, fragrant and soft; the Vietnamese turn theirs into pho noodles, rice paper for spring rolls, vermicelli for bún and the thin sheets of bánh cuốn. The water buffalo has ploughed the paddies for four thousand years and is still on duty in the delta.",
+    partners: ["fish sauce", "herbs", "coconut", "chicken"], match: (r) => has(r.core, /rice|noodle|vermicelli|baguette/) },
+  { id: "chickenSea", world: "southeast-asia", kind: "ingredient", name: "Chicken", zh: "Gà · ไก่", emoji: "🐔", area: "mekong", pos: [-32, -3], prop: "chickenSea",
+    tagline: "Poached for salad, grilled on the street, simmered in curry.", blurb: "The chicken was first tamed from the red junglefowl of these forests, and every yard in the delta keeps a few. Vietnam poaches a whole bird with ginger and shreds it for gỏi gà, tossed with cabbage, herbs, peanuts and a lime-and-fish-sauce dressing, the broth becoming pho. Thailand grills it as gai yang over charcoal with lemongrass and garlic, or lets it simmer in green curry with pea aubergines. Both countries sell it on skewers from carts after dark.",
+    partners: ["fish sauce", "lime", "herbs", "coconut milk"], match: (r) => has(r.protein, /chicken/) },
+  { id: "herbsSea", world: "southeast-asia", kind: "ingredient", name: "Herbs: basil, mint, coriander & lime leaf", zh: "Rau thơm · สมุนไพร", emoji: "🌿", area: "hanoi", pos: [18, -13], prop: "herbGardenSea", rot: 0.1,
+    tagline: "Eaten by the handful, raw, with almost everything.", blurb: "No cuisine uses more fresh herbs: a Vietnamese table has a plate of them, rau thơm, beside every bowl, mint, Thai basil, perilla, sawtooth coriander, torn in by hand. Thai holy basil goes into pad kra pao, sweet basil into green curry; kaffir lime leaf, lemongrass and galangal are pounded into the paste itself. Coriander root, not just leaf, is a Thai seasoning. Peanuts crushed over the top and a squeeze of lime finish gỏi gà.",
+    partners: ["lime", "chilli", "fish sauce", "peanuts"], match: (r) => has(r.core, /basil|mint|coriander|cilantro|herb|lime leaf|lemongrass|peanut|lime/) },
+  { id: "coconutSea", world: "southeast-asia", kind: "ingredient", name: "Coconut", zh: "Dừa · มะพร้าว", emoji: "🥥", area: "andaman", pos: [14, 8], prop: "coconutSea", rot: 0.2,
+    tagline: "The milk that makes a Thai curry, cracked from the fresh flesh.", blurb: "Coconut palms line every beach and canal from the Andaman to the Mekong. The milk is not the water inside but the flesh grated and squeezed: the first thick pressing, the cream, is fried until its oil splits before the curry paste goes in, which is the step that makes a green curry taste right; the thinner second pressing becomes the sauce. Young coconuts are hacked open for their water; the old ones give oil, sugar from the flower, and the sweets of Bangkok's markets.",
+    partners: ["green curry paste", "chicken", "Thai basil", "palm sugar"], match: (r) => has(r.core, /coconut/) },
+  // --- flavours ---
+  { id: "chilliesSea", world: "southeast-asia", kind: "flavour", name: "Chilli, galangal & lemongrass", zh: "พริก ข่า ตะไคร้", emoji: "🌶️", area: "bangkok", pos: [-12, -8], prop: "spiceStall", rot: 0.2,
+    tagline: "The heat and the fragrance, pounded together in a stone mortar.", blurb: "Chillies reached Siam with Portuguese traders in the 1500s and the Thais made them their own; the tiny bird's-eye, prik kee noo, is the hottest thing on most tables. Galangal, a sharper cousin of ginger, lemongrass, kaffir lime zest and coriander root are the Thai aromatics, native to the region and pounded with the chillies, garlic and shrimp paste into curry paste. Vietnam uses the same chillies more gently, sliced into dressings and nước chấm.",
+    flavour: ["hot", "citrus", "fragrant"], partners: ["coconut", "fish sauce", "garlic", "lime"], match: (r) => has(r.core, /chilli|chili|galangal|lemongrass|curry paste/) },
+  { id: "fishSauce", world: "southeast-asia", kind: "flavour", name: "Fish sauce & shrimp paste", zh: "Nước mắm · น้ำปลา", emoji: "🐟", area: "mekong", pos: [-24, 18.5], prop: "fishSauceVillage", rot: 0.1,
+    tagline: "Anchovies and salt, fermented a year in the sun: the region's salt and its soul.", blurb: "Fish sauce is anchovies layered with salt in wooden vats and left for a year until they dissolve into an amber liquid; the first draw-off is the best, and Phú Quốc's has been protected like a wine since 2012. The Romans made the same thing as garum. It seasons nearly every savoury dish in Vietnam and Thailand, replaces salt at the table, and diluted with lime, sugar, garlic and chilli becomes nước chấm, the dipping sauce that goes with everything. Shrimp paste, kapi, fermented and dried, goes into curry pastes.",
+    flavour: ["salty", "umami", "funky"], partners: ["lime", "chilli", "garlic", "palm sugar"], match: (r) => has(r.core, /fish sauce|shrimp|prawn/) },
+  // --- techniques ---
+  { id: "curryPaste", world: "southeast-asia", kind: "technique", name: "Curry paste & the wok", zh: "แกง", emoji: "🥣", area: "bangkok", pos: [7, -4], prop: "curryKitchen", rot: 0.1, place: true, placeName: "Curry kitchen",
+    tagline: "Green from fresh chillies, fried in cracked coconut cream, finished with basil.", blurb: "A Thai curry starts with the paste: green chillies, galangal, lemongrass, kaffir lime zest, coriander root, garlic, shallot and shrimp paste, pounded in a granite mortar for a quarter of an hour. Coconut cream is fried until the oil splits, the paste is fried in that oil until it smells right, then thin coconut milk, chicken, pea aubergines, palm sugar and fish sauce, and a handful of Thai basil at the end. Green curry, kaeng khiao wan, appears in Siamese cookbooks in the 1920s; the wok and the street stall came with Chinese immigrants in the 1800s.",
+    partners: ["coconut", "chicken", "chilli", "Thai basil", "fish sauce"], match: (r) => has(r.techniques, /curryPaste/) },
+  { id: "hanoiKitchen", world: "southeast-asia", kind: "technique", name: "The street kitchen", zh: "Quán vỉa hè", emoji: "🍜", area: "hanoi", pos: [9, -25], prop: "hanoiKitchen", rot: 0, place: true, placeName: "Hanoi street kitchen",
+    tagline: "A charcoal brazier, a pot of broth, plastic stools on the pavement.", blurb: "Hanoi eats on the pavement: a woman with one dish she has made for thirty years, a brazier, a pot, and stools a foot high. Pho, beef or chicken in a clear broth of charred onion and star anise, appeared in Hanoi around 1900 and was carried on shoulder poles. Gỏi gà, the chicken salad, is the poached bird from the pho pot shredded over cabbage and herbs with peanuts and a sharp dressing. Bún chả, grilled pork with noodles, is the lunch. Everything comes with herbs, lime and chilli to adjust yourself.",
+    partners: ["chicken", "herbs", "fish sauce", "rice noodles", "lime"], match: (r) => has(r.techniques, /salad|pho/) },
+  { id: "banhMi", world: "southeast-asia", kind: "technique", name: "The banh mi cart", zh: "Bánh mì", emoji: "🥖", area: "hanoi", pos: [9, -19.5], prop: "banhMiCart", rot: 0.3, place: true, placeName: "Banh mi cart",
+    tagline: "A French baguette, filled the Vietnamese way, from a glass box on wheels.", blurb: "The French brought the baguette to Saigon in the 1860s; the Vietnamese made it lighter with rice flour and, after 1954, when the French left and the pâté and mayonnaise stayed cheap, filled it themselves: pâté, cold cuts or grilled chicken, pickled carrot and daikon, cucumber, coriander, chilli and Maggi sauce. Sold from carts for a few thousand dong, it is breakfast for half the country, and the name simply means bread.",
+    partners: ["chicken", "pickled carrot", "coriander", "chilli", "pâté"], match: (r) => has(r.techniques, /banhMi/) },
+  // --- places ---
+  { id: "floatingMarket", world: "southeast-asia", kind: "place", name: "The floating market", zh: "ตลาดน้ำ", emoji: "🛶", area: "bangkok", pos: FM, prop: "floatingMarket", rot: 0, place: true, open: "reveal",
+    tagline: "Boats as stalls: fruit and durian, boat noodles, herbs, coconuts, flowers.", blurb: "Bangkok was a city of canals before it was a city of roads, and its markets were held from boats; Damnoen Saduak and Amphawa still are. Vendors in straw hats paddle up with mangoes, rambutan and durian, bowls of boat noodles ladled over the gunwale, herbs by the bunch, young coconuts opened with a cleaver, and marigolds and lotus buds for the temple.", match: () => false },
+  { id: "stall-fruit", world: "southeast-asia", kind: "dish", name: "Mangoes, rambutan & durian", zh: "ผลไม้", emoji: "🥭", area: "bangkok", pos: [FM[0] - 4.8, FM[1] + 0.4], prop: "none", hitOnly: true, parent: "floatingMarket",
+    tagline: "Sweet mango with sticky rice, and the fruit hotels ban.", blurb: "Mango with sticky rice, khao niao mamuang, is the Thai dessert: ripe nam dok mai mango beside glutinous rice steeped in sweetened coconut cream, sold from carts every April. Rambutan, mangosteen and longan fill the markets in the rains. Durian, the spiky one, smells of drains and tastes of custard; it is banned on Bangkok's trains and in most hotels, and its devotees pay more for it than for any other fruit.", match: () => false },
+  { id: "stall-noodles", world: "southeast-asia", kind: "dish", name: "Boat noodles", zh: "ก๋วยเตี๋ยวเรือ", emoji: "🍜", area: "bangkok", pos: [FM[0] - 1.6, FM[1] - 0.1], prop: "none", hitOnly: true, parent: "floatingMarket",
+    tagline: "Small bowls of dark broth, sold from the boat.", blurb: "Kuai tiao ruea, boat noodles, were ladled from canal boats to customers on the bank, in bowls kept small so nothing spilled in the wake; the broth is dark with soy, spice and a little blood, over rice noodles with pork or beef, bean sprouts and morning glory. People order five bowls at a time and stack them. Pad thai, the stir-fried noodle, was promoted by the government in the 1940s as the national dish.", match: () => false },
+  { id: "stall-herbs-th", world: "southeast-asia", kind: "ingredient", name: "Herbs & chillies", zh: "สมุนไพร", emoji: "🌿", area: "bangkok", pos: [FM[0] + 1.6, FM[1] + 0.4], prop: "none", hitOnly: true, parent: "floatingMarket", alias: "herbsSea", tagline: "", blurb: "", match: () => false },
+  { id: "stall-coconut", world: "southeast-asia", kind: "ingredient", name: "Coconuts", zh: "มะพร้าว", emoji: "🥥", area: "bangkok", pos: [FM[0] + 4.8, FM[1] - 0.1], prop: "none", hitOnly: true, parent: "floatingMarket", alias: "coconutSea", tagline: "", blurb: "", match: () => false },
+  { id: "wat", world: "southeast-asia", kind: "landmark", name: "The wat", zh: "วัด", emoji: "🛕", area: "bangkok", pos: [6, -14], prop: "wat", rot: 0,
+    tagline: "A temple of tiered roofs and a golden chedi, where the monks' food comes from the street.", blurb: "Bangkok has four hundred wats; their roofs of red and gold tiles curl up into chofa finials, their chedis hold relics under gold leaf, and naga serpents guard the stairs. Every dawn the monks walk out barefoot with alms bowls and the neighbourhood kneels to fill them with rice and curry; the monks eat before noon and nothing after. The temple fair, with its food stalls, is where much of Thai street food began.", match: () => false },
+  { id: "almsRound", world: "southeast-asia", kind: "landmark", name: "The alms round", zh: "บิณฑบาต", emoji: "🧡", area: "bangkok", pos: [-9, -14], prop: "almsRound", rot: 0,
+    tagline: "Monks at dawn with their bowls, and the rice that fills them.", blurb: "Tak bat, the morning alms round, has been the way Buddhist monks are fed for 2,500 years: they walk in a line in silence, the bowl held before them, and lay people kneel with rice, fruit and packets of curry. Giving earns merit. The monks bless, walk on, and share what they gathered back at the wat before the sun is high.", match: () => false },
+  { id: "hoanKiem", world: "southeast-asia", kind: "landmark", name: "Hoan Kiem lake", zh: "Hồ Hoàn Kiếm", emoji: "🐢", area: "hanoi", pos: [17, -22], prop: "hoanKiem", rot: 0,
+    tagline: "The Lake of the Returned Sword, with its turtle and its red bridge.", blurb: "Legend has it that the emperor Lê Lợi, after driving out the Ming in 1428, was rowing on this lake when a golden turtle rose and took back the magic sword he had been lent: hence the name. The Turtle Tower on the islet dates from 1886, the red Húc bridge from 1865. At dawn the shore fills with people doing tai chi, and by seven the pho stalls around it are full.", match: () => false },
+  { id: "motorbikes", world: "southeast-asia", kind: "landmark", name: "Motorbikes", zh: "Xe máy", emoji: "🛵", area: "hanoi", pos: [17, -17], prop: "none", hitOnly: true,
+    tagline: "Eight million of them in Hanoi, carrying everything.", blurb: "Vietnam has more motorbikes per head than anywhere: families of four on one seat, a pig in a cage, a wardrobe, forty live ducks. Crossing the road means walking slowly and steadily into the stream and trusting it to part. Much of the food arrives this way too, from the herb farms outside the city to the pavement kitchens before dawn.", match: () => false },
+  { id: "stilts", world: "southeast-asia", kind: "landmark", name: "Stilt houses", zh: "Nhà sàn", emoji: "🏚️", area: "mekong", pos: [-24, 12.5], prop: "none", hitOnly: true,
+    tagline: "Houses on legs over the water, the delta's answer to the floods.", blurb: "The Mekong rises and falls by metres with the monsoon, so the delta builds on stilts: thatched houses over the water, a ladder down to the sampan, chillies drying on the deck and fish in a net cage below. Nine mouths of the river feed the richest rice land in Asia, and the floating markets of Cần Thơ sell fruit from boats that fly their wares on a pole.", match: () => false },
+  { id: "karsts", world: "southeast-asia", kind: "landmark", name: "Limestone karsts", zh: "เกาะหินปูน", emoji: "🏝️", area: "andaman", pos: [28, -7], prop: "none", hitOnly: true,
+    tagline: "Towers of limestone rising from a green sea.", blurb: "The Andaman coast and Ha Long Bay share the same geology: ancient coral reefs lifted, then dissolved by rain into pillars, arches and caves, with jungle clinging to the tops. Fishermen live at their feet in floating villages; longtail boats carry visitors through the lagoons. The water below is full of the prawns and squid the region cooks.", match: () => false },
+  { id: "longtail", world: "southeast-asia", kind: "landmark", name: "Longtail boats", zh: "เรือหางยาว", emoji: "🚤", area: "andaman", pos: [24, 12], prop: "none", hitOnly: true,
+    tagline: "A truck engine on a pole, ribbons on the bow, and the whole coast to reach.", blurb: "The longtail, ruea hang yao, is a wooden hull with a car or truck engine mounted on a swivel and a propeller on a long shaft, which lets it run in a hand's depth of water. The ribbons on the prow are for the boat's spirit. It ferries fish to market and families to the islands, and it is how the coconut and the catch reach the kitchen.", match: () => false },
+  { id: "tukTuk", world: "southeast-asia", kind: "landmark", name: "Tuk-tuks", zh: "ตุ๊กตุ๊ก", emoji: "🛺", area: "bangkok", pos: [12, -8], prop: "none", hitOnly: true,
+    tagline: "Three wheels, an open cab, and the fastest way to the next meal.", blurb: "Tuk-tuks came to Bangkok from Japan in the 1960s and took their name from the sound of the two-stroke engine. They are how the city moves between markets, and drivers know where the best boat noodles are.", match: () => false },
+];
+
+export const ALL_OBJECTS = [...OBJECTS, ...ITALY_OBJECTS, ...KOREA_OBJECTS, ...MEXICO_OBJECTS, ...MIDEAST_OBJECTS, ...MED_OBJECTS, ...INDIA_OBJECTS, ...SEASIA_OBJECTS];
 export const objectsOf = (world: WorldId) => ALL_OBJECTS.filter((o) => o.world === world);
 export const objectById = (id: string) => ALL_OBJECTS.find((o) => o.id === id)!;
 
@@ -693,7 +767,7 @@ export const MAP_REGIONS: MapRegion[] = [
   { id: "middle-east", name: "Middle East", cuisines: ["Middle Eastern", "Lebanese", "Turkish"], pos: [10, 8], size: 6, color: "#e2cf9b", emoji: ["🧆", "🍢", "🫓", "🌿"], built: true, seed: 16 },
   { id: "india", name: "India", cuisines: ["Indian"], pos: [22, 20], size: 6, color: "#e0b25e", emoji: ["🍛", "🫚", "🌶️", "🫓"], built: true, seed: 17 },
   { id: "china", name: "China", cuisines: ["Chinese"], pos: [26, -8], size: 10, color: "#c9a26a", emoji: ["🌶️", "🥟", "🍜", "🏮"], built: true, seed: 18 },
-  { id: "southeast-asia", name: "Southeast Asia", cuisines: ["Thai", "Vietnamese"], pos: [38, 16], size: 6, color: "#9cc27f", emoji: ["🥥", "🌿", "🍜", "🦐"], built: false, seed: 19 },
+  { id: "southeast-asia", name: "Southeast Asia", cuisines: ["Thai", "Vietnamese"], pos: [38, 16], size: 6, color: "#9cc27f", emoji: ["🥥", "🌿", "🍜", "🦐"], built: true, seed: 19 },
   { id: "korea", name: "Korea", cuisines: ["Korean"], pos: [44, -16], size: 6, color: "#d7a7a0", emoji: ["🥬", "🍚", "🔥", "🥢"], built: true, seed: 20 },
   { id: "japan", name: "Japan", cuisines: ["Japanese"], pos: [52, -4], size: 4.5, color: "#e8b8c4", emoji: ["🍣", "🍙", "🍵", "🐟"], built: false, seed: 21 },
 ];

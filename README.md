@@ -28,7 +28,7 @@ Production: `npm run build && npm start` serves `dist/` and the API from one Nod
   (worlds, areas, objects with history, recipe placements), `worldkit.ts` the engine (slab, interactive objects,
   dish plates, steam, hover), `world-china.ts` / `world-italy.ts` the layouts, `props.ts` / `props-italy.ts` the
   procedural props, `map.ts` the atlas, `ui.ts` the cards. Two worlds so far: China (Sichuan, Jiangnan, the north)
-  Italy (Rome, Venice, Sicily), Korea (Seoul, Jeonju, Busan, Jeju), Mexico (Mexico City, Oaxaca, Jalisco, Yucatán), the Middle East (Istanbul, the Levant, Arabia, Persia), the Mediterranean (Greece, Spain, Morocco, Dalmatia) and India (Punjab & Delhi, Rajasthan, Mumbai, Kerala). Published to GitHub Pages by `.github/workflows/pages.yml` after `npm run export`.
+  Italy (Rome, Venice, Sicily), Korea (Seoul, Jeonju, Busan, Jeju), Mexico (Mexico City, Oaxaca, Jalisco, Yucatán), the Middle East (Istanbul, the Levant, Arabia, Persia), the Mediterranean (Greece, Spain, Morocco, Dalmatia), India (Punjab & Delhi, Rajasthan, Mumbai, Kerala) and Southeast Asia (Bangkok, the Andaman coast, Hanoi, the Mekong delta). Published to GitHub Pages by `.github/workflows/pages.yml` after `npm run export`.
 - `src/regions.ts` — the seven islands and which cuisines land on each. Unknown cuisines go to Northern Europe;
   recipes with no cuisine go to The Pantry. Edit this file to redraw the map.
 - `src/world/` — three.js scene: procedural low-poly islands (`island.ts`), recipe plates (`plates.ts`),

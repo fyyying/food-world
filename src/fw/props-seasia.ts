@@ -328,7 +328,7 @@ export function almsRound(): P {
 }
 
 export const SEASIA_PROPS: Record<string, () => P> = {
-  floatingMarket, curryKitchen, hanoiKitchen, banhMiCart, herbGardenSea, spiceStall, paddySea, chickenSea, fishSauceVillage, coconutSea, almsRound, none: () => group(),
+  floatingMarket, curryKitchen, hanoiKitchen, banhMiCart, herbGardenSea, spiceStall, paddySea, chickenSea, fishSauceVillage, coconutSea, almsRound, wat, hoanKiem, none: () => group(),
 };
 
 export const SEASIA_ICONS: Record<string, () => P> = {
@@ -336,13 +336,13 @@ export const SEASIA_ICONS: Record<string, () => P> = {
   chickenSea: () => chicken("#a8602a"),
   herbsSea: () => { const g = group(); for (let k = 0; k < 6; k++) { add(g, cyl(0.015, 0.015, 0.35, "#5f9a4a", 3), -0.3 + k * 0.12, 0.18, (k % 2) * 0.1); add(g, ball(0.07, ["#4f7a3a", "#6fb06a"][k % 2], 5), -0.3 + k * 0.12, 0.38, (k % 2) * 0.1).scale.y = 0.6; } add(g, ball(0.1, "#7fbf3a", 7), 0.45, 0.1, -0.2); for (let k = 0; k < 3; k++) add(g, cyl(0.02, 0.025, 0.5, "#a8c46a", 4), 0.4 + k * 0.06, 0.25, 0.25).rotation.z = 0.25; return g; },
   coconutSea: () => { const g = group(); add(g, ball(0.2, "#8fb06a", 8), -0.25, 0.2, 0); add(g, cyl(0.18, 0.18, 0.14, "#f7f4ee", 8), 0.2, 0.07, 0.1); add(g, cyl(0.14, 0.14, 0.02, "#f7f4ee", 8), 0.2, 0.15, 0.1); add(g, cyl(0.012, 0.012, 0.4, "#e8558a", 3), -0.2, 0.45, 0).rotation.z = 0.2; return g; },
-  spicesSea: () => { const g = group(); for (let i = 0; i < 3; i++) { const c = add(g, cone(0.05, 0.3, "#7fbf3a", 5), -0.4 + i * 0.15, 0.1, 0); c.rotation.z = Math.PI / 2 + (i - 1) * 0.3; } add(g, cyl(0.03, 0.04, 0.5, "#a8c46a", 4), 0.15, 0.25, -0.1).rotation.z = 0.2; add(g, ball(0.1, "#c9a86a", 6), 0.4, 0.1, 0.15); add(g, box(0.1, 0.02, 0.06, "#3f7a3a"), 0.45, 0.02, -0.25); return g; },
+  chilliesSea: () => { const g = group(); for (let i = 0; i < 3; i++) { const c = add(g, cone(0.05, 0.3, "#7fbf3a", 5), -0.4 + i * 0.15, 0.1, 0); c.rotation.z = Math.PI / 2 + (i - 1) * 0.3; } add(g, cyl(0.03, 0.04, 0.5, "#a8c46a", 4), 0.15, 0.25, -0.1).rotation.z = 0.2; add(g, ball(0.1, "#c9a86a", 6), 0.4, 0.1, 0.15); add(g, box(0.1, 0.02, 0.06, "#3f7a3a"), 0.45, 0.02, -0.25); return g; },
   fishSauce: () => { const g = group(); add(g, cyl(0.16, 0.13, 0.4, "#8a4a2a", 10), -0.25, 0.2, 0); add(g, cyl(0.14, 0.12, 0.04, C.straw, 10), -0.25, 0.42, 0); for (let k = 0; k < 4; k++) add(g, ball(0.06, "#f08a6a", 5), 0.15 + (k % 2) * 0.2, 0.06, -0.15 + Math.floor(k / 2) * 0.25).scale.set(1.6, 0.6, 0.8); add(g, cyl(0.05, 0.05, 0.2, "#c9a86a", 6), 0.5, 0.1, 0.2); return g; },
   curryPaste: () => { const g = group(); add(g, cyl(0.3, 0.22, 0.28, "#5a5a5a", 12), -0.15, 0.14, 0); add(g, cyl(0.24, 0.24, 0.05, "#6f9b57", 12), -0.15, 0.28, 0); add(g, cyl(0.05, 0.07, 0.45, "#5a5a5a", 8), -0.05, 0.5, 0).rotation.z = 0.3; add(g, cyl(0.12, 0.1, 0.16, "#f4f1ea", 8), 0.4, 0.08, 0.15); return g; },
   hanoiKitchen: () => { const g = group(); add(g, cyl(0.32, 0.26, 0.2, "#c9cfd6", 12), 0, 0.1, 0); for (let k = 0; k < 8; k++) add(g, ball(0.06, ["#e9d7a8", "#3f7a3a", "#f4f1ea", "#e07a3a"][k % 4], 5), Math.cos(k * 0.785) * 0.18, 0.22, Math.sin(k * 0.785) * 0.18); add(g, cyl(0.1, 0.09, 0.2, "#2f6fb5", 8), 0.5, 0.1, -0.2); return g; },
   banhMi: () => { const g = group(); const b = add(g, cyl(0.08, 0.08, 0.6, "#e9c46a", 7), 0, 0.08, 0); b.rotation.z = Math.PI / 2; add(g, box(0.5, 0.04, 0.12, "#3f7a3a"), 0, 0.15, 0.03); add(g, box(0.4, 0.04, 0.1, "#f08a2a"), 0.02, 0.18, 0.02); add(g, ball(0.04, "#c9302a", 4), 0.1, 0.22, 0.02); return g; },
   floatingMarket: () => { const g = group(); add(g, box(0.9, 0.12, 0.3, SE.teak), 0, 0.06, 0); add(g, box(0.9, 0.02, 0.32, "#a37a4f"), 0, 0.13, 0); for (let k = 0; k < 3; k++) add(g, ball(0.06, ["#f2b64d", "#c0392b", "#7fbf3a"][k], 5), -0.25 + k * 0.2, 0.2, 0); add(g, cone(0.12, 0.1, "#e9d7a8", 10), 0.35, 0.3, 0); return g; },
-  durian: () => { const g = group(); const d = add(g, ball(0.25, "#a8b85a", 8), 0, 0.25, 0); for (let k = 0; k < 14; k++) { const s = add(d, cone(0.04, 0.1, "#a8b85a", 4), Math.cos(k * 1.1) * 0.24, Math.sin(k * 0.7) * 0.2, Math.sin(k * 1.1) * 0.24); s.lookAt(new THREE.Vector3(0, 0, 0)); s.rotateX(Math.PI / 2); } add(g, ball(0.09, "#f2c14e", 6), 0.42, 0.09, 0.1); return g; },
+  durianOld: () => { const g = group(); const d = add(g, ball(0.25, "#a8b85a", 8), 0, 0.25, 0); for (let k = 0; k < 14; k++) { const s = add(d, cone(0.04, 0.1, "#a8b85a", 4), Math.cos(k * 1.1) * 0.24, Math.sin(k * 0.7) * 0.2, Math.sin(k * 1.1) * 0.24); s.lookAt(new THREE.Vector3(0, 0, 0)); s.rotateX(Math.PI / 2); } add(g, ball(0.09, "#f2c14e", 6), 0.42, 0.09, 0.1); return g; },
   wat: () => { const w = wat(); w.scale.setScalar(0.22); return w; },
   almsRound: () => { const g = group(); const m = local("", { monk: true }); m.scale.setScalar(0.6); add(g, m, -0.2, 0, 0); add(g, ball(0.08, "#3a2a1a", 6), 0.2, 0.3, 0.1); return g; },
   tukTuk: () => { const t = tukTuk(); t.scale.setScalar(0.5); return t; },
@@ -351,4 +351,6 @@ export const SEASIA_ICONS: Record<string, () => P> = {
   karsts: () => { const g = group(); const a = karst(0.9, 0.3); a.position.x = -0.25; g.add(a); const b = karst(0.6, 0.22); b.position.set(0.3, 0, 0.1); g.add(b); return g; },
   longtail: () => { const l = longtail(); l.scale.setScalar(0.3); return l; },
   motorbikes: () => { const m = motorbike(); m.scale.setScalar(0.6); return m; },
+  "stall-fruit": () => { const g = group(); for (let i = 0; i < 3; i++) add(g, ball(0.12, ["#f2b64d", "#c0392b", "#7fbf3a"][i], 7), -0.3 + i * 0.3, 0.12, (i - 1) * 0.1); const d = add(g, ball(0.16, "#a8b85a", 8), 0.5, 0.16, -0.2); for (let k = 0; k < 8; k++) add(d, cone(0.03, 0.07, "#a8b85a", 4), Math.cos(k * 1.3) * 0.15, Math.sin(k * 0.9) * 0.12, Math.sin(k * 1.3) * 0.15).lookAt(new THREE.Vector3(0, 0, 0)); return g; },
+  "stall-noodles": () => { const g = group(); for (let k = 0; k < 3; k++) { add(g, cyl(0.14, 0.11, 0.12, "#f4f1ea", 8), -0.3 + k * 0.3, 0.06, (k - 1) * 0.1); add(g, ball(0.1, "#8a5a3a", 6), -0.3 + k * 0.3, 0.14, (k - 1) * 0.1).scale.y = 0.5; } add(g, ball(0.12, "#3f7a3a", 6), 0.5, 0.1, 0.25).scale.set(1.3, 0.7, 1); return g; },
 };

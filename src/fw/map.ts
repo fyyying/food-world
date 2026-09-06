@@ -10,6 +10,7 @@ import { cathedral, aztecPyramid, casa, saguaro, palm, MX } from "./props-mexico
 import { mosque, casaMe, datePalm, camel, ME } from "./props-mideast";
 import { blueDomeChurch, cycladicHouse, windmill, sailboat, koutoubia } from "./props-med";
 import { tajMahal, elephant, hillFort } from "./props-india";
+import { wat, karst, longtail } from "./props-seasia";
 
 export type PlacedRegion = {
   region: MapRegion;
@@ -82,6 +83,15 @@ export function buildMap(counts: Map<string, number>): MapWorld {
       const hs = italianHouse("rome", 2.2 * s, 1.8 * s, 1.3 * s, 2); hs.position.set(-5 * s, h, -1 * s); hs.rotation.y = 0.5; g.add(hs);
       const bd = birds(4, 5 * s, 5 * s); bd.position.set(0, h, 0); bd.scale.setScalar(s * 0.9); g.add(bd);
       g.userData.tick = (t: number, dt: number) => { bd.userData.tick?.(t, dt); };
+    } else if (region.built && region.id === "southeast-asia") {
+      const s = region.size / 10;
+      const w = wat(); w.position.set(-1.5 * s, h, -1.5 * s); w.scale.setScalar(s * 0.4); w.rotation.y = 0.2; g.add(w);
+      const k1 = karst(4.5, 1.4); k1.position.set(5 * s, h, -3 * s); k1.scale.setScalar(s * 0.9); g.add(k1);
+      const k2 = karst(3.2, 1.1); k2.position.set(6 * s, h, 1.5 * s); k2.scale.setScalar(s * 0.9); g.add(k2);
+      const lb = longtail(); lb.position.set(1.5 * s, h, 3.5 * s); lb.scale.setScalar(s * 0.6); lb.rotation.y = 0.5; g.add(lb);
+      for (let i = 0; i < 3; i++) { const p = tree("round", s * 0.7); p.position.set((-5.5 + i * 2.2) * s, h, (2.5 + (i % 2)) * s); g.add(p); }
+      const bd = birds(4, 5 * s, 5 * s); bd.position.set(0, h, 0); bd.scale.setScalar(s * 0.9); g.add(bd);
+      g.userData.tick = (t: number, dt: number) => { bd.userData.tick?.(t, dt); w.userData.tick?.(t, dt); lb.userData.tick?.(t, dt); };
     } else if (region.built && region.id === "india") {
       const s = region.size / 10;
       const tj = tajMahal(); tj.position.set(-1.5 * s, h, -3 * s); tj.scale.setScalar(s * 0.28); tj.rotation.y = 0.2; g.add(tj);

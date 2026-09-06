@@ -1,7 +1,7 @@
 /** Korea: Seoul in the north, Jeonju in the south-west, Busan on the east coast, Jeju an island in the southern sea. Objects come from graph.ts. */
 import * as THREE from "three";
 import { KOREA_OBJECTS, type EnrichedRecipe } from "./graph";
-import { mat, add, person, tree, butterfly, path, birds, fence, bridge, cow, type P } from "./props";
+import { mat, add, person, tree, butterfly, path, birds, fence, bridge, cow, lounger, type P } from "./props";
 import { KOREA_PROPS, KR, hanok, stoneWall, palaceGate, palaceHall, templeKorea, seoulTower, dolHareubang } from "./props-korea";
 import { fishingBoat } from "./props-italy";
 import { buildWorld, riverGeometry, seaWater, estuaryWater, addFish, type Diorama, type LayoutCtx } from "./worldkit";
@@ -21,16 +21,16 @@ function layoutKorea({ group, tickers, place, tint, TOP }: LayoutCtx) {
   tint(10, 6, 9, 8, "#c4b98a", 0.1);
 
   // ---------- water: the East Sea and the south coast as one shoreline, the Han river through the middle ----------
-  const waterMat = seaWater(), riverMat = estuaryWater(-1.5, 22, 9);   // the Han turns the sea's colour as it reaches the coast
+  const waterMat = seaWater(), riverMat = estuaryWater(-2.6, 28, 6.5);   // the Han turns the sea's colour over its last stretch, so its end is invisible in the sea
   tickers.push((t) => { waterMat.uniforms.uTime.value = t; riverMat.uniforms.uTime.value = t; });
   const shore = (pts: [number, number][]) => { const sh = new THREE.Shape(); pts.forEach(([x, z], i) => { const edge = Math.abs(x) >= 38 || Math.abs(z) >= 28; const wx = edge ? x : x + Math.sin(i * 2.7) * 0.5, wz = edge ? z : z + Math.cos(i * 1.9) * 0.5; if (i === 0) sh.moveTo(wx, wz); else sh.lineTo(wx, wz); }); sh.closePath(); return sh; };
-  const seaShape = shore([[17, -28], [38, -28], [38, 28], [-2, 28], [-2, 22], [2, 19], [8, 16], [15, 12.5], [17, 6], [17.5, 0], [18, -10], [17, -20]]);
-  const rimShape = shore([[15.8, -28], [38, -28], [38, 28], [-3.2, 28], [-3.2, 21.5], [0.8, 18], [7, 14.8], [14, 11.3], [15.8, 5.6], [16.3, 0], [16.8, -10], [15.8, -20]]);
+  const seaShape = shore([[17, -28], [38, -28], [38, 28], [-7, 28], [-6, 24.5], [-3, 22], [2, 19], [8, 16], [15, 12.5], [17, 6], [17.5, 0], [18, -10], [17, -20]]);
+  const rimShape = shore([[15.8, -28], [38, -28], [38, 28], [-8.2, 28], [-7.2, 24], [-4.2, 21.3], [0.8, 18], [7, 14.8], [14, 11.3], [15.8, 5.6], [16.3, 0], [16.8, -10], [15.8, -20]]);
   const rimM = new THREE.Mesh(new THREE.ShapeGeometry(rimShape), mat("#e9dcb4")); rimM.rotation.x = -Math.PI / 2; rimM.scale.y = -1; rimM.position.y = TOP + 0.03; rimM.receiveShadow = true; group.add(rimM);
   const seaM = new THREE.Mesh(new THREE.ShapeGeometry(seaShape), waterMat); seaM.rotation.x = -Math.PI / 2; seaM.scale.y = -1; seaM.position.y = TOP + 0.06; seaM.receiveShadow = true; group.add(seaM);
   const han = new THREE.CatmullRomCurve3([
     new THREE.Vector3(-38, 0, -3), new THREE.Vector3(-36.5, 0, -2.9), new THREE.Vector3(-30, 0, -1.6), new THREE.Vector3(-20, 0, -1), new THREE.Vector3(-10, 0, -0.2), new THREE.Vector3(-3, 0, 1.5),
-    new THREE.Vector3(0, 0, 5), new THREE.Vector3(1, 0, 10), new THREE.Vector3(0.5, 0, 15), new THREE.Vector3(-1, 0, 20), new THREE.Vector3(-2, 0, 25),
+    new THREE.Vector3(0, 0, 5), new THREE.Vector3(1, 0, 10), new THREE.Vector3(0.5, 0, 15), new THREE.Vector3(-1, 0, 20), new THREE.Vector3(-2, 0, 24), new THREE.Vector3(-2.6, 0, 28),
   ]);
   const bank = new THREE.Mesh(riverGeometry(han, 7), mat("#e9dcb4")); bank.position.y = 0.03; bank.receiveShadow = true; group.add(bank);
   const river = new THREE.Mesh(riverGeometry(han, 5), riverMat); river.position.y = 0.068; river.renderOrder = 2; group.add(river);   // a hair above the sea so the two sheets never flicker
@@ -88,7 +88,7 @@ function layoutKorea({ group, tickers, place, tint, TOP }: LayoutCtx) {
   for (const [x, z, c] of [[8, 13.5, "#f2cf3a"], [5.5, 15.5, "#c0392b"], [3, 17, "#3f6fb0"]] as [number, number, string][]) {
     add(group, new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 1.8, 5), mat("#f4f1ea")), x, TOP + 0.9, z);
     add(group, new THREE.Mesh(new THREE.ConeGeometry(1.0, 0.45, 10), mat(c)), x, TOP + 1.9, z);
-    place(person(c === "#c0392b" ? "#e07aa0" : "#3f6b8f"), x + 0.9, z + 0.4, -1.2);
+    const lg = lounger(c === "#c0392b" ? "#e07aa0" : "#3f6b8f", c); place(lg, x + 1.1, z + 0.3, -0.5); tickers.push(lg.userData.tick!);
   }
   group.add(path([[5, 12], [10, 12.8], [14, 12], [13, 3], [8, 2.5], [4.5, 4], [3.9, 8], [5, 12]], 1.8, "#d2c7a8"));
 

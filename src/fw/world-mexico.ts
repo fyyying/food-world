@@ -1,7 +1,7 @@
 /** Mexico: the capital in the north-centre, Jalisco and Michoacán to the west, Oaxaca in the south, Yucatán and the Caribbean to the east. Objects come from graph.ts. */
 import * as THREE from "three";
 import { MEXICO_OBJECTS, type EnrichedRecipe } from "./graph";
-import { mat, add, tree, butterfly, path, birds, type P } from "./props";
+import { mat, add, tree, butterfly, path, birds, lounger, type P } from "./props";
 import { MEXICO_PROPS, MX, casa, cathedral, aztecPyramid, mayaPyramid, ruins, flagpole, papelPicado, saguaro, palm, marigolds, flamingo, mexican, avocadoTree } from "./props-mexico";
 import { fishingBoat, pricklyPear } from "./props-italy";
 import { buildWorld, seaWater, type Diorama, type LayoutCtx } from "./worldkit";
@@ -87,6 +87,6 @@ function layoutMexico({ group, tickers, place, tint, TOP }: LayoutCtx) {
   for (const [x, z, c] of [[14, 19, MX.pink], [18, 16.5, MX.yellow], [11, 21.5, MX.blue]] as [number, number, string][]) {
     add(group, new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 1.8, 5), mat("#f4f1ea")), x, TOP + 0.9, z);
     add(group, new THREE.Mesh(new THREE.ConeGeometry(1.0, 0.45, 10), mat(c)), x, TOP + 1.9, z);
-    place(mexican("#f4f1ea", { hat: true }), x + 0.9, z + 0.4, -1.2);
+    const lg = lounger("#f4f1ea", c); place(lg, x + 1.1, z + 0.3, -0.6); tickers.push(lg.userData.tick!);
   }
 }

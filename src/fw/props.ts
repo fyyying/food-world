@@ -533,6 +533,24 @@ export function person(shirt = "#3f6b8f", opts: { hat?: boolean; pole?: boolean;
 // ---------- landscape ----------
 
 /** A mountain: a cluster of flared, softly irregular peaks with rock at the summit and forest at the foot. */
+
+/** A sun lounger with someone lying on it, under nothing but the sun. */
+export function lounger(shirt = "#f4f1ea", cloth = "#3f6fb0"): P {
+  const g = group();
+  add(g, box(0.7, 0.05, 1.7, C.woodDark), 0, 0.36, 0);
+  for (const x of [-0.3, 0.3]) for (const z of [-0.7, 0.7]) add(g, box(0.06, 0.34, 0.06, C.woodDark), x, 0.17, z);
+  const back = add(g, box(0.7, 0.05, 0.6, C.woodDark), 0, 0.55, -0.95); back.rotation.x = 0.7;
+  add(g, box(0.62, 0.02, 1.5, cloth), 0, 0.39, 0.05);
+  const p = person(shirt);
+  p.rotation.x = -Math.PI / 2 + 0.25;                 // lying back, head raised on the backrest
+  p.position.set(0, 0.5, 0.75);
+  const up = (p.userData as { upper?: THREE.Group }).upper; if (up) up.rotation.x = -0.35;
+  g.add(p);
+  add(g, box(0.16, 0.04, 0.3, "#c9302a"), 0.45, 0.02, 0.3); add(g, box(0.16, 0.04, 0.3, "#c9302a"), 0.62, 0.02, 0.35);   // flip-flops kicked off
+  g.userData.tick = (t) => { if (up) up.rotation.x = -0.35 + Math.sin(t * 0.8) * 0.02; };
+  return g;
+}
+
 export function mountain(r: number, h: number, dark = false): P {
   const g = group();
   const seedBase = Math.floor(rnd() * 1e6);

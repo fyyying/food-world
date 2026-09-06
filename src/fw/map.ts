@@ -13,6 +13,7 @@ import { tajMahal, elephant, hillFort } from "./props-india";
 import { wat, karst, longtail } from "./props-seasia";
 import { liberty, skyscraper, barn, goldenGate } from "./props-namerica";
 import { fuji, floatingTorii, tokyoTower, pagodaJp, sakura } from "./props-japan";
+import { bigBen, parliamentHu, chalet } from "./props-ceurope";
 
 export type PlacedRegion = {
   region: MapRegion;
@@ -85,6 +86,15 @@ export function buildMap(counts: Map<string, number>): MapWorld {
       const hs = italianHouse("rome", 2.2 * s, 1.8 * s, 1.3 * s, 2); hs.position.set(-5 * s, h, -1 * s); hs.rotation.y = 0.5; g.add(hs);
       const bd = birds(4, 5 * s, 5 * s); bd.position.set(0, h, 0); bd.scale.setScalar(s * 0.9); g.add(bd);
       g.userData.tick = (t: number, dt: number) => { bd.userData.tick?.(t, dt); };
+    } else if (region.built && region.id === "central-europe") {
+      const s = region.size / 10;
+      const bb = bigBen(); bb.position.set(-5.5 * s, h, -2.5 * s); bb.scale.setScalar(s * 0.32); g.add(bb);
+      const ph = parliamentHu(); ph.position.set(2.5 * s, h, -3 * s); ph.scale.setScalar(s * 0.3); g.add(ph);
+      const ch = chalet(); ch.position.set(-3.5 * s, h, 3 * s); ch.scale.setScalar(s * 0.5); ch.rotation.y = 0.3; g.add(ch);
+      const mt = mountain(3.5, 6.5); mt.position.set(-1 * s, h, 3.5 * s); mt.scale.setScalar(s * 0.8); g.add(mt);
+      for (let i = 0; i < 3; i++) { const p = tree("pine", s * 0.8); p.position.set((3 + i * 1.6) * s, h, (2.5 + (i % 2)) * s); g.add(p); }
+      const bd = birds(4, 5 * s, 5 * s); bd.position.set(0, h, 0); bd.scale.setScalar(s * 0.9); g.add(bd);
+      g.userData.tick = (t: number, dt: number) => { bd.userData.tick?.(t, dt); bb.userData.tick?.(t, dt); };
     } else if (region.built && region.id === "japan") {
       const s = region.size / 10;
       const fj = fuji(); fj.position.set(0, h, 0.5 * s); fj.scale.setScalar(s * 0.5); g.add(fj);

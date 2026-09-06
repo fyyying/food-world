@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer.js";
 import { fetchRecipes } from "../data";
-import { MAP_REGIONS, AREAS, WORLDS, areasOf, objectsOf, worldRecipes, enrich, isChinaRecipe, isItalyRecipe, isKoreaRecipe, isMexicoRecipe, isMideastRecipe, isMedRecipe, isIndiaRecipe, isSeasiaRecipe, isNamericaRecipe, isJapanRecipe, objectById, type Area, type EnrichedRecipe, type MapRegion, type WorldId } from "./graph";
+import { MAP_REGIONS, AREAS, WORLDS, areasOf, objectsOf, worldRecipes, enrich, isChinaRecipe, isItalyRecipe, isKoreaRecipe, isMexicoRecipe, isMideastRecipe, isMedRecipe, isIndiaRecipe, isSeasiaRecipe, isNamericaRecipe, isJapanRecipe, isCeuropeRecipe, objectById, type Area, type EnrichedRecipe, type MapRegion, type WorldId } from "./graph";
 import { buildMap, type MapWorld, type PlacedRegion } from "./map";
 import { buildChina } from "./world-china";
 import { buildItaly } from "./world-italy";
@@ -15,6 +15,7 @@ import { buildIndia } from "./world-india";
 import { buildSeasia } from "./world-seasia";
 import { buildNamerica } from "./world-namerica";
 import { buildJapan } from "./world-japan";
+import { buildCeurope } from "./world-ceurope";
 import { type Diorama, type DishMarker, type Placed } from "./worldkit";
 const areaCenter = (a: Area) => new THREE.Vector3(AREAS[a].center[0], 0, AREAS[a].center[1]);
 import { mountUi, showRecipePage, setCrumbs, hint, toast } from "./ui";
@@ -154,10 +155,11 @@ async function boot() {
     counts.set("southeast-asia", recipes.filter(isSeasiaRecipe).length);
     counts.set("north-america", recipes.filter(isNamericaRecipe).length);
     counts.set("japan", recipes.filter(isJapanRecipe).length);
+    counts.set("central-europe", recipes.filter(isCeuropeRecipe).length);
     mapWorld = buildMap(counts);
     mapScene.add(mapWorld.group);
     for (const r of mapWorld.regions) r.labelEl.addEventListener("click", () => { if (level !== "map" || flight) return; if (r.region.built) enterRegion(r.region); else ui.showRegion(r.region, r.count, "/"); });
-    status.textContent = `${recipes.length} dishes · ${counts.get("china")} in China · ${counts.get("italy")} in Italy · ${counts.get("korea")} in Korea · ${counts.get("mexico")} in Mexico · ${counts.get("middle-east")} in the Middle East · ${counts.get("mediterranean")} around the Mediterranean · ${counts.get("india")} in India · ${counts.get("southeast-asia")} in Southeast Asia · ${counts.get("north-america")} in North America · ${counts.get("japan")} in Japan`;
+    status.textContent = `${recipes.length} dishes · ${counts.get("china")} in China · ${counts.get("italy")} in Italy · ${counts.get("korea")} in Korea · ${counts.get("mexico")} in Mexico · ${counts.get("middle-east")} in the Middle East · ${counts.get("mediterranean")} around the Mediterranean · ${counts.get("india")} in India · ${counts.get("southeast-asia")} in Southeast Asia · ${counts.get("north-america")} in North America · ${counts.get("japan")} in Japan · ${counts.get("central-europe")} in Central Europe`;
   } catch (e) {
     status.textContent = `Couldn't load the cookbook: ${(e as Error).message}`;
     return;
@@ -215,7 +217,7 @@ function getWorld(id: WorldId): Diorama {
   let d = worlds[id];
   if (!d) {
     const recipes = worldRecipes(id, allRecipes).map(enrich);
-    d = id === "china" ? buildChina(recipes) : id === "italy" ? buildItaly(recipes) : id === "korea" ? buildKorea(recipes) : id === "mexico" ? buildMexico(recipes) : id === "middle-east" ? buildMideast(recipes) : id === "mediterranean" ? buildMed(recipes) : id === "india" ? buildIndia(recipes) : id === "southeast-asia" ? buildSeasia(recipes) : id === "north-america" ? buildNamerica(recipes) : buildJapan(recipes);
+    d = id === "china" ? buildChina(recipes) : id === "italy" ? buildItaly(recipes) : id === "korea" ? buildKorea(recipes) : id === "mexico" ? buildMexico(recipes) : id === "middle-east" ? buildMideast(recipes) : id === "mediterranean" ? buildMed(recipes) : id === "india" ? buildIndia(recipes) : id === "southeast-asia" ? buildSeasia(recipes) : id === "north-america" ? buildNamerica(recipes) : id === "japan" ? buildJapan(recipes) : buildCeurope(recipes);
     worlds[id] = d;
     for (const p of d.placed) p.labelEl.addEventListener("click", () => { if (p.labelEl.classList.contains("pinned")) openObject(p); });
   }

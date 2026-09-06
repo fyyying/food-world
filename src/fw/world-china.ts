@@ -39,7 +39,7 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
 
   // ---------- mountains: a western wall and a northern backdrop ----------
   const peaks: [number, number, number, number, boolean][] = [
-    [-35, -22, 5.5, 12, false], [-33, -9, 4.5, 9, true], [-36.5, 17, 4.5, 11, false], [-35, 26.5, 3.2, 6, true],
+    [-35, -22, 5.5, 12, false], [-33, -9, 4.5, 9, true], [-37.5, 17, 3.6, 10, false], [-35, 26.5, 3.2, 6, true],
     [-27, -25, 4, 9, true], [-18, -26, 3.4, 7, false], [-8, -27, 4, 9, true], [2, -27, 3.2, 6, false], [12, -27, 3.8, 8, true], [22, -26, 3, 6, false],
     [31, -23, 3.6, 7, true], [36, -14, 3.2, 6, false],
   ];
@@ -109,8 +109,8 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   place(terrace(4, 4.2, true), -30, 23.5, 0.3);
   place(terrace(3, 3.0, false), -21.5, 24, -0.4);
   // pasture with fence and animals
-  for (const [x, z, rot, len] of [[-27, 12, 0, 9], [-27, 20, 0, 9], [-31.5, 16, Math.PI / 2, 8], [-22.5, 16, Math.PI / 2, 8]] as [number, number, number, number][]) place(fence(len), x, z, rot);
-  place(cow(false), -29.5, 18.3, 2.4);   // second cow keeps to the back of the pasture, clear of the clickable one
+  for (const [x, z, rot, len] of [[-26, 12, 0, 9], [-26, 20, 0, 9], [-30.5, 16, Math.PI / 2, 8], [-21.5, 16, Math.PI / 2, 8]] as [number, number, number, number][]) place(fence(len), x, z, rot);
+  place(cow(false), -28.3, 18.3, 2.4);   // the pasture sits a step east of the mountain's foot so the cows never amble into it   // second cow keeps to the back of the pasture, clear of the clickable one
   place(goat(), -24.5, 13.5, 1.2); place(goat(), -24, 18.5, -0.6);
   for (const [x, z, rot, len] of [[-18.5, 15, 0, 5], [-18.5, 19, 0, 5], [-21, 17, Math.PI / 2, 4], [-16, 17, Math.PI / 2, 4]] as [number, number, number, number][]) place(fence(len), x, z, rot);
   place(PROPS.pig(), -17, 18.5, 2.0).scale.setScalar(0.8);

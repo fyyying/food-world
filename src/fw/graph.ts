@@ -209,7 +209,7 @@ const has = (list: string[], re: RegExp) => list.some((x) => re.test(x));
 
 export const OBJECTS: WorldObject[] = [
   // --- Sichuan valley: ingredients ---
-  { id: "cow", world: "china", kind: "ingredient", name: "Beef", zh: "牛肉", emoji: "🐄", area: "sichuan", pos: [-27, 15.5], prop: "cow", rot: 0.6,
+  { id: "cow", world: "china", kind: "ingredient", name: "Beef", zh: "牛肉", emoji: "🐄", area: "sichuan", pos: [-26, 15.5], prop: "cow", rot: 0.6,
     tagline: "Sliced thin and cooked fast.", blurb: "For most of Chinese history cattle were working animals, and killing them for meat was often forbidden, so beef stayed rarer than pork. Sichuan is the exception: the salt wells of Zigong worked thousands of buffalo, and worn-out animals fed the salt workers, which is where dishes like shui zhu beef and dry-fried beef come from. Beef here is sliced thin and cooked fast, poached in chilli broth or stir-fried with cumin and dried chillies.",
     partners: ["chilli", "Sichuan pepper", "celery", "garlic", "cumin"], match: (r) => has(r.protein, /beef/) },
   { id: "pig", world: "china", kind: "ingredient", name: "Pork", zh: "猪肉", emoji: "🐖", area: "sichuan", pos: [-18.5, 17], prop: "pig", rot: -1.2,

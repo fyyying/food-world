@@ -53,8 +53,9 @@ function layoutMexico({ group, tickers, place, tint, TOP }: LayoutCtx) {
   const doves = birds(6, 6, 8); doves.position.set(0, TOP, -12); group.add(doves); tickers.push(doves.userData.tick!);
 
   // ---------- Jalisco & Michoacán: dry hills, cacti, monarch butterflies ----------
-  for (const [x, z, s] of [[-36, -2, 1.0], [-35, 9.5, 0.8], [-22, -25, 0.9], [-36, -26, 1.1], [-34, -19.5, 0.7]] as [number, number, number][]) place(saguaro(s), x, z, x);
-  for (const [x, z] of [[-35, -4.5], [-24, -26.5], [-36, 12]]) place(pricklyPear(), x, z, x);
+  for (const [x, z, s] of [[-36, -2, 1.0], [-35, 9.5, 0.8], [-22, -25, 0.9], [-36, -26, 1.1], [-34, -19.5, 0.7], [-24, -13, 1.0], [-18, -21, 0.8], [-37, 16, 0.9], [-30, -27, 0.7], [-8, 22, 0.9], [-4, 25.5, 1.1], [-14, 25, 0.8], [12, -8, 0.9], [18, -13, 0.8], [8, -25, 1.0], [-36, 22, 0.8]] as [number, number, number][]) place(saguaro(s), x, z, x);
+  for (const [x, z] of [[-35, -4.5], [-24, -26.5], [-36, 12], [-21, -23.5], [-33, 24], [-10, 24], [-2, 24.5], [16, -10], [-37, 19], [-27, 9], [-22, -11]]) place(pricklyPear(), x, z, x);
+  for (const [x, z, s] of [[-30, 16, 1.0], [-26, 14, 0.8], [-20, -8, 0.9], [13, -19, 0.9]] as [number, number, number][]) { const a = new THREE.Group(); for (let i = 0; i < 12; i++) { const leaf = new THREE.Mesh(new THREE.ConeGeometry(0.1 * s, 1.1 * s, 4), mat(i % 2 ? "#5f8fa0" : "#6f9fb0")); leaf.geometry.translate(0, 0.55 * s, 0); leaf.rotation.y = (i / 12) * Math.PI * 2; leaf.rotation.x = 0.6 + (i % 2) * 0.3; a.add(leaf); } place(a, x, z, 0); }   // wild agaves
   for (const [x, z, s] of [[-36, 0, 1.0], [-25, 6.5, 0.9], [-35, 6, 1.1], [-27, 0.5, 0.85]] as [number, number, number][]) place(avocadoTree(s), x, z, x + z);   // Michoacán is avocado country: trees beyond the orchard too
   const monarchs = [[-31, 4], [-27, 2], [-33, 8]].map(([x, z], i) => { const b = butterfly(i % 2 ? "#f08a2a" : "#e07a1a"); group.add(b); tickers.push(b.userData.tick!); return { b, x, z, ph: i * 1.7 }; });
   tickers.push((t) => monarchs.forEach(({ b, x, z, ph }) => { b.position.set(x + Math.sin(t * 0.6 + ph) * 2.6, TOP + 2.2 + Math.sin(t * 1.7 + ph) * 0.5, z + Math.cos(t * 0.45 + ph) * 2); b.rotation.y = t * 0.6 + ph; }));

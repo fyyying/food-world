@@ -444,10 +444,10 @@ export function avocadoTree(s = 1): P {
   const tr = group();
   add(tr, cyl(0.1 * s, 0.14 * s, 1.0 * s, "#6b4a2c", 6), 0, 0.5 * s, 0);
   const crown = new THREE.Group(); tr.add(crown); (tr.userData as { crown?: THREE.Group; fruits?: THREE.Mesh[] }).crown = crown;
-  add(crown, ball(0.85 * s, "#5f9a4a", 9), 0, 1.6 * s, 0).scale.y = 1.05;
-  add(crown, ball(0.55 * s, "#6fae52", 8), 0.35 * s, 2.0 * s, 0.2 * s);
+  add(crown, ball(0.85 * s, "#7fb35a", 9), 0, 1.6 * s, 0).scale.y = 1.05;
+  add(crown, ball(0.55 * s, "#8fc26a", 8), 0.35 * s, 2.0 * s, 0.2 * s);
   const fruits: THREE.Mesh[] = [];
-  for (let k = 0; k < 8; k++) { const a = (k / 8) * Math.PI * 2 + rnd() * 0.5; const f = add(crown, ball(0.11 * s, "#2f4f2a", 7), Math.cos(a) * 0.75 * s, (0.95 + rnd() * 0.7) * s, Math.sin(a) * 0.75 * s); f.scale.y = 1.5; add(crown, cyl(0.01, 0.01, 0.16 * s, "#6b4a2c", 3), f.position.x, f.position.y + 0.2 * s, f.position.z); fruits.push(f); }
+  for (let k = 0; k < 10; k++) { const a = (k / 10) * Math.PI * 2 + rnd() * 0.4; const f = add(crown, ball(0.15 * s, "#1f3a1a", 7), Math.cos(a) * 0.85 * s, (0.85 + rnd() * 0.8) * s, Math.sin(a) * 0.85 * s); f.scale.y = 1.5; add(crown, cyl(0.012, 0.012, 0.22 * s, "#c9b45a", 3), f.position.x, f.position.y + 0.26 * s, f.position.z); fruits.push(f); }   // big dark pear-shaped fruit hanging clear of a lighter crown
   (tr.userData as { crown?: THREE.Group; fruits?: THREE.Mesh[] }).fruits = fruits;
   return tr;
 }
@@ -458,7 +458,11 @@ export function avocadoOrchard(): P {
   for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) trees.push(add(g, avocadoTree(0.85 + rnd() * 0.25), -2.4 + j * 2.4, 0, -2.4 + i * 2.4));
   const picker = mexican("#3f6fb5", { hat: true }); add(g, picker, 3.6, 0, 0.4);
   add(g, cyl(0.02, 0.02, 2.2, "#a37a4f", 4), 3.9, 1.1, 0.6).rotation.z = 0.2; add(g, cyl(0.12, 0.1, 0.16, "#a37a4f", 8), 4.1, 2.2, 0.6);   // the picking pole with its basket
-  const crate = add(g, box(0.6, 0.3, 0.45, "#a37a4f"), 4.0, 0.15, 1.3); for (let k = 0; k < 6; k++) add(crate, ball(0.08, "#2f4f2a", 6), (rnd() - 0.5) * 0.45, 0.18, (rnd() - 0.5) * 0.3).scale.y = 1.4;
+  const crate = add(g, box(0.6, 0.3, 0.45, "#a37a4f"), 4.0, 0.15, 1.3); for (let k = 0; k < 6; k++) add(crate, ball(0.08, "#1f3a1a", 6), (rnd() - 0.5) * 0.45, 0.18, (rnd() - 0.5) * 0.3).scale.y = 1.4;
+  // a cut avocado on a board out front, the halves everyone recognises
+  add(g, box(1.0, 0.06, 0.7, "#c9a37a"), 4.0, 0.03, 2.3);
+  for (let k = 0; k < 2; k++) { const half = add(g, ball(0.26, "#8fc26a", 9), 3.7 + k * 0.6, 0.12, 2.3); half.scale.set(1, 0.45, 1.35); add(g, ball(0.21, "#1f3a1a", 9), 3.7 + k * 0.6, 0.02, 2.3).scale.set(1.15, 0.5, 1.5); if (k === 0) add(g, ball(0.1, "#8a5a3c", 7), 3.7, 0.2, 2.3); else add(g, ball(0.1, "#b8a06a", 7), 4.3, 0.14, 2.3).scale.y = 0.4; }
+  add(g, box(0.9, 0.5, 0.05, "#5a3d28"), 4.6, 0.95, 2.6); add(g, box(0.05, 0.7, 0.05, "#5a3d28"), 4.6, 0.35, 2.62); for (let k = 0; k < 4; k++) add(g, ball(0.06, "#8fc26a", 5), 4.35 + k * 0.17, 0.95, 2.64).scale.set(1, 1.4, 0.4);   // a painted sign with avocados
   const falling: { m: THREE.Mesh; v: number; life: number }[] = [];
   let shake = 0;
   g.userData.poke = () => { shake = 1; bubble(g, "¡Aguacates! Avocados!", 3.0, 1300); for (const tr of trees) { const fr = (tr.userData as { fruits?: THREE.Mesh[] }).fruits ?? []; for (let i = 0; i < 2; i++) { const src = fr[Math.floor(rnd() * fr.length)]; const m = ball(0.1, "#2f4f2a", 6); m.scale.y = 1.5; const wp = src.getWorldPosition(new THREE.Vector3()); g.worldToLocal(wp); m.position.copy(wp); g.add(m); falling.push({ m, v: 0, life: 0 }); } } };

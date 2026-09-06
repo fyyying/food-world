@@ -22,7 +22,7 @@ export function indian(shirt: string, opts: { turban?: string; sari?: string; ca
   const p = person(shirt, { apron: opts.apron }) as Fig;
   if (opts.turban) { wear(p, ball(0.2, opts.turban, 9), 0, 1.32, 0).scale.set(1.15, 0.8, 1.15); wear(p, box(0.1, 0.16, 0.1, opts.turban), 0.12, 1.44, 0.05); }
   if (opts.sari) { wear(p, box(0.42, 0.55, 0.3, opts.sari), 0, 0.72, 0); wear(p, box(0.16, 0.5, 0.2, opts.sari), 0.14, 1.05, -0.06).rotation.z = 0.3; wear(p, ball(0.19, opts.sari, 8), 0, 1.25, -0.04).scale.set(1, 1.05, 1); }
-  if (opts.cap) wear(p, box(0.32, 0.12, 0.2, "#f4f1ea"), 0, 1.38, 0);
+  if (opts.cap) wear(p, box(0.32, 0.11, 0.22, "#f4f1ea"), 0, 1.3, 0);
   if (opts.dhoti) wear(p, box(0.36, 0.4, 0.28, "#f4f1ea"), 0, 0.42, 0);
   return p;
 }
@@ -355,22 +355,29 @@ export function chowpatty(): P {
   return g;
 }
 
-/** Dabbawalas: bicycles with crates of tiffins circling a small crossroads. */
+/** A dabbawala on his bicycle with a crate of tiffins. */
+export function dabbaBike(): P {
+  const r = group();
+  for (const x of [-0.45, 0.45]) add(r, new THREE.Mesh(new THREE.TorusGeometry(0.26, 0.03, 6, 14), mat("#2a2a2e")), x, 0.28, 0);
+  add(r, box(0.9, 0.04, 0.04, "#2a2a2e"), 0, 0.5, 0); add(r, box(0.04, 0.5, 0.04, "#2a2a2e"), 0.3, 0.55, 0); add(r, box(0.3, 0.04, 0.04, "#2a2a2e"), 0.4, 0.8, 0).rotation.y = Math.PI / 2;
+  add(r, box(0.6, 0.35, 0.5, "#a37a4f"), -0.55, 0.65, 0); for (let k = 0; k < 4; k++) add(r, cyl(0.07, 0.07, 0.16, "#c9cfd6", 8), -0.7 + (k % 2) * 0.3, 0.9, -0.12 + Math.floor(k / 2) * 0.24);
+  const p = indian("#f4f1ea", { cap: true }); p.userData.sit?.(); p.scale.setScalar(0.85); p.position.set(-0.05, 0.45, 0); p.rotation.y = Math.PI / 2; r.add(p);
+  r.userData.tick = (t) => { r.rotation.z = Math.sin(t * 6) * 0.015; };
+  return r;
+}
+
+/** The dabbawalas' sorting corner: crates of tiffins on the pavement, a handcart, one man sorting, a parked bicycle. */
 export function dabbawalas(): P {
   const g = group();
-  add(g, new THREE.Mesh(new THREE.CircleGeometry(3.2, 20), mat("#c9bda3")), 0, 0.02, 0).rotation.x = -Math.PI / 2;
-  const riders: THREE.Group[] = [];
-  for (let i = 0; i < 3; i++) {
-    const r = new THREE.Group(); g.add(r); riders.push(r);
-    for (const x of [-0.45, 0.45]) add(r, new THREE.Mesh(new THREE.TorusGeometry(0.26, 0.03, 6, 14), mat("#2a2a2e")), x, 0.28, 0);
-    add(r, box(0.9, 0.04, 0.04, "#2a2a2e"), 0, 0.5, 0); add(r, box(0.04, 0.5, 0.04, "#2a2a2e"), 0.3, 0.55, 0); add(r, box(0.3, 0.04, 0.04, "#2a2a2e"), 0.4, 0.8, 0).rotation.y = Math.PI / 2;
-    add(r, box(0.6, 0.35, 0.5, "#a37a4f"), -0.55, 0.65, 0); for (let k = 0; k < 4; k++) add(r, cyl(0.07, 0.07, 0.16, "#c9cfd6", 8), -0.7 + (k % 2) * 0.3, 0.9, -0.12 + Math.floor(k / 2) * 0.24);   // tiffins
-    const p = indian("#f4f1ea", { cap: true }); p.userData.sit?.(); p.scale.setScalar(0.85); p.position.set(-0.05, 0.45, 0); p.rotation.y = Math.PI / 2; r.add(p);
-  }
-  const post = add(g, cyl(0.04, 0.04, 2.2, "#8c9096", 5), 0, 1.1, 0); void post; add(g, box(0.9, 0.3, 0.04, "#2f6fb5"), 0.4, 1.9, 0); add(g, box(0.8, 0.2, 0.02, "#f4f1ea"), 0.4, 1.9, 0.03);
+  add(g, new THREE.Mesh(new THREE.PlaneGeometry(4.5, 3.2), mat("#c9bda3")), 0, 0.02, 0).rotation.x = -Math.PI / 2;
+  for (let i = 0; i < 3; i++) { add(g, box(1.0, 0.35, 0.7, "#a37a4f"), -1.4 + i * 1.2, 0.18, 0.6); for (let k = 0; k < 6; k++) add(g, cyl(0.08, 0.08, 0.2, "#c9cfd6", 8), -1.4 + i * 1.2 - 0.3 + (k % 3) * 0.3, 0.45, 0.45 + Math.floor(k / 3) * 0.3); }
+  add(g, box(1.6, 0.1, 0.9, IN.wood), 1.2, 0.5, -0.8); for (const z of [-0.45, 0.45]) add(g, cyl(0.3, 0.3, 0.08, "#2a2a2e", 10), 1.2, 0.3, -0.8 + z).rotation.x = Math.PI / 2; for (let k = 0; k < 8; k++) add(g, cyl(0.08, 0.08, 0.2, "#c9cfd6", 8), 0.6 + (k % 4) * 0.35, 0.65, -1.0 + Math.floor(k / 4) * 0.4);   // the handcart
+  const sorter = indian("#f4f1ea", { cap: true }); add(g, sorter, -0.3, 0, -0.6); sorter.rotation.y = Math.PI; const tiffin = add(sorter, cyl(0.07, 0.07, 0.18, "#c9cfd6", 8), 0.2, 0.85, 0.25);
+  const parked = dabbaBike(); parked.position.set(-1.6, 0, -1.0); parked.rotation.y = 0.4; g.add(parked);
+  add(g, cyl(0.04, 0.04, 2.2, "#8c9096", 5), 2.0, 1.1, 0.9); add(g, box(0.9, 0.3, 0.04, "#2f6fb5"), 2.4, 1.9, 0.9); add(g, box(0.8, 0.2, 0.02, "#f4f1ea"), 2.4, 1.9, 0.93);
   const re = reaction(0.5);
-  g.userData.poke = () => { re.poke(); bubble(g, "डब्बा! Lunch is on its way!", 1.8, 1400); };
-  g.userData.tick = (t, dt) => { const k = re.step(dt); riders.forEach((r, i) => { const a = t * (0.6 + k * 2) + (i / 3) * Math.PI * 2; r.position.set(Math.cos(a) * 2.2, 0, Math.sin(a) * 2.2); r.rotation.y = -a; }); };
+  g.userData.poke = () => { re.poke(); bubble(sorter, "डब्बा! Lunch is on its way!", 1.6, 1400); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); tiffin.position.y = 0.85 + k * Math.abs(Math.sin(t * 8)) * 0.4; if (sorter.userData.upper) sorter.userData.upper.rotation.z = k * Math.sin(t * 8) * 0.3; parked.userData.tick?.(t, dt); };
   return g;
 }
 
@@ -454,26 +461,30 @@ export function keralaKitchen(): P {
   return g;
 }
 
-/** Kochi's Chinese fishing nets: cantilevered frames that dip into the water when clicked. */
+/** Kochi's Chinese fishing nets: an A-frame with a long lever, the net hung from its far end on ropes, stones on the tail; they dip when clicked. */
 export function fishingNets(): P {
   const g = group();
   add(g, box(9, 0.4, 2.0, "#8a7a5a"), 0, 0.2, 1.4);
   const nets: THREE.Group[] = [];
   for (let i = 0; i < 3; i++) {
     const base = new THREE.Group(); base.position.set(-3 + i * 3, 0.4, 1.0); g.add(base);
-    for (const x of [-0.6, 0.6]) add(base, cyl(0.06, 0.08, 3.6, IN.wood, 5), x, 1.5, 0).rotation.x = -0.3;
-    const arm = new THREE.Group(); arm.position.set(0, 3.0, -0.9); base.add(arm); nets.push(arm);
-    add(arm, cyl(0.06, 0.06, 6, IN.wood, 5), 0, 0, -1.5).rotation.x = Math.PI / 2;
-    for (const sd of [-1, 1]) add(arm, cyl(0.04, 0.04, 4.5, IN.wood, 4), sd * 1.5, -0.5, -4.2).rotation.set(0.3, 0, sd * 0.35);
-    add(arm, new THREE.Mesh(new THREE.PlaneGeometry(3.2, 3.2, 6, 6), new THREE.MeshStandardMaterial({ color: "#c9b45a", wireframe: true })), 0, -2.4, -5.0).rotation.x = Math.PI / 2;
-    for (let k = 0; k < 4; k++) add(arm, ball(0.16, "#8f857a", 6), -0.3 + k * 0.2, -0.3 - k * 0.15, 1.5 + k * 0.3);   // counterweight stones
+    for (const x of [-0.7, 0.7]) { const leg = add(base, cyl(0.07, 0.09, 3.4, IN.wood, 5), x, 1.6, 0); leg.rotation.z = -x * 0.3; }   // the A-frame
+    add(base, cyl(0.05, 0.05, 1.6, IN.wood, 5), 0, 3.15, 0).rotation.z = Math.PI / 2;
+    const arm = new THREE.Group(); arm.position.set(0, 3.2, 0); base.add(arm); nets.push(arm);
+    add(arm, cyl(0.07, 0.09, 8, IN.wood, 6), 0, 0, -2.2).rotation.x = Math.PI / 2;   // the lever: long toward the water, short toward the land
+    for (let k = 0; k < 5; k++) add(arm, ball(0.18, "#8f857a", 6), (k % 2 - 0.5) * 0.3, -0.3 - (k % 3) * 0.2, 1.4 + k * 0.12);   // counterweight stones on the tail
+    const frame = new THREE.Group(); frame.position.set(0, -2.6, -6.0); arm.add(frame);
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) add(arm, cyl(0.015, 0.015, 2.7, "#5a4a3a", 3), sx * 1.4, -1.3, -6.0 + sz * 1.4);   // four ropes from the lever's end
+    for (const sx of [-1, 1]) add(frame, cyl(0.04, 0.04, 3.0, IN.wood, 4), sx * 1.4, 0, 0).rotation.x = Math.PI / 2;
+    for (const sz of [-1, 1]) add(frame, cyl(0.04, 0.04, 3.0, IN.wood, 4), 0, 0, sz * 1.4).rotation.z = Math.PI / 2;
+    add(frame, new THREE.Mesh(new THREE.PlaneGeometry(2.8, 2.8, 7, 7), new THREE.MeshStandardMaterial({ color: "#c9b45a", wireframe: true })), 0, -0.4, 0).rotation.x = -Math.PI / 2;
   }
   const fishers: Fig[] = [];
   for (let i = 0; i < 2; i++) { const f = indian("#3f6fb5", { dhoti: true }); add(g, f, -2 + i * 3, 0.4, 2.0); f.rotation.y = 0.3; fishers.push(f); }
   add(g, box(0.6, 0.3, 0.45, "#a37a4f"), 3.4, 0.55, 2.0); for (let k = 0; k < 4; k++) add(g, ball(0.06, "#b3bfc9", 5), 3.4 + (k % 2) * 0.2 - 0.1, 0.75, 2.0 + Math.floor(k / 2) * 0.15).scale.set(1.8, 0.5, 1);
   const re = reaction(0.4);
   g.userData.poke = () => { re.poke(); bubble(fishers[0], "വല! The nets!", 1.5, 1400); };
-  g.userData.tick = (t, dt) => { const k = re.step(dt); nets.forEach((n, i) => { n.rotation.x = -0.15 + Math.sin(t * 0.5 + i) * 0.03 - k * Math.max(0, Math.sin(k * Math.PI)) * 0.55; }); fishers.forEach((f) => { if (f.userData.upper) f.userData.upper.rotation.x = 0.1 + k * Math.abs(Math.sin(t * 4)) * 0.3; }); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); nets.forEach((n, i) => { n.rotation.x = 0.12 + Math.sin(t * 0.5 + i) * 0.02 - k * Math.max(0, Math.sin(k * Math.PI)) * 0.45; }); fishers.forEach((f) => { if (f.userData.upper) f.userData.upper.rotation.x = 0.1 + k * Math.abs(Math.sin(t * 4)) * 0.3; }); };
   return g;
 }
 
@@ -509,6 +520,73 @@ export function houseboat(): P {
   const poler = indian("#f4f1ea", { dhoti: true }); add(g, poler, 1.7, 0.55, 0); poler.rotation.y = -Math.PI / 2; poler.scale.setScalar(0.85); add(g, cyl(0.02, 0.02, 2.4, IN.wood, 4), 1.9, 1.2, 0.3).rotation.z = 0.35;
   for (let i = 0; i < 2; i++) { const p = indian(pick(["#3f6fb5", "#e8558a", "#e0b34c"]), { sari: i ? "#2a8f8f" : undefined }); p.userData.sit?.(); add(g, p, -1.4, 0.55, -0.2 + i * 0.5).rotation.y = i ? 0 : Math.PI; p.scale.setScalar(0.8); }
   g.userData.tick = (t) => { g.rotation.z = Math.sin(t * 1.1) * 0.02; if (poler.userData.upper) poler.userData.upper.rotation.x = 0.1 + Math.sin(t * 1.6) * 0.2; };
+  return g;
+}
+
+
+/** A banana plant: a green stem, long drooping leaves, a hand of bananas. */
+export function bananaTree(s = 1): P {
+  const g = group();
+  add(g, cyl(0.1 * s, 0.14 * s, 1.6 * s, "#8fb06a", 7), 0, 0.8 * s, 0);
+  const crown = new THREE.Group(); crown.position.y = 1.6 * s; g.add(crown);
+  for (let i = 0; i < 6; i++) {
+    // each leaf is two boards: a rising base and a drooping tip, broad and paddle-shaped, with a pale midrib
+    const ang = (i / 6) * Math.PI * 2 + 0.3, tilt = 0.5 + (i % 3) * 0.2;
+    const base = add(crown, box(0.8 * s, 0.03, 0.62 * s, i % 2 ? "#4f9a4a" : "#5fae52"), 0, 0, 0); base.geometry.translate(0.4 * s, 0, 0); base.rotation.y = ang; base.rotation.z = tilt;
+    const tip = new THREE.Group(); tip.position.set(Math.cos(ang) * Math.cos(tilt) * 0.8 * s, Math.sin(tilt) * 0.8 * s, -Math.sin(ang) * Math.cos(tilt) * 0.8 * s); crown.add(tip);
+    const tipLeaf = add(tip, box(1.0 * s, 0.03, 0.62 * s, i % 2 ? "#4f9a4a" : "#5fae52"), 0, 0, 0); tipLeaf.geometry.translate(0.5 * s, 0, 0); tipLeaf.rotation.y = ang; tipLeaf.rotation.z = tilt - 1.2;
+    add(base, box(0.8 * s, 0.04, 0.06 * s, "#c9e0a0"), 0.4 * s, 0.01, 0); add(tipLeaf, box(1.0 * s, 0.04, 0.06 * s, "#c9e0a0"), 0.5 * s, 0.01, 0);
+  }
+  const hand = new THREE.Group(); hand.position.set(0.35 * s, -0.25 * s, 0.2 * s); crown.add(hand);
+  for (let k = 0; k < 7; k++) { const b = add(hand, cyl(0.04 * s, 0.045 * s, 0.32 * s, "#e0c84a", 5), Math.cos(k * 0.9) * 0.12 * s, -k * 0.06 * s, Math.sin(k * 0.9) * 0.12 * s); b.rotation.z = 0.3; }
+  add(hand, ball(0.07 * s, "#8e2a5a", 6), 0, -0.6 * s, 0).scale.y = 1.6;   // the purple flower
+  g.userData.tick = (t) => { crown.rotation.y = Math.sin(t * 0.4) * 0.05; crown.rotation.z = Math.sin(t * 0.9) * 0.04; };
+  return g;
+}
+
+/** A Dravidian gopuram: a stepped tower crowded with painted gods, a gold finial, a sanctum behind. */
+export function gopuram(): P {
+  const g = group();
+  add(g, box(6, 0.5, 4.5, "#c9bda3"), 0, 0.25, 0);
+  const tiers = 5;
+  for (let i = 0; i < tiers; i++) { const w = 5 - i * 0.7, d = 3.6 - i * 0.5, y = 0.5 + i * 1.3; add(g, box(w, 1.3, d, i % 2 ? "#e9d7a8" : "#f3e9d2"), 0, y + 0.65, 0); for (let k = 0; k < Math.round(w / 0.7); k++) { const c = ["#e8558a", "#2f6fb5", "#f2c14e", "#3f8f5a", "#e07a3a", "#9b59b6"][(k + i) % 6]; add(g, box(0.4, 0.9, 0.2, c), -w / 2 + 0.4 + k * 0.7, y + 0.6, d / 2 + 0.08); add(g, ball(0.12, "#f2c9a4", 5), -w / 2 + 0.4 + k * 0.7, y + 1.15, d / 2 + 0.1); } }
+  add(g, new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 2.2, 10, 1, false, 0, Math.PI), mat("#c0392b")), 0, 7.2, 0).rotation.set(Math.PI / 2, 0, Math.PI / 2);
+  for (let k = 0; k < 5; k++) add(g, ball(0.16, IN.gold, 6), -0.9 + k * 0.45, 8.0, 0).scale.set(0.6, 1.6, 0.6);
+  add(g, new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 1.2, 10, 1, false, 0, Math.PI), mat("#3a2a1a")), 0, 0.9, 1.9).rotation.set(Math.PI / 2, 0, Math.PI / 2); add(g, box(1.6, 1.2, 0.3, "#3a2a1a"), 0, 0.9, 1.95);
+  add(g, box(4, 2.2, 3, "#e9d7a8"), 0, 1.6, -3.5); add(g, cone(1.6, 1.8, "#c0392b", 4), 0, 3.6, -3.5).rotation.y = Math.PI / 4; add(g, cyl(0.04, 0.04, 1.0, IN.gold, 5), 0, 5.0, -3.5);
+  add(g, cyl(0.06, 0.06, 4, "#e0b34c", 6), 2.4, 2.5, 2.8); add(g, box(0.5, 0.3, 0.02, IN.saffron), 2.65, 4.3, 2.8);   // the flagstaff
+  const garland = new THREE.Group(); g.add(garland); for (let k = 0; k < 12; k++) add(garland, ball(0.07, k % 2 ? IN.saffron : "#f2c14e", 5), -2.4 + k * 0.44, 2.0 - Math.sin((k / 11) * Math.PI) * 0.4, 2.35);
+  for (let i = 0; i < 3; i++) { const p = indian(pick(["#f4f1ea", "#e0b34c", "#c0392b"]), { sari: i === 1 ? "#e8558a" : undefined, dhoti: i !== 1 }); add(g, p, -1.2 + i * 1.2, 0.5, 3.2).rotation.y = Math.PI; }
+  add(g, box(1.6, 0.03, 1.6, "#f4f1ea"), 0, 0.52, 4.0); for (let k = 0; k < 8; k++) add(g, ball(0.08, ["#e8558a", "#f2c14e", "#3f8f5a", "#2f6fb5"][k % 4], 5), Math.cos(k * 0.785) * 0.5, 0.56, 4.0 + Math.sin(k * 0.785) * 0.5).scale.y = 0.3;   // a kolam on the ground
+  g.userData.tick = (t) => { garland.position.y = Math.sin(t * 1.2) * 0.03; };
+  return g;
+}
+
+/** A ghat: stone steps into the river, a small shikhara shrine, bathers, a boatman, saris drying on a line. */
+export function ghat(): P {
+  const g = group();
+  for (let k = 0; k < 7; k++) add(g, box(7, 0.22, 0.6, k % 2 ? "#d9c9a8" : "#c9b898"), 0, 0.11 + k * 0.2, 1.0 - k * 0.55);
+  add(g, box(1.6, 1.8, 1.6, "#e9c46a"), -2.2, 2.4, 1.0); add(g, cone(1.0, 2.2, "#e07a3a", 4), -2.2, 4.4, 1.0).rotation.y = Math.PI / 4; add(g, cyl(0.03, 0.03, 0.8, IN.gold, 5), -2.2, 5.8, 1.0); add(g, box(0.4, 0.28, 0.02, IN.saffron), -2.0, 5.9, 1.0);
+  add(g, new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.3, 8, 1, false, 0, Math.PI), mat("#3a2a1a")), -2.2, 2.0, 1.82).rotation.set(Math.PI / 2, 0, Math.PI / 2); add(g, box(0.7, 0.9, 0.3, "#3a2a1a"), -2.2, 1.9, 1.85);
+  for (let k = 0; k < 2; k++) { add(g, cyl(0.03, 0.03, 2.2, "#8c9096", 5), 1.6 + k * 1.8, 2.6, 0.6); add(g, cone(0.9, 0.35, k ? "#e8558a" : IN.saffron, 10), 1.6 + k * 1.8, 3.7, 0.6); }
+  const bathers: Fig[] = [];
+  for (let i = 0; i < 3; i++) { const b = indian(pick(["#f4f1ea", "#e0b34c", "#3f6fb5"]), { dhoti: i !== 1, sari: i === 1 ? "#e8558a" : undefined }); add(g, b, -1.0 + i * 1.2, -0.45, -2.6 + (i % 2) * 0.3); b.rotation.y = i * 0.5; bathers.push(b); }
+  const priest = indian(IN.saffron, { dhoti: true }); priest.userData.sit?.(); add(g, priest, 0.4, 0.95, 0.4); priest.rotation.y = Math.PI; add(g, cyl(0.16, 0.14, 0.05, "#e0b34c", 8), 0.4, 1.0, -0.1); for (let k = 0; k < 4; k++) add(g, ball(0.035, IN.saffron, 4), 0.4 + Math.cos(k * 1.6) * 0.08, 1.05, -0.1 + Math.sin(k * 1.6) * 0.08);
+  add(g, cyl(0.02, 0.02, 4.2, "#5a3d28", 3), 1.2, 1.9, 2.1).rotation.z = Math.PI / 2; for (let k = 0; k < 5; k++) add(g, box(0.5, 0.8, 0.02, ["#e8558a", "#f2c14e", "#2a8f8f", "#9b59b6", "#f08a2a"][k]), -0.6 + k * 0.85, 1.5, 2.1);   // saris drying
+  const boat = new THREE.Group(); boat.position.set(3.2, -0.5, -3.6); g.add(boat); add(boat, box(2.2, 0.35, 0.8, "#6b4a2c"), 0, 0.2, 0); add(boat, box(2.2, 0.06, 0.86, "#a37a4f"), 0, 0.4, 0); const bm = indian("#f4f1ea", { dhoti: true }); add(boat, bm, -0.5, 0.4, 0); bm.scale.setScalar(0.85); add(boat, cyl(0.02, 0.02, 1.8, IN.wood, 4), -0.3, 1.0, 0.3).rotation.z = 0.4;
+  const lamps: THREE.Mesh[] = []; for (let k = 0; k < 4; k++) { const l = ball(0.05, "#f2c14e", 4); l.visible = false; g.add(l); lamps.push(l); }
+  const re = reaction(0.4);
+  g.userData.poke = () => { re.poke(); bubble(priest, "गंगा! The river!", 1.3, 1400); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); bathers.forEach((b, i) => { b.position.y = -0.45 + Math.sin(t * 1.5 + i) * 0.04 - k * Math.max(0, Math.sin(t * 3 + i)) * 0.4; }); boat.position.x = 3.2 + Math.sin(t * 0.3) * 0.6; boat.rotation.z = Math.sin(t * 1.1) * 0.03; lamps.forEach((l, i) => { const a = (t * 0.5 + i * 0.6) % 3; l.visible = k > 0.1; l.position.set(1.0 + a * 1.2, -0.42, -2.8 + Math.sin(a) * 0.3); }); };
+  return g;
+}
+
+/** A string of marigold garlands. */
+export function marigoldString(len: number, y = 2.4): P {
+  const g = group();
+  add(g, cyl(0.012, 0.012, len, "#5a4a3a", 3), 0, y, 0).rotation.z = Math.PI / 2;
+  const n = Math.round(len / 0.9);
+  for (let i = 0; i < n; i++) { const x = -len / 2 + (i + 0.5) * (len / n); for (let k = 0; k < 4; k++) add(g, ball(0.07, k % 2 ? IN.saffron : "#f2c14e", 5), x, y - 0.12 - k * 0.14, 0); }
   return g;
 }
 

@@ -181,8 +181,10 @@ export function barn(): P {
 
 export function waterTower(): P {
   const g = group();
-  for (const sx of [-1, 1]) for (const sz of [-1, 1]) add(g, cyl(0.06, 0.06, 5, NA.steel, 5), sx * 0.9, 2.5, sz * 0.9).rotation.set(sz * 0.1, 0, -sx * 0.1);
-  add(g, cyl(1.3, 1.1, 1.6, "#c9cfd6", 12), 0, 5.6, 0); add(g, cone(1.35, 0.7, "#8c9096", 12), 0, 6.75, 0); add(g, box(2.0, 0.4, 0.04, "#2f6fb5"), 0, 5.6, 1.32);
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) { add(g, cyl(0.09, 0.11, 4.6, NA.steel, 6), sx * 1.05, 2.3, sz * 1.05); add(g, box(0.5, 0.3, 0.5, "#8f857a"), sx * 1.05, 0.15, sz * 1.05); }
+  for (const y of [1.3, 2.9]) { for (const sd of [-1, 1]) { add(g, box(2.2, 0.06, 0.06, NA.steel), 0, y, sd * 1.05); add(g, box(0.06, 0.06, 2.2, NA.steel), sd * 1.05, y, 0); for (const rot of [0.75, -0.75]) { add(g, box(2.4, 0.04, 0.04, NA.steel), 0, y, sd * 1.05).rotation.z = rot; add(g, box(0.04, 0.04, 2.4, NA.steel), sd * 1.05, y, 0).rotation.x = rot; } } }   // the cross bracing
+  add(g, box(2.6, 0.16, 2.6, "#5a5a5a"), 0, 4.65, 0);
+  add(g, cyl(1.3, 1.1, 1.6, "#c9cfd6", 12), 0, 5.55, 0); add(g, cone(1.35, 0.7, "#8c9096", 12), 0, 6.7, 0); add(g, box(2.0, 0.4, 0.04, "#2f6fb5"), 0, 5.55, 1.32); add(g, cyl(0.06, 0.06, 4.6, NA.steel, 5), 0, 2.4, 0);   // the riser pipe
   return g;
 }
 
@@ -369,10 +371,11 @@ export function pumpjack(): P {
   const g = group();
   add(g, box(2.4, 0.3, 1.2, "#5a5a5a"), 0, 0.15, 0);
   for (const sd of [-1, 1]) add(g, box(0.15, 2.6, 0.15, "#2a2a2e"), sd * 0.4, 1.5, 0).rotation.z = sd * 0.15;
-  const beam = new THREE.Group(); beam.position.y = 2.8; g.add(beam); add(beam, box(3.2, 0.2, 0.3, "#2a2a2e"), 0, 0, 0); add(beam, box(0.4, 0.8, 0.5, "#c0392b"), 1.6, -0.1, 0); add(beam, cyl(0.04, 0.04, 1.4, "#8c9096", 4), 1.7, -0.9, 0);
+  const beam = new THREE.Group(); beam.position.y = 2.8; g.add(beam); add(beam, box(3.2, 0.2, 0.3, "#2a2a2e"), 0, 0, 0); add(beam, box(0.4, 0.8, 0.5, "#c0392b"), 1.6, -0.1, 0); add(beam, cyl(0.04, 0.04, 2.7, "#8c9096", 4), 1.7, -1.45, 0);   // the polished rod runs down into the wellhead
+  add(g, box(0.5, 0.5, 0.5, "#5a5a5a"), 1.7, 0.55, 0); add(g, cyl(0.12, 0.12, 0.3, "#2a2a2e", 8), 1.7, 0.95, 0); add(g, cyl(0.16, 0.16, 0.1, "#8c9096", 8), 1.7, 0.35, 0.4).rotation.x = Math.PI / 2;
   add(g, cyl(0.5, 0.5, 0.2, "#2a2a2e", 12), -1.4, 0.9, 0.5).rotation.x = Math.PI / 2; add(g, box(1.0, 0.7, 0.7, "#5a5a5a"), -1.2, 0.5, -0.3);
   const arm = add(g, box(0.1, 1.6, 0.1, "#8c9096"), -1.4, 1.8, 0.5); void arm;
-  g.userData.tick = (t) => { beam.rotation.z = Math.sin(t * 1.6) * 0.12; arm.rotation.z = Math.sin(t * 1.6) * 0.1; };
+  g.userData.tick = (t) => { beam.rotation.z = Math.sin(t * 1.6) * 0.09; arm.rotation.z = Math.sin(t * 1.6) * 0.1; };
   return g;
 }
 

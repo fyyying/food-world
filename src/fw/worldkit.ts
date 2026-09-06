@@ -43,12 +43,12 @@ export type WorldSpec = {
   layout: (ctx: LayoutCtx) => void;
 };
 
-export function riverGeometry(curve: THREE.CatmullRomCurve3, width: number, segments = 90): THREE.BufferGeometry {
+export function riverGeometry(curve: THREE.CatmullRomCurve3, width: number, segments = 180): THREE.BufferGeometry {
   const pts = curve.getSpacedPoints(segments);
   const positions: number[] = [], uvs: number[] = [], indices: number[] = [];
   for (let i = 0; i <= segments; i++) {
-    const p = pts[i], tangent = curve.getTangentAt(i / segments);
-    const side = new THREE.Vector3(-tangent.z, 0, tangent.x).normalize().multiplyScalar(width / 2 * (0.85 + Math.sin(i * 0.7) * 0.15));
+    const u = i / segments, p = pts[i], tangent = curve.getTangentAt(u);
+    const side = new THREE.Vector3(-tangent.z, 0, tangent.x).normalize().multiplyScalar(width / 2 * (0.94 + Math.sin(u * 34) * 0.06));   // a gentle, smooth swell in the banks
     positions.push(p.x - side.x, p.y, p.z - side.z, p.x + side.x, p.y, p.z + side.z);
     uvs.push(0, i / segments, 1, i / segments);
     if (i < segments) { const k = i * 2; indices.push(k, k + 1, k + 2, k + 1, k + 3, k + 2); }

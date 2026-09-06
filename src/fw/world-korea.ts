@@ -21,16 +21,16 @@ function layoutKorea({ group, tickers, place, tint, TOP }: LayoutCtx) {
   tint(10, 6, 9, 8, "#c4b98a", 0.1);
 
   // ---------- water: the East Sea and the south coast as one shoreline, the Han river through the middle ----------
-  const waterMat = seaWater(), riverMat = estuaryWater(-2.6, 28, 6.5);   // the Han turns the sea's colour over its last stretch, so its end is invisible in the sea
+  const waterMat = seaWater(), riverMat = estuaryWater(-1.6, 23, 5, "z");   // fresh at the beach, exactly the sea's colour by its last point, which sits just inside the bay   // the Han turns the sea's colour over its last stretch, so its end is invisible in the sea
   tickers.push((t) => { waterMat.uniforms.uTime.value = t; riverMat.uniforms.uTime.value = t; });
   const shore = (pts: [number, number][]) => { const sh = new THREE.Shape(); pts.forEach(([x, z], i) => { const edge = Math.abs(x) >= 38 || Math.abs(z) >= 28; const wx = edge ? x : x + Math.sin(i * 2.7) * 0.5, wz = edge ? z : z + Math.cos(i * 1.9) * 0.5; if (i === 0) sh.moveTo(wx, wz); else sh.lineTo(wx, wz); }); sh.closePath(); return sh; };
-  const seaShape = shore([[17, -28], [38, -28], [38, 28], [-7, 28], [-6, 24.5], [-3, 22], [2, 19], [8, 16], [15, 12.5], [17, 6], [17.5, 0], [18, -10], [17, -20]]);
-  const rimShape = shore([[15.8, -28], [38, -28], [38, 28], [-8.2, 28], [-7.2, 24], [-4.2, 21.3], [0.8, 18], [7, 14.8], [14, 11.3], [15.8, 5.6], [16.3, 0], [16.8, -10], [15.8, -20]]);
+  const seaShape = shore([[17, -28], [38, -28], [38, 28], [-7, 28], [-6, 25], [-3.5, 22.5], [0.5, 20], [5, 17.5], [10, 15], [15, 12.5], [17, 6], [17.5, 0], [18, -10], [17, -20]]);
+  const rimShape = shore([[15.8, -28], [38, -28], [38, 28], [-8.2, 28], [-7.2, 24.4], [-4.8, 21.4], [-0.6, 18.8], [4, 16.3], [9.2, 13.8], [14, 11.3], [15.8, 5.6], [16.3, 0], [16.8, -10], [15.8, -20]]);
   const rimM = new THREE.Mesh(new THREE.ShapeGeometry(rimShape), mat("#e9dcb4")); rimM.rotation.x = -Math.PI / 2; rimM.scale.y = -1; rimM.position.y = TOP + 0.03; rimM.receiveShadow = true; group.add(rimM);
   const seaM = new THREE.Mesh(new THREE.ShapeGeometry(seaShape), waterMat); seaM.rotation.x = -Math.PI / 2; seaM.scale.y = -1; seaM.position.y = TOP + 0.06; seaM.receiveShadow = true; group.add(seaM);
   const han = new THREE.CatmullRomCurve3([
     new THREE.Vector3(-38, 0, -3), new THREE.Vector3(-36.5, 0, -2.9), new THREE.Vector3(-30, 0, -1.6), new THREE.Vector3(-20, 0, -1), new THREE.Vector3(-10, 0, -0.2), new THREE.Vector3(-3, 0, 1.5),
-    new THREE.Vector3(0, 0, 5), new THREE.Vector3(1, 0, 10), new THREE.Vector3(0.5, 0, 15), new THREE.Vector3(-1, 0, 20), new THREE.Vector3(-2, 0, 24), new THREE.Vector3(-2.6, 0, 28),
+    new THREE.Vector3(0, 0, 5), new THREE.Vector3(1, 0, 10), new THREE.Vector3(0.5, 0, 15), new THREE.Vector3(-0.8, 0, 19.5), new THREE.Vector3(-1.3, 0, 22.5), new THREE.Vector3(-1.6, 0, 25),
   ]);
   const bank = new THREE.Mesh(riverGeometry(han, 7), mat("#e9dcb4")); bank.position.y = 0.03; bank.receiveShadow = true; group.add(bank);
   const river = new THREE.Mesh(riverGeometry(han, 5), riverMat); river.position.y = 0.068; river.renderOrder = 2; group.add(river);   // a hair above the sea so the two sheets never flicker

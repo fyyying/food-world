@@ -2,7 +2,7 @@
 import * as THREE from "three";
 import { MIDEAST_OBJECTS, type EnrichedRecipe } from "./graph";
 import { mat, add, tree, mountain, path, bridge, birds, type P } from "./props";
-import { MIDEAST_PROPS, ME, casaMe, mosque, galataTower, ferry, petra, persianMosque, arcadeBridge, cedar, datePalm, dune, tulips, local } from "./props-mideast";
+import { MIDEAST_PROPS, ME, casaMe, mosque, galataTower, ferry, petra, persianMosque, arcadeBridge, cedar, datePalm, dune, tulips, local, balloon } from "./props-mideast";
 import { buildWorld, riverGeometry, seaWater, freshWater, addFish, type Diorama, type LayoutCtx } from "./worldkit";
 
 export function buildMideast(recipes: EnrichedRecipe[]): Diorama {
@@ -69,6 +69,10 @@ function layoutMideast({ group, tickers, place, tint, TOP }: LayoutCtx) {
   for (let i = 0; i < 6; i++) place(tree("pine", 0.8 + (i % 2) * 0.2), 19 + i * 2.2, -6.5, i);
   for (let i = 0; i < 4; i++) place(tree("round", 0.9), 10 + i * 1.6, 18.5 + (i % 2), i);
   group.add(path([[18, -4], [30, -4], [31, 2], [29, 7], [19, 7], [17, 2], [18, -4]], 1.6, "#d3c8ad"));
+
+  // ---------- Cappadocia's balloons drift over Anatolia at dawn ----------
+  const balloons = [["#c9302a", "#f2c14e"], ["#2f4f9f", "#f4f1ea"], ["#3f8f5a", "#e0b34c"], ["#e8558a", "#f4f1ea"], ["#e07a3a", "#2a6f6f"]].map(([a, b], i) => { const bl = balloon(a, b); bl.scale.setScalar(0.9 + (i % 3) * 0.15); group.add(bl); tickers.push(bl.userData.tick!); return { bl, x: 21 + i * 3.4, z: -12 + (i % 2) * 4.5, h: 13 + (i % 3) * 2.5, ph: i * 1.3 }; });
+  tickers.push((t) => balloons.forEach(({ bl, x, z, h, ph }) => { bl.position.set(x + Math.sin(t * 0.08 + ph) * 3, TOP + h + Math.sin(t * 0.5 + ph) * 0.6, z + Math.cos(t * 0.06 + ph) * 2.5); bl.rotation.y = t * 0.05 + ph; }));
 
   // ---------- life ----------
   const loops: [THREE.CatmullRomCurve3, [string, string][], number][] = [

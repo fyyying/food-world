@@ -599,6 +599,22 @@ export function sweetShop(): P {
   return g;
 }
 
+
+/** A Cappadocia hot-air balloon: striped envelope, a wicker basket, two people looking down. */
+export function balloon(a = "#c9302a", b = "#f2c14e"): P {
+  const g = group();
+  const env = new THREE.Group(); g.add(env);
+  for (let i = 0; i < 12; i++) { const gore = add(env, new THREE.Mesh(new THREE.SphereGeometry(1.3, 4, 10, (i / 12) * Math.PI * 2, Math.PI / 6, 0, Math.PI * 0.72), mat(i % 2 ? a : b, { side: THREE.DoubleSide })), 0, 0, 0); void gore; }
+  add(env, cone(0.6, 0.9, a, 12), 0, -1.2, 0).rotation.x = Math.PI;
+  add(env, cyl(0.28, 0.28, 0.2, "#4a3222", 10), 0, -1.7, 0);
+  for (const sd of [-1, 1]) for (const sz of [-1, 1]) add(g, cyl(0.015, 0.015, 1.4, "#4a3222", 3), sd * 0.35, -2.3, sz * 0.35);
+  add(g, box(0.9, 0.6, 0.9, "#a37a4f"), 0, -3.2, 0); add(g, box(0.95, 0.06, 0.95, "#8a6a3a"), 0, -2.9, 0);
+  for (let i = 0; i < 2; i++) { const p = person(i ? "#3f6fb5" : "#f4f1ea"); p.scale.setScalar(0.7); p.position.set(-0.2 + i * 0.4, -3.05, 0); p.rotation.y = i * Math.PI; g.add(p); }
+  const flame = add(g, cone(0.12, 0.35, "#f08a2a", 6), 0, -1.95, 0);
+  g.userData.tick = (t) => { flame.scale.y = 0.6 + Math.max(0, Math.sin(t * 7)) * 0.8; flame.visible = Math.sin(t * 0.9) > -0.3; };
+  return g;
+}
+
 export const MIDEAST_PROPS: Record<string, () => P> = {
   bazaar, kebabHouse, teaGarden, simitCart, mezzeHouse, bakery, shawarmaStand, herbGarden, chickpeaField, oliveLemonGrove, flock, caravan, oasis, bedouinTent, saffronField, pomegranateOrchard, pilafKitchen, sweetShop, none: () => group(),
 };

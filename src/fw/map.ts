@@ -11,6 +11,7 @@ import { mosque, casaMe, datePalm, camel, ME } from "./props-mideast";
 import { blueDomeChurch, cycladicHouse, windmill, sailboat, koutoubia } from "./props-med";
 import { tajMahal, elephant, hillFort } from "./props-india";
 import { wat, karst, longtail } from "./props-seasia";
+import { liberty, skyscraper, barn, goldenGate } from "./props-namerica";
 
 export type PlacedRegion = {
   region: MapRegion;
@@ -81,6 +82,15 @@ export function buildMap(counts: Map<string, number>): MapWorld {
       const cp = campanile(); cp.position.set(2.5 * s, h, 3.5 * s); cp.scale.setScalar(s * 0.45); g.add(cp);
       for (let i = 0; i < 5; i++) { const p = i % 2 ? umbrellaPine(s * 0.8) : cypress(s * 0.9); p.position.set((-5 + i * 2.6) * s, h, (-4 + (i % 2) * 8) * s); g.add(p); }
       const hs = italianHouse("rome", 2.2 * s, 1.8 * s, 1.3 * s, 2); hs.position.set(-5 * s, h, -1 * s); hs.rotation.y = 0.5; g.add(hs);
+      const bd = birds(4, 5 * s, 5 * s); bd.position.set(0, h, 0); bd.scale.setScalar(s * 0.9); g.add(bd);
+      g.userData.tick = (t: number, dt: number) => { bd.userData.tick?.(t, dt); };
+    } else if (region.built && region.id === "north-america") {
+      const s = region.size / 10;
+      const lb = liberty(); lb.position.set(5 * s, h, -2.5 * s); lb.scale.setScalar(s * 0.32); lb.rotation.y = -0.6; g.add(lb);
+      for (const [x, z, hh] of [[3.2, -4.5, 8], [4.6, -5.5, 11], [2.2, -6, 6]] as [number, number, number][]) { const sk = skyscraper(2.2, hh, 2.2); sk.position.set(x * s, h, z * s); sk.scale.setScalar(s * 0.4); g.add(sk); }
+      const bn = barn(); bn.position.set(-1.5 * s, h, -3 * s); bn.scale.setScalar(s * 0.5); bn.rotation.y = 0.2; g.add(bn);
+      const gg = goldenGate(6); gg.position.set(-5.5 * s, h, 1.5 * s); gg.scale.setScalar(s * 0.4); gg.rotation.y = Math.PI / 2 + 0.1; g.add(gg);
+      for (let i = 0; i < 3; i++) { const p = tree("round", s * 0.7); p.position.set((0 + i * 2.2) * s, h, (3 + (i % 2)) * s); g.add(p); }
       const bd = birds(4, 5 * s, 5 * s); bd.position.set(0, h, 0); bd.scale.setScalar(s * 0.9); g.add(bd);
       g.userData.tick = (t: number, dt: number) => { bd.userData.tick?.(t, dt); };
     } else if (region.built && region.id === "southeast-asia") {

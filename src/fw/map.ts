@@ -7,6 +7,7 @@ import { mat, mountain, house, tree, temple, pagoda, birds, lanternString, gate 
 import { colosseum, baroqueChurch, campanile, umbrellaPine, cypress, italianHouse } from "./props-italy";
 import { palaceGate, hanok, seoulTower } from "./props-korea";
 import { cathedral, aztecPyramid, casa, saguaro, palm, MX } from "./props-mexico";
+import { mosque, casaMe, datePalm, camel, ME } from "./props-mideast";
 
 export type PlacedRegion = {
   region: MapRegion;
@@ -79,6 +80,14 @@ export function buildMap(counts: Map<string, number>): MapWorld {
       const hs = italianHouse("rome", 2.2 * s, 1.8 * s, 1.3 * s, 2); hs.position.set(-5 * s, h, -1 * s); hs.rotation.y = 0.5; g.add(hs);
       const bd = birds(4, 5 * s, 5 * s); bd.position.set(0, h, 0); bd.scale.setScalar(s * 0.9); g.add(bd);
       g.userData.tick = (t: number, dt: number) => { bd.userData.tick?.(t, dt); };
+    } else if (region.built && region.id === "middle-east") {
+      const s = region.size / 10;
+      const mq = mosque(); mq.position.set(-1 * s, h, -1.5 * s); mq.scale.setScalar(s * 0.3); mq.rotation.y = 0.3; g.add(mq);
+      for (let i = 0; i < 3; i++) { const hs = casaMe(ME.stone, 2.4 * s, 1.8 * s, 1.4 * s, { domes: i === 1 }); hs.position.set((-5 + i * 2.8) * s, h, 3.5 * s); hs.rotation.y = 0.3 - i * 0.3; g.add(hs); }
+      const cm = camel(); cm.position.set(5 * s, h, 1 * s); cm.scale.setScalar(s * 0.45); cm.rotation.y = -0.6; g.add(cm);
+      const pl = datePalm(s * 0.8); pl.position.set(5.5 * s, h, -3.5 * s); g.add(pl);
+      const bd = birds(4, 5 * s, 5 * s); bd.position.set(0, h, 0); bd.scale.setScalar(s * 0.9); g.add(bd);
+      g.userData.tick = (t: number, dt: number) => { bd.userData.tick?.(t, dt); pl.userData.tick?.(t, dt); };
     } else if (region.built && region.id === "mexico") {
       const s = region.size / 10;
       const ca = cathedral(); ca.position.set(-1.5 * s, h, -2 * s); ca.scale.setScalar(s * 0.32); ca.rotation.y = 0.2; g.add(ca);

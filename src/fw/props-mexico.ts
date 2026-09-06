@@ -1,7 +1,7 @@
 /** Mexican props: colonial houses, the cathedral and pyramids, the mercado with papel picado, the taquería's trompo, milpa, agave, trajineras, a cenote and a Maya pyramid. Text is Spanish + English only. */
 import * as THREE from "three";
 import { mat, add, rnd, C, person, cow, bubble, wear, tree, type P } from "./props";
-import { flowingWaterMaterial } from "./worldkit";
+import { freshWater } from "./worldkit";
 
 const group = (): P => new THREE.Group() as P;
 const box = (w: number, h: number, d: number, color: string) => new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat(color));
@@ -439,25 +439,32 @@ export function agaveField(): P {
   return g;
 }
 
+/** An avocado tree: a broad lighter crown with the dark pear-shaped fruit hanging clear of the leaves. */
+export function avocadoTree(s = 1): P {
+  const tr = group();
+  add(tr, cyl(0.1 * s, 0.14 * s, 1.0 * s, "#6b4a2c", 6), 0, 0.5 * s, 0);
+  const crown = new THREE.Group(); tr.add(crown); (tr.userData as { crown?: THREE.Group; fruits?: THREE.Mesh[] }).crown = crown;
+  add(crown, ball(0.85 * s, "#5f9a4a", 9), 0, 1.6 * s, 0).scale.y = 1.05;
+  add(crown, ball(0.55 * s, "#6fae52", 8), 0.35 * s, 2.0 * s, 0.2 * s);
+  const fruits: THREE.Mesh[] = [];
+  for (let k = 0; k < 8; k++) { const a = (k / 8) * Math.PI * 2 + rnd() * 0.5; const f = add(crown, ball(0.11 * s, "#2f4f2a", 7), Math.cos(a) * 0.75 * s, (0.95 + rnd() * 0.7) * s, Math.sin(a) * 0.75 * s); f.scale.y = 1.5; add(crown, cyl(0.01, 0.01, 0.16 * s, "#6b4a2c", 3), f.position.x, f.position.y + 0.2 * s, f.position.z); fruits.push(f); }
+  (tr.userData as { crown?: THREE.Group; fruits?: THREE.Mesh[] }).fruits = fruits;
+  return tr;
+}
+
 export function avocadoOrchard(): P {
   const g = group();
   const trees: P[] = [];
-  const fruits: THREE.Mesh[] = [];
-  for (let i = 0; i < 2; i++) for (let j = 0; j < 3; j++) {
-    const tr = group(); tr.position.set(-2.4 + j * 2.4, 0, -1.2 + i * 2.4); g.add(tr); trees.push(tr);
-    add(tr, cyl(0.1, 0.14, 0.9, "#6b4a2c", 6), 0, 0.45, 0);
-    const crown = new THREE.Group(); tr.add(crown); (tr.userData as { crown?: THREE.Group }).crown = crown;
-    add(crown, ball(0.85, "#2f5f2a", 9), 0, 1.5, 0).scale.y = 1.1;
-    for (let k = 0; k < 6; k++) { const a = rnd() * 6.3; const f = add(crown, ball(0.09, "#1f3a1a", 6), Math.cos(a) * 0.65, 1.0 + rnd() * 0.9, Math.sin(a) * 0.65); f.scale.y = 1.4; fruits.push(f); }
-  }
-  const picker = mexican("#3f6fb5", { hat: true }); add(g, picker, 3.4, 0, 0.4);
-  const crate = add(g, box(0.6, 0.3, 0.45, "#a37a4f"), 3.8, 0.15, 1.1); for (let k = 0; k < 6; k++) add(crate, ball(0.08, "#2f4f2a", 6), (rnd() - 0.5) * 0.45, 0.18, (rnd() - 0.5) * 0.3).scale.y = 1.3;
+  for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) trees.push(add(g, avocadoTree(0.85 + rnd() * 0.25), -2.4 + j * 2.4, 0, -2.4 + i * 2.4));
+  const picker = mexican("#3f6fb5", { hat: true }); add(g, picker, 3.6, 0, 0.4);
+  add(g, cyl(0.02, 0.02, 2.2, "#a37a4f", 4), 3.9, 1.1, 0.6).rotation.z = 0.2; add(g, cyl(0.12, 0.1, 0.16, "#a37a4f", 8), 4.1, 2.2, 0.6);   // the picking pole with its basket
+  const crate = add(g, box(0.6, 0.3, 0.45, "#a37a4f"), 4.0, 0.15, 1.3); for (let k = 0; k < 6; k++) add(crate, ball(0.08, "#2f4f2a", 6), (rnd() - 0.5) * 0.45, 0.18, (rnd() - 0.5) * 0.3).scale.y = 1.4;
   const falling: { m: THREE.Mesh; v: number; life: number }[] = [];
   let shake = 0;
-  g.userData.poke = () => { shake = 1; bubble(g, "¡Aguacates! Avocados!", 2.6, 1300); for (const tr of trees) for (let i = 0; i < 2; i++) { const src = fruits[Math.floor(rnd() * fruits.length)]; const m = ball(0.09, "#2f4f2a", 6); m.scale.y = 1.4; const wp = src.getWorldPosition(new THREE.Vector3()); g.worldToLocal(wp); m.position.copy(wp); g.add(m); falling.push({ m, v: 0, life: 0 }); void tr; } };
+  g.userData.poke = () => { shake = 1; bubble(g, "¡Aguacates! Avocados!", 3.0, 1300); for (const tr of trees) { const fr = (tr.userData as { fruits?: THREE.Mesh[] }).fruits ?? []; for (let i = 0; i < 2; i++) { const src = fr[Math.floor(rnd() * fr.length)]; const m = ball(0.1, "#2f4f2a", 6); m.scale.y = 1.5; const wp = src.getWorldPosition(new THREE.Vector3()); g.worldToLocal(wp); m.position.copy(wp); g.add(m); falling.push({ m, v: 0, life: 0 }); } } };
   g.userData.tick = (t, dt) => {
     if (shake > 0) { shake = Math.max(0, shake - dt * 1.2); for (const tr of trees) { const c = (tr.userData as { crown?: THREE.Group }).crown; if (c) { c.rotation.z = Math.sin(t * 26 + tr.position.x) * 0.06 * shake; c.rotation.x = Math.cos(t * 21 + tr.position.z) * 0.05 * shake; } } }
-    for (let i = falling.length - 1; i >= 0; i--) { const f = falling[i]; f.v += dt * 8; f.life += dt; f.m.position.y = Math.max(0.09, f.m.position.y - f.v * dt); if (f.m.position.y <= 0.091) f.v = 0; if (f.life > 4) { g.remove(f.m); falling.splice(i, 1); } }
+    for (let i = falling.length - 1; i >= 0; i--) { const f = falling[i]; f.v += dt * 8; f.life += dt; f.m.position.y = Math.max(0.1, f.m.position.y - f.v * dt); if (f.m.position.y <= 0.101) f.v = 0; if (f.life > 4) { g.remove(f.m); falling.splice(i, 1); } }
   };
   return g;
 }
@@ -564,7 +571,7 @@ export function pibOven(): P {
 /** A cenote: a round sinkhole of turquoise water in the limestone, with a wooden ladder and swimmers. */
 export function cenote(): P {
   const g = group();
-  const waterMat = flowingWaterMaterial("#5fc4cf", "#2f8fa4");
+  const waterMat = freshWater();
   add(g, new THREE.Mesh(new THREE.RingGeometry(3.0, 4.2, 24), mat("#c9c2b0")), 0, 0.04, 0).rotation.x = -Math.PI / 2;
   add(g, new THREE.Mesh(new THREE.RingGeometry(2.6, 3.1, 24), mat("#8f857a")), 0, 0.05, 0).rotation.x = -Math.PI / 2;
   const w = new THREE.Mesh(new THREE.CircleGeometry(2.9, 24), waterMat); w.rotation.x = -Math.PI / 2; w.position.y = 0.06; w.renderOrder = 2; g.add(w);
@@ -613,7 +620,7 @@ export function tomatoPatch(): P {
 /** Xochimilco: two canals between chinampas, trajineras poled along them, flowers on the banks. */
 export function xochimilco(): P {
   const g = group();
-  const waterMat = flowingWaterMaterial("#6fb0a4", "#3f8a7a");
+  const waterMat = freshWater();
   // the boats circle the chinampa: along the south canal, up the east channel, back along the north canal and down the west one
   const loop = new THREE.CatmullRomCurve3([new THREE.Vector3(-5.5, 0, 2), new THREE.Vector3(0, 0, 2.1), new THREE.Vector3(5.5, 0, 2), new THREE.Vector3(7.2, 0, 0), new THREE.Vector3(5.5, 0, -2), new THREE.Vector3(0, 0, -2.1), new THREE.Vector3(-5.5, 0, -2), new THREE.Vector3(-7.2, 0, 0)], true);
   const strip = (w: number, d: number, x: number, z: number, m: THREE.Material, y: number) => { const s = new THREE.Mesh(new THREE.PlaneGeometry(w, d), m); s.rotation.x = -Math.PI / 2; s.position.set(x, y, z); s.receiveShadow = true; g.add(s); return s; };

@@ -308,6 +308,10 @@ export function addWater(ctx: LayoutCtx, curve: THREE.CatmullRomCurve3, width = 
 
 
 /** Flowing water surface for arbitrary shapes: ripples and glints driven by world position, opaque. */
+/** Seas are deep blue; rivers, canals, ponds and fountains are the light turquoise China's river set. */
+export const seaWater = () => flowingWaterMaterial("#4f95b8", "#245f88");
+export const freshWater = () => flowingWaterMaterial("#a8dfe6", "#6fc0cf");
+
 export function flowingWaterMaterial(shallow = "#6ab3c2", deep = "#3f8fa4"): THREE.ShaderMaterial {
   const m = new THREE.ShaderMaterial({
     uniforms: { uTime: { value: 0 }, uShallow: { value: new THREE.Color(shallow) }, uDeep: { value: new THREE.Color(deep) } },

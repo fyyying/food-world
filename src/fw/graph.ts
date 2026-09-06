@@ -6,8 +6,8 @@
 import type { Recipe } from "../data";
 
 export type Kind = "ingredient" | "flavour" | "technique" | "landmark" | "place" | "dish";
-export type WorldId = "china" | "italy" | "korea" | "mexico";
-export type Area = "sichuan" | "jiangnan" | "northern" | "everyday" | "rome" | "venice" | "sicily" | "seoul" | "jeonju" | "busan" | "jeju" | "cdmx" | "oaxaca" | "jalisco" | "yucatan";
+export type WorldId = "china" | "italy" | "korea" | "mexico" | "middle-east";
+export type Area = "sichuan" | "jiangnan" | "northern" | "everyday" | "rome" | "venice" | "sicily" | "seoul" | "jeonju" | "busan" | "jeju" | "cdmx" | "oaxaca" | "jalisco" | "yucatan" | "istanbul" | "levant" | "arabia" | "persia";
 
 export type EnrichedRecipe = Recipe & {
   zh?: string;
@@ -75,12 +75,17 @@ export const AREAS: Record<Area, AreaInfo> = {
   oaxaca: { world: "mexico", name: "Oaxaca", zh: "Oaxaca", blurb: "corn, chillies, mole and the comal", center: [-18, 15] },
   jalisco: { world: "mexico", name: "Jalisco & Michoacán", zh: "El Bajío", blurb: "agave, avocados, ranchos and carnitas", center: [-28, -10] },
   yucatan: { world: "mexico", name: "Yucatán", zh: "Yucatán", blurb: "Maya pyramids, cenotes, cacao and the pib", center: [24, -6] },
+  istanbul: { world: "middle-east", name: "Istanbul", zh: "İstanbul", blurb: "the Bosphorus, the bazaar, kebabs and tea", center: [6, -14] },
+  levant: { world: "middle-east", name: "The Levant", zh: "بلاد الشام", blurb: "Beirut and Damascus: mezze, bread, herbs and olives", center: [-20, 0] },
+  arabia: { world: "middle-east", name: "Arabia", zh: "الجزيرة العربية", blurb: "dunes, dates, coffee and the caravan", center: [-14, 20] },
+  persia: { world: "middle-east", name: "Persia", zh: "ایران", blurb: "Isfahan: saffron, pomegranates and rice", center: [24, 8] },
 };
 export const WORLDS: Record<WorldId, { name: string; zh: string; regionId: string }> = {
   china: { name: "China", zh: "中国", regionId: "china" },
   italy: { name: "Italy", zh: "Italia", regionId: "italy" },
   korea: { name: "Korea", zh: "한국", regionId: "korea" },
   mexico: { name: "Mexico", zh: "México", regionId: "mexico" },
+  "middle-east": { name: "Middle East", zh: "الشرق الأوسط", regionId: "middle-east" },
 };
 export const areasOf = (world: WorldId) => (Object.keys(AREAS) as Area[]).filter((a) => AREAS[a].world === world);
 
@@ -119,21 +124,28 @@ const ENRICH: { test: RegExp; data: Enrichment }[] = [
   { test: /carnitas/i, data: { zh: "Carnitas", world: "mexico", area: "jalisco", spice: 0, flavours: ["rich", "crisp", "citrus"], core: ["pork", "orange", "garlic", "cumin", "lard", "corn tortillas"], techniques: ["carnitas"], place: "carnitas" } },
   { test: /guacamole/i, data: { zh: "Guacamole", world: "mexico", area: "cdmx", spice: 1, flavours: ["creamy", "fresh", "tangy"], core: ["avocado", "tomato", "cilantro", "lime", "onion"], techniques: ["molcajete"], place: "molcajete" } },
   { test: /chili con carne/i, data: { zh: "Chili con carne", world: "mexico", area: "jalisco", spice: 2, flavours: ["smoky", "hearty", "spicy"], core: ["beef", "beans", "dried chillies", "cumin", "tomato", "onion"], techniques: ["cazuela"], place: "beefMx" } },
+  // ---- Middle East ----
+  { test: /^hummus/i, data: { zh: "حمص", world: "middle-east", area: "levant", spice: 0, flavours: ["creamy", "nutty", "lemony"], core: ["chickpeas", "tahini", "lemon", "garlic", "olive oil"], techniques: ["mezze"], place: "mezze" } },
+  { test: /shawarma/i, data: { zh: "شاورما", world: "middle-east", area: "levant", spice: 1, flavours: ["spiced", "smoky", "tangy"], core: ["chicken", "yogurt", "garlic", "cumin", "coriander", "paprika", "pita"], techniques: ["spit"], place: "spit" } },
+  { test: /tabouli|tabbouleh/i, data: { zh: "تبولة", world: "middle-east", area: "levant", spice: 0, flavours: ["herby", "lemony", "fresh"], core: ["parsley", "mint", "bulgur", "tomato", "lemon", "olive oil"], techniques: ["mezze"], place: "mezze" } },
+  { test: /chicken kebab/i, data: { zh: "Tavuk şiş", world: "middle-east", area: "istanbul", spice: 1, flavours: ["charred", "yogurt-marinated", "spiced"], core: ["chicken", "yogurt", "garlic", "paprika", "cumin", "lemon"], techniques: ["mangal"], place: "mangal" } },
+  { test: /shakshuka/i, data: { zh: "شكشوكة", world: "middle-east", area: "levant", spice: 1, flavours: ["tomato", "spicy", "eggy"], core: ["eggs", "tomato", "peppers", "onion", "cumin", "paprika", "feta"], techniques: ["taboon", "pan"], place: "taboon" } },
 ];
 
+const ME_CUISINES = new Set(["Middle Eastern", "Lebanese", "Turkish"]);
 export function enrich(r: Recipe): EnrichedRecipe {
   const hit = ENRICH.find((e) => e.test.test(r.title))?.data ?? {};
   const spicy = r.tags.some((t) => /spicy/.test(t));
   return {
     ...r,
     zh: hit.zh,
-    world: hit.world ?? (r.cuisine === "Italian" ? "italy" : r.cuisine === "Korean" ? "korea" : r.cuisine === "Mexican" ? "mexico" : "china"),
-    area: hit.area ?? (r.cuisine === "Italian" ? "rome" : r.cuisine === "Korean" ? "seoul" : r.cuisine === "Mexican" ? "cdmx" : "everyday"),
+    world: hit.world ?? (r.cuisine === "Italian" ? "italy" : r.cuisine === "Korean" ? "korea" : r.cuisine === "Mexican" ? "mexico" : ME_CUISINES.has(r.cuisine ?? "") ? "middle-east" : "china"),
+    area: hit.area ?? (r.cuisine === "Italian" ? "rome" : r.cuisine === "Korean" ? "seoul" : r.cuisine === "Mexican" ? "cdmx" : r.cuisine === "Turkish" ? "istanbul" : ME_CUISINES.has(r.cuisine ?? "") ? "levant" : "everyday"),
     spice: hit.spice ?? (spicy ? 2 : 0),
     flavours: hit.flavours ?? [],
     core: hit.core ?? [...r.protein, ...r.mainIngredient.map((m) => m.toLowerCase())],
     techniques: hit.techniques ?? (r.method === "Pan" ? ["wok"] : r.method === "Pot" ? ["braise"] : []),
-    place: hit.place ?? (r.cuisine === "Italian" ? "trattoria" : r.cuisine === "Korean" ? "grill" : r.cuisine === "Mexican" ? "fonda" : "wok"),
+    place: hit.place ?? (r.cuisine === "Italian" ? "trattoria" : r.cuisine === "Korean" ? "grill" : r.cuisine === "Mexican" ? "fonda" : ME_CUISINES.has(r.cuisine ?? "") ? "mezze" : "wok"),
     weeknight: (r.totalMin !== null && r.totalMin <= 40) || r.tags.includes("busy_day") || r.tags.includes("quick"),
   };
 }
@@ -151,7 +163,10 @@ export function isKoreaRecipe(r: Recipe): boolean {
 export function isMexicoRecipe(r: Recipe): boolean {
   return r.cuisine === "Mexican" || /mexican|taco|salsa|guacamole|carnitas|burrito|enchilada|quesadilla|chili con carne/i.test(r.title);
 }
-export const worldRecipes = (world: WorldId, all: Recipe[]) => all.filter(world === "china" ? isChinaRecipe : world === "italy" ? isItalyRecipe : world === "korea" ? isKoreaRecipe : isMexicoRecipe);
+export function isMideastRecipe(r: Recipe): boolean {
+  return ME_CUISINES.has(r.cuisine ?? "") || /shawarma|falafel|hummus|kebab|kofta|tabouli|tabbouleh|shakshuka|pita|baklava/i.test(r.title);
+}
+export const worldRecipes = (world: WorldId, all: Recipe[]) => all.filter(world === "china" ? isChinaRecipe : world === "italy" ? isItalyRecipe : world === "korea" ? isKoreaRecipe : world === "mexico" ? isMexicoRecipe : isMideastRecipe);
 
 const has = (list: string[], re: RegExp) => list.some((x) => re.test(x));
 
@@ -276,7 +291,7 @@ export const ITALY_OBJECTS: WorldObject[] = [
   { id: "seafood", world: "italy", kind: "ingredient", name: "Fish & seafood", zh: "Pesce", emoji: "🦐", area: "venice", pos: [22, -4], prop: "fishMarket", rot: 0.3, place: true,
     tagline: "The lagoon's catch, sold at dawn by the Rialto.", blurb: "Venice's fish market has stood by the Rialto bridge for a thousand years. Sardines marinated in onion and vinegar, cuttlefish cooked in their own ink over polenta, clams tossed with spaghetti. Sicily's tuna and swordfish come from the other end of the country.",
     partners: ["garlic", "white wine", "parsley", "lemon"], match: (r) => has(r.protein, /fish|prawn|shrimp|seafood|clam/) },
-  { id: "rice", world: "italy", kind: "ingredient", name: "Rice", zh: "Riso", emoji: "🍚", area: "venice", pos: [2, -24], prop: "riceFieldItaly", rot: 0.1,
+  { id: "riceIt", world: "italy", kind: "ingredient", name: "Rice", zh: "Riso", emoji: "🍚", area: "venice", pos: [2, -24], prop: "riceFieldItaly", rot: 0.1,
     tagline: "Risotto country.", blurb: "The Po valley has grown short-grain rice since the 1400s, in flooded fields around Vercelli and Pavia. Arborio and carnaroli release their starch slowly, which is what makes a risotto creamy without cream: stock added a ladle at a time, stirred, finished with butter and parmesan.",
     partners: ["stock", "butter", "parmesan", "saffron"], match: (r) => has(r.core, /risotto|\brice\b/) },
   // --- techniques ---
@@ -432,7 +447,73 @@ export const MEXICO_OBJECTS: WorldObject[] = [
     tagline: "A sinkhole to the underworld, and the only fresh water for miles.", blurb: "Yucatán is a limestone slab with no rivers; its water is underground, reached through the cenotes, ts'onot, where the roof of a cave has fallen in. The Maya built Chichén Itzá beside one and threw gold, jade and people into it as offerings to Chaac, the rain god. Today they are for swimming, cold and clear, with tree roots hanging to the water.", match: () => false },
 ];
 
-export const ALL_OBJECTS = [...OBJECTS, ...ITALY_OBJECTS, ...KOREA_OBJECTS, ...MEXICO_OBJECTS];
+
+// ---------- the Middle East world ----------
+
+const BZ: [number, number] = [12, -12];
+export const MIDEAST_OBJECTS: WorldObject[] = [
+  // --- ingredients ---
+  { id: "chickpeas", world: "middle-east", kind: "ingredient", name: "Chickpeas & tahini", zh: "حمص وطحينة", emoji: "🫘", area: "levant", pos: [-24, 9], prop: "chickpeaField", rot: 0.1,
+    tagline: "The oldest crops of the Fertile Crescent, ground into hummus.", blurb: "Chickpeas were domesticated in south-east Turkey around 7500 BC, among the first crops anyone farmed, and sesame followed from the Indus by 2000 BC. Hummus bi tahina, chickpeas mashed with sesame paste, lemon and garlic, is first written down in Cairo cookbooks of the 1200s. Every city on the coast claims it; Beirut serves it warm with olive oil and pine nuts, and falafel, the same chickpeas ground raw and fried, is the street's breakfast.",
+    partners: ["lemon", "garlic", "olive oil", "pita"], match: (r) => has(r.core, /chickpea|tahini|hummus/) },
+  { id: "lambYogurt", world: "middle-east", kind: "ingredient", name: "Lamb, chicken & yogurt", zh: "لحم ولبن", emoji: "🐑", area: "levant", pos: [-29, 3], prop: "flock", rot: 0,
+    tagline: "The flock gives the meat and the yogurt that tenderises it.", blurb: "Sheep and goats were domesticated in the Zagros and Taurus mountains around 8000 BC, and yogurt, milk soured by warm-climate bacteria, followed soon after; the word is Turkish. Meat for the spit or skewer is steeped overnight in yogurt, garlic and spices, whose acid softens it and whose sugars char. Strained overnight in cloth the yogurt becomes labneh; salted and dried it becomes the balls kept in oil all year.",
+    partners: ["garlic", "cumin", "sumac", "pita", "lemon"], match: (r) => has(r.protein, /chicken|lamb|yogurt|beef/) },
+  { id: "herbs", world: "middle-east", kind: "ingredient", name: "Parsley, mint & bulgur", zh: "بقدونس ونعناع", emoji: "🌿", area: "levant", pos: [-15, 8], prop: "herbGarden", rot: -0.1,
+    tagline: "A salad that is mostly herb, from the hills above Beirut.", blurb: "Tabbouleh comes from the mountains of Lebanon and Syria, where families ate wild herbs with a little cracked wheat; the salad is nearly all chopped flat-leaf parsley and mint, with bulgur, tomato, lemon and oil, scooped up in lettuce or cabbage leaves. Bulgur is wheat parboiled, dried and cracked, a way of keeping the harvest that Anatolians have used for four thousand years. Mint dries for tea; parsley goes into nearly everything.",
+    partners: ["lemon", "olive oil", "tomato", "onion"], match: (r) => has(r.core, /parsley|mint|bulgur|herb/) },
+  { id: "oliveLemon", world: "middle-east", kind: "ingredient", name: "Olives & lemons", zh: "زيتون وليمون", emoji: "🫒", area: "levant", pos: [-29, -12], prop: "oliveLemonGrove", rot: 0.1,
+    tagline: "Trees older than the villages beneath them.", blurb: "Olives were first pressed for oil in the Levant around 4000 BC, and some trees near Bethlehem are believed to be over a thousand years old. Lemons came later, from India through Persia, and were being grown in the Mediterranean by the 900s. Between them they finish almost every mezze: oil poured over hummus and labneh, lemon squeezed on tabbouleh and fattoush, both on grilled fish. Za'atar, dried thyme with sesame and sumac, is eaten with oil and bread for breakfast.",
+    partners: ["garlic", "za'atar", "chickpeas", "herbs"], match: (r) => has(r.core, /olive|lemon/) },
+  { id: "dates", world: "middle-east", kind: "ingredient", name: "Dates", zh: "تمر", emoji: "🌴", area: "arabia", pos: [-10, 20], prop: "oasis", rot: 0,
+    tagline: "The tree of life, grown in the desert's oases for six thousand years.", blurb: "Date palms were cultivated in Mesopotamia and eastern Arabia by 4000 BC; they need their feet in water and their heads in fire, as the saying goes, which is what an oasis provides. A tree gives a hundred kilos a year for a century. Dates broke the fast at sundown in Ramadan and still do, eaten with Arabic coffee; stuffed with almonds, pressed into blocks for the caravan, or cooked down to dibs, the syrup used before sugar.",
+    partners: ["coffee", "almonds", "cardamom"], match: (r) => has(r.core, /date/) },
+  { id: "spicesMe", world: "middle-east", kind: "flavour", name: "Spices of the bazaar", zh: "Baharat", emoji: "🧂", area: "istanbul", pos: [BZ[0] - 5.5, BZ[1] - 2.6], prop: "none", hitOnly: true, parent: "bazaar",
+    tagline: "Cumin, sumac, cinnamon and the pepper that paid for empires.", blurb: "Istanbul's Spice Bazaar was built in 1660 with the customs from Egypt, the last stop of the spice road before Europe. Cumin and coriander are the Levant's own, used since the Bronze Age; sumac, a sour red berry, sharpens salads and kebabs; cinnamon and allspice go into stews; baharat and seven-spice blend them all. Paprika and chilli came from the Americas after 1500 and Aleppo made its pepper flakes famous.",
+    flavour: ["warm", "earthy", "sour"], partners: ["lamb", "chicken", "yogurt", "rice"], match: (r) => has(r.core, /cumin|coriander|paprika|sumac|cinnamon|allspice|spice/) },
+  { id: "saffron", world: "middle-east", kind: "flavour", name: "Saffron & pomegranate", zh: "زعفران و انار", emoji: "🌸", area: "persia", pos: [17, 17], prop: "saffronField", rot: 0.05,
+    tagline: "Persia's red gold, picked from a purple crocus at dawn.", blurb: "Saffron is the three red stigmas of a crocus, picked by hand: it takes about 150,000 flowers for a kilo, which is why it costs what it does. Persians were growing it by 500 BC and Khorasan still supplies most of the world. A pinch, ground and bloomed in hot water, colours a rice gold. Pomegranates are Persian too, in the Zoroastrian rites and on every table: fresh, as juice, or boiled to the dark molasses that sours fesenjan.",
+    flavour: ["floral", "bitter-sweet", "sour"], partners: ["rice", "pomegranate", "walnuts", "rosewater"], match: (r) => has(r.core, /saffron|pomegranate/) },
+  { id: "pomegranate", world: "middle-east", kind: "ingredient", name: "Pomegranates", zh: "انار", emoji: "🍎", area: "persia", pos: [30, 14], prop: "pomegranateOrchard", rot: -0.2, alias: "saffron", tagline: "", blurb: "", match: () => false },
+  // --- techniques ---
+  { id: "mangal", world: "middle-east", kind: "technique", name: "Skewers on the mangal", zh: "Ocakbaşı", emoji: "🍢", area: "istanbul", pos: [0, -6], prop: "kebabHouse", rot: 0.1, place: true, placeName: "Ocakbaşı",
+    tagline: "Charcoal, a fan, and meat that never touches a pan.", blurb: "Kebab is Persian and Arabic for roasted meat, and skewers over coals were being cooked in Anatolia in the Bronze Age; the Ottoman army carried the mangal, a low charcoal trough, on campaign. At an ocakbaşı you sit at the counter round the fire while the usta fans the coals and turns the şiş: cubes of chicken or lamb in yogurt and pepper paste, or minced Adana on wide blades, with grilled peppers, onion in sumac, lavash and a glass of ayran.",
+    partners: ["chicken", "yogurt", "paprika", "sumac", "pita"], match: (r) => has(r.techniques, /mangal|grill/) },
+  { id: "spit", world: "middle-east", kind: "technique", name: "The turning spit", zh: "شاورما", emoji: "🌯", area: "levant", pos: [-14, -1], prop: "shawarmaStand", rot: 0.2, place: true, placeName: "Shawarma stand",
+    tagline: "Meat stacked on a spit and shaved as it roasts, an Ottoman idea.", blurb: "The vertical spit was invented in Bursa in the 1860s as döner, turning meat, and travelled: to the Levant as shawarma (from Turkish çevirme, turning), to Greece as gyros, and by way of Lebanese migrants to Mexico as tacos al pastor. Chicken or lamb is marinated in yogurt, garlic, cumin and vinegar, stacked, and carved into a pita with toum, the whipped garlic sauce, pickles and fries. Falafel fries beside it.",
+    partners: ["chicken", "garlic", "yogurt", "pita", "pickles"], match: (r) => has(r.techniques, /spit/) },
+  { id: "taboon", world: "middle-east", kind: "technique", name: "The taboon oven", zh: "طابون", emoji: "🫓", area: "levant", pos: [-20, -7], prop: "bakery", rot: 0.15, place: true, placeName: "Bakery",
+    tagline: "Bread slapped onto the wall of a clay oven, puffing in a minute.", blurb: "Wheat was first farmed in the Levant about 9500 BC and the taboon, a clay oven fired with dung and olive wood, has been baking flatbreads since at least 2000 BC. Pita puffs into a pocket from the steam of its own water; saj is thrown thin over a domed iron; manakish is pita spread with za'atar and oil. Breakfast comes from the same counter: shakshuka, eggs poached in a pan of tomato and pepper, brought east by Tunisian Jews in the 1950s.",
+    partners: ["olive oil", "za'atar", "eggs", "tomato"], match: (r) => has(r.techniques, /taboon/) },
+  { id: "mezze", world: "middle-east", kind: "technique", name: "Mezze", zh: "مزة", emoji: "🥙", area: "levant", pos: [-22, 2], prop: "mezzeHouse", rot: 0.05, place: true, placeName: "Mezze house",
+    tagline: "Twenty small plates, shared slowly, with arak.", blurb: "Mezze, from the Persian maza, taste, is the Levant's way of eating: the table fills with hummus, baba ghanoush, tabbouleh, fattoush, labneh, olives, pickles, kibbeh and stuffed vine leaves before anything grilled arrives, scooped up with bread torn by hand. It grew in the cafés of Beirut and Aleppo in the 1800s around arak, the anise spirit that turns milky with water. Nothing is finished; the point is the conversation.",
+    partners: ["chickpeas", "herbs", "olive oil", "pita", "lemon"], match: (r) => has(r.techniques, /mezze/) },
+  // --- places ---
+  { id: "bazaar", world: "middle-east", kind: "place", name: "The Grand Bazaar", zh: "Kapalıçarşı", emoji: "🏮", area: "istanbul", pos: BZ, prop: "bazaar", rot: 0, place: true, open: "reveal",
+    tagline: "Sixty streets under one roof, trading since 1461.", blurb: "Mehmed the Conqueror built the first two halls in 1461, eight years after taking the city; the vaults now cover sixty-one streets and four thousand shops. Spices, lamps, carpets, tea sets, olives, nuts, dried apricots and baklava, and the tea that arrives on a swinging tray the moment you sit down.", match: () => false },
+  { id: "stall-lamps", world: "middle-east", kind: "landmark", name: "Lamps & tea sets", zh: "Kandiller", emoji: "🪔", area: "istanbul", pos: [BZ[0] - 0.5, BZ[1] - 2.6], prop: "none", hitOnly: true, parent: "bazaar", alias: "tea", tagline: "", blurb: "", match: () => false },
+  { id: "sweets", world: "middle-east", kind: "dish", name: "Baklava & lokum", zh: "Baklava", emoji: "🍯", area: "istanbul", pos: [BZ[0] + 4.5, BZ[1] - 2.6], prop: "none", hitOnly: true, parent: "bazaar",
+    tagline: "Forty layers of pastry, pistachio and syrup.", blurb: "Baklava was perfected in the kitchens of Topkapı Palace, where in the 1600s the sultan sent trays of it to the Janissaries every Ramadan. Gaziantep's pistachios make the best; the pastry is rolled so thin you can read through it. Lokum, Turkish delight, was made by the confectioner Hacı Bekir in 1777 with starch and sugar, scented with rose or mastic.", match: () => false },
+  { id: "stall-nuts", world: "middle-east", kind: "ingredient", name: "Nuts & dried fruit", zh: "Kuruyemiş", emoji: "🥜", area: "istanbul", pos: [BZ[0] - 4, BZ[1] + 2.6], prop: "none", hitOnly: true, parent: "bazaar", alias: "dates", tagline: "", blurb: "", match: () => false },
+  { id: "tea", world: "middle-east", kind: "dish", name: "Tea & coffee", zh: "Çay", emoji: "🫖", area: "istanbul", pos: [BZ[0] + 1, BZ[1] + 2.6], prop: "none", hitOnly: true, parent: "bazaar",
+    tagline: "Coffee came first, but Turkey drinks more tea than anyone.", blurb: "Coffee reached Istanbul from Yemen in the 1550s and the world's first coffeehouses opened here; it is boiled with sugar in a cezve and read in the grounds. Tea took over after 1920, when coffee became an import the new republic could not afford and the Black Sea coast was planted with tea gardens: brewed strong in a two-storey pot, served in tulip glasses, never with milk, and refilled until you turn the glass on its side.", match: () => false },
+  { id: "stall-olives", world: "middle-east", kind: "ingredient", name: "Olives & oil", zh: "Zeytin", emoji: "🫒", area: "istanbul", pos: [BZ[0] + 6, BZ[1] + 2.6], prop: "none", hitOnly: true, parent: "bazaar", alias: "oliveLemon", tagline: "", blurb: "", match: () => false },
+  { id: "teaGarden", world: "middle-east", kind: "landmark", name: "Tea garden", zh: "Çay bahçesi", emoji: "☕", area: "istanbul", pos: [26, -19], prop: "teaGarden", rot: -0.3,
+    tagline: "Samovar, backgammon, a nargile and a view of the water.", blurb: "The çay bahçesi is where Istanbul sits: tea from a samovar, backgammon played fast and loud, a water pipe of apple tobacco, gulls over the Bosphorus. The whirling dervishes belong to the Mevlevi order founded after Rumi's death in 1273; their turning is a prayer, and Istanbul's lodge at Galata has held the ceremony since 1491.", match: () => false },
+  { id: "simit", world: "middle-east", kind: "dish", name: "Simit", zh: "Simit", emoji: "🥨", area: "istanbul", pos: [6, -2], prop: "simitCart", rot: 0.4, placeName: "Simit cart",
+    tagline: "A sesame ring, dipped in grape molasses, sold from a tray on the head.", blurb: "Simit has been sold on Istanbul's streets since at least 1525, when palace records fix its price and weight. The rings are dipped in pekmez, grape molasses, rolled in sesame and baked hard and shiny; the sellers carry them stacked on a tray balanced on the head and cry the price all day. It is eaten with white cheese and tea, and the ferries are full of people feeding pieces to the gulls.", match: () => false },
+  { id: "sweetShop", world: "middle-east", kind: "dish", name: "Sweet shop", zh: "Tatlıcı", emoji: "🍬", area: "istanbul", pos: [-18, -13], prop: "sweetShop", rot: 0.3, placeName: "Tatlıcı", alias: "sweets", tagline: "", blurb: "", match: () => false },
+  { id: "camels", world: "middle-east", kind: "landmark", name: "The caravan", zh: "القافلة", emoji: "🐪", area: "arabia", pos: [-24, 22], prop: "caravan", rot: 0.2,
+    tagline: "The ships of the desert that carried spice, coffee and dates.", blurb: "Camels were domesticated in Arabia around 1000 BC and made the incense road possible: frankincense and myrrh north from Yemen, and later coffee, which Yemeni Sufis were drinking by the 1400s. A camel goes a week without water and its milk fed the Bedouin; its meat is still eaten at weddings. Petra, cut into the rock by the Nabataeans around 100 BC, grew rich taxing the caravans that passed.", match: () => false },
+  { id: "coffee", world: "middle-east", kind: "dish", name: "Arabic coffee & the tent", zh: "قهوة عربية", emoji: "🏕️", area: "arabia", pos: [-18, 16], prop: "bedouinTent", rot: 0.15, placeName: "Bedouin tent",
+    tagline: "Three cups, cardamom, and hospitality as law.", blurb: "Bedouin coffee is roasted lightly, ground with cardamom and boiled in the long-beaked dallah, then poured in small sips from the right hand: it is rude to refuse the first cup and rude to accept a fourth. Guests are owed three days' food and shelter under the goat-hair tent whoever they are. Dates come with it, and on feast days a lamb roasted whole over rice, eaten from one great dish by hand.", match: () => false },
+  { id: "pilaf", world: "middle-east", kind: "dish", name: "Persian rice", zh: "چلو", emoji: "🍚", area: "persia", pos: [24, 20], prop: "pilafKitchen", rot: -0.1, placeName: "Persian kitchen",
+    tagline: "Rice steamed until a golden crust forms, and fought over.", blurb: "Persians have cooked rice this way since at least the 1500s, when Safavid court cookbooks describe it: soaked, parboiled, then steamed under a cloth until the bottom crisps into tahdig, the crust everyone wants. Saffron water goes over the top, and it comes with kebab koobideh, minced lamb on wide skewers, a grilled tomato and a raw egg yolk. Sour cherries, barberries or fava beans and dill turn it into a polo.", match: () => false },
+  { id: "isfahan", world: "middle-east", kind: "landmark", name: "Isfahan", zh: "اصفهان", emoji: "🕌", area: "persia", pos: [24, 3], prop: "none", hitOnly: true, parent: "pilaf",
+    tagline: "Half the world, the Persians said.", blurb: "Shah Abbas made Isfahan his capital in 1598 and built the great square, the turquoise-tiled mosques and the Si-o-se-pol, the bridge of thirty-three arches, over the Zayandeh river between 1599 and 1602. Persia gave the region its cooking words, pilaf, kebab and mezze among them, and its sweet-and-sour pairings of fruit with meat.", match: () => false },
+];
+
+export const ALL_OBJECTS = [...OBJECTS, ...ITALY_OBJECTS, ...KOREA_OBJECTS, ...MEXICO_OBJECTS, ...MIDEAST_OBJECTS];
 export const objectsOf = (world: WorldId) => ALL_OBJECTS.filter((o) => o.world === world);
 export const objectById = (id: string) => ALL_OBJECTS.find((o) => o.id === id)!;
 
@@ -456,7 +537,7 @@ export const MAP_REGIONS: MapRegion[] = [
   { id: "italy", name: "Italy", cuisines: ["Italian"], pos: [-8, -4], size: 6.5, color: "#a8c07a", emoji: ["🍝", "🍅", "🫒", "🧀"], built: true, seed: 13 },
   { id: "central-europe", name: "Central Europe", cuisines: ["British", "Hungarian", "Georgian", "German", "Swiss", "French", "Swedish"], pos: [-12, -26], size: 7, color: "#93b48a", emoji: ["🥧", "🍲", "🥔", "🧈"], built: false, seed: 14 },
   { id: "mediterranean", name: "Mediterranean", cuisines: ["Mediterranean", "Greek", "Spanish", "North African"], pos: [-20, 14], size: 6, color: "#b9cf94", emoji: ["🫒", "🍋", "🐟", "🧆"], built: false, seed: 15 },
-  { id: "middle-east", name: "Middle East", cuisines: ["Middle Eastern", "Lebanese", "Turkish"], pos: [10, 8], size: 6, color: "#e2cf9b", emoji: ["🧆", "🍢", "🫓", "🌿"], built: false, seed: 16 },
+  { id: "middle-east", name: "Middle East", cuisines: ["Middle Eastern", "Lebanese", "Turkish"], pos: [10, 8], size: 6, color: "#e2cf9b", emoji: ["🧆", "🍢", "🫓", "🌿"], built: true, seed: 16 },
   { id: "india", name: "India", cuisines: ["Indian"], pos: [22, 20], size: 6, color: "#e0b25e", emoji: ["🍛", "🫚", "🌶️", "🫓"], built: false, seed: 17 },
   { id: "china", name: "China", cuisines: ["Chinese"], pos: [26, -8], size: 10, color: "#c9a26a", emoji: ["🌶️", "🥟", "🍜", "🏮"], built: true, seed: 18 },
   { id: "southeast-asia", name: "Southeast Asia", cuisines: ["Thai", "Vietnamese"], pos: [38, 16], size: 6, color: "#9cc27f", emoji: ["🥥", "🌿", "🍜", "🦐"], built: false, seed: 19 },

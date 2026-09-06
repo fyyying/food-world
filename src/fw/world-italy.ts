@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { ITALY_OBJECTS, type EnrichedRecipe } from "./graph";
 import { mat, add, person, tree, butterfly, path, fish, type P } from "./props";
 import { ITALY_PROPS, IT, italianHouse, umbrellaPine, cypress, colosseum, fountain, obelisk, campanile, gondola, venetianBridge, mooringPole, etna, fishingBoat, baroqueChurch, pricklyPear, oliveTree, pantheon, triumphalArch, basilica, treviFountain, vespa, cafeTables } from "./props-italy";
-import { buildWorld, addWater, riverGeometry, flowingWaterMaterial, addFish, type Diorama, type LayoutCtx } from "./worldkit";
+import { buildWorld, addWater, riverGeometry, flowingWaterMaterial, seaWater, addFish, type Diorama, type LayoutCtx } from "./worldkit";
 
 void tree;
 
@@ -55,7 +55,7 @@ function layoutItaly({ group, tickers, place, tint, TOP }: LayoutCtx) {
 
   // ---------- Venice: lagoon with three islands, canals, bridges, gondolas, the campanile ----------
   // one body of water: the lagoon, a channel down the east edge, and the sea along the south
-  const waterMat = flowingWaterMaterial("#6ab3c2", "#3f8fa4");   // solid, flowing, right to the table edge
+  const waterMat = seaWater();   // the lagoon and the sea: deep blue, flowing, right to the table edge
   tickers.push((t) => { waterMat.uniforms.uTime.value = t; });
   const bedMat = mat("#3f7a86"); void bedMat;
   const water = (w: number, d: number, x: number, z: number) => {

@@ -2,9 +2,9 @@
 import * as THREE from "three";
 import { MEXICO_OBJECTS, type EnrichedRecipe } from "./graph";
 import { mat, add, tree, butterfly, path, birds, type P } from "./props";
-import { MEXICO_PROPS, MX, casa, cathedral, aztecPyramid, mayaPyramid, ruins, flagpole, papelPicado, saguaro, palm, marigolds, flamingo, mexican } from "./props-mexico";
+import { MEXICO_PROPS, MX, casa, cathedral, aztecPyramid, mayaPyramid, ruins, flagpole, papelPicado, saguaro, palm, marigolds, flamingo, mexican, avocadoTree } from "./props-mexico";
 import { fishingBoat, pricklyPear } from "./props-italy";
-import { buildWorld, flowingWaterMaterial, type Diorama, type LayoutCtx } from "./worldkit";
+import { buildWorld, seaWater, type Diorama, type LayoutCtx } from "./worldkit";
 
 export function buildMexico(recipes: EnrichedRecipe[]): Diorama {
   return buildWorld({
@@ -22,7 +22,7 @@ function layoutMexico({ group, tickers, place, tint, TOP }: LayoutCtx) {
   tint(22, -6, 12, 14, "#a9bf7a", 0.05);
 
   // ---------- the Caribbean along the east, a bay in the south-east ----------
-  const waterMat = flowingWaterMaterial("#5fc4cf", "#2f8fa4");
+  const waterMat = seaWater();
   tickers.push((t) => { waterMat.uniforms.uTime.value = t; });
   const shore = (pts: [number, number][]) => { const sh = new THREE.Shape(); pts.forEach(([x, z], i) => { const edge = Math.abs(x) >= 38 || Math.abs(z) >= 28; const wx = edge ? x : x + Math.sin(i * 2.7) * 0.5, wz = edge ? z : z + Math.cos(i * 1.9) * 0.5; if (i === 0) sh.moveTo(wx, wz); else sh.lineTo(wx, wz); }); sh.closePath(); return sh; };
   const seaShape = shore([[31, -28], [38, -28], [38, 28], [10, 28], [10, 22], [16, 18], [24, 16], [30, 10], [32, 2], [31, -6], [32, -16]]);
@@ -55,6 +55,7 @@ function layoutMexico({ group, tickers, place, tint, TOP }: LayoutCtx) {
   // ---------- Jalisco & Michoacán: dry hills, cacti, monarch butterflies ----------
   for (const [x, z, s] of [[-36, -2, 1.0], [-35, 9.5, 0.8], [-22, -25, 0.9], [-36, -26, 1.1], [-34, -19.5, 0.7]] as [number, number, number][]) place(saguaro(s), x, z, x);
   for (const [x, z] of [[-35, -4.5], [-24, -26.5], [-36, 12]]) place(pricklyPear(), x, z, x);
+  for (const [x, z, s] of [[-36, 0, 1.0], [-25, 6.5, 0.9], [-35, 6, 1.1], [-27, 0.5, 0.85]] as [number, number, number][]) place(avocadoTree(s), x, z, x + z);   // Michoacán is avocado country: trees beyond the orchard too
   const monarchs = [[-31, 4], [-27, 2], [-33, 8]].map(([x, z], i) => { const b = butterfly(i % 2 ? "#f08a2a" : "#e07a1a"); group.add(b); tickers.push(b.userData.tick!); return { b, x, z, ph: i * 1.7 }; });
   tickers.push((t) => monarchs.forEach(({ b, x, z, ph }) => { b.position.set(x + Math.sin(t * 0.6 + ph) * 2.6, TOP + 2.2 + Math.sin(t * 1.7 + ph) * 0.5, z + Math.cos(t * 0.45 + ph) * 2); b.rotation.y = t * 0.6 + ph; }));
 

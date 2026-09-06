@@ -15,7 +15,7 @@ export type UiHandlers = {
 };
 
 const card = () => document.getElementById("card")!;
-const ICON_KEYS: Record<string, true> = { corn: true, chilliesMx: true, tomatoMx: true, avocado: true, limes: true, cacao: true, beefMx: true, carnitas: true, comal: true, molcajete: true, trompo: true, fonda: true, churros: true, tequila: true, mole: true, pib: true, mariachi: true, xochimilco: true, kimchi: true, hanwoo: true, riceKr: true, namul: true, seafoodKr: true, tangerine: true, blackPig: true, gochugaru: true, aromaticsKr: true, grill: true, dolsot: true, gwangjang: true, pojangmacha: true, "stall-gimbap": true, tomato: true, pasta: true, olive: true, cheese: true, basil: true, italyBeef: true, italyChicken: true, mushrooms: true, lemon: true, seafood: true, oven: true, ragu: true, gelateria: true, bacaro: true, "stall-arancini": true, pastry: true, garlic: true, spices: true, fish: true, chilli: true, pepper: true, jars: true, tofu: true, veg: true, mushroom: true, rice: true, wheat: true, cow: true, pig: true, chicken: true, aromatics: true, wok: true, claypot: true, griddle: true, prep: true, noodle: true, dumpling: true, hotpot: true, teahouse: true };
+const ICON_KEYS: Record<string, true> = { riceIt: true, spicesMe: true, chickpeas: true, lambYogurt: true, herbs: true, oliveLemon: true, dates: true, spices: true, saffron: true, mangal: true, spit: true, taboon: true, mezze: true, bazaar: true, tea: true, sweets: true, coffee: true, pilaf: true, camels: true, corn: true, chilliesMx: true, tomatoMx: true, avocado: true, limes: true, cacao: true, beefMx: true, carnitas: true, comal: true, molcajete: true, trompo: true, fonda: true, churros: true, tequila: true, mole: true, pib: true, mariachi: true, xochimilco: true, kimchi: true, hanwoo: true, riceKr: true, namul: true, seafoodKr: true, tangerine: true, blackPig: true, gochugaru: true, aromaticsKr: true, grill: true, dolsot: true, gwangjang: true, pojangmacha: true, "stall-gimbap": true, tomato: true, pasta: true, olive: true, cheese: true, basil: true, italyBeef: true, italyChicken: true, mushrooms: true, lemon: true, seafood: true, oven: true, ragu: true, gelateria: true, bacaro: true, "stall-arancini": true, pastry: true, garlic: true, fish: true, chilli: true, pepper: true, jars: true, tofu: true, veg: true, mushroom: true, rice: true, wheat: true, cow: true, pig: true, chicken: true, aromatics: true, wok: true, claypot: true, griddle: true, prep: true, noodle: true, dumpling: true, hotpot: true, teahouse: true };
 
 /** Which world object a "paired with" word points at, so every partner that exists in the world is clickable. */
 const PARTNER_ALIASES: [RegExp, string][] = [
@@ -26,13 +26,16 @@ const PARTNER_ALIASES: [RegExp, string][] = [
   // Korea
   [/kimchi/i, "kimchi"], [/gochu|pepper flakes|ssamjang|chilli|chili/i, "gochugaru"], [/hanwoo|bulgogi|beef/i, "hanwoo"], [/pork|belly|samgyeopsal/i, "blackPig"], [/namul|spinach|sprout|lettuce|perilla|carrot|zucchini|vegetable/i, "namul"],
   [/tangerine|honey|tea/i, "tangerine"], [/\brice\b|\bbap\b/i, "riceKr"], [/garlic|scallion|sesame|soy|ginger|onion|doenjang/i, "aromaticsKr"], [/fish|seafood|anchovy|shrimp|squid|abalone/i, "seafoodKr"], [/grill|barbecue|charcoal/i, "grill"], [/\begg\b|yolk/i, "dolsot"],
+  // Middle East
+  [/chickpea|tahini|hummus|falafel/i, "chickpeas"], [/lamb|chicken|yogurt|labneh|ayran/i, "lambYogurt"], [/parsley|mint|bulgur|herb|za'atar/i, "herbs"], [/olive|lemon/i, "oliveLemon"], [/date|almond|nut/i, "dates"],
+  [/cumin|coriander|paprika|sumac|cinnamon|cardamom|spice|garlic/i, "spicesMe"], [/saffron|pomegranate|rosewater|walnut/i, "saffron"], [/pita|bread|lavash|egg|tomato/i, "taboon"], [/coffee/i, "coffee"], [/\brice\b/i, "pilaf"], [/pickle/i, "spit"],
   // Mexico
   [/corn|tortilla|masa|bean|tamale/i, "corn"], [/chilli|chili|jalapeño|habanero|chipotle|guajillo|ancho/i, "chilliesMx"], [/tomato|tomatillo|salsa/i, "tomatoMx"], [/avocado|guacamole/i, "avocado"],
   [/lime|onion|cilantro|cumin|oregano|garlic/i, "limes"], [/cacao|chocolate|cinnamon/i, "cacao"], [/beef|carne/i, "beefMx"], [/pork|carnitas|lard/i, "carnitas"], [/pineapple|achiote|orange/i, "trompo"], [/\brice\b|stock/i, "fonda"],
   // Italy
   [/tomato/i, "tomato"], [/pasta|lasagn|ragù|ragu/i, "pasta"], [/olive oil|olive/i, "olive"], [/parmesan|mozzarella|cheese|pecorino|ricotta|cream|butter/i, "cheese"],
   [/basil|pesto|herb|rosemary|parsley|oregano|pine nut/i, "basil"], [/beef|pork|salami|prosciutto|soffritto|mince/i, "italyBeef"], [/lemon|orange|citrus/i, "lemon"], [/mushroom|porcini/i, "mushrooms"],
-  [/clam|seafood|sardine/i, "seafood"], [/pizza dough|dough|flour|yeast|bread/i, "dough"], [/stock|saffron|white wine|red wine|wine/i, "ragu"],
+  [/clam|seafood|sardine/i, "seafood"], [/pizza dough|dough|flour|yeast|bread/i, "dough"], [/risotto|\brice\b/i, "riceIt"], [/stock|saffron|white wine|red wine|wine/i, "ragu"],
   [/garlic|ginger|scallion|onion|cilantro|soy sauce|vinegar|sesame|sugar|wine|stock|pickled mustard/i, "garlic"],
 ];
 function partnerObject(p: string, self: WorldObject, all: WorldObject[]): WorldObject | undefined {

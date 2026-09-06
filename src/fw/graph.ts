@@ -6,8 +6,8 @@
 import type { Recipe } from "../data";
 
 export type Kind = "ingredient" | "flavour" | "technique" | "landmark" | "place" | "dish";
-export type WorldId = "china" | "italy" | "korea" | "mexico" | "middle-east" | "mediterranean";
-export type Area = "sichuan" | "jiangnan" | "northern" | "everyday" | "rome" | "venice" | "sicily" | "seoul" | "jeonju" | "busan" | "jeju" | "cdmx" | "oaxaca" | "jalisco" | "yucatan" | "istanbul" | "levant" | "arabia" | "persia" | "greece" | "spain" | "morocco" | "dalmatia";
+export type WorldId = "china" | "italy" | "korea" | "mexico" | "middle-east" | "mediterranean" | "india";
+export type Area = "sichuan" | "jiangnan" | "northern" | "everyday" | "rome" | "venice" | "sicily" | "seoul" | "jeonju" | "busan" | "jeju" | "cdmx" | "oaxaca" | "jalisco" | "yucatan" | "istanbul" | "levant" | "arabia" | "persia" | "greece" | "spain" | "morocco" | "dalmatia" | "punjab" | "rajasthan" | "mumbai" | "kerala";
 
 export type EnrichedRecipe = Recipe & {
   zh?: string;
@@ -83,6 +83,10 @@ export const AREAS: Record<Area, AreaInfo> = {
   spain: { world: "mediterranean", name: "Spain", zh: "España", blurb: "the port, the tapas bar, oranges and the Alhambra", center: [-27, -2] },
   morocco: { world: "mediterranean", name: "Morocco", zh: "المغرب", blurb: "the souk, the square, tagines and mint tea", center: [-8, 20] },
   dalmatia: { world: "mediterranean", name: "Dalmatia", zh: "Dalmacija", blurb: "a walled harbour, the konoba, cabbage and lentils", center: [6, -21] },
+  punjab: { world: "india", name: "Punjab & Delhi", zh: "पंजाब", blurb: "the tandoor, the dhaba, wheat, dairy and the Golden Temple", center: [-6, -14] },
+  rajasthan: { world: "india", name: "Rajasthan", zh: "राजस्थान", blurb: "a hill fort, chillies drying, dal and camels", center: [-24, 5] },
+  mumbai: { world: "india", name: "Mumbai", zh: "मुंबई", blurb: "the market, the beach, chaat and dabbawalas", center: [-2, 12] },
+  kerala: { world: "india", name: "Kerala", zh: "കേരളം", blurb: "backwaters, spices, coconut, rice and fishing nets", center: [24, 10] },
 };
 export const WORLDS: Record<WorldId, { name: string; zh: string; regionId: string }> = {
   china: { name: "China", zh: "中国", regionId: "china" },
@@ -91,6 +95,7 @@ export const WORLDS: Record<WorldId, { name: string; zh: string; regionId: strin
   mexico: { name: "Mexico", zh: "México", regionId: "mexico" },
   "middle-east": { name: "Middle East", zh: "الشرق الأوسط", regionId: "middle-east" },
   mediterranean: { name: "Mediterranean", zh: "Mare Nostrum", regionId: "mediterranean" },
+  india: { name: "India", zh: "भारत", regionId: "india" },
 };
 export const areasOf = (world: WorldId) => (Object.keys(AREAS) as Area[]).filter((a) => AREAS[a].world === world);
 
@@ -146,6 +151,13 @@ const ENRICH: { test: RegExp; data: Enrichment }[] = [
   { test: /prawns & feta|prawn.*omelette/i, data: { zh: "Ομελέτα", world: "mediterranean", area: "greece", spice: 0, flavours: ["savoury", "briny"], core: ["prawns", "eggs", "feta", "herbs"], techniques: ["pan"], place: "taverna" } },
   { test: /halloumi/i, data: { zh: "Μακαρόνια με χαλούμι", world: "mediterranean", area: "greece", spice: 0, flavours: ["salty", "cheesy"], core: ["pasta", "halloumi", "tomato", "olive oil", "herbs"], techniques: ["pot"], place: "taverna" } },
   { test: /tzatziki/i, data: { zh: "Τζατζίκι", world: "mediterranean", area: "greece", spice: 0, flavours: ["cool", "garlicky", "tangy"], core: ["yogurt", "cucumber", "garlic", "dill", "olive oil"], techniques: ["raw"], place: "taverna" } },
+  // ---- India ----
+  { test: /red lentil curry/i, data: { zh: "मसूर दाल", world: "india", area: "rajasthan", spice: 1, flavours: ["earthy", "warm-spiced", "comforting"], core: ["red lentils", "onion", "garlic", "ginger", "tomato", "turmeric", "cumin"], techniques: ["dal"], place: "thali" } },
+  { test: /tandoori chicken/i, data: { zh: "तंदूरी चिकन", world: "india", area: "punjab", spice: 2, flavours: ["smoky", "charred", "tangy"], core: ["chicken", "yogurt", "garam masala", "chilli", "ginger", "garlic", "lemon"], techniques: ["tandoor"], place: "tandoor" } },
+  { test: /butter chicken/i, data: { zh: "मुर्ग मखनी", world: "india", area: "punjab", spice: 1, flavours: ["rich", "buttery", "tomato"], core: ["chicken", "butter", "cream", "tomato", "garam masala", "fenugreek", "ginger", "garlic"], techniques: ["karahi", "tandoor"], place: "dhaba" } },
+  { test: /tikka masala/i, data: { zh: "चिकन टिक्का मसाला", world: "india", area: "punjab", spice: 2, flavours: ["creamy", "spiced", "tomato"], core: ["chicken", "yogurt", "tomato", "cream", "garam masala", "cumin", "coriander"], techniques: ["karahi"], place: "dhaba" } },
+  { test: /mushroom curry/i, data: { zh: "മഷ്റൂം കറി", world: "india", area: "kerala", spice: 1, flavours: ["coconut", "nutty", "aromatic"], core: ["mushrooms", "coconut", "cashews", "onion", "curry leaves", "turmeric", "chilli"], techniques: ["coconut"], place: "southKitchen" } },
+  { test: /lentil chicken curry/i, data: { zh: "दाल चिकन", world: "india", area: "punjab", spice: 1, flavours: ["hearty", "warm-spiced"], core: ["chicken", "lentils", "onion", "tomato", "ginger", "garlic", "cumin"], techniques: ["karahi"], place: "dhaba" } },
 ];
 
 const ME_CUISINES = new Set(["Middle Eastern", "Lebanese", "Turkish"]);
@@ -156,13 +168,13 @@ export function enrich(r: Recipe): EnrichedRecipe {
   return {
     ...r,
     zh: hit.zh,
-    world: hit.world ?? (r.cuisine === "Italian" ? "italy" : r.cuisine === "Korean" ? "korea" : r.cuisine === "Mexican" ? "mexico" : ME_CUISINES.has(r.cuisine ?? "") ? "middle-east" : MED_CUISINES.has(r.cuisine ?? "") ? "mediterranean" : "china"),
-    area: hit.area ?? (r.cuisine === "Italian" ? "rome" : r.cuisine === "Korean" ? "seoul" : r.cuisine === "Mexican" ? "cdmx" : r.cuisine === "Turkish" ? "istanbul" : ME_CUISINES.has(r.cuisine ?? "") ? "levant" : r.cuisine === "Spanish" ? "spain" : r.cuisine === "North African" ? "morocco" : MED_CUISINES.has(r.cuisine ?? "") ? "greece" : "everyday"),
+    world: hit.world ?? (r.cuisine === "Italian" ? "italy" : r.cuisine === "Korean" ? "korea" : r.cuisine === "Mexican" ? "mexico" : ME_CUISINES.has(r.cuisine ?? "") ? "middle-east" : MED_CUISINES.has(r.cuisine ?? "") ? "mediterranean" : r.cuisine === "Indian" ? "india" : "china"),
+    area: hit.area ?? (r.cuisine === "Italian" ? "rome" : r.cuisine === "Korean" ? "seoul" : r.cuisine === "Mexican" ? "cdmx" : r.cuisine === "Turkish" ? "istanbul" : ME_CUISINES.has(r.cuisine ?? "") ? "levant" : r.cuisine === "Spanish" ? "spain" : r.cuisine === "North African" ? "morocco" : MED_CUISINES.has(r.cuisine ?? "") ? "greece" : r.cuisine === "Indian" ? "punjab" : "everyday"),
     spice: hit.spice ?? (spicy ? 2 : 0),
     flavours: hit.flavours ?? [],
     core: hit.core ?? [...r.protein, ...r.mainIngredient.map((m) => m.toLowerCase())],
     techniques: hit.techniques ?? (r.method === "Pan" ? ["wok"] : r.method === "Pot" ? ["braise"] : []),
-    place: hit.place ?? (r.cuisine === "Italian" ? "trattoria" : r.cuisine === "Korean" ? "grill" : r.cuisine === "Mexican" ? "fonda" : ME_CUISINES.has(r.cuisine ?? "") ? "mezze" : MED_CUISINES.has(r.cuisine ?? "") ? "taverna" : "wok"),
+    place: hit.place ?? (r.cuisine === "Italian" ? "trattoria" : r.cuisine === "Korean" ? "grill" : r.cuisine === "Mexican" ? "fonda" : ME_CUISINES.has(r.cuisine ?? "") ? "mezze" : MED_CUISINES.has(r.cuisine ?? "") ? "taverna" : r.cuisine === "Indian" ? "dhaba" : "wok"),
     weeknight: (r.totalMin !== null && r.totalMin <= 40) || r.tags.includes("busy_day") || r.tags.includes("quick"),
   };
 }
@@ -186,7 +198,10 @@ export function isMideastRecipe(r: Recipe): boolean {
 export function isMedRecipe(r: Recipe): boolean {
   return (MED_CUISINES.has(r.cuisine ?? "") || /greek|tzatziki|halloumi|tagine|paella|kupus|moussaka|souvlaki/i.test(r.title)) && !/shakshuka/i.test(r.title);
 }
-export const worldRecipes = (world: WorldId, all: Recipe[]) => all.filter(world === "china" ? isChinaRecipe : world === "italy" ? isItalyRecipe : world === "korea" ? isKoreaRecipe : world === "mexico" ? isMexicoRecipe : world === "middle-east" ? isMideastRecipe : isMedRecipe);
+export function isIndiaRecipe(r: Recipe): boolean {
+  return r.cuisine === "Indian" || /tandoori|tikka|masala|dal\b|dahl|paneer|biryani|korma|naan/i.test(r.title);
+}
+export const worldRecipes = (world: WorldId, all: Recipe[]) => all.filter(world === "china" ? isChinaRecipe : world === "italy" ? isItalyRecipe : world === "korea" ? isKoreaRecipe : world === "mexico" ? isMexicoRecipe : world === "middle-east" ? isMideastRecipe : world === "mediterranean" ? isMedRecipe : isIndiaRecipe);
 
 const has = (list: string[], re: RegExp) => list.some((x) => re.test(x));
 
@@ -590,7 +605,68 @@ export const MED_OBJECTS: WorldObject[] = [
     tagline: "Guitar, palms and a stamping heel, from the Gitano quarters of Andalusia.", blurb: "Flamenco grew among the Gitanos of Seville, Jerez and Cádiz in the 1700s and 1800s, in the tablaos and the patios: a singer, a guitar, hands clapping the rhythm and a dancer whose heels are the drum. Sherry, aged in Jerez since the 1400s, and a plate of jamón are what come with it. UNESCO listed it in 2010.", match: () => false },
 ];
 
-export const ALL_OBJECTS = [...OBJECTS, ...ITALY_OBJECTS, ...KOREA_OBJECTS, ...MEXICO_OBJECTS, ...MIDEAST_OBJECTS, ...MED_OBJECTS];
+
+// ---------- the India world ----------
+
+const CM: [number, number] = [-4, 10];
+export const INDIA_OBJECTS: WorldObject[] = [
+  // --- ingredients ---
+  { id: "wheatNaan", world: "india", kind: "ingredient", name: "Wheat, roti & naan", zh: "गेहूँ और रोटी", emoji: "🫓", area: "punjab", pos: [-31, -9], prop: "wheatMustard", rot: 0.1,
+    tagline: "The bread basket of the north, and the bread that mops up everything.", blurb: "Wheat has been grown on the Indus plain since about 7000 BC, and Punjab, the land of five rivers, still grows most of India's. Every meal in the north ends with bread: roti or chapati patted from whole wheat and puffed on a tawa, paratha stuffed with potato and fried in ghee for breakfast, and naan, leavened and slapped onto the tandoor wall, a Persian idea that reached Delhi's courts by the 1300s. The yellow mustard flowering among the wheat is winter's saag.",
+    partners: ["ghee", "butter", "dal", "tandoori chicken"], match: (r) => has(r.core, /naan|roti|wheat|flour/) },
+  { id: "dairyIn", world: "india", kind: "ingredient", name: "Butter, ghee, paneer & yogurt", zh: "दूध, घी और पनीर", emoji: "🥛", area: "punjab", pos: [22, -14], prop: "dairyIn", rot: 0.2,
+    tagline: "The cow is sacred; its milk is in everything.", blurb: "India milks more animals than any country on earth, most of it from water buffalo, whose richer milk makes the best ghee: butter simmered until the water is gone and the solids brown, which keeps for months without a fridge and has been the cooking fat of the Vedas since 1500 BC. Yogurt, dahi, is set fresh every day and marinates tandoori meat; paneer, milk curdled with lemon and pressed, is the north's vegetarian protein. Butter chicken is named for the makhani sauce of butter and cream that Moti Mahal in Delhi invented in the 1950s.",
+    partners: ["chicken", "tomato", "garam masala", "fenugreek"], match: (r) => has(r.core, /butter|cream|yogurt|paneer|ghee/) || has(r.protein, /yogurt/) },
+  { id: "chickenIn", world: "india", kind: "ingredient", name: "Chicken", zh: "मुर्ग", emoji: "🐓", area: "punjab", pos: [16, -20], prop: "chickenIn",
+    tagline: "Domesticated here, four thousand years ago.", blurb: "The chicken was tamed from the red junglefowl of the Indian forests around 2000 BC, and Harappan cities kept them. Marinated overnight in yogurt, lemon and spice, then roasted in a tandoor, it became tandoori chicken at Moti Mahal in Peshawar in the 1920s, brought to Delhi by Kundan Lal Gujral in 1947 after Partition; its leftovers, simmered in butter and tomato, became butter chicken. Tikka masala, chunks of the same chicken in a spiced cream sauce, is the British-Indian version, from Glasgow or Birmingham in the 1970s, depending who you ask.",
+    partners: ["yogurt", "garam masala", "ginger", "garlic", "lemon"], match: (r) => has(r.protein, /chicken/) },
+  { id: "lentils", world: "india", kind: "ingredient", name: "Dal: lentils & pulses", zh: "दाल", emoji: "🫘", area: "rajasthan", pos: [-22, 12], prop: "lentilField", rot: 0,
+    tagline: "A dozen kinds, and one on every table every day.", blurb: "Lentils, chickpeas and mung beans came into India from the Fertile Crescent and were being farmed in the Indus valley by 2500 BC. Dal is both the pulse and the dish: split red masoor cooks in twenty minutes; yellow toor, chana and black urad take longer. It is finished with a tadka, spices sizzled in ghee and poured over, cumin and dried chilli and garlic. In Rajasthan's desert, where vegetables are scarce, dal-baati-churma, dal with baked wheat balls, is the feast.",
+    partners: ["cumin", "turmeric", "garlic", "ghee", "rice"], match: (r) => has(r.core, /lentil|dal|chickpea/) || has(r.protein, /lentils/) },
+  { id: "spicesIn", world: "india", kind: "flavour", name: "Spices", zh: "मसाला", emoji: "🌶️", area: "kerala", pos: [16, 17], prop: "spiceGarden", rot: 0.05,
+    tagline: "Pepper, cardamom, turmeric and cinnamon, from the coast the world sailed for.", blurb: "Black pepper grew wild on the Malabar coast and Romans paid for it in gold by the first century AD; Vasco da Gama landed at Calicut in 1498 for it. Cardamom and turmeric are Indian too; cumin, coriander and cinnamon came early. Garam masala, the warm blend, is toasted and ground fresh: cumin, coriander, cardamom, cinnamon, clove and black pepper. Chilli arrived with the Portuguese after 1500 and within a century India grew more than anywhere.",
+    flavour: ["warm", "pungent", "earthy"], partners: ["ginger", "garlic", "yogurt", "coconut"], match: (r) => has(r.core, /garam masala|cumin|turmeric|coriander|cardamom|chilli|fenugreek|curry leaves/) },
+  { id: "coconut", world: "india", kind: "ingredient", name: "Coconut & cashews", zh: "തേങ്ങ", emoji: "🥥", area: "kerala", pos: [30, 9], prop: "coconutGrove", rot: 0.1,
+    tagline: "Kerala means the land of coconuts.", blurb: "The state takes its name from kera, the coconut palm, and its cooking is built on it: fresh coconut ground with green chilli and curry leaves for chutney, coconut milk to finish a curry, coconut oil to fry in. Cashews came from Brazil with the Portuguese in the 1500s and Kerala now grows and shells much of the world's; ground, they thicken kormas and mushroom curries. Tapping the palm's flower gives toddy, drunk in the palm-leaf shacks along the backwaters.",
+    partners: ["curry leaves", "mustard seed", "green chilli", "turmeric"], match: (r) => has(r.core, /coconut|cashew|nut/) || has(r.protein, /nuts/) },
+  { id: "aromaticsIn", world: "india", kind: "flavour", name: "Onion, garlic, ginger & tomato", zh: "प्याज़, लहसुन, अदरक", emoji: "🧅", area: "mumbai", pos: [CM[0], CM[1] - 2.4], prop: "none", hitOnly: true, parent: "market",
+    tagline: "The masala base that starts nearly every curry.", blurb: "Most curries begin the same way: onion fried slowly in ghee or oil until golden, then ginger-garlic paste, then tomato cooked down until the fat separates, then the spices. Ginger and garlic are native to South Asia; onions came in early; tomatoes arrived with the Portuguese after 1500 and took over the north's gravies only in the 1900s. Fresh coriander leaf goes on at the end.",
+    flavour: ["pungent", "sweet", "sharp"], partners: ["cumin", "garam masala", "chicken", "lentils"], match: (r) => has(r.core, /onion|garlic|ginger|tomato/) },
+  { id: "vegIn", world: "india", kind: "ingredient", name: "Vegetables & mushrooms", zh: "सब्ज़ी", emoji: "🍆", area: "mumbai", pos: [CM[0] - 5, CM[1] - 2.4], prop: "none", hitOnly: true, parent: "market",
+    tagline: "A country where a third of people never eat meat.", blurb: "India cooks more vegetables than anyone: sabzi of aubergine, okra, cauliflower and potato dry-fried with spice, spinach blended into saag, peas in everything. Mushrooms are newer to the plate, farmed since the 1980s, and take a curry well: fried with onion and coconut in the south, with cashew cream in the north.", partners: ["turmeric", "cumin", "coconut", "cream"], match: (r) => has(r.core, /mushroom|spinach|potato|cauliflower|pea|aubergine/) },
+  { id: "mango", world: "india", kind: "dish", name: "Mangoes & mithai", zh: "आम और मिठाई", emoji: "🥭", area: "mumbai", pos: [CM[0] - 3, CM[1] + 2.4], prop: "none", hitOnly: true, parent: "market",
+    tagline: "The king of fruit, and sweets made of milk and sugar.", blurb: "Mangoes have grown in India for four thousand years and the Alphonso of the Konkan coast, named after a Portuguese viceroy of the 1500s, is the one people queue for in May. Mithai are the sweets: jalebi, batter piped into spirals and fried then soaked in syrup; barfi, milk cooked down with sugar; gulab jamun; and kulfi, the frozen milk of the Mughal courts of the 1500s.", match: () => false },
+  { id: "chilliesIn", world: "india", kind: "flavour", name: "Chillies", zh: "मिर्च", emoji: "🌶️", area: "rajasthan", pos: [-21, 5], prop: "chilliYard", rot: 0.1, alias: "spicesIn", tagline: "", blurb: "", match: () => false },
+  // --- techniques ---
+  { id: "tandoor", world: "india", kind: "technique", name: "The tandoor", zh: "तंदूर", emoji: "🔥", area: "punjab", pos: [-12, -13], prop: "tandoorHouse", rot: 0.1, place: true, placeName: "Tandoor",
+    tagline: "A clay oven at 480 degrees, bread on its walls and meat on skewers inside.", blurb: "Clay ovens have been dug into Indus valley floors since 2600 BC; the tandoor is the tall one, fired with charcoal, that Punjabis share in village yards. Naan is slapped wet onto its inner wall and peeled off blistered in a minute; chicken marinated in yogurt, chilli and garam masala roasts on long skewers over the coals, dripping into the fire, which is where the smoke in tandoori comes from. Delhi's Moti Mahal put the tandoor into a restaurant in 1947 and made it the north's kitchen.",
+    partners: ["chicken", "yogurt", "naan", "garam masala"], match: (r) => has(r.techniques, /tandoor/) },
+  { id: "dhaba", world: "india", kind: "technique", name: "The dhaba's karahi", zh: "ढाबा", emoji: "🍛", area: "punjab", pos: [6, -12], prop: "dhaba", rot: -0.1, place: true, placeName: "Dhaba",
+    tagline: "Truck-stop cooking: a wide iron pan, a fierce flame, butter and cream.", blurb: "Dhabas are the roadside kitchens of the Grand Trunk Road, run for lorry drivers since the 1940s: charpoy string beds to sit on, a karahi, the wide two-handled iron pan, over a roaring burner, and food that is rich, spiced and fast. Butter chicken, chicken in tomato, butter and cream; tikka masala; dal makhani simmered overnight. Punjabi cooking is the one the world calls Indian, and it travelled from these roads to Britain's curry houses in the 1960s.",
+    partners: ["chicken", "butter", "tomato", "cream", "garam masala"], match: (r) => has(r.techniques, /karahi/) },
+  { id: "thali", world: "india", kind: "technique", name: "Dal & the thali", zh: "थाली", emoji: "🍽️", area: "rajasthan", pos: [-13, 3], prop: "thaliHouse", rot: 0.1, place: true, placeName: "Thali house",
+    tagline: "A steel platter of little bowls: a whole balanced meal at once.", blurb: "A thali is the round platter with everything on it: dal, a vegetable, rice, roti, yogurt, pickle, a sweet, refilled until you cover the bowl with your hand. It follows Ayurveda's six tastes and the idea that a meal should hold all of them. Rajasthan's is the grandest, all vegetarian in the Jain and Marwari houses, with dal-baati and gatte, chickpea-flour dumplings, and ghee poured from a height by a server who does not take no for an answer.",
+    partners: ["lentils", "roti", "yogurt", "ghee", "pickle"], match: (r) => has(r.techniques, /dal/) },
+  { id: "southKitchen", world: "india", kind: "technique", name: "Coconut curry & the tawa", zh: "കറി", emoji: "🥥", area: "kerala", pos: [16, 2], prop: "keralaKitchen", rot: 0.1, place: true, placeName: "Kerala kitchen",
+    tagline: "Curry leaves and mustard seed popped in coconut oil, and dosas the size of a plate.", blurb: "Southern cooking starts with a tadka of mustard seed, curry leaves and dried chilli crackling in coconut oil, and finishes with coconut, ground fresh or as milk. Rice, not wheat, is the grain: dosas of fermented rice-and-lentil batter spread paper-thin on a tawa, idlis steamed, appams lacy. A sadya, the feast, comes on a banana leaf with a dozen curries and is eaten by hand. Mushrooms, jackfruit and fish all take this treatment.",
+    partners: ["coconut", "curry leaves", "mushrooms", "rice", "turmeric"], match: (r) => has(r.techniques, /coconut/) },
+  // --- places ---
+  { id: "market", world: "india", kind: "place", name: "Crawford Market", zh: "क्रॉफर्ड मार्केट", emoji: "🧺", area: "mumbai", pos: CM, prop: "bazaarIn", rot: 0, place: true, open: "reveal",
+    tagline: "Mumbai's market since 1869: vegetables, spices, mangoes and a chai wallah.", blurb: "Built in 1869 with a clock tower and friezes by Rudyard Kipling's father, the market feeds south Mumbai: vegetables and mushrooms, the onion-garlic-ginger-tomato base, spice mounds, Alphonso mangoes in May and mithai, with cutting chai poured from a height at the corner.", match: () => false },
+  { id: "stall-spices-in", world: "india", kind: "flavour", name: "Spices", zh: "मसाला", emoji: "🌶️", area: "mumbai", pos: [CM[0] + 5, CM[1] - 2.4], prop: "none", hitOnly: true, parent: "market", alias: "spicesIn", tagline: "", blurb: "", match: () => false },
+  { id: "streetFood", world: "india", kind: "dish", name: "Chaat & chai at Chowpatty", zh: "चाट", emoji: "🍢", area: "mumbai", pos: [-8, 18.5], prop: "chowpatty", rot: 0.1, placeName: "Chowpatty beach",
+    tagline: "Pav bhaji, bhel puri, cutting chai and kulfi on the sand.", blurb: "Chowpatty's stalls fed the mill workers of the 1850s and still feed the city at dusk: pav bhaji, mashed spiced vegetables with a buttered bun, invented for the textile workers' quick lunches in the 1850s; bhel puri, puffed rice with tamarind and chutneys; vada pav, the potato fritter in a bun, from 1966. Chai comes as cutting, a half glass; kulfi comes on a stick.", match: () => false },
+  { id: "dabbawala", world: "india", kind: "landmark", name: "Dabbawalas", zh: "डब्बावाला", emoji: "🚲", area: "mumbai", pos: [8, 13], prop: "dabbawalas", rot: 0,
+    tagline: "Five thousand men delivering two hundred thousand home-cooked lunches a day, since 1890.", blurb: "Every morning the dabbawalas collect tiffins, stacked steel lunch boxes, from homes across Mumbai, sort them by a code of colours and letters, carry them by train and bicycle to offices, and bring the empties back by evening. Started in 1890 for a Parsi banker who wanted his own food at work. Harvard studied their error rate: about one in six million.", match: () => false },
+  { id: "backwaters", world: "india", kind: "landmark", name: "The backwaters", zh: "കായൽ", emoji: "🛶", area: "kerala", pos: [22, 10], prop: "none", hitOnly: true,
+    tagline: "A thousand kilometres of lagoons and canals, travelled by houseboat.", blurb: "The kettuvallam were rice barges, planks sewn together with coir rope and thatched with palm, that carried the harvest through Kerala's lagoons; since the 1990s they have carried visitors, with a cook aboard frying karimeen, the pearl-spot fish, in banana leaf. The paddies alongside sit below sea level behind dykes, and Chinese fishing nets, brought by traders from Kublai Khan's court around 1400, still dip at Kochi.", match: () => false },
+  { id: "nets", world: "india", kind: "landmark", name: "Chinese fishing nets", zh: "ചീനവല", emoji: "🎣", area: "kerala", pos: [13, 20.5], prop: "fishingNets", rot: Math.PI,
+    tagline: "Cantilevered nets from Kublai Khan's traders, still working at Kochi.", blurb: "The cheena vala came to Kochi with Chinese traders around 1400, and the same design stands on the shore today: a net on a teak frame, lowered into the tide by four men on stones and counterweights, lifted every few minutes with whatever swam in. What they catch is sold on the spot and fried at the stalls behind: seer fish, prawns, and karimeen for the houseboats.", match: () => false },
+  { id: "elephant", world: "india", kind: "landmark", name: "Temple elephant", zh: "ആന", emoji: "🐘", area: "kerala", pos: [24, 18], prop: "elephant", rot: -0.3,
+    tagline: "Caparisoned in gold for the festival, fed rice and jaggery.", blurb: "Kerala's temples keep elephants for their festivals; at Thrissur Pooram, held since the 1790s, thirty stand in a line in golden nettipattam headdresses under silk parasols. A temple elephant eats about 200 kilos a day, palm fronds mostly, with rice and jaggery balls at feast time. The mahout's family often keeps the same animal for a lifetime.", match: () => false },
+];
+
+export const ALL_OBJECTS = [...OBJECTS, ...ITALY_OBJECTS, ...KOREA_OBJECTS, ...MEXICO_OBJECTS, ...MIDEAST_OBJECTS, ...MED_OBJECTS, ...INDIA_OBJECTS];
 export const objectsOf = (world: WorldId) => ALL_OBJECTS.filter((o) => o.world === world);
 export const objectById = (id: string) => ALL_OBJECTS.find((o) => o.id === id)!;
 
@@ -615,7 +691,7 @@ export const MAP_REGIONS: MapRegion[] = [
   { id: "central-europe", name: "Central Europe", cuisines: ["British", "Hungarian", "Georgian", "German", "Swiss", "French", "Swedish"], pos: [-12, -26], size: 7, color: "#93b48a", emoji: ["🥧", "🍲", "🥔", "🧈"], built: false, seed: 14 },
   { id: "mediterranean", name: "Mediterranean", cuisines: ["Mediterranean", "Greek", "Spanish", "North African"], pos: [-20, 14], size: 6, color: "#b9cf94", emoji: ["🫒", "🍋", "🐟", "🧆"], built: true, seed: 15 },
   { id: "middle-east", name: "Middle East", cuisines: ["Middle Eastern", "Lebanese", "Turkish"], pos: [10, 8], size: 6, color: "#e2cf9b", emoji: ["🧆", "🍢", "🫓", "🌿"], built: true, seed: 16 },
-  { id: "india", name: "India", cuisines: ["Indian"], pos: [22, 20], size: 6, color: "#e0b25e", emoji: ["🍛", "🫚", "🌶️", "🫓"], built: false, seed: 17 },
+  { id: "india", name: "India", cuisines: ["Indian"], pos: [22, 20], size: 6, color: "#e0b25e", emoji: ["🍛", "🫚", "🌶️", "🫓"], built: true, seed: 17 },
   { id: "china", name: "China", cuisines: ["Chinese"], pos: [26, -8], size: 10, color: "#c9a26a", emoji: ["🌶️", "🥟", "🍜", "🏮"], built: true, seed: 18 },
   { id: "southeast-asia", name: "Southeast Asia", cuisines: ["Thai", "Vietnamese"], pos: [38, 16], size: 6, color: "#9cc27f", emoji: ["🥥", "🌿", "🍜", "🦐"], built: false, seed: 19 },
   { id: "korea", name: "Korea", cuisines: ["Korean"], pos: [44, -16], size: 6, color: "#d7a7a0", emoji: ["🥬", "🍚", "🔥", "🥢"], built: true, seed: 20 },

@@ -29,7 +29,7 @@ function layoutKorea({ group, tickers, place, tint, TOP }: LayoutCtx) {
   const rimM = new THREE.Mesh(new THREE.ShapeGeometry(rimShape), mat("#e9dcb4")); rimM.rotation.x = -Math.PI / 2; rimM.scale.y = -1; rimM.position.y = TOP + 0.03; rimM.receiveShadow = true; group.add(rimM);
   const seaM = new THREE.Mesh(new THREE.ShapeGeometry(seaShape), waterMat); seaM.rotation.x = -Math.PI / 2; seaM.scale.y = -1; seaM.position.y = TOP + 0.06; seaM.receiveShadow = true; group.add(seaM);
   const han = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-38, 0, -3), new THREE.Vector3(-36.5, 0, -2.9), new THREE.Vector3(-30, 0, -1.6), new THREE.Vector3(-20, 0, -1), new THREE.Vector3(-10, 0, -0.2), new THREE.Vector3(-3, 0, 1.5),
+    new THREE.Vector3(-38, 0, -3), new THREE.Vector3(-36.5, 0, -3), new THREE.Vector3(-30, 0, -1.6), new THREE.Vector3(-20, 0, -1), new THREE.Vector3(-10, 0, -0.2), new THREE.Vector3(-3, 0, 1.5),
     new THREE.Vector3(0, 0, 5), new THREE.Vector3(1, 0, 10), new THREE.Vector3(0.5, 0, 15), new THREE.Vector3(-0.8, 0, 19.5), new THREE.Vector3(-1.3, 0, 22.5), new THREE.Vector3(-1.6, 0, 25),
   ]);
   const bank = new THREE.Mesh(riverGeometry(han, 7), mat("#e9dcb4")); bank.position.y = 0.03; bank.receiveShadow = true; group.add(bank);

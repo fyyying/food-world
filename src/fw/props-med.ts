@@ -18,10 +18,10 @@ export const MD = { white: "#f7f4ee", blue: "#2a5fb8", aegean: "#3f86c8", terrac
 
 export function islander(shirt: string, opts: { hat?: boolean; scarf?: string; apron?: boolean; fez?: boolean; flat?: boolean } = {}): Fig {
   const p = person(shirt, { apron: opts.apron }) as Fig;
-  if (opts.hat) wear(p, cyl(0.34, 0.36, 0.05, "#e9d7a8", 12), 0, 1.3, 0), wear(p, cyl(0.15, 0.17, 0.16, "#e9d7a8", 10), 0, 1.4, 0);
+  if (opts.hat) wear(p, cyl(0.34, 0.36, 0.05, "#e9d7a8", 12), 0, 1.19, 0), wear(p, cyl(0.15, 0.17, 0.16, "#e9d7a8", 10), 0, 1.28, 0);
   if (opts.scarf) { wear(p, ball(0.19, opts.scarf, 8), 0, 1.25, -0.02).scale.set(1, 1.1, 1); wear(p, box(0.36, 0.28, 0.2, opts.scarf), 0, 1.0, -0.12); }
-  if (opts.fez) { wear(p, cyl(0.12, 0.14, 0.18, "#8e2a22", 10), 0, 1.36, 0); }
-  if (opts.flat) wear(p, cyl(0.2, 0.22, 0.06, "#2a2a2e", 10), 0, 1.36, 0);
+  if (opts.fez) { wear(p, cyl(0.12, 0.14, 0.18, "#8e2a22", 10), 0, 1.25, 0); }
+  if (opts.flat) wear(p, cyl(0.2, 0.22, 0.06, "#2a2a2e", 10), 0, 1.21, 0);
   return p;
 }
 
@@ -321,7 +321,7 @@ export function jemaaSquare(): P {
   const g = group();
   add(g, new THREE.Mesh(new THREE.PlaneGeometry(10, 7), mat("#d9c7a0")), 0, 0.02, 0).rotation.x = -Math.PI / 2;
   // the charmer and the cobra
-  const charmer = islander("#f4f1ea"); charmer.userData.sit?.(); wear(charmer, box(0.36, 0.2, 0.36, "#f4f1ea"), 0, 1.3, 0); add(g, charmer, -2.5, -0.3, 0.6); charmer.rotation.y = 0.3; add(charmer, cyl(0.02, 0.02, 0.5, MD.wood, 4), 0.1, 0.9, 0.35).rotation.x = -0.9;
+  const charmer = islander("#f4f1ea"); charmer.userData.sit?.(); wear(charmer, box(0.36, 0.2, 0.36, "#f4f1ea"), 0, 1.2, 0); add(g, charmer, -2.5, -0.3, 0.6); charmer.rotation.y = 0.3; add(charmer, cyl(0.02, 0.02, 0.5, MD.wood, 4), 0.1, 0.9, 0.35).rotation.x = -0.9;
   add(g, cyl(0.3, 0.26, 0.2, C.straw, 10), -1.7, 0.1, 1.4);
   const cobra = new THREE.Group(); cobra.position.set(-1.7, 0.2, 1.4); g.add(cobra);
   const body = add(cobra, cyl(0.06, 0.08, 0.8, "#6f7a4a", 6), 0, 0.4, 0); const hood = add(cobra, box(0.28, 0.32, 0.06, "#6f7a4a"), 0, 0.9, 0); add(hood, ball(0.04, "#f2c14e", 4), -0.06, 0.06, 0.04); add(hood, ball(0.04, "#f2c14e", 4), 0.06, 0.06, 0.04); void body;
@@ -334,7 +334,7 @@ export function jemaaSquare(): P {
   const listeners: Fig[] = [];
   for (let i = 0; i < 5; i++) { const a = -0.4 + i * 0.45; const p = islander(pick(["#f4f1ea", "#7a4a3a", "#2a2a2e", "#c0392b"]), { fez: i % 2 === 0 }); p.userData.sit?.(); add(g, p, 1.5 + Math.cos(a + 1.6) * 1.4, -0.3, 1.8 + Math.sin(a + 1.6) * 1.4).rotation.y = -(a + 1.6) - Math.PI / 2 + Math.PI; listeners.push(p); }
   const teller = islander("#8e2a22", { fez: true }); add(g, teller, 1.5, 0, 1.6); teller.rotation.y = Math.PI;
-  const water = islander("#c0392b"); wear(water, cyl(0.42, 0.44, 0.06, "#c0392b", 12), 0, 1.3, 0); wear(water, cyl(0.15, 0.17, 0.2, "#c0392b", 10), 0, 1.42, 0); for (let k = 0; k < 4; k++) add(water, cyl(0.04, 0.03, 0.12, "#e0b34c", 6), -0.25 + k * 0.17, 0.9, 0.24); add(water, ball(0.14, "#4a3222", 7), 0.25, 0.7, -0.1).scale.y = 1.4;
+  const water = islander("#c0392b"); wear(water, cyl(0.42, 0.44, 0.06, "#c0392b", 12), 0, 1.19, 0); wear(water, cyl(0.15, 0.17, 0.2, "#c0392b", 10), 0, 1.3, 0); for (let k = 0; k < 4; k++) add(water, cyl(0.04, 0.03, 0.12, "#e0b34c", 6), -0.25 + k * 0.17, 0.9, 0.24); add(water, ball(0.14, "#4a3222", 7), 0.25, 0.7, -0.1).scale.y = 1.4;
   add(g, water, -3.6, 0, -1.6); water.rotation.y = 0.8;
   const re = reaction(0.5);
   g.userData.poke = () => { re.poke(); bubble(charmer, "🐍 !", 1.4, 1200); bubble(teller, "مرحبا! Marhaba!", 1.6, 1500); };
@@ -360,13 +360,14 @@ export function souk(): P {
   const stall = (kind: string) => {
     const s = group();
     add(s, box(2.6, 0.8, 1.2, MD.wood), 0, 0.45, 0); add(s, box(2.6, 0.06, 1.2, "#5a3d28"), 0, 0.88, 0);
+    for (const x of [-1.2, 1.2]) add(s, cyl(0.04, 0.04, 2.3, "#5a3d28", 5), x, 1.15, -0.5);
     add(s, box(2.6, 0.06, 1.4, pick([MD.moroccoRed, "#2a6f6f", "#e0b34c"])), 0, 2.3, 0.1).rotation.x = 0.15;
     const goods = new THREE.Group(); goods.position.y = 0.92; s.add(goods);
     switch (kind) {
       case "spices": for (let i = 0; i < 6; i++) { add(goods, cyl(0.22, 0.24, 0.16, "#8a6a3a", 9), -1.0 + (i % 3) * 0.8, 0.08, -0.25 + Math.floor(i / 3) * 0.5); add(goods, cone(0.2, 0.4, ["#c9302a", "#e0b34c", "#e07a3a", "#6f9b57", "#8e2a22", "#c9a86a"][i], 9), -1.0 + (i % 3) * 0.8, 0.34, -0.25 + Math.floor(i / 3) * 0.5); } for (let k = 0; k < 3; k++) add(goods, cyl(0.1, 0.08, 0.22, "#f2c14e", 8), 1.1, 0.11, -0.3 + k * 0.3); break;   // and preserved lemons in a jar
       case "pulses": for (let i = 0; i < 5; i++) { const sack = add(goods, cyl(0.3, 0.26, 0.4, "#e9d7a8", 9), -1.0 + i * 0.5, 0.2, 0); add(sack, cyl(0.24, 0.24, 0.05, ["#e9d7a8", "#8a6a3a", "#c9a86a", "#3f4a3a", "#e0b34c"][i], 9), 0, 0.22, 0); } break;
       case "tea": add(goods, cyl(0.2, 0.16, 0.3, "#c9cfd6", 8), -0.6, 0.15, 0); add(goods, cone(0.06, 0.2, "#c9cfd6", 6), -0.6, 0.4, 0); add(goods, cyl(0.02, 0.02, 0.4, "#c9cfd6", 4), -0.4, 0.3, 0).rotation.z = -0.8; for (let i = 0; i < 5; i++) add(goods, cyl(0.05, 0.04, 0.12, "#6fb06a", 6), 0.1 + i * 0.22, 0.06, 0.2); add(goods, ball(0.18, "#3f7a3a", 6), 0.6, 0.12, -0.3).scale.set(1.3, 0.8, 1); for (let k = 0; k < 6; k++) add(goods, box(0.1, 0.1, 0.1, "#f7f4ee"), -0.9 + (k % 3) * 0.12, 0.05 + Math.floor(k / 3) * 0.1, -0.3); break;   // sugar loaves and mint
-      case "olives": for (let i = 0; i < 4; i++) { add(goods, cyl(0.26, 0.22, 0.28, "#4a4a50", 10), -0.9 + i * 0.6, 0.14, 0); add(goods, cyl(0.23, 0.23, 0.05, ["#2f3a2a", "#6f9b57", "#9b59b6", "#c9302a"][i], 10), -0.9 + i * 0.6, 0.3, 0); } add(goods, cyl(0.1, 0.08, 0.32, "#c9b45a", 6), 0.9, 0.16, 0.3); break;
+      case "olives": for (let i = 0; i < 4; i++) { add(goods, cyl(0.26, 0.22, 0.28, "#8c9096", 10), -0.9 + i * 0.6, 0.14, 0); for (let k = 0; k < 12; k++) add(goods, ball(0.04, ["#2f3a2a", "#6f9b57", "#9b59b6", "#c9302a"][i], 5), -0.9 + i * 0.6 + (rnd() - 0.5) * 0.36, 0.3 + (rnd() - 0.5) * 0.04, (rnd() - 0.5) * 0.36); } add(goods, box(0.22, 0.34, 0.16, "#e0b34c"), 0.95, 0.17, -0.25); add(goods, cyl(0.05, 0.06, 0.3, "#c9b45a", 7), 0.95, 0.15, 0.3); break;
       case "slippers": for (let i = 0; i < 8; i++) { const sl = add(goods, box(0.22, 0.06, 0.1, ["#e0b34c", "#c9302a", "#2a6f6f", "#e8558a"][i % 4]), -0.9 + (i % 4) * 0.5, 0.03, -0.2 + Math.floor(i / 4) * 0.4); add(sl, cone(0.05, 0.1, ["#e0b34c", "#c9302a", "#2a6f6f", "#e8558a"][i % 4], 4), 0.13, 0.02, 0).rotation.z = -1.3; } for (let i = 0; i < 4; i++) { const l = add(s, ball(0.13, ["#c9302a", "#3fa2b0", "#e0b34c", "#9b59b6"][i], 7), -0.9 + i * 0.6, 1.75, 0.1); l.scale.y = 1.4; add(s, cyl(0.01, 0.01, 0.5, "#8a6a3a", 3), -0.9 + i * 0.6, 2.1, 0.1); } break;
       case "carpets": for (let i = 0; i < 4; i++) add(goods, box(0.6, 0.12, 1.0, [MD.moroccoRed, "#2a6f6f", "#e0b34c", "#8e2a22"][i]), -0.9 + i * 0.6, 0.06 + (i % 2) * 0.1, 0); for (let i = 0; i < 2; i++) add(s, box(1.0, 1.4, 0.04, i ? "#8e2a22" : "#2a6f6f"), -0.6 + i * 1.2, 1.6, -0.55); break;
     }

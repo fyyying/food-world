@@ -20,10 +20,10 @@ export const ME = { stone: "#d9c9a8", stoneDark: "#b8a88a", cream: "#f3ecdc", do
 /** Someone in a keffiyeh, a fez, a hijab or a Persian felt hat. */
 export function local(shirt: string, opts: { keffiyeh?: boolean; fez?: boolean; hijab?: string; apron?: boolean; skull?: boolean } = {}): Fig {
   const p = person(shirt, { apron: opts.apron }) as Fig;
-  if (opts.keffiyeh) { wear(p, box(0.36, 0.22, 0.36, "#f4f1ea"), 0, 1.3, 0); wear(p, new THREE.Mesh(new THREE.TorusGeometry(0.17, 0.025, 6, 12), mat("#1f1f1f")), 0, 1.36, 0).rotation.x = Math.PI / 2; wear(p, box(0.3, 0.3, 0.05, "#f4f1ea"), 0, 1.15, -0.18); }
-  if (opts.fez) { wear(p, cyl(0.12, 0.14, 0.18, "#8e2a22", 10), 0, 1.36, 0); wear(p, box(0.02, 0.1, 0.02, "#1f1f1f"), 0, 1.45, -0.1); }
+  if (opts.keffiyeh) { wear(p, box(0.36, 0.22, 0.36, "#f4f1ea"), 0, 1.2, 0); wear(p, new THREE.Mesh(new THREE.TorusGeometry(0.17, 0.025, 6, 12), mat("#1f1f1f")), 0, 1.27, 0).rotation.x = Math.PI / 2; wear(p, box(0.3, 0.3, 0.05, "#f4f1ea"), 0, 1.15, -0.18); }
+  if (opts.fez) { wear(p, cyl(0.12, 0.14, 0.18, "#8e2a22", 10), 0, 1.25, 0); wear(p, box(0.02, 0.1, 0.02, "#1f1f1f"), 0, 1.34, -0.1); }
   if (opts.hijab) { wear(p, ball(0.19, opts.hijab, 8), 0, 1.25, -0.02).scale.set(1, 1.1, 1); wear(p, box(0.36, 0.28, 0.2, opts.hijab), 0, 1.0, -0.12); }
-  if (opts.skull) wear(p, cyl(0.15, 0.16, 0.08, "#f4f1ea", 10), 0, 1.38, 0);
+  if (opts.skull) wear(p, cyl(0.15, 0.16, 0.08, "#f4f1ea", 10), 0, 1.2, 0);
   return p;
 }
 
@@ -183,6 +183,7 @@ export function bazaar(): P {
   const stall = (kind: string) => {
     const s = group();
     add(s, box(2.6, 0.8, 1.2, ME.wood), 0, 0.45, 0); add(s, box(2.6, 0.06, 1.2, "#5a3d28"), 0, 0.88, 0);
+    for (const x of [-1.2, 1.2]) add(s, cyl(0.04, 0.04, 2.4, "#5a3d28", 5), x, 1.2, -0.5);
     add(s, box(2.6, 0.06, 1.4, pick([ME.rug, ME.cobalt, "#2f5d3f"])), 0, 2.4, 0.1).rotation.x = 0.15;
     const goods = new THREE.Group(); goods.position.y = 0.92; s.add(goods);
     switch (kind) {
@@ -191,7 +192,7 @@ export function bazaar(): P {
       case "sweets": for (let i = 0; i < 3; i++) { add(goods, box(0.7, 0.08, 0.5, "#c9c2b0"), -0.8 + i * 0.8, 0.04, 0); for (let k = 0; k < 6; k++) add(goods, box(0.14, 0.1, 0.14, i === 0 ? "#d9a441" : i === 1 ? "#6f9b57" : "#e8a0a8"), -0.8 + i * 0.8 - 0.22 + (k % 3) * 0.22, 0.13, -0.12 + Math.floor(k / 3) * 0.24); } break;
       case "nuts": for (let i = 0; i < 5; i++) { const b = add(goods, cyl(0.2, 0.16, 0.24, C.straw, 8), -1.0 + i * 0.5, 0.12, 0); for (let k = 0; k < 5; k++) add(b, ball(0.05, ["#6f9b57", "#b8601e", "#5a3a2a", "#e0b34c", "#8e2a22"][i], 5), (rnd() - 0.5) * 0.25, 0.14, (rnd() - 0.5) * 0.25); } break;
       case "tea": for (let i = 0; i < 6; i++) add(goods, cyl(0.06, 0.04, 0.14, "#8fc4c9", 6), -0.9 + i * 0.36, 0.07, 0.3); add(goods, cyl(0.24, 0.2, 0.5, ME.copper, 10), 0.4, 0.25, -0.2); add(goods, cyl(0.12, 0.12, 0.12, ME.copper, 8), 0.4, 0.56, -0.2); add(goods, box(0.5, 0.2, 0.3, "#2a2a2e"), -0.6, 0.1, -0.2); break;
-      case "olives": for (let i = 0; i < 3; i++) { add(goods, cyl(0.28, 0.24, 0.28, "#4a4a50", 10), -0.8 + i * 0.8, 0.14, 0); add(goods, cyl(0.25, 0.25, 0.05, i ? "#2f3a2a" : "#6f9b57", 10), -0.8 + i * 0.8, 0.3, 0); } add(goods, cyl(0.1, 0.08, 0.32, "#c9b45a", 6), 0.9, 0.16, 0.3); break;
+      case "olives": for (let i = 0; i < 3; i++) { add(goods, cyl(0.28, 0.24, 0.28, "#8c9096", 10), -0.85 + i * 0.7, 0.14, 0); for (let k = 0; k < 14; k++) add(goods, ball(0.045, ["#6f9b57", "#2f3a2a", "#5a3a5a"][i], 5), -0.85 + i * 0.7 + (rnd() - 0.5) * 0.4, 0.3 + (rnd() - 0.5) * 0.04, (rnd() - 0.5) * 0.4); } for (let k = 0; k < 2; k++) { add(goods, box(0.22, 0.34, 0.16, "#e0b34c"), 0.75 + (k % 2) * 0.28, 0.17, -0.3 + k * 0.1); add(goods, box(0.14, 0.14, 0.02, "#2f5d3f"), 0.75 + (k % 2) * 0.28, 0.2, -0.21 + k * 0.1); } for (let k = 0; k < 2; k++) { add(goods, cyl(0.05, 0.06, 0.3, "#c9b45a", 7), 0.75 + k * 0.28, 0.15, 0.35); add(goods, cyl(0.02, 0.02, 0.1, "#c9b45a", 5), 0.75 + k * 0.28, 0.35, 0.35); } break;   // green, black and purple olives in tubs, oil in tins and bottles
     }
     const v = local(pick(["#3f6fb5", "#c0392b", "#f4f1ea", "#2f5d3f"]), { apron: true, fez: kind === "tea", skull: kind === "spices" }); add(s, v, 0.3, 0, -0.95); vendors.push(v);
     return s;
@@ -263,7 +264,7 @@ export function teaGarden(): P {
   add(g, box(0.5, 0.04, 0.35, "#5a3d28"), 1.4, 0.65, 0.4); for (let i = 0; i < 8; i++) add(g, cyl(0.03, 0.03, 0.02, i % 2 ? "#f4f1ea" : "#2a2a2e", 6), 1.2 + (i % 4) * 0.12, 0.68, 0.3 + Math.floor(i / 4) * 0.18);   // backgammon
   add(g, cyl(0.3, 0.26, 0.6, ME.copper, 10), 3.0, 0.3 + 0.55, -0.8); add(g, cyl(0.12, 0.12, 0.2, ME.copper, 8), 3.0, 1.25, -0.8); add(g, cyl(0.16, 0.14, 0.14, "#8fc4c9", 8), 3.0, 1.42, -0.8); add(g, box(0.9, 0.55, 0.6, ME.wood), 3.0, 0.27, -0.8);   // the samovar
   add(g, cyl(0.12, 0.16, 0.5, "#8fc4c9", 8), -1.2, 0.25, 3.2); add(g, cyl(0.04, 0.04, 0.7, ME.copper, 6), -1.2, 0.85, 3.2); add(g, ball(0.08, "#2a2a2e", 6), -1.2, 1.2, 3.2); add(g, cyl(0.02, 0.02, 0.9, "#8e2a22", 4), -0.9, 0.7, 3.4).rotation.z = 0.6;   // nargile
-  const dervish = local("#f4f1ea"); wear(dervish, cyl(0.12, 0.14, 0.34, "#8a6a3a", 8), 0, 1.42, 0); const skirt = add(dervish, cone(0.55, 0.9, "#f4f1ea", 14), 0, 0.5, 0); skirt.rotation.x = Math.PI; add(g, dervish, 3.4, 0, 2.6);
+  const dervish = local("#f4f1ea"); wear(dervish, cyl(0.12, 0.14, 0.34, "#8a6a3a", 8), 0, 1.32, 0); const skirt = add(dervish, cone(0.55, 0.9, "#f4f1ea", 14), 0, 0.5, 0); skirt.rotation.x = Math.PI; add(g, dervish, 3.4, 0, 2.6);
   const waiter = local("#2a2a2e", { apron: true, fez: true }); add(g, waiter, 1.8, 0, -1.6); waiter.rotation.y = 2.4;
   add(g, box(0.3, 0.02, 0.2, ME.copper), 2.05, 1.05, -1.4); add(g, cyl(0.05, 0.04, 0.12, "#8fc4c9", 6), 2.05, 1.12, -1.4);
   g.userData.steam = new THREE.Vector3(3.0, 1.6, -0.8);

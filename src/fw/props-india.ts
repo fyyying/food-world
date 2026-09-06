@@ -20,9 +20,9 @@ export const IN = { marble: "#f4efe6", sandstone: "#c96a3a", gold: "#e0b34c", sa
 /** Someone in a turban, a sari, a dhoti or a Nehru cap. */
 export function indian(shirt: string, opts: { turban?: string; sari?: string; cap?: boolean; apron?: boolean; dhoti?: boolean } = {}): Fig {
   const p = person(shirt, { apron: opts.apron }) as Fig;
-  if (opts.turban) { wear(p, ball(0.2, opts.turban, 9), 0, 1.32, 0).scale.set(1.15, 0.8, 1.15); wear(p, box(0.1, 0.16, 0.1, opts.turban), 0.12, 1.44, 0.05); }
+  if (opts.turban) { wear(p, ball(0.2, opts.turban, 9), 0, 1.24, 0).scale.set(1.15, 0.8, 1.15); wear(p, box(0.1, 0.16, 0.1, opts.turban), 0.12, 1.36, 0.05); }
   if (opts.sari) { wear(p, box(0.42, 0.55, 0.3, opts.sari), 0, 0.72, 0); wear(p, box(0.16, 0.5, 0.2, opts.sari), 0.14, 1.05, -0.06).rotation.z = 0.3; wear(p, ball(0.19, opts.sari, 8), 0, 1.25, -0.04).scale.set(1, 1.05, 1); }
-  if (opts.cap) wear(p, box(0.32, 0.11, 0.22, "#f4f1ea"), 0, 1.3, 0);
+  if (opts.cap) wear(p, box(0.32, 0.11, 0.22, "#f4f1ea"), 0, 1.22, 0);
   if (opts.dhoti) wear(p, box(0.36, 0.4, 0.28, "#f4f1ea"), 0, 0.42, 0);
   return p;
 }
@@ -293,6 +293,7 @@ export function bazaarIn(): P {
   const stall = (kind: string) => {
     const s = group();
     add(s, box(2.6, 0.8, 1.2, IN.wood), 0, 0.45, 0); add(s, box(2.6, 0.06, 1.2, "#5a3d28"), 0, 0.88, 0);
+    for (const x of [-1.2, 1.2]) add(s, cyl(0.04, 0.04, 2.3, "#5a3d28", 5), x, 1.15, -0.5);
     add(s, box(2.6, 0.06, 1.4, pick([IN.saffron, IN.green, IN.pink, IN.blue])), 0, 2.3, 0.1).rotation.x = 0.15;
     const goods = new THREE.Group(); goods.position.y = 0.92; s.add(goods);
     switch (kind) {
@@ -427,7 +428,7 @@ export function ricePaddyIn(): P {
   const seedlings: THREE.Mesh[] = [];
   for (let i = 0; i < 2; i++) { add(g, box(6.5, 0.18, 2.6, "#9ec9b8"), 0, 0.09, -1.5 + i * 3); for (let r = 0; r < 3; r++) for (let c = 0; c < 13; c++) { const sd = add(g, cone(0.09, 0.6, "#7fc85a", 4), -3 + c * 0.5, 0.3, -2.3 + i * 3 + r * 0.7); sd.geometry = sd.geometry.clone(); sd.geometry.translate(0, 0.3, 0); sd.position.y -= 0.3; seedlings.push(sd); } }
   add(g, box(7, 0.2, 0.3, "#a37a4f"), 0, 0.1, 0);
-  const farmer = indian("#f4f1ea", { dhoti: true }); add(g, farmer, 3.9, 0, -0.4); wear(farmer, cone(0.36, 0.3, C.straw, 10), 0, 1.35, 0);
+  const farmer = indian("#f4f1ea", { dhoti: true }); add(g, farmer, 3.9, 0, -0.4); wear(farmer, cone(0.36, 0.3, C.straw, 10), 0, 1.3, 0);
   const buff = cow(true, false, "മ്മേ! Moo!"); buff.position.set(-4.0, 0, 1.6); buff.rotation.y = 1.2; buff.scale.setScalar(0.9); g.add(buff);
   const egret = group(); add(egret, ball(0.1, "#f4f1ea", 6), 0, 0.5, 0).scale.set(1.4, 0.8, 1); add(egret, cyl(0.02, 0.02, 0.4, "#f4f1ea", 4), 0.12, 0.72, 0).rotation.z = -0.3; add(egret, ball(0.05, "#f4f1ea", 5), 0.22, 0.9, 0); add(egret, cone(0.015, 0.14, "#e0b34c", 4), 0.32, 0.9, 0).rotation.z = -1.5; add(egret, cyl(0.01, 0.01, 0.4, "#2a2a2e", 3), 0, 0.2, 0); add(g, egret, 1.5, 0.15, 1.6);
   const re = reaction(0.6);

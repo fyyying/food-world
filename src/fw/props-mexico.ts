@@ -23,7 +23,7 @@ export function sombrero(color = "#d9b56a"): THREE.Group {
 /** A person in a sombrero, or a woman in a rebozo shawl. */
 export function mexican(shirt: string, opts: { hat?: boolean; apron?: boolean; rebozo?: string } = {}): Fig {
   const p = person(shirt, { apron: opts.apron }) as Fig;
-  if (opts.hat) wear(p, sombrero(), 0, 1.3, 0);
+  if (opts.hat) wear(p, sombrero(), 0, 1.19, 0);
   if (opts.rebozo) wear(p, box(0.62, 0.34, 0.36, opts.rebozo), 0, 0.98, 0);
   return p;
 }

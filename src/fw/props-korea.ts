@@ -55,7 +55,7 @@ export function palaceGate(): P {
   }
   add(g, box(2.6, 0.5, 0.06, "#1f2430"), 0, 3.9, 1.8); add(g, box(2.3, 0.3, 0.02, C.gold), 0, 3.9, 1.84);
   // guards in red and blue with flags
-  for (const sd of [-1, 1]) { const gd = person(sd < 0 ? "#b83a3a" : "#3c5fa8"); wear(gd, cone(0.28, 0.28, "#1f1f1f", 8), 0, 1.24, 0); add(g, gd, sd * 2.6, 0, 2.6); add(g, cyl(0.02, 0.02, 2.2, KR.woodDark, 4), sd * 3.0, 1.1, 2.6); add(g, box(0.5, 0.35, 0.02, sd < 0 ? "#e0a52c" : "#b83a3a"), sd * 3.25, 1.9, 2.6); }
+  for (const sd of [-1, 1]) { const gd = person(sd < 0 ? "#b83a3a" : "#3c5fa8"); wear(gd, cone(0.28, 0.28, "#1f1f1f", 8), 0, 1.28, 0); add(g, gd, sd * 2.6, 0, 2.6); add(g, cyl(0.02, 0.02, 2.2, KR.woodDark, 4), sd * 3.0, 1.1, 2.6); add(g, box(0.5, 0.35, 0.02, sd < 0 ? "#e0a52c" : "#b83a3a"), sd * 3.25, 1.9, 2.6); }
   return g;
 }
 

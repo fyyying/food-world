@@ -230,9 +230,9 @@ export function fuji(): P {
   for (let i = 0; i < pos.count; i++) { const f = (pos.getY(i) + 6) / 12; const a = Math.atan2(pos.getZ(i), pos.getX(i)); const r = Math.hypot(pos.getX(i), pos.getZ(i)); const flare = 1 + (1 - f) * 0.35; if (r > 0.01) { pos.setX(i, Math.cos(a) * r * flare * (1 + Math.sin(a * 5) * 0.02)); pos.setZ(i, Math.sin(a) * r * flare * (1 + Math.sin(a * 5) * 0.02)); } const c = f > 0.68 + Math.sin(a * 7) * 0.03 ? snow : f < 0.25 ? foot.clone().lerp(slope, f / 0.25) : slope; col.push(c.r, c.g, c.b); }
   geo.setAttribute("color", new THREE.Float32BufferAttribute(col, 3)); geo.computeVertexNormals();
   const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.95, flatShading: true })); m.position.y = 6; m.castShadow = true; m.receiveShadow = true; g.add(m);
-  add(g, cyl(1.4, 1.8, 0.4, "#5c6b8c", 12), 0, 11.9, 0);   // the crater rim
   const cloud = new THREE.Group(); for (let k = 0; k < 4; k++) add(cloud, ball(0.9 - k * 0.1, JP.white, 7), -1.2 + k * 0.8, Math.sin(k) * 0.2, 0).scale.y = 0.6; cloud.position.set(6, 8.5, 2); g.add(cloud);
   g.userData.tick = (t) => { cloud.position.x = 6 + Math.sin(t * 0.2) * 1.5; };
+  g.scale.setScalar(0.66);
   return g;
 }
 
@@ -373,10 +373,19 @@ export const JAPAN_ICONS: Record<string, () => P> = {
   tokyoTower: () => { const t = tokyoTower(); t.scale.setScalar(0.06); return t; },
   torii: () => { const t = floatingTorii(); t.scale.setScalar(0.16); return t; },
   kinkakuji: () => { const k = kinkakuji(); k.scale.setScalar(0.14); return k; },
-  fuji: () => { const f = fuji(); f.scale.setScalar(0.05); return f; },
+  fuji: () => { const f = fuji(); f.scale.setScalar(0.035); return f; },
   onsen: () => { const o = onsen(); o.scale.setScalar(0.18); return o; },
   shinkansen: () => { const s = shinkansen(2); s.scale.setScalar(0.12); return s; },
   sakura: () => { const s = sakura(0.32); return s; },
   bamboo: () => { const b = tree("bamboo", 0.35); return b; },
   port: () => { const b = fishingBoat(); b.scale.setScalar(0.25); return b; },
 };
+
+/** One shinkansen car, so a train can follow a curve car by car. `nose` gives the lead car its duck-bill. */
+export function shinkansenCar(nose = false): P {
+  const g = group();
+  const len = 3.0;
+  add(g, box(len, 0.9, 1.0, JP.white), 0, 0.75, 0); add(g, box(len + 0.02, 0.14, 1.02, "#2f6fb5"), 0, 0.75, 0); for (let k = 0; k < 5; k++) for (const sd of [-1, 1]) add(g, box(0.3, 0.22, 0.02, "#2a3a4a"), -len / 2 + 0.5 + k * 0.5, 0.95, sd * 0.51); add(g, box(len, 0.1, 0.6, "#8c9096"), 0, 0.25, 0);
+  if (nose) { const n = add(g, box(1.5, 0.9, 1.0, JP.white), len / 2 + 0.6, 0.6, 0); n.scale.set(1, 0.5, 0.9); add(g, box(1.0, 0.45, 0.8, JP.white), len / 2 + 0.4, 0.98, 0); add(g, box(0.5, 0.26, 0.7, "#2a3a4a"), len / 2 + 0.75, 0.98, 0); add(g, box(2.0, 0.14, 1.02, "#2f6fb5"), len / 2 + 0.5, 0.7, 0); }
+  return g;
+}

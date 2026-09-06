@@ -6,8 +6,8 @@
 import type { Recipe } from "../data";
 
 export type Kind = "ingredient" | "flavour" | "technique" | "landmark" | "place" | "dish";
-export type WorldId = "china" | "italy" | "korea" | "mexico" | "middle-east" | "mediterranean" | "india" | "southeast-asia" | "north-america";
-export type Area = "sichuan" | "jiangnan" | "northern" | "everyday" | "rome" | "venice" | "sicily" | "seoul" | "jeonju" | "busan" | "jeju" | "cdmx" | "oaxaca" | "jalisco" | "yucatan" | "istanbul" | "levant" | "arabia" | "persia" | "greece" | "spain" | "morocco" | "dalmatia" | "punjab" | "rajasthan" | "mumbai" | "kerala" | "bangkok" | "andaman" | "hanoi" | "mekong" | "newyork" | "midwest" | "texas" | "california";
+export type WorldId = "china" | "italy" | "korea" | "mexico" | "middle-east" | "mediterranean" | "india" | "southeast-asia" | "north-america" | "japan";
+export type Area = "sichuan" | "jiangnan" | "northern" | "everyday" | "rome" | "venice" | "sicily" | "seoul" | "jeonju" | "busan" | "jeju" | "cdmx" | "oaxaca" | "jalisco" | "yucatan" | "istanbul" | "levant" | "arabia" | "persia" | "greece" | "spain" | "morocco" | "dalmatia" | "punjab" | "rajasthan" | "mumbai" | "kerala" | "bangkok" | "andaman" | "hanoi" | "mekong" | "newyork" | "midwest" | "texas" | "california" | "tokyo" | "kyoto" | "fuji" | "hokkaido";
 
 export type EnrichedRecipe = Recipe & {
   zh?: string;
@@ -95,6 +95,10 @@ export const AREAS: Record<Area, AreaInfo> = {
   midwest: { world: "north-america", name: "The Midwest", zh: "The Heartland", blurb: "corn, the barn, the county fair, the burger stand and the farm kitchen", center: [0, -14] },
   texas: { world: "north-america", name: "Texas & the South", zh: "The South", blurb: "the smokehouse, longhorns, chili, the honky-tonk and the mesa", center: [-4, 14] },
   california: { world: "north-america", name: "California", zh: "The West Coast", blurb: "the farmers market, citrus and avocados, the backyard grill, the Golden Gate", center: [-24, 2] },
+  tokyo: { world: "japan", name: "Tokyo", zh: "東京", blurb: "Shibuya, the ramen shop, the izakaya, the tonkatsu counter, the tower", center: [15, -18] },
+  kyoto: { world: "japan", name: "Kyoto", zh: "京都", blurb: "the Golden Pavilion, the torii path, machiya, sakura on the Kamo river", center: [-24, 12] },
+  fuji: { world: "japan", name: "Fuji & the lake", zh: "富士山", blurb: "the mountain, the lake, the onsen monkeys, the shinkansen", center: [6, 8] },
+  hokkaido: { world: "japan", name: "Hokkaido", zh: "北海道", blurb: "the fishing port, salmon and cod, pumpkins and cabbages, the miso brewery", center: [-22, -16] },
 };
 export const WORLDS: Record<WorldId, { name: string; zh: string; regionId: string }> = {
   china: { name: "China", zh: "中国", regionId: "china" },
@@ -106,6 +110,7 @@ export const WORLDS: Record<WorldId, { name: string; zh: string; regionId: strin
   india: { name: "India", zh: "भारत", regionId: "india" },
   "southeast-asia": { name: "Southeast Asia", zh: "เอเชียตะวันออกเฉียงใต้", regionId: "southeast-asia" },
   "north-america": { name: "North America", zh: "The United States", regionId: "north-america" },
+  japan: { name: "Japan", zh: "日本", regionId: "japan" },
 };
 export const areasOf = (world: WorldId) => (Object.keys(AREAS) as Area[]).filter((a) => AREAS[a].world === world);
 
@@ -187,6 +192,11 @@ const ENRICH: { test: RegExp; data: Enrichment }[] = [
   { test: /flying dutchman|burger/i, data: { zh: "Flying Dutchman", world: "north-america", area: "midwest", spice: 0, flavours: ["beefy", "cheesy", "caramelised onion"], core: ["beef", "cheese", "onion", "mustard", "pickles", "special sauce"], techniques: ["griddle"], place: "burgerStand" } },
   { test: /^waffles?$/i, data: { zh: "Waffles", world: "north-america", area: "newyork", spice: 0, flavours: ["crisp", "buttery", "sweet"], core: ["flour", "eggs", "milk", "butter", "sugar", "baking powder", "maple syrup"], techniques: ["griddle"], place: "diner" } },
   { test: /^pancakes?$/i, data: { zh: "Pancakes", world: "north-america", area: "newyork", spice: 0, flavours: ["fluffy", "buttery", "sweet"], core: ["flour", "eggs", "milk", "butter", "sugar", "baking powder", "maple syrup", "blueberries"], techniques: ["griddle"], place: "diner" } },
+  // ---- Japan ----
+  { test: /miso.glazed cod|black cod/i, data: { zh: "銀鱈の西京焼き", world: "japan", area: "kyoto", spice: 0, flavours: ["sweet-salty", "buttery", "caramelised"], core: ["black cod", "white miso", "mirin", "sake", "sugar"], techniques: ["saikyo"], place: "saikyo" } },
+  { test: /japanese.style cabbage salad|cabbage salad/i, data: { zh: "キャベツのサラダ", world: "japan", area: "tokyo", spice: 0, flavours: ["crunchy", "nutty", "tangy"], core: ["cabbage", "sesame seeds", "rice vinegar", "soy sauce", "sesame oil", "ginger", "carrot"], techniques: ["salad"], place: "tonkatsu" } },
+  { test: /teriyaki salmon/i, data: { zh: "鮭の照り焼き", world: "japan", area: "tokyo", spice: 0, flavours: ["glossy", "sweet-soy", "smoky"], core: ["salmon", "soy sauce", "mirin", "sake", "sugar", "ginger", "sesame seeds", "rice", "scallion"], techniques: ["robata", "teriyaki"], place: "robata" } },
+  { test: /pumpkin miso ramen|ramen/i, data: { zh: "かぼちゃ味噌ラーメン", world: "japan", area: "tokyo", spice: 0, flavours: ["rich", "sweet", "umami"], core: ["ramen noodles", "kabocha pumpkin", "miso", "kombu dashi", "tofu", "scallion", "sesame seeds", "nori"], techniques: ["ramen"], place: "ramen" } },
 ];
 
 const ME_CUISINES = new Set(["Middle Eastern", "Lebanese", "Turkish"]);
@@ -197,8 +207,8 @@ export function enrich(r: Recipe): EnrichedRecipe {
   return {
     ...r,
     zh: hit.zh,
-    world: hit.world ?? (r.cuisine === "Italian" ? "italy" : r.cuisine === "Korean" ? "korea" : r.cuisine === "Mexican" ? "mexico" : ME_CUISINES.has(r.cuisine ?? "") ? "middle-east" : MED_CUISINES.has(r.cuisine ?? "") ? "mediterranean" : r.cuisine === "Indian" ? "india" : r.cuisine === "Thai" || r.cuisine === "Vietnamese" ? "southeast-asia" : r.cuisine === "American" ? "north-america" : "china"),
-    area: hit.area ?? (r.cuisine === "Italian" ? "rome" : r.cuisine === "Korean" ? "seoul" : r.cuisine === "Mexican" ? "cdmx" : r.cuisine === "Turkish" ? "istanbul" : ME_CUISINES.has(r.cuisine ?? "") ? "levant" : r.cuisine === "Spanish" ? "spain" : r.cuisine === "North African" ? "morocco" : MED_CUISINES.has(r.cuisine ?? "") ? "greece" : r.cuisine === "Indian" ? "punjab" : r.cuisine === "Thai" ? "bangkok" : r.cuisine === "Vietnamese" ? "hanoi" : r.cuisine === "American" ? "midwest" : "everyday"),
+    world: hit.world ?? (r.cuisine === "Italian" ? "italy" : r.cuisine === "Korean" ? "korea" : r.cuisine === "Mexican" ? "mexico" : ME_CUISINES.has(r.cuisine ?? "") ? "middle-east" : MED_CUISINES.has(r.cuisine ?? "") ? "mediterranean" : r.cuisine === "Indian" ? "india" : r.cuisine === "Thai" || r.cuisine === "Vietnamese" ? "southeast-asia" : r.cuisine === "American" ? "north-america" : r.cuisine === "Japanese" ? "japan" : "china"),
+    area: hit.area ?? (r.cuisine === "Italian" ? "rome" : r.cuisine === "Korean" ? "seoul" : r.cuisine === "Mexican" ? "cdmx" : r.cuisine === "Turkish" ? "istanbul" : ME_CUISINES.has(r.cuisine ?? "") ? "levant" : r.cuisine === "Spanish" ? "spain" : r.cuisine === "North African" ? "morocco" : MED_CUISINES.has(r.cuisine ?? "") ? "greece" : r.cuisine === "Indian" ? "punjab" : r.cuisine === "Thai" ? "bangkok" : r.cuisine === "Vietnamese" ? "hanoi" : r.cuisine === "American" ? "midwest" : r.cuisine === "Japanese" ? "tokyo" : "everyday"),
     spice: hit.spice ?? (spicy ? 2 : 0),
     flavours: hit.flavours ?? [],
     core: hit.core ?? [...r.protein, ...r.mainIngredient.map((m) => m.toLowerCase())],
@@ -236,7 +246,10 @@ export function isSeasiaRecipe(r: Recipe): boolean {
 export function isNamericaRecipe(r: Recipe): boolean {
   return r.cuisine === "American" || /pancake|waffle|burger|ribs|texas|smoked|chicken wings|slaw|banana nut|instant pot/i.test(r.title);
 }
-export const worldRecipes = (world: WorldId, all: Recipe[]) => all.filter(world === "china" ? isChinaRecipe : world === "italy" ? isItalyRecipe : world === "korea" ? isKoreaRecipe : world === "mexico" ? isMexicoRecipe : world === "middle-east" ? isMideastRecipe : world === "mediterranean" ? isMedRecipe : world === "india" ? isIndiaRecipe : world === "southeast-asia" ? isSeasiaRecipe : isNamericaRecipe);
+export function isJapanRecipe(r: Recipe): boolean {
+  return r.cuisine === "Japanese" || /miso|teriyaki|ramen|sushi|tempura|udon|katsu|japanese/i.test(r.title);
+}
+export const worldRecipes = (world: WorldId, all: Recipe[]) => all.filter(world === "china" ? isChinaRecipe : world === "italy" ? isItalyRecipe : world === "korea" ? isKoreaRecipe : world === "mexico" ? isMexicoRecipe : world === "middle-east" ? isMideastRecipe : world === "mediterranean" ? isMedRecipe : world === "india" ? isIndiaRecipe : world === "southeast-asia" ? isSeasiaRecipe : world === "north-america" ? isNamericaRecipe : isJapanRecipe);
 
 const has = (list: string[], re: RegExp) => list.some((x) => re.test(x));
 
@@ -847,7 +860,74 @@ export const NAMERICA_OBJECTS: WorldObject[] = [
     tagline: "Los Angeles' kitchen on wheels, from the taco truck to Kogi.", blurb: "The chuck wagon fed the cattle drives from 1866; the taco truck fed Los Angeles from the 1970s; and in 2008 Roy Choi's Kogi truck, tweeting its location and selling Korean short-rib tacos, started the food-truck boom. Every American city now has a lot of them for lunch, and the line is the review.", match: () => false },
 ];
 
-export const ALL_OBJECTS = [...OBJECTS, ...ITALY_OBJECTS, ...KOREA_OBJECTS, ...MEXICO_OBJECTS, ...MIDEAST_OBJECTS, ...MED_OBJECTS, ...INDIA_OBJECTS, ...SEASIA_OBJECTS, ...NAMERICA_OBJECTS];
+// ---------- the Japan world ----------
+
+export const JAPAN_OBJECTS: WorldObject[] = [
+  // --- ingredients ---
+  { id: "fishJp", world: "japan", kind: "ingredient", name: "Salmon & cod", zh: "鮭と鱈", emoji: "🐟", area: "hokkaido", pos: [-26, -15], prop: "fishingPort", rot: 0,
+    tagline: "Landed at dawn in Hokkaido: salmon for the grill, black cod for the miso.", blurb: "Japan eats more fish per head than almost any nation, and Hokkaido's ports land the salmon, the cod and the kombu that season everything else. Sake, the salmon, runs up the island's rivers each autumn and is salted, grilled for breakfast or glazed with teriyaki. Gindara, sablefish or black cod, is so rich that Kyoto cooks cure it for days in sweet white miso before grilling: the dish Nobu made famous in 1994 is four centuries old. Tsukiji's morning auction ran from 1935 to 2018, when it moved to Toyosu.",
+    partners: ["miso", "soy sauce", "mirin", "rice"], match: (r) => has(r.protein, /fish/) || has(r.core, /salmon|cod/) },
+  { id: "misoSoy", world: "japan", kind: "ingredient", name: "Miso, soy sauce, mirin & sake", zh: "味噌 · 醤油 · みりん · 酒", emoji: "🫙", area: "hokkaido", pos: [-15, -12], prop: "misoBrewery", rot: 0.1,
+    tagline: "Four ferments from soybeans and rice that make Japanese food taste Japanese.", blurb: "Miso is soybeans, salt and koji rice left in a cedar vat for a winter or three: white Saikyo miso from Kyoto is young and sweet, red Sendai miso is aged and sharp. Soy sauce, shoyu, has been brewed in Kansai since the 1200s; the Kikkoman family began in Noda in 1603. Mirin is a sweet rice wine for glazing; sake is the drink and the cooking wine. Teriyaki is simply soy, mirin and sake reduced to a gloss, teri.",
+    partners: ["salmon", "cod", "pumpkin", "cabbage"], match: (r) => has(r.core, /miso|soy|mirin|sake/) },
+  { id: "vegJp", world: "japan", kind: "ingredient", name: "Cabbage, kabocha & scallion", zh: "キャベツ · かぼちゃ · ねぎ", emoji: "🎃", area: "hokkaido", pos: [-20, -22], prop: "cabbagePumpkinField", rot: 0.05,
+    tagline: "Hokkaido's big fields: sweet pumpkins, cabbages the size of a head, negi onions.", blurb: "Kabocha, the Japanese pumpkin, came from Cambodia with the Portuguese in the 1500s, hence its name; dense and chestnut-sweet, it is simmered in dashi, fried as tempura and, here, roasted into a miso ramen broth. Cabbage arrived in the Meiji era and became the shredded raft under tonkatsu, dressed with sesame; Hokkaido grows the most. Negi, the long green onion, finishes almost every bowl.",
+    partners: ["sesame", "miso", "soy sauce", "ginger"], match: (r) => has(r.core, /cabbage|pumpkin|kabocha|carrot|scallion|negi/) },
+  { id: "riceJp", world: "japan", kind: "ingredient", name: "Rice", zh: "お米", emoji: "🍚", area: "hokkaido", pos: [-6, -21], prop: "paddyJp", rot: 0,
+    tagline: "Short-grain, glossy, and the meal itself: gohan means both rice and food.", blurb: "Rice reached Japan from the Korean peninsula around 300 BC and shaped everything: the calendar, the taxes, the sake and the word for a meal. Japonica rice is short and sticky, polished white and cooked plain in a donabe or a rice cooker, and eaten with the salmon, the pickles and the miso soup. Koshihikari from Niigata and Yumepirika from Hokkaido are the prized strains; the leftover starch water goes to the vinegar and the sake.",
+    partners: ["salmon", "miso", "soy sauce", "nori"], match: (r) => has(r.core, /\brice\b(?! vinegar)/) },
+  { id: "wheatJp", world: "japan", kind: "ingredient", name: "Ramen noodles", zh: "中華麺", emoji: "🍜", area: "tokyo", pos: [4, -20], prop: "none", hitOnly: true,
+    tagline: "Wheat noodles with a spring, from Chinese cooks in Yokohama a century ago.", blurb: "Ramen noodles are wheat flour, water, salt and kansui, the alkaline water that makes them yellow and springy; Chinese cooks sold them in Yokohama's Chinatown from the 1880s and the first Tokyo shop, Rairaiken, opened in 1910. Instant ramen came in 1958 from Momofuku Ando. Each region has its bowl: Sapporo's miso ramen, invented in 1955, is the model for a pumpkin miso broth, thick and sweet under a slice of butter and a pat of corn.",
+    partners: ["miso", "pumpkin", "dashi", "scallion"], match: (r) => has(r.core, /noodle|ramen/) },
+  { id: "dashi", world: "japan", kind: "ingredient", name: "Kombu, bonito, tofu & nori", zh: "昆布 · 鰹節 · 豆腐 · 海苔", emoji: "🌊", area: "hokkaido", pos: [-29, -21], prop: "none", hitOnly: true,
+    tagline: "The sea, dried: the stock beneath every soup.", blurb: "Dashi is kombu kelp from Hokkaido's cold coast steeped in water, then a handful of katsuobushi, bonito smoked and dried to a wooden block and shaved. It takes ten minutes and is the base of miso soup, ramen broth, simmered vegetables and dipping sauces; Kikunae Ikeda isolated its taste in 1908 and named it umami. Tofu, from China with Buddhism, and nori, sheets of laver dried on frames, ride on top.",
+    partners: ["miso", "ramen noodles", "pumpkin", "soy sauce"], match: (r) => has(r.core, /dashi|kombu|bonito|tofu|nori/) },
+  { id: "sesameGinger", world: "japan", kind: "ingredient", name: "Sesame & ginger", zh: "ごま · 生姜", emoji: "🫚", area: "kyoto", pos: [-16, 24], prop: "none", hitOnly: true,
+    tagline: "Toasted and ground in a ridged suribachi; grated fresh over the salmon.", blurb: "Goma, sesame, is toasted and ground in a suribachi, a ridged clay mortar, into the dressing for spinach, for cold noodles and for the cabbage beside tonkatsu; sesame oil finishes the salad. Ginger is grated raw over grilled fish and into teriyaki, pickled pink as gari beside sushi, and simmered with pork for shogayaki. Both came from China and both are Kyoto shop staples.",
+    partners: ["cabbage", "soy sauce", "salmon", "rice vinegar"], match: (r) => has(r.core, /sesame|ginger|rice vinegar/) },
+  // --- flavours ---
+  { id: "umami", world: "japan", kind: "flavour", name: "Umami", zh: "うま味", emoji: "✨", area: "fuji", pos: [-4, 22], prop: "none", hitOnly: true,
+    tagline: "The fifth taste, named in Tokyo in 1908: dashi, miso, soy, the glaze on the fish.", blurb: "Kikunae Ikeda, a chemist at Tokyo Imperial University, tasted his wife's kombu dashi and asked what the savoury thing in it was; in 1908 he isolated glutamate and called the taste umami, deliciousness. Japanese cooking layers it: kombu and bonito in the stock, fermented miso and soy in the sauces, the caramelised glaze of teriyaki and saikyo-yaki. Salt and sweetness are kept low so umami leads.",
+    flavour: ["savoury", "deep", "rounded"], partners: ["miso", "soy sauce", "dashi", "mirin"], match: (r) => has(r.core, /miso|soy|dashi|kombu/) },
+  // --- techniques ---
+  { id: "ramen", world: "japan", kind: "technique", name: "The ramen shop", zh: "ラーメン屋", emoji: "🍜", area: "tokyo", pos: [3.5, -14], prop: "ramenShop", rot: 0.1, place: true, placeName: "Ramen shop",
+    tagline: "A noren curtain, a counter, a ticket machine, and a bowl in four minutes.", blurb: "The ramen-ya is ten stools and a broth that has been simmering since dawn: pork bones for tonkotsu, chicken and dashi for shoyu, and in Sapporo a miso broth stirred in a wok with vegetables and served with butter and corn. You buy a ticket from the machine, hand it over, and slurp loudly, which cools the noodles and is expected. Toppings are chashu, a soft egg, nori, menma and negi; a pumpkin miso bowl swaps the pork for roasted kabocha and tofu.",
+    partners: ["ramen noodles", "miso", "pumpkin", "dashi", "scallion"], match: (r) => has(r.techniques, /ramen/) },
+  { id: "robata", world: "japan", kind: "technique", name: "The izakaya & the robata grill", zh: "居酒屋", emoji: "🏮", area: "tokyo", pos: [26, -17], prop: "izakaya", rot: 0, place: true, placeName: "Izakaya",
+    tagline: "Red lanterns, a charcoal grill, sake by the cup, salmon glazed with teriyaki.", blurb: "The izakaya is Japan's pub, marked by a red lantern and a noren; the name means stay-in-sake-shop, from Edo-era liquor stores that let customers drink on the premises. Small plates come all night: edamame, yakitori from the charcoal robata, sashimi, and fish in teriyaki, a glaze of soy, mirin and sake brushed on as it grills until it shines. Binchotan charcoal from Wakayama oak burns clean and hot. Kanpai before the first sip.",
+    partners: ["salmon", "soy sauce", "mirin", "sake", "rice"], match: (r) => has(r.techniques, /robata|teriyaki/) },
+  { id: "saikyo", world: "japan", kind: "technique", name: "The Kyoto kitchen: saikyo-yaki", zh: "西京焼き", emoji: "🍱", area: "kyoto", pos: [-20, 2], prop: "kaisekiHouse", rot: 0, place: true, placeName: "Kyoto kitchen",
+    tagline: "Fish buried in sweet white miso for three days, then grilled to a lacquer.", blurb: "Saikyo-yaki takes its name from Saikyo, the western capital, Kyoto, and its pale sweet miso. Fillets of black cod or Spanish mackerel are wrapped in the miso for two or three days, wiped and grilled slowly until the sugars in the marinade caramelise; the miso cures the fish and keeps it moist. It is a dish of kaiseki, the tea-ceremony meal that became Kyoto's cuisine in the 1500s, served in lacquer with a pickled ginger shoot on the side.",
+    partners: ["black cod", "white miso", "mirin", "sake"], match: (r) => has(r.techniques, /saikyo/) },
+  { id: "tonkatsu", world: "japan", kind: "technique", name: "The tonkatsu counter", zh: "とんかつ屋", emoji: "🥬", area: "tokyo", pos: [17, -13], prop: "tonkatsuShop", rot: 0, place: true, placeName: "Tonkatsu shop",
+    tagline: "A cutlet, a mountain of shredded cabbage, and sesame to grind yourself.", blurb: "Tonkatsu, the breaded pork cutlet, was born in Tokyo's Ginza in 1899 as yoshoku, Western food done the Japanese way; the shredded raw cabbage beside it was a wartime economy that became the rule. A tonkatsu shop refills the cabbage for free, gives you a suribachi of sesame seeds to grind for the sauce, and a sesame-soy dressing for the cabbage itself: the Japanese-style cabbage salad is that side dish grown up.",
+    partners: ["cabbage", "sesame", "soy sauce", "rice vinegar", "ginger"], match: (r) => has(r.techniques, /salad/) },
+  // --- places & landmarks ---
+  { id: "shibuya", world: "japan", kind: "landmark", name: "Shibuya crossing", zh: "渋谷スクランブル交差点", emoji: "🚦", area: "tokyo", pos: [15, -19], prop: "shibuya", rot: 0,
+    tagline: "Three thousand people cross at once, under the screens, every two minutes.", blurb: "The scramble outside Shibuya station stops all traffic and lets pedestrians cross in every direction at once; on a Friday night three thousand people go at each light. The station opened in 1885; the loyal dog Hachiko waited for his owner there through the 1920s and has a statue at the exit. Around it are the department stores, the karaoke towers and, in the basements and alleys, the ramen shops and izakayas of Tokyo's densest eating quarter.", match: () => false },
+  { id: "tokyoTower", world: "japan", kind: "landmark", name: "Tokyo Tower", zh: "東京タワー", emoji: "🗼", area: "tokyo", pos: [26.5, -25], prop: "tokyoTower", rot: 0,
+    tagline: "Orange and white, 333 metres, thirteen higher than the Eiffel it copies.", blurb: "Tokyo Tower went up in 1958 as a broadcast mast and a symbol of the post-war city, painted international orange and white for the aviation rules; it stood as the tallest structure in Japan until the Skytree in 2012. From the observation deck on a clear winter morning you can see Fuji a hundred kilometres away, and below it the city of thirty-seven million eats: more Michelin stars than any city on earth.", match: () => false },
+  { id: "kinkakuji", world: "japan", kind: "landmark", name: "Kinkaku-ji, the Golden Pavilion", zh: "金閣寺", emoji: "🏯", area: "kyoto", pos: [-28, 8], prop: "kinkakuji", rot: 0.2,
+    tagline: "A shogun's villa in gold leaf, reflected in its Mirror Pond.", blurb: "Ashikaga Yoshimitsu built the pavilion in 1397 as his retirement villa and it became a Zen temple on his death; the upper two floors are covered in gold leaf and a phoenix stands on the roof. A novice monk burned it down in 1950 and it was rebuilt exactly in 1955. Kyoto's temples gave Japan shojin ryori, the Buddhist vegetarian cuisine of tofu, yuba and seasonal vegetables, and the tea ceremony that became kaiseki.", match: () => false },
+  { id: "torii", world: "japan", kind: "landmark", name: "Fushimi Inari's torii path", zh: "伏見稲荷大社", emoji: "⛩️", area: "kyoto", pos: [-30, 20], prop: "toriiPath", rot: 0,
+    tagline: "Ten thousand vermilion gates up the hill, each one a merchant's prayer.", blurb: "Inari is the god of rice and therefore of prosperity, and Fushimi Inari, founded in 711, is the head shrine of thirty thousand across Japan. Businesses donate the gates; a small one costs a few thousand dollars and a large one much more. Fox statues guard the paths, with a key to the rice granary in their mouths. The stalls at the foot sell inari-zushi, sweet fried tofu pockets of rice, the fox's favourite food.", match: () => false },
+  { id: "pagodaJp", world: "japan", kind: "landmark", name: "The five-storey pagoda", zh: "五重塔", emoji: "🛕", area: "kyoto", pos: [-18, 24.5], prop: "pagodaJp", rot: 0.1,
+    tagline: "To-ji's pagoda, the tallest wooden tower in Japan, rebuilt in 1644.", blurb: "The five storeys stand for earth, water, fire, wind and void; the central pillar hangs free so the tower sways in an earthquake instead of breaking. To-ji's pagoda has burned four times since 826 and been rebuilt each time. Kyoto's monthly temple flea markets, Kobo-san at To-ji and Tenjin-san at Kitano, sell pickles, dried fish and the sweets that go with matcha.", match: () => false },
+  { id: "sakura", world: "japan", kind: "landmark", name: "Sakura", zh: "桜", emoji: "🌸", area: "kyoto", pos: [-13, 4], prop: "none", hitOnly: true,
+    tagline: "A week of blossom in April, and picnics under it since the 700s.", blurb: "Hanami, flower viewing, began at the Nara court in the 8th century with plum blossom and switched to cherry under the Heian emperors. The blossom front moves north from Okinawa in January to Hokkaido in May, and the news forecasts it like weather. Beneath the trees the country eats: bento, sakura mochi wrapped in a salted cherry leaf, dango on a stick, and sake with a petal floating in it.", match: () => false },
+  { id: "bamboo", world: "japan", kind: "landmark", name: "The bamboo grove", zh: "竹林", emoji: "🎋", area: "kyoto", pos: [-33, -2], prop: "bambooGrove", rot: 0.2,
+    tagline: "Arashiyama's grove, and the bamboo shoots dug in spring.", blurb: "The bamboo grove at Arashiyama on Kyoto's west edge has been walked since the Heian court came for its maple and its river. Bamboo is a grass and grows a metre a day; the young shoots, takenoko, are dug in April, boiled with rice bran to take out the bitterness and simmered in dashi, and the culms become chopsticks, baskets, the tea whisk and the flute. The leaves wrap sushi.", match: () => false },
+  { id: "fuji", world: "japan", kind: "landmark", name: "Mount Fuji", zh: "富士山", emoji: "🗻", area: "fuji", pos: [4, 10], prop: "fuji", rot: 0,
+    tagline: "The sacred volcano, 3,776 metres, snow-capped and climbed by everyone.", blurb: "Fuji last erupted in 1707 and has been painted, climbed and worshipped ever since; Hokusai's thirty-six views of 1831 made it the symbol of Japan. Three hundred thousand people climb it each summer to watch the sunrise from the crater, and eat curry rice at the mountain huts. Its meltwater feeds the wasabi farms of Shizuoka and the tea fields below, and Fujinomiya's fried noodles, the yakisoba, are a local pride.", match: () => false },
+  { id: "onsen", world: "japan", kind: "landmark", name: "The onsen & the snow monkeys", zh: "温泉 · 雪猿", emoji: "♨️", area: "fuji", pos: [-2, -2.5], prop: "onsen", rot: 0.2,
+    tagline: "Volcanic hot springs, and the macaques of Jigokudani who bathe in them.", blurb: "Japan has three thousand onsen towns fed by its volcanoes, and the ritual is fixed: wash first, then soak, then a beer or an onsen egg cooked in the spring. The Japanese macaques of Jigokudani in Nagano have bathed in theirs since 1963, when one young female followed an apple into the water. The ryokan inns serve kaiseki dinners in your room: the grilled fish, the simmered vegetables, the rice and pickles and miso soup.", match: () => false },
+  { id: "shinkansen", world: "japan", kind: "landmark", name: "The shinkansen", zh: "新幹線", emoji: "🚄", area: "fuji", pos: [22.5, 6], prop: "none", hitOnly: true,
+    tagline: "The bullet train since 1964, past Fuji at 285 kilometres an hour, with an ekiben.", blurb: "The Tokaido Shinkansen opened for the Tokyo Olympics in 1964 and has never had a fatal accident; the Nozomi covers Tokyo to Kyoto in two hours and eleven minutes, and the average delay is under a minute. The right-hand window gives you Fuji. Eating on it is the ekiben, the station bento: every stop has its own, from Kobe beef to Hokkaido crab, bought on the platform and unwrapped as the city drops away.", match: () => false },
+  { id: "miyajima", world: "japan", kind: "landmark", name: "The floating torii", zh: "厳島神社の大鳥居", emoji: "⛩️", area: "fuji", pos: [24, 24], prop: "floatingTorii", rot: 0.3,
+    tagline: "Itsukushima's gate stands in the sea; at low tide you walk out to it.", blurb: "The great torii of Itsukushima shrine on Miyajima island has stood in the Inland Sea since 1168, rebuilt in camphor wood in 1875; the shrine behind it is built on piers so it floats at high tide. The island's deer wander the street of stalls selling grilled oysters from the bay, Hiroshima's specialty, and momiji manju, maple-leaf cakes filled with sweet bean paste.", match: () => false },
+];
+
+export const ALL_OBJECTS = [...OBJECTS, ...ITALY_OBJECTS, ...KOREA_OBJECTS, ...MEXICO_OBJECTS, ...MIDEAST_OBJECTS, ...MED_OBJECTS, ...INDIA_OBJECTS, ...SEASIA_OBJECTS, ...NAMERICA_OBJECTS, ...JAPAN_OBJECTS];
 export const objectsOf = (world: WorldId) => ALL_OBJECTS.filter((o) => o.world === world);
 export const objectById = (id: string) => ALL_OBJECTS.find((o) => o.id === id)!;
 
@@ -876,7 +956,7 @@ export const MAP_REGIONS: MapRegion[] = [
   { id: "china", name: "China", cuisines: ["Chinese"], pos: [26, -8], size: 10, color: "#c9a26a", emoji: ["🌶️", "🥟", "🍜", "🏮"], built: true, seed: 18 },
   { id: "southeast-asia", name: "Southeast Asia", cuisines: ["Thai", "Vietnamese"], pos: [38, 16], size: 6, color: "#9cc27f", emoji: ["🥥", "🌿", "🍜", "🦐"], built: true, seed: 19 },
   { id: "korea", name: "Korea", cuisines: ["Korean"], pos: [44, -16], size: 6, color: "#d7a7a0", emoji: ["🥬", "🍚", "🔥", "🥢"], built: true, seed: 20 },
-  { id: "japan", name: "Japan", cuisines: ["Japanese"], pos: [52, -4], size: 4.5, color: "#e8b8c4", emoji: ["🍣", "🍙", "🍵", "🐟"], built: false, seed: 21 },
+  { id: "japan", name: "Japan", cuisines: ["Japanese"], pos: [52, -4], size: 6, color: "#e8b8c4", emoji: ["🍣", "🍙", "🍵", "🐟"], built: true, seed: 21 },
 ];
 
 export const SPICE = ["mild", "a little heat", "spicy", "very spicy"];

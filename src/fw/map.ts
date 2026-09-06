@@ -12,6 +12,7 @@ import { blueDomeChurch, cycladicHouse, windmill, sailboat, koutoubia } from "./
 import { tajMahal, elephant, hillFort } from "./props-india";
 import { wat, karst, longtail } from "./props-seasia";
 import { liberty, skyscraper, barn, goldenGate } from "./props-namerica";
+import { fuji, floatingTorii, tokyoTower, pagodaJp, sakura } from "./props-japan";
 
 export type PlacedRegion = {
   region: MapRegion;
@@ -84,6 +85,15 @@ export function buildMap(counts: Map<string, number>): MapWorld {
       const hs = italianHouse("rome", 2.2 * s, 1.8 * s, 1.3 * s, 2); hs.position.set(-5 * s, h, -1 * s); hs.rotation.y = 0.5; g.add(hs);
       const bd = birds(4, 5 * s, 5 * s); bd.position.set(0, h, 0); bd.scale.setScalar(s * 0.9); g.add(bd);
       g.userData.tick = (t: number, dt: number) => { bd.userData.tick?.(t, dt); };
+    } else if (region.built && region.id === "japan") {
+      const s = region.size / 10;
+      const fj = fuji(); fj.position.set(0, h, 0.5 * s); fj.scale.setScalar(s * 0.5); g.add(fj);
+      const tt = tokyoTower(); tt.position.set(5 * s, h, -3.5 * s); tt.scale.setScalar(s * 0.5); g.add(tt);
+      const pg = pagodaJp(); pg.position.set(-5 * s, h, 2.5 * s); pg.scale.setScalar(s * 0.6); g.add(pg);
+      const tr = floatingTorii(); tr.position.set(4.5 * s, h, 4 * s); tr.scale.setScalar(s * 0.5); tr.rotation.y = 0.4; g.add(tr);
+      for (let i = 0; i < 3; i++) { const p = sakura(s * 0.9); p.position.set((-5.5 + i * 2.2) * s, h, (-2.5 - (i % 2)) * s); g.add(p); }
+      const bd = birds(4, 5 * s, 5 * s); bd.position.set(0, h, 0); bd.scale.setScalar(s * 0.9); g.add(bd);
+      g.userData.tick = (t: number, dt: number) => { bd.userData.tick?.(t, dt); fj.userData.tick?.(t, dt); tt.userData.tick?.(t, dt); };
     } else if (region.built && region.id === "north-america") {
       const s = region.size / 10;
       const lb = liberty(); lb.position.set(5 * s, h, -2.5 * s); lb.scale.setScalar(s * 0.32); lb.rotation.y = -0.6; g.add(lb);

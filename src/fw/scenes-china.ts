@@ -60,7 +60,6 @@ const market = (): SceneDef => {
       { name: "chilli-basket", prop: true, x: -70, w: 420 },
       { name: "stand-sign", prop: true, x: 1300, w: 320 },
     ],
-    walkers: [{ name: "market-woman-with-basket", w: 190, y: 884, from: 1760, to: -360, dur: 40, every: 28 }],
     steam: [{ x: 1550, y: 450, w: 60, rate: 6, a: 0.3 }],
     lamps: [{ x: 1359, y: 67, r: 80 }, { x: 1273, y: 143, r: 60 }, { x: 713, y: 206, r: 45 }, { x: 1411, y: 230, r: 60 }],
     leaves: 3.5, motes: 40,

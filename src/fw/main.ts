@@ -394,8 +394,8 @@ function castWorld(x: number, y: number): Placed | DishMarker | null {
     const thing = (u1.dish as DishMarker) ?? (u1.placed as Placed);
     // a stall inside a place is only meant from close up; from further away (and on a phone, from anywhere but
     // very close) the tap means the place itself, whose room lists the stands
-    const stall = thing as Placed;
-    if (stall.obj?.parent) {
+    const stall = "obj" in thing ? thing : null;
+    if (stall?.obj.parent) {
       const far = camera.position.distanceTo(stall.anchor) > (COARSE ? 14 : 22);
       if (far) return diorama.placed.find((p) => p.obj.id === stall.obj.parent) ?? thing;
     }

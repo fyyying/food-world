@@ -145,7 +145,9 @@ export function buildWorld(spec: WorldSpec): Diorama {
   for (const r of recipes) { const list = byPlace.get(r.place) ?? []; list.push(r); byPlace.set(r.place, list); }
   const plateGeo = new THREE.CircleGeometry(0.72, 30);
   const rimGeo = new THREE.CylinderGeometry(0.86, 0.8, 0.1, 30);
-  for (const [placeId, list] of byPlace) {
+  // Yingying's call (2026-09-08): dishes live in the cards, never as plates popping up in the world
+  const SHOW_DISH_PLATES = false;
+  for (const [placeId, list] of SHOW_DISH_PLATES ? byPlace : []) {
     const host = placed.find((p) => p.obj.id === placeId) ?? placed.find((p) => p.obj.id === spec.fallbackPlace)!;
     list.forEach((recipe, i) => {
       const g = new THREE.Group();

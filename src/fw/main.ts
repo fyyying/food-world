@@ -119,12 +119,6 @@ let currentArea: Area | null = null;
 const ui = mountUi({
   onClose: () => { ui.hide(); diorama?.highlight(null, null); diorama?.pin(null); },
   onOpenRecipe: (r) => openDish(r),
-  onExploreDishes: (_o, recipes) => afterScene(() => {
-    const ids = new Set(recipes.map((r) => r.id));
-    diorama!.highlight(null, ids);
-    frameDishes(recipes);
-    hint(`${recipes.length === 1 ? "The dish is" : "The dishes are"} glowing in the world. Click a plate to see it.`);
-  }),
   onGoObject: (o) => afterScene(() => openObject(diorama!.placed.find((p) => p.obj.id === o.id)!)),
   onCook: (r) => { showRecipePage(r, () => {}); },
   onExploreIngredients: (r) => afterScene(() => {
@@ -337,11 +331,10 @@ function openObject(p: Placed) {
   const recipes = china.filter((r) => obj.match(r));
   if (obj.scene && SCENES[obj.scene]) { enterLivingScene(p, obj, recipes); return; }
   if (p.obj.open === "reveal") { revealPlace(p); return; }
-  // the world answers first: the object reacts, its dishes rise and glow, and only then does the card come
+  // the world answers first: the object reacts, and only then does the card come (dishes stay in the card)
   clearTimeout(cardTimer); clearTimeout(revealTimer);
   ui.hide();
   diorama!.highlight(new Set([obj.id]), null);
-  revealTimer = window.setTimeout(() => diorama!.highlight(new Set([obj.id]), new Set(recipes.map((r) => r.id)), true), 450);
   cardTimer = window.setTimeout(() => ui.showObject(obj, recipes, OBJECTS_NOW()), COARSE ? 1200 : 800);
   diorama!.poke(p);
   if (p.obj.alias) { const real = diorama!.placed.find((x) => x.obj.id === p.obj.alias); if (real) diorama!.poke(real); }
@@ -353,7 +346,7 @@ function revealPlace(p: Placed) {
   const recipes = china.filter((r) => p.obj.match(r));
   const stalls = OBJECTS_NOW().filter((o) => o.parent === p.obj.id);
   ui.hide();
-  diorama!.highlight(null, new Set(recipes.map((r) => r.id)));
+  diorama!.highlight(new Set([p.obj.id]), null);
   diorama!.poke(p);
   glideTo(p.anchor.clone().add(new THREE.Vector3(0, 1.2, 0)), stalls.length ? 20 : 15, 1.2);
   if (!recipes.length && !stalls.length) { ui.showObject(p.obj, [], OBJECTS_NOW()); return; }
@@ -362,11 +355,11 @@ function revealPlace(p: Placed) {
 }
 
 function openDish(r: EnrichedRecipe) {
-  const marker = diorama!.dishes.find((d) => d.recipe.id === r.id);
   clearTimeout(cardTimer); clearTimeout(revealTimer);
   ui.showRecipePreview(r);
-  diorama!.highlight(new Set([r.place]), new Set([r.id]));
-  if (marker) glideTo(marker.anchor.clone().add(new THREE.Vector3(0, 1, 0)), 22, 1.3, undefined, 4);
+  diorama!.highlight(new Set([r.place]), null);
+  const home = diorama!.placed.find((p) => p.obj.id === r.place);
+  if (home && !livingScene) glideTo(home.anchor.clone().add(new THREE.Vector3(0, 1, 0)), 22, 1.3, undefined, 4);
 }
 
 function frameThings(points: THREE.Vector3[]) {
@@ -374,10 +367,6 @@ function frameThings(points: THREE.Vector3[]) {
   const center = box.getCenter(new THREE.Vector3());
   const size = box.getSize(new THREE.Vector3()).length();
   glideTo(center, THREE.MathUtils.clamp(size * 1.1 + 18, 22, 70), 1.3);
-}
-function frameDishes(recipes: EnrichedRecipe[]) {
-  const pts = diorama!.dishes.filter((d) => recipes.some((r) => r.id === d.recipe.id)).map((d) => d.anchor);
-  if (pts.length) frameThings(pts);
 }
 
 // ---------- pointer ----------

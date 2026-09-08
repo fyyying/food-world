@@ -7,7 +7,6 @@ import { snapshot } from "./snapshot";
 export type UiHandlers = {
   onClose: () => void;
   onOpenRecipe: (r: EnrichedRecipe) => void;
-  onExploreDishes: (o: WorldObject, recipes: EnrichedRecipe[]) => void;
   onGoObject: (o: WorldObject) => void;
   onCook: (r: EnrichedRecipe) => void;
   onExploreIngredients: (r: EnrichedRecipe) => void;
@@ -99,10 +98,9 @@ export function mountUi(h: UiHandlers) {
       ${o.flavour ? `<h4>Flavour</h4><div class="chips">${o.flavour.map((f) => `<span class="chip fl">${esc(f)}</span>`).join("")}</div>` : ""}
       ${o.partners ? `<h4>Often paired with</h4><div class="chips">${partnerObjs.map(({ p, obj }) => obj ? `<button class="chip link" data-object="${obj.id}">${obj.emoji} ${esc(p)}</button>` : `<span class="chip">${esc(p)}</span>`).join("")}</div>` : ""}
       ${recipes.length ? `<h4>Appears in ${recipes.length} ${recipes.length === 1 ? "dish" : "dishes"} you cook</h4>${dishRows(recipes)}` : ""}
-      ${recipes.length ? `<button class="explore" id="explore">Explore ${recipes.length === 1 ? "this dish" : `${recipes.length} dishes`} in the world →</button>` : ""}`;
+`;
     el.hidden = false;
     el.scrollTop = 0;
-    el.querySelector("#explore")?.addEventListener("click", () => h.onExploreDishes(o, recipes));
   }
 
   function showRecipePreview(r: EnrichedRecipe) {

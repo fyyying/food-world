@@ -266,16 +266,17 @@ function leaveWorld() {
 
 // ---------- world interactions ----------
 const COARSE = window.matchMedia("(pointer: coarse)").matches;
-let cardTimer: number | undefined;
+let cardTimer: number | undefined, revealTimer: number | undefined;
 function openObject(p: Placed) {
   if (p.obj.open === "reveal") { revealPlace(p); return; }
   const obj = p.obj.alias ? objectById(p.obj.alias) : p.obj;   // a market stall opens its ingredient's card
   const recipes = china.filter((r) => obj.match(r));
-  // on a phone the card covers the world, so let the reaction play first
-  clearTimeout(cardTimer);
-  if (COARSE) cardTimer = window.setTimeout(() => ui.showObject(obj, recipes, OBJECTS_NOW()), 1100);
-  else ui.showObject(obj, recipes, OBJECTS_NOW());
-  diorama!.highlight(new Set([obj.id]), null);   // the card is enough; plates only rise at a place or on "Explore dishes"
+  // the world answers first: the object reacts, its dishes rise and glow, and only then does the card come
+  clearTimeout(cardTimer); clearTimeout(revealTimer);
+  ui.hide();
+  diorama!.highlight(new Set([obj.id]), null);
+  revealTimer = window.setTimeout(() => diorama!.highlight(new Set([obj.id]), new Set(recipes.map((r) => r.id)), true), 450);
+  cardTimer = window.setTimeout(() => ui.showObject(obj, recipes, OBJECTS_NOW()), COARSE ? 1200 : 800);
   diorama!.poke(p);
   if (p.obj.alias) { const real = diorama!.placed.find((x) => x.obj.id === p.obj.alias); if (real) diorama!.poke(real); }
   glideTo(p.anchor.clone().add(new THREE.Vector3(0, 0.8, 0)), p.obj.hitOnly ? 16 : 28, 1.0, undefined, p.obj.hitOnly ? 3 : 5);
@@ -296,7 +297,7 @@ function revealPlace(p: Placed) {
 
 function openDish(r: EnrichedRecipe) {
   const marker = diorama!.dishes.find((d) => d.recipe.id === r.id);
-  clearTimeout(cardTimer);
+  clearTimeout(cardTimer); clearTimeout(revealTimer);
   ui.showRecipePreview(r);
   diorama!.highlight(new Set([r.place]), new Set([r.id]));
   if (marker) glideTo(marker.anchor.clone().add(new THREE.Vector3(0, 1, 0)), 22, 1.3, undefined, 4);
@@ -376,7 +377,7 @@ window.addEventListener("pointerup", (e) => {
     else ui.showRegion(region.region, region.count, "/");
   } else if (level === "world") {
     const thing = castWorld(e.clientX, e.clientY);
-    if (!thing) { clearTimeout(cardTimer); ui.hide(); diorama!.highlight(null, null); diorama!.pin(null); return; }
+    if (!thing) { clearTimeout(cardTimer); clearTimeout(revealTimer); ui.hide(); diorama!.highlight(null, null); diorama!.pin(null); return; }
     if ("recipe" in thing) openDish(thing.recipe);
     else openObject(thing);
   }
@@ -384,7 +385,7 @@ window.addEventListener("pointerup", (e) => {
 window.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
     if (!document.getElementById("recipe")!.hidden) { document.getElementById("recipe")!.hidden = true; return; }
-    if (ui.open) { clearTimeout(cardTimer); ui.hide(); diorama?.highlight(null, null); diorama?.pin(null); return; }
+    if (ui.open) { clearTimeout(cardTimer); clearTimeout(revealTimer); ui.hide(); diorama?.highlight(null, null); diorama?.pin(null); return; }
     if (level === "world") leaveWorld();
   }
 });

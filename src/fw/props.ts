@@ -821,10 +821,12 @@ export function chilliField(): P {
   const g = group();
   add(g, box(7, 0.2, 4.2, C.soil), 0, 0.1, 0);
   for (let i = 0; i < 4; i++) add(g, box(7, 0.15, 0.5, "#6a4b32"), 0, 0.22, -1.6 + i * 1.05);
+  const plants: THREE.Group[] = [];
   for (let i = 0; i < 4; i++) for (let j = 0; j < 9; j++) {
     const x = -3.1 + j * 0.78, z = -1.6 + i * 1.05;
-    add(g, ball(0.3, C.greenDark, 6), x, 0.5, z).scale.y = 0.8;
-    for (let k = 0; k < 4; k++) { const c = add(g, cone(0.05, 0.24, C.red, 5), x + (rnd() - 0.5) * 0.4, 0.5 + (rnd() - 0.4) * 0.2, z + (rnd() - 0.5) * 0.4); c.rotation.x = Math.PI + (rnd() - 0.5); c.rotation.z = rnd() - 0.5; }
+    const plant = new THREE.Group(); plant.position.set(x, 0.25, z); g.add(plant); plants.push(plant);
+    add(plant, ball(0.3, C.greenDark, 6), 0, 0.25, 0).scale.y = 0.8;
+    for (let k = 0; k < 4; k++) { const c = add(plant, cone(0.05, 0.24, C.red, 5), (rnd() - 0.5) * 0.4, 0.25 + (rnd() - 0.4) * 0.2, (rnd() - 0.5) * 0.4); c.rotation.x = Math.PI + (rnd() - 0.5); c.rotation.z = rnd() - 0.5; }
   }
   // drying racks with chilli strings and a farmer
   for (const zx of [-2.2, 2.2]) { add(g, box(0.08, 1.7, 0.08, C.woodDark), -3.9, 0.85, zx); }
@@ -837,11 +839,12 @@ export function chilliField(): P {
   const falling: { m: THREE.Mesh; v: number; life: number }[] = [];
   const re = reaction(0.9);
   g.userData.poke = () => {
-    re.poke();
-    for (let i = 0; i < 10; i++) { const m = cone(0.05, 0.24, C.red, 5); m.position.set(-3 + rnd() * 6, 0.55, -1.6 + rnd() * 3.2); m.rotation.x = Math.PI; g.add(m); falling.push({ m, v: 0, life: 0 }); }
+    re.poke(); bubble(farmer, "辣! Hot!", 1.5, 1200);
+    for (let i = 0; i < 16; i++) { const m = cone(0.05, 0.24, C.red, 5); m.position.set(-3 + rnd() * 6, 0.55, -1.6 + rnd() * 3.2); m.rotation.x = Math.PI; g.add(m); falling.push({ m, v: 0, life: 0 }); }
   };
   g.userData.tick = (t, dt) => {
     const k = re.step(dt);
+    plants.forEach((p, i) => { const wave = Math.sin((1 - k) * 7 - (p.position.x + 3.1) * 0.9 + i * 0.05); p.rotation.z = Math.sin(t * 1.1 + i) * 0.03 + k * wave * 0.32; p.scale.setScalar(1 + k * Math.max(0, wave) * 0.25); });
     const up = (farmer.userData as { upper?: THREE.Group }).upper;
     if (up) { up.rotation.z = k * Math.sin(t * 9) * 0.25; }                    // farmer waves
     strings.forEach((st, i) => { st.rotation.x = Math.sin(t * 1.4 + i) * 0.05 + k * Math.sin(t * 9 + i) * 0.35; });
@@ -862,13 +865,17 @@ export function pepperTree(): P {
   // a low stone wall and a basket under the tree
   add(g, cyl(0.4, 0.32, 0.3, C.straw, 9), 1.3, 0.15, 0.6);
   const falling: { m: THREE.Mesh; v: number; life: number }[] = [];
-  let shake = 0;
+  // the 麻 ripple: two rings that spread from the trunk and fade, the numbing tingle made visible
+  const ripples = [0, 1].map(() => { const m = new THREE.Mesh(new THREE.RingGeometry(0.7, 0.95, 40), new THREE.MeshBasicMaterial({ color: "#e0483a", transparent: true, opacity: 0, depthWrite: false })); m.rotation.x = -Math.PI / 2; m.position.y = 0.06; g.add(m); return m; });
+  let shake = 0, rip = 0;
   g.userData.poke = () => {
-    shake = 1;
-    for (let i = 0; i < 12; i++) { const src = berries[Math.floor(rnd() * berries.length)]; const m = ball(0.07, "#b23a2f", 5); m.position.copy(src.position); g.add(m); falling.push({ m, v: 0, life: 0 }); }
+    shake = 1; rip = 1;
+    bubble(g, "麻 · the tingle", 3.6, 1300);
+    for (let i = 0; i < 18; i++) { const src = berries[Math.floor(rnd() * berries.length)]; const m = ball(0.07, "#b23a2f", 5); m.position.copy(src.position); m.position.x += (rnd() - 0.5) * 0.3; m.position.z += (rnd() - 0.5) * 0.3; g.add(m); falling.push({ m, v: 0, life: 0 }); }
   };
   g.userData.tick = (t, dt) => {
-    if (shake > 0) { shake = Math.max(0, shake - dt * 1.3); crown.rotation.z = Math.sin(t * 28) * 0.07 * shake; crown.rotation.x = Math.cos(t * 23) * 0.05 * shake; }
+    if (shake > 0) { shake = Math.max(0, shake - dt * 1.3); crown.rotation.z = Math.sin(t * 28) * 0.09 * shake; crown.rotation.x = Math.cos(t * 23) * 0.06 * shake; crown.position.y = Math.abs(Math.sin(t * 20)) * 0.08 * shake; }
+    if (rip > 0) { rip = Math.max(0, rip - dt * 0.55); ripples.forEach((m, i) => { const u = Math.max(0, Math.min(1, (1 - rip) * 1.25 - i * 0.25)); const s = 1 + u * 4.5; m.scale.set(s, s, 1); (m.material as THREE.MeshBasicMaterial).opacity = u > 0 && u < 1 ? (1 - u) * 0.55 : 0; }); } else ripples.forEach((m) => { (m.material as THREE.MeshBasicMaterial).opacity = 0; });
     for (let i = falling.length - 1; i >= 0; i--) {
       const f = falling[i]; f.v += dt * 9; f.life += dt;
       f.m.position.y = Math.max(0.06, f.m.position.y - f.v * dt);
@@ -1017,6 +1024,30 @@ export function jars(): P {
   return g;
 }
 
+/** Small non-clickable food details for the villages: strings of chillies, jars by a door, baskets, drying mats and racks, a chopping table. */
+export function foodDetail(kind: "chilliFrame" | "jars" | "garlicBasket" | "vegBasket" | "sausageRack" | "chilliMat" | "pepperMat" | "teaMat" | "choppingTable" | "marketBaskets" | "cornStrings" | "cabbageRack"): P {
+  const g = group();
+  const basket = (r: number, x: number, z: number) => add(g, cyl(r, r * 0.8, r * 0.75, C.straw, 9), x, r * 0.375, z);
+  switch (kind) {
+    case "chilliFrame": {
+      for (const x of [-0.9, 0.9]) add(g, box(0.07, 1.8, 0.07, C.woodDark), x, 0.9, 0); add(g, box(2.0, 0.06, 0.06, C.woodDark), 0, 1.78, 0);
+      const strings: THREE.Mesh[] = []; for (let i = 0; i < 5; i++) { const st = add(g, cyl(0.06, 0.06, 0.9 + (i % 2) * 0.3, C.red, 6), -0.7 + i * 0.35, 1.76, 0); st.geometry.translate(0, -0.55, 0); strings.push(st); for (let k = 0; k < 5; k++) add(st, cone(0.035, 0.14, "#8e2a22", 4), (k % 2 ? 0.05 : -0.05), -0.1 - k * 0.18, 0.04).rotation.x = Math.PI; }
+      g.userData.tick = (t) => strings.forEach((s, i) => { s.rotation.x = Math.sin(t * 1.3 + i) * 0.06; s.rotation.z = Math.cos(t * 1.1 + i) * 0.04; });
+      break;
+    }
+    case "jars": for (let i = 0; i < 3; i++) { const r = [0.34, 0.28, 0.4][i]; add(g, ball(r, i % 2 ? C.clay : "#5c3a28", 9), -0.5 + i * 0.5, r * 0.9, (i % 2) * 0.3).scale.y = 1.15; add(g, cyl(r * 0.5, r * 0.55, 0.1, "#3c2a22", 9), -0.5 + i * 0.5, r * 1.9, (i % 2) * 0.3); if (i !== 1) add(g, cone(r * 0.55, 0.2, C.straw, 9), -0.5 + i * 0.5, r * 1.9 + 0.14, (i % 2) * 0.3); } break;
+    case "garlicBasket": { basket(0.4, 0, 0); for (let k = 0; k < 9; k++) add(g, ball(0.09, "#f4ecdc", 6), (rnd() - 0.5) * 0.5, 0.36 + (k % 3) * 0.05, (rnd() - 0.5) * 0.5).scale.y = 0.85; add(g, cyl(0.03, 0.03, 0.9, C.woodDark, 4), 0.55, 0.85, 0); for (let k = 0; k < 6; k++) add(g, ball(0.07, "#f4ecdc", 5), 0.55, 1.2 - k * 0.14, (k % 2) * 0.08 - 0.04); break; }   // a braid hanging beside it
+    case "vegBasket": { basket(0.42, 0, 0); basket(0.3, 0.7, 0.3); for (let k = 0; k < 6; k++) add(g, ball(0.12, k % 2 ? "#8fc26a" : "#4f8a3c", 6), (rnd() - 0.5) * 0.5, 0.42 + (k % 2) * 0.06, (rnd() - 0.5) * 0.5).scale.y = 0.8; for (let k = 0; k < 4; k++) add(g, cyl(0.03, 0.04, 0.5, "#e07a3a", 5), 0.7 + (rnd() - 0.5) * 0.3, 0.45, 0.3 + (rnd() - 0.5) * 0.3).rotation.z = 0.5 + rnd() * 0.4; for (let k = 0; k < 3; k++) add(g, cyl(0.06, 0.06, 0.3, "#f4ecdc", 6), -0.55 + k * 0.15, 0.15, 0.6).rotation.z = Math.PI / 2; break; }   // greens, carrots, and daikon on the ground
+    case "sausageRack": { for (const x of [-0.8, 0.8]) add(g, box(0.07, 1.9, 0.07, C.woodDark), x, 0.95, 0); add(g, box(1.8, 0.05, 0.05, C.woodDark), 0, 1.88, 0); for (let i = 0; i < 6; i++) { const x = -0.65 + i * 0.26; add(g, cyl(0.01, 0.01, 0.18, C.woodDark, 3), x, 1.8, 0); const s = add(g, cyl(0.05, 0.05, 0.55 + (i % 2) * 0.2, i % 3 === 2 ? "#7a3a2a" : "#9b3b2e", 6), x, 1.4 - (i % 2) * 0.1, 0); s.rotation.z = (i % 2 ? 1 : -1) * 0.08; } add(g, box(0.5, 0.12, 0.28, "#8a4a3a"), 0.1, 1.5, 0.3); add(g, box(0.5, 0.04, 0.28, "#f4e6d0"), 0.1, 1.58, 0.3); break; }   // lap cheong and a slab of cured pork belly
+    case "chilliMat": case "pepperMat": case "teaMat": { add(g, cyl(0.9, 0.9, 0.05, "#d9c28a", 16), 0, 0.03, 0); add(g, new THREE.Mesh(new THREE.TorusGeometry(0.88, 0.03, 5, 24), mat("#b89a5a")), 0, 0.06, 0).rotation.x = Math.PI / 2; const n = kind === "teaMat" ? 40 : 30; for (let k = 0; k < n; k++) { const a = rnd() * Math.PI * 2, r = rnd() * 0.75; if (kind === "chilliMat") add(g, cone(0.04, 0.2, k % 4 ? C.red : "#8e2a22", 4), Math.cos(a) * r, 0.08, Math.sin(a) * r).rotation.set(Math.PI / 2, 0, a); else if (kind === "pepperMat") add(g, ball(0.045, "#b23a2f", 4), Math.cos(a) * r, 0.08, Math.sin(a) * r); else add(g, box(0.06, 0.02, 0.12, k % 2 ? "#4f7a3c" : "#6f9a4c"), Math.cos(a) * r, 0.07, Math.sin(a) * r).rotation.y = a; } break; }
+    case "choppingTable": { add(g, box(1.6, 0.1, 0.8, C.wood), 0, 0.8, 0); for (const x of [-0.7, 0.7]) for (const z of [-0.3, 0.3]) add(g, box(0.08, 0.76, 0.08, C.woodDark), x, 0.38, z); add(g, cyl(0.32, 0.32, 0.1, "#c99a63", 14), -0.4, 0.9, 0); add(g, cyl(0.26, 0.26, 0.08, "#c99a63", 14), 0.35, 0.89, 0.15); add(g, box(0.36, 0.03, 0.12, C.steel), -0.35, 0.97, -0.05).rotation.y = 0.3; add(g, box(0.12, 0.05, 0.05, C.woodDark), -0.55, 0.97, -0.15); for (let k = 0; k < 5; k++) add(g, cyl(0.02, 0.02, 0.18, "#7fbf3a", 4), 0.25 + k * 0.06, 0.96, 0.15).rotation.z = Math.PI / 2; for (let k = 0; k < 3; k++) add(g, ball(0.06, "#e9c46a", 5), 0.5, 0.95, -0.2 + k * 0.12); add(g, cyl(0.1, 0.09, 0.14, "#5c3a28", 8), -0.05, 0.92, -0.28); break; }   // cleaver, scallions, ginger, a pot of paste
+    case "marketBaskets": { basket(0.38, 0, 0); basket(0.3, 0.55, 0.45); basket(0.34, -0.5, 0.5); basket(0.26, 0.15, -0.55); for (let k = 0; k < 6; k++) add(g, ball(0.1, k % 2 ? "#e07a3a" : "#f2c14e", 6), (rnd() - 0.5) * 0.4, 0.34, (rnd() - 0.5) * 0.4); for (let k = 0; k < 5; k++) add(g, ball(0.09, "#8fc26a", 5), 0.55 + (rnd() - 0.5) * 0.3, 0.3, 0.45 + (rnd() - 0.5) * 0.3); for (let k = 0; k < 5; k++) add(g, ball(0.1, "#6f3d8a", 5), -0.5 + (rnd() - 0.5) * 0.35, 0.32, 0.5 + (rnd() - 0.5) * 0.35).scale.y = 1.3; for (let k = 0; k < 4; k++) add(g, ball(0.07, "#f4ecdc", 5), 0.15 + (rnd() - 0.5) * 0.25, 0.26, -0.55 + (rnd() - 0.5) * 0.25); break; }
+    case "cornStrings": { add(g, box(0.08, 2.0, 0.08, C.woodDark), 0, 1.0, 0); add(g, box(1.4, 0.06, 0.06, C.woodDark), 0, 1.95, 0); for (let i = 0; i < 4; i++) for (let k = 0; k < 4; k++) add(g, cyl(0.07, 0.06, 0.28, C.gold, 6), -0.5 + i * 0.33 + (k % 2) * 0.05, 1.8 - k * 0.3, (k % 2) * 0.06).rotation.z = (k % 2 ? 1 : -1) * 0.15; break; }
+    case "cabbageRack": { for (const x of [-0.7, 0.7]) add(g, box(0.07, 1.6, 0.07, C.woodDark), x, 0.8, 0); add(g, box(1.6, 0.05, 0.05, C.woodDark), 0, 1.58, 0); for (let i = 0; i < 5; i++) { const c = add(g, cyl(0.1, 0.14, 0.5, "#a9c87a", 7), -0.6 + i * 0.3, 1.28, 0); c.rotation.x = Math.PI; for (let k = 0; k < 3; k++) add(c, box(0.18, 0.4, 0.02, "#c9d99a"), 0, 0.05, 0.05).rotation.y = k * 2.1; } break; }
+  }
+  return g;
+}
+
 /** The village market: stalls with striped awnings, heaps of produce, hanging ducks, steamers, fish on ice, sacks of spice. */
 export function market(): P {
   const g = group();
@@ -1122,8 +1153,9 @@ export function wokKitchen(): P {
   const g = group();
   add(g, house("sichuan", 3.8, 3.0, 1.9, 2), 0, 0, -0.9);
   add(g, box(2.2, 0.9, 1.0, "#6f6a66"), 0, 0.45, 1.5);
-  add(g, new THREE.Mesh(new THREE.SphereGeometry(0.5, 12, 6, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), mat(C.iron, { side: THREE.DoubleSide })), -0.4, 1.02, 1.5);
-  add(g, cyl(0.03, 0.03, 0.6, C.woodDark, 4), 0.1, 1.0, 1.5).rotation.z = -1.2;
+  const wok = add(g, new THREE.Mesh(new THREE.SphereGeometry(0.5, 12, 6, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), mat(C.iron, { side: THREE.DoubleSide })), -0.4, 1.02, 1.5);
+  const ladle = add(g, cyl(0.03, 0.03, 0.6, C.woodDark, 4), 0.1, 1.0, 1.5); ladle.rotation.z = -1.2;
+  const flash = add(g, cone(0.5, 1.4, "#ffb347", 8), -0.4, 1.2, 1.5); flash.visible = false; (flash.material as THREE.MeshStandardMaterial).transparent = true;
   const flame = add(g, cone(0.22, 0.3, "#ff9a3c", 6), -0.4, 0.98, 1.5);
   const flame2 = add(g, cone(0.12, 0.2, "#ffd36b", 6), -0.4, 1.05, 1.5);
   add(g, box(0.4, 1.2, 0.4, "#5a5550"), 1.2, 3.3, -1.2);
@@ -1134,11 +1166,14 @@ export function wokKitchen(): P {
   g.userData.steam = new THREE.Vector3(-0.4, 1.4, 1.5);
   g.userData.smoke = new THREE.Vector3(1.2, 3.95, -1.2);
   const re = reaction(0.8);
-  g.userData.poke = () => { re.poke(); bits.forEach((b) => { b.visible = true; b.userData.vx = (rnd() - 0.5) * 1.2; b.userData.vz = (rnd() - 0.5) * 1.2; b.userData.vy = 3 + rnd() * 2; b.position.set(-0.4, 1.05, 1.5); }); };
+  g.userData.poke = () => { re.poke(); bubble(cook, "锅气! Wok hei!", 1.5, 1300); bits.forEach((b) => { b.visible = true; b.userData.vx = (rnd() - 0.5) * 1.6; b.userData.vz = (rnd() - 0.5) * 1.6; b.userData.vy = 3.5 + rnd() * 2.5; b.position.set(-0.4, 1.05, 1.5); }); };
   g.userData.tick = (t, dt) => {
     const k = re.step(dt);
     const f = (0.8 + Math.sin(t * 18) * 0.25) * (1 + k * 1.6);                 // flare
     flame.scale.set(f, (1 + Math.sin(t * 22) * 0.35) * (1 + k * 1.8), f); flame2.scale.set(f, 1 + Math.cos(t * 19) * 0.3, f);
+    // the burst: a tall flare in the first half-second, then the wok tosses and the ladle stirs
+    const burst = Math.max(0, k - 0.55) / 0.45; flash.visible = burst > 0; flash.scale.set(0.6 + burst, 0.4 + burst * 1.6, 0.6 + burst); (flash.material as THREE.MeshStandardMaterial).opacity = burst * 0.9;
+    wok.position.y = 1.02 + k * Math.max(0, Math.sin(t * 11)) * 0.4; wok.rotation.z = k * Math.sin(t * 11) * 0.45; ladle.position.y = 1.0 + k * Math.abs(Math.sin(t * 11 + 1)) * 0.35; ladle.rotation.y = k * t * 6;
     cook.position.y = Math.abs(Math.sin(t * 4)) * 0.05 + k * Math.abs(Math.sin(t * 12)) * 0.15; cook.rotation.z = Math.sin(t * 4) * 0.08;
     const up = (cook.userData as { upper?: THREE.Group }).upper; if (up) up.rotation.x = 0.15 + k * Math.sin(t * 12) * 0.3;
     bits.forEach((b) => { if (!b.visible) return; b.userData.vy -= dt * 9; b.position.x += b.userData.vx * dt; b.position.z += b.userData.vz * dt; b.position.y += b.userData.vy * dt; if (b.position.y < 1.0) { b.visible = false; } });
@@ -1252,10 +1287,29 @@ export function hotpot(): P {
   add(g, awning(3.6, 3.2, C.red), 0, 2.32, tz);
   add(g, lantern(0.9), -1.6, 2.1, tz + 1.4); add(g, lantern(0.9), 1.6, 2.1, tz + 1.4);
   const brothBits: THREE.Mesh[] = [];
-  for (let i = 0; i < 8; i++) { const b = add(g, ball(0.045, "#e8c9a0", 6), 0, 1.1, tz); b.visible = false; brothBits.push(b); }
+  for (let i = 0; i < 8; i++) { const b = add(g, ball(0.045, "#e8c9a0", 6), 0, 1.1, tz); brothBits.push(b); }
+  // plates of raw ingredients waiting to go in: rolled lamb, greens, tofu, mushrooms, and a tiered trolley with more
+  const platter = (x: number, z: number, fill: (p: THREE.Group) => void) => { const p = new THREE.Group(); p.position.set(x, 0.78, z); g.add(p); add(p, cyl(0.2, 0.17, 0.05, "#f7f2e6", 10), 0, 0, 0); fill(p); };
+  platter(0.55, tz - 0.55, (p) => { for (let k = 0; k < 4; k++) add(p, cyl(0.06, 0.06, 0.16, "#e8a0a0", 8), -0.1 + k * 0.07, 0.07, (k % 2) * 0.1 - 0.05).rotation.z = Math.PI / 2; });
+  platter(-0.6, tz - 0.5, (p) => { for (let k = 0; k < 5; k++) add(p, cone(0.06, 0.2, "#7fbf3a", 4), -0.12 + k * 0.06, 0.1, (k % 2) * 0.08).rotation.z = 0.3; });
+  platter(-0.62, tz + 0.55, (p) => { for (let k = 0; k < 4; k++) add(p, box(0.1, 0.08, 0.1, "#fbf7ee"), -0.08 + (k % 2) * 0.16, 0.07, -0.08 + Math.floor(k / 2) * 0.16); });
+  platter(0.6, tz + 0.55, (p) => { for (let k = 0; k < 3; k++) { add(p, cyl(0.02, 0.02, 0.1, "#f1ece2", 5), -0.08 + k * 0.08, 0.06, 0); add(p, ball(0.05, "#8a5a3a", 6), -0.08 + k * 0.08, 0.12, 0).scale.y = 0.6; } });
+  for (let k = 0; k < 3; k++) add(g, cyl(0.05, 0.05, 0.28, "#3f8f5a", 6), -0.25 + k * 0.22, 0.91, tz + 0.05);   // bottles of beer
+  const trolley = new THREE.Group(); trolley.position.set(2.3, 0, tz + 0.2); g.add(trolley);
+  for (let l = 0; l < 3; l++) { add(trolley, box(0.7, 0.04, 0.5, C.woodDark), 0, 0.3 + l * 0.35, 0); for (let k = 0; k < 3; k++) { add(trolley, cyl(0.1, 0.09, 0.03, "#f7f2e6", 8), -0.22 + k * 0.22, 0.34 + l * 0.35, 0); add(trolley, ball(0.05, ["#e8a0a0", "#7fbf3a", "#fbf7ee", "#f2c14e", "#8a5a3a", "#c0392b"][(l * 3 + k) % 6], 5), -0.22 + k * 0.22, 0.4 + l * 0.35, 0).scale.y = 0.6; } }
+  for (const x of [-0.3, 0.3]) add(trolley, box(0.05, 1.1, 0.05, C.woodDark), x, 0.55, 0.22); for (const x of [-0.3, 0.3]) add(trolley, cyl(0.08, 0.08, 0.05, C.iron, 8), x, 0.08, 0).rotation.x = Math.PI / 2;
+  // a second, smaller table for two; a waiter doing the rounds; two people waiting for a seat
+  const t2 = new THREE.Vector3(-3.1, 0, tz + 0.4);
+  add(g, cyl(0.7, 0.7, 0.08, C.wood, 12), t2.x, 0.7, t2.z); add(g, cyl(0.08, 0.1, 0.66, C.woodDark, 6), t2.x, 0.33, t2.z);
+  add(g, cyl(0.36, 0.33, 0.22, "#b87333", 14), t2.x, 0.82, t2.z); add(g, cyl(0.31, 0.31, 0.03, "#b8302a", 14), t2.x, 0.94, t2.z);
+  const pair: P[] = []; [[-0.9, 0.2], [0.85, -0.3]].forEach(([dx, dz], i) => { const x = t2.x + dx, z = t2.z + dz; add(g, cyl(0.18, 0.18, 0.4, C.woodDark, 8), x, 0.2, z); const d = person(["#e0a52c", "#8fc4c9"][i]); (d.userData as { sit?: () => void }).sit?.(); add(g, d, x, 0.04, z).rotation.y = Math.atan2(t2.x - x, t2.z - z); pair.push(d); });
+  const waiter = person("#f1f1f1", { apron: true }); g.add(waiter); const tray = add(waiter, cyl(0.2, 0.2, 0.03, "#f7f2e6", 10), 0.28, 0.95, 0.2); for (let k = 0; k < 3; k++) add(tray, ball(0.05, ["#e8a0a0", "#7fbf3a", "#fbf7ee"][k], 5), -0.08 + k * 0.08, 0.05, 0);
+  const queue: P[] = []; for (let i = 0; i < 2; i++) { const q = person(["#6f9b57", "#c9413f"][i]); add(g, q, 2.2 + i * 0.55, 0, 1.2 + i * 0.35); q.rotation.y = -2.2; queue.push(q); }
   g.userData.steam = new THREE.Vector3(0, 1.3, tz);
   const re = reaction(0.5);
-  g.userData.poke = () => { re.poke(); diners.forEach(({ d }, i) => setTimeout(() => bubble(d, ["干杯! Cheers!", "好辣! So spicy!", "再来! More!", "哈哈 Haha"][i], 1.4, 1200), i * 180)); };
+  let chat = 4 + rnd() * 5;
+  const lines = ["干杯! Cheers!", "好辣! So spicy!", "再来! More!", "哈哈 Haha", "加汤! More broth!", "烫一下就好 · just a dip"];
+  g.userData.poke = () => { re.poke(); diners.forEach(({ d }, i) => setTimeout(() => bubble(d, lines[i], 1.4, 1200), i * 180)); pair.forEach((d, i) => setTimeout(() => bubble(d, lines[4 + i], 1.4, 1200), 700 + i * 200)); };
   g.userData.tick = (t, dt) => {
     const k = re.step(dt);
     diners.forEach(({ d }, i) => {
@@ -1267,7 +1321,13 @@ export function hotpot(): P {
       const arms = upper.children.filter((c) => c.type === "Group");                 // the two arm pivots
       arms.forEach((a, j) => { a.rotation.z = k * (j ? 2.4 : -2.4) * Math.sin(Math.min(1, k * 1.5) * Math.PI / 2); });
     });
-    brothBits.forEach((b, i) => { b.visible = k > 0; b.position.set(Math.cos(t * 2 + i) * 0.3 * (1 + i % 3 * 0.3), 1.1 + k * Math.abs(Math.sin(t * 9 + i)) * 0.18, tz + Math.sin(t * 2 + i) * 0.3 * (1 + i % 2 * 0.4)); });
+    // the broth is always at a rolling simmer; a poke makes it boil over
+    brothBits.forEach((b, i) => { b.position.set(Math.cos(t * 1.2 + i) * 0.3 * (1 + i % 3 * 0.3), 1.1 + Math.max(0, Math.sin(t * 5 + i * 1.3)) * 0.05 + k * Math.abs(Math.sin(t * 9 + i)) * 0.18, tz + Math.sin(t * 1.2 + i) * 0.3 * (1 + i % 2 * 0.4)); });
+    pair.forEach((d, i) => { const up = (d.userData as { upper?: THREE.Group }).upper; if (up) { up.rotation.z = Math.sin(t * 1.3 + i * 2) * 0.12; up.rotation.x = 0.1 + Math.sin(t * 2.1 + i) * 0.06 - k * 0.3; } });
+    // the waiter sweeps back and forth along the front of the tables, never through the house behind them
+    const wa = Math.PI / 2 + Math.sin(t * 0.45) * 1.15, dir = Math.cos(t * 0.45) >= 0 ? 1 : -1; waiter.position.set(Math.cos(wa) * 2.4, 0, tz + Math.sin(wa) * 2.4); waiter.rotation.y = -wa + (dir > 0 ? Math.PI : 0); (waiter.userData as { walk?: (t: number) => void }).walk?.(t);
+    queue.forEach((q, i) => { const up = (q.userData as { upper?: THREE.Group }).upper; if (up) up.rotation.y = Math.sin(t * 0.7 + i * 2) * 0.25; });
+    chat -= dt; if (chat < 0) { chat = 6 + rnd() * 6; const all = [...diners.map((x) => x.d), ...pair]; bubble(all[Math.floor(rnd() * all.length)], lines[Math.floor(rnd() * lines.length)], 1.4, 1400); }
     tickChildren(g)(t, dt);
   };
   return g;

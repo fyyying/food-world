@@ -2,7 +2,7 @@
 import * as THREE from "three";
 import { CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
 import { OBJECTS, type EnrichedRecipe } from "./graph";
-import { PROPS, mat, mountain, house, tree, terrace, bridge, woodenBridge, boat, signpost, chicken, butterfly, temple, pagoda, gate, lanternString, dragon, person, fence, pond, cow, goat, path, add, birds, crane, coop, panda, fish, C, type P } from "./props";
+import { PROPS, mat, mountain, house, tree, terrace, bridge, woodenBridge, boat, signpost, chicken, butterfly, temple, pagoda, gate, lanternString, dragon, person, fence, pond, cow, goat, path, add, birds, crane, coop, panda, fish, C, type P, foodDetail } from "./props";
 import { buildWorld, addWater, type Diorama, type LayoutCtx } from "./worldkit";
 
 void CSS2DObject; void signpost;
@@ -72,6 +72,8 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   for (const [style, x, z, rot, w, d, h, st] of houses) place(house(style, w, d, h, st), x, z, rot);
   // courtyard wall for the northern compound
   for (const [x, z, rot, len] of [[22.5, -13, 0, 12], [16.5, -17, Math.PI / 2, 8], [28.5, -17, Math.PI / 2, 8]] as [number, number, number, number][]) { add(group, new THREE.Mesh(new THREE.BoxGeometry(len, 0.9, 0.3), mat(C.brick)), x, 0.45, z).rotation.y = rot; }
+  // Sichuan's quiet food details: nothing to click, everything tells the story
+  for (const [kind, x, z, rot] of [["chilliFrame", -15.2, 1.6, 0.3], ["jars", -17.5, -13.6, 0.2], ["garlicBasket", -13.9, -8.4, 0], ["vegBasket", -10.2, -8.6, 0.4], ["sausageRack", -10, -13.2, 0.1], ["chilliMat", -22.8, 5.2, 0], ["pepperMat", -17.2, 3.6, 0], ["teaMat", -24, -7.4, 0], ["choppingTable", -10.6, -1.2, 0.2], ["marketBaskets", -9, 8, 0], ["jars", -26.8, -7.6, -0.3], ["cornStrings", -20.2, 13.2, 0.4], ["cabbageRack", -9.6, 18.4, 0.1], ["sausageRack", -18.6, -3.4, 0.5], ["garlicBasket", -22.3, 8.4, 0]] as [Parameters<typeof foodDetail>[0], number, number, number][]) place(foodDetail(kind), x, z, rot);
   // lantern strings across the street
   for (const x of [-18, -8, 4]) place(lanternString(6, 4), x, -6).position.y = 3.2;
   for (const x of [-18, -8, 4]) for (const s of [-1, 1]) add(group, new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.09, 3.3, 6), mat(C.woodRed)), x + s * 3, 1.65, -6);

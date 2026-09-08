@@ -14,7 +14,7 @@ export type Diorama = {
   dishes: DishMarker[];
   bounds: THREE.Box3;
   tick: (t: number, dt: number) => void;
-  highlight: (objectIds: Set<string> | null, dishIds: Set<string> | null) => void;
+  highlight: (objectIds: Set<string> | null, dishIds: Set<string> | null, glow?: boolean) => void;
   hover: (thing: Placed | DishMarker | null) => void;
   /** keep name labels showing on these objects (used by "Explore ingredients") */
   pin: (ids: Set<string> | null) => void;
@@ -255,9 +255,9 @@ export function buildWorld(spec: WorldSpec): Diorama {
   });
 
   // ---------- highlight & dish emergence ----------
-  let hiObjects: Set<string> | null = null, hiDishes: Set<string> | null = null;
-  function highlight(objectIds: Set<string> | null, dishIds: Set<string> | null) {
-    hiObjects = objectIds; hiDishes = dishIds;
+  let hiObjects: Set<string> | null = null, hiDishes: Set<string> | null = null, hiGlow = false;
+  function highlight(objectIds: Set<string> | null, dishIds: Set<string> | null, glow = false) {
+    hiObjects = objectIds; hiDishes = dishIds; hiGlow = glow;
     for (const d of dishes) d.shown = dishIds?.has(d.recipe.id) ?? false;
   }
   tickers.push((t, dt) => {
@@ -270,6 +270,10 @@ export function buildWorld(spec: WorldSpec): Diorama {
       d.group.scale.setScalar(sc);
       d.group.visible = sc > 0.02;
       d.group.position.y = d.base.y + (d.shown ? Math.sin(t * 2.2 + d.base.x) * 0.12 : -0.6);
+      // a warm ring pulses under a plate that an ingredient or technique just called up
+      const glowing = d.shown && hiGlow && sc > 0.5;
+      d.ring.visible = glowing;
+      if (glowing) { const pulse = 0.5 + Math.sin(t * 4 + d.base.x) * 0.5; (d.ring.material as THREE.MeshBasicMaterial).opacity = 0.25 + pulse * 0.45; const rs = 1 + pulse * 0.25; d.ring.scale.set(rs, rs, 1); }
     }
   });
 

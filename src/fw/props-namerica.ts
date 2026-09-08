@@ -75,7 +75,7 @@ export function car(color: string): P {
 /** A city bus, blue and white. */
 export function bus(): P {
   const g = group();
-  add(g, box(3.6, 1.3, 1.2, NA.white), 0, 0.95, 0); add(g, box(3.62, 0.5, 1.22, "#2f6fb5"), 0, 0.55, 0); for (let k = 0; k < 6; k++) for (const sd of [-1, 1]) add(g, box(0.45, 0.5, 0.04, NA.glass), -1.4 + k * 0.56, 1.15, sd * 0.62); add(g, box(0.04, 0.6, 1.0, NA.glass), 1.82, 1.1, 0); add(g, box(0.9, 0.18, 0.02, "#2a2a2e"), 1.2, 1.5, 0.62);
+  add(g, box(3.6, 1.3, 1.1, NA.white), 0, 0.95, 0); add(g, box(3.62, 0.5, 1.12, "#2f6fb5"), 0, 0.55, 0); for (let k = 0; k < 6; k++) for (const sd of [-1, 1]) add(g, box(0.45, 0.5, 0.04, NA.glass), -1.4 + k * 0.56, 1.15, sd * 0.62); add(g, box(0.04, 0.6, 1.0, NA.glass), 1.82, 1.1, 0); add(g, box(0.9, 0.18, 0.02, "#2a2a2e"), 1.2, 1.5, 0.62);
   for (const x of [-1.1, 1.1]) for (const z of [-0.55, 0.55]) add(g, cyl(0.24, 0.24, 0.16, "#2a2a2e", 10), x, 0.24, z).rotation.x = Math.PI / 2;
   return g;
 }
@@ -319,7 +319,7 @@ export function smokehouse(): P {
 export function longhornRanch(): P {
   const g = group();
   const cattle: P[] = [];
-  for (let i = 0; i < 3; i++) { const c = cow(i === 1, false, "Moo!"); for (const sd of [-1, 1]) { const horn = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.07, 1.1, 6), mat("#e9d7a8")); horn.position.set(0.95, 1.55, sd * 0.55); horn.rotation.z = Math.PI / 2; horn.rotation.x = sd * 0.5; c.add(horn); add(horn, ball(0.04, "#5a4a3a", 4), 0, 0.55, 0); } c.position.set(-2.2 + i * 2.0, 0, -0.5 + (i % 2) * 1.4); c.rotation.y = i * 1.4; g.add(c); cattle.push(c); }
+  for (let i = 0; i < 3; i++) { const c = cow(i === 1, false, "Moo!"); for (const sd of [-1, 1]) { const horn = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.07, 1.1, 6), mat("#e9d7a8")); horn.position.set(0.95, 1.55, sd * 0.55); horn.rotation.z = Math.PI / 2; horn.rotation.x = sd * 0.5; c.add(horn); add(horn, ball(0.04, "#5a4a3a", 4), 0, 0.55, 0); } c.position.set([-2.6, 0.2, 2.6][i], 0, [-1.2, 1.4, -1.0][i]); c.rotation.y = i * 1.4; g.add(c); cattle.push(c); }
   for (const [x, z, rot, len] of [[0, -2.2, 0, 7], [0, 2.2, 0, 7], [-3.5, 0, Math.PI / 2, 4.4], [3.5, 0, Math.PI / 2, 4.4]] as [number, number, number, number][]) { const f = new THREE.Group(); const n = Math.round(len / 1.1); for (let i = 0; i <= n; i++) add(f, box(0.1, 0.8, 0.1, NA.wood), -len / 2 + (i / n) * len, 0.4, 0); add(f, box(len, 0.06, 0.05, "#a37a4f"), 0, 0.62, 0); add(f, box(len, 0.06, 0.05, "#a37a4f"), 0, 0.34, 0); f.position.set(x, 0, z); f.rotation.y = rot; g.add(f); }
   const mount = horse("#6b4a2c", NA.denim); mount.position.set(5.6, 0, 1.0); mount.rotation.y = 0.4; g.add(mount); const cowboy = (mount.userData as { rider?: Fig }).rider!;
   for (const sd of [-1, 1]) add(g, cyl(0.05, 0.06, 4.5, NA.steel, 5), 5.2 + sd * 0.35, 2.25, -1.6).rotation.z = sd * 0.1; add(g, box(0.5, 0.3, 0.3, NA.steel), 5.2, 4.5, -1.6); const fan = new THREE.Group(); fan.position.set(5.2, 4.5, -1.35); g.add(fan); for (let i = 0; i < 12; i++) add(fan, box(0.12, 0.7, 0.02, "#c9cfd6"), Math.cos(i * 0.52) * 0.4, Math.sin(i * 0.52) * 0.4, 0).rotation.z = i * 0.52 + Math.PI / 2; add(g, box(0.06, 0.5, 0.5, "#c9cfd6"), 5.2, 4.5, -2.0); add(g, cyl(0.7, 0.7, 0.4, NA.steel, 10), 5.2, 0.2, -1.6); add(g, cyl(0.62, 0.62, 0.05, "#8fd0dc", 10), 5.2, 0.43, -1.6);   // the windmill pump and its trough

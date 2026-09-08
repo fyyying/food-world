@@ -40,14 +40,14 @@ function layoutCeurope({ group, tickers, place, tint, TOP }: LayoutCtx) {
   addFish({ group, tickers, place, tint, TOP }, danubeC, [["#8fa3b5", "#d9dee3"], ["#6f8f6f", "#c9d6b0"]], 1.0, 0.28);
   const disc = (x: number, z: number, rx: number, rz: number, m: THREE.Material, rim: string, rimW = 0.8) => { const r = new THREE.Mesh(new THREE.CircleGeometry(1, 36), mat(rim)); r.rotation.x = -Math.PI / 2; r.position.set(x, TOP + 0.03, z); r.scale.set(rx + rimW, rz + rimW, 1); group.add(r); const w = new THREE.Mesh(new THREE.CircleGeometry(1, 36), m); w.rotation.x = -Math.PI / 2; w.position.set(x, TOP + 0.064, z); w.scale.set(rx, rz, 1); w.renderOrder = 2; group.add(w); };
   disc(-8, 18, 3.4, 2.4, lake, "#e6dfc4");   // an alpine lake
-  const poolM = new THREE.Mesh(new THREE.PlaneGeometry(5.0, 4.6), pool); poolM.rotation.x = -Math.PI / 2; poolM.position.set(14, TOP + 0.24, -17.4); poolM.renderOrder = 2; group.add(poolM);   // the Széchenyi pool
+  const poolM = new THREE.Mesh(new THREE.PlaneGeometry(5.0, 4.6), pool); poolM.rotation.x = -Math.PI / 2; poolM.position.set(16, TOP + 0.24, -17.4); poolM.renderOrder = 2; group.add(poolM);   // the Széchenyi pool
   // the bridges
-  const wb = new THREE.Group(); add(wb, new THREE.Mesh(new THREE.BoxGeometry(7.4, 0.3, 2.6), mat(CE.stone)), 0, 0.75, 0); for (const sd of [-1, 1]) add(wb, new THREE.Mesh(new THREE.BoxGeometry(7.4, 0.5, 0.1), mat("#3f6b3a")), 0, 1.1, sd * 1.27); for (const x of [-2.4, 0, 2.4]) add(wb, new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 2.4, 12, 1, false, 0, Math.PI), mat(CE.stone)), x, 0.5, 0).rotation.set(0, 0, Math.PI / 2); for (let k = 0; k < 4; k++) { add(wb, new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 1.0, 5), mat("#1a1a1e")), -2.7 + k * 1.8, 1.5, 1.2); add(wb, new THREE.Mesh(new THREE.SphereGeometry(0.1, 6, 5), mat("#f2e6a0")), -2.7 + k * 1.8, 2.0, 1.2); } const wbp = thamesC.getPointAt(0.53); wb.position.set(wbp.x, TOP, wbp.z); group.add(wb);   // Westminster Bridge
+  const wb = new THREE.Group(); add(wb, new THREE.Mesh(new THREE.BoxGeometry(7.4, 0.3, 2.6), mat(CE.stone)), 0, 0.75, 0); for (const sd of [-1, 1]) add(wb, new THREE.Mesh(new THREE.BoxGeometry(7.4, 0.5, 0.1), mat("#3f6b3a")), 0, 1.1, sd * 1.27); for (const x of [-2.4, 0, 2.4]) add(wb, new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 2.4, 12, 1, false, 0, Math.PI), mat(CE.stone)), x, 0.0, 0).rotation.set(0, 0, Math.PI / 2); for (let k = 0; k < 4; k++) { add(wb, new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 1.0, 5), mat("#1a1a1e")), -2.7 + k * 1.8, 1.5, 1.2); add(wb, new THREE.Mesh(new THREE.SphereGeometry(0.1, 6, 5), mat("#f2e6a0")), -2.7 + k * 1.8, 2.0, 1.2); } const wbp = thamesC.getPointAt(0.53); wb.position.set(wbp.x, TOP, wbp.z); group.add(wb);   // Westminster Bridge
   // boats
   const cruise = new THREE.Group(); add(cruise, new THREE.Mesh(new THREE.BoxGeometry(3.0, 0.4, 1.1), mat(CE.white)), 0, 0.25, 0); add(cruise, new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.5, 1.0), mat(CE.glass)), -0.2, 0.7, 0); add(cruise, new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.06, 1.1), mat(CE.white)), -0.2, 0.98, 0); group.add(cruise);
   tickers.push((t) => { const raw = (t * 0.02) % 2; const u = raw < 1 ? raw : 2 - raw; const uu = 0.5 + u * 0.42; const p = danubeC.getPointAt(uu), n = danubeC.getPointAt(uu + (raw < 1 ? 0.01 : -0.01)); cruise.position.set(p.x, TOP + 0.05, p.z); cruise.rotation.y = Math.atan2(n.x - p.x, n.z - p.z) - Math.PI / 2; });
   const ships = [ferry(), ferry()]; ships.forEach((s) => { group.add(s); tickers.push(s.userData.tick!); });
-  const lane = new THREE.CatmullRomCurve3([[35, 6], [36.5, 14], [34, 22], [30.5, 25.5], [33, 18], [35.5, 10]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true);
+  const lane = new THREE.CatmullRomCurve3([[35.5, 5], [37, 12], [36, 20], [32, 25.5], [29.5, 23.5], [33, 16], [35, 9]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true);
   tickers.push((t) => ships.forEach((s, i) => { const u = (t * 0.007 + i / 2) % 1; const p = lane.getPointAt(u), n = lane.getPointAt((u + 0.005) % 1); s.position.set(p.x, TOP + 0.05, p.z); s.rotation.y = Math.atan2(n.x - p.x, n.z - p.z) - Math.PI / 2; }));
 
   // anything crossing a bridge rides up onto its deck
@@ -58,9 +58,9 @@ function layoutCeurope({ group, tickers, place, tint, TOP }: LayoutCtx) {
   const ldnLoop = new THREE.CatmullRomCurve3(ldnPts.map(([x, z]) => new THREE.Vector3(x, 0, z)), true, "catmullrom", 0.0);
   ldnPts.forEach((a, i) => { const b = ldnPts[(i + 1) % ldnPts.length]; const seg = path([a, b], 2.2, "#6e6e72"); seg.position.y = 0.03 + 0.004 * (i % 2 + 1); group.add(seg); });
   const traffic = [redBus(), blackCab("#1a1a1e"), blackCab("#1a1a1e"), redBus()]; traffic.forEach((v) => group.add(v));
-  tickers.push((t) => traffic.forEach((v, i) => { const u = (t * 0.026 + i / 4) % 1; const p = ldnLoop.getPointAt(u), n = ldnLoop.getPointAt((u + 0.003) % 1); const dx = n.x - p.x, dz = n.z - p.z, l = Math.hypot(dx, dz) || 1; const vx = p.x + (dz / l) * 0.5, vz = p.z - (dx / l) * 0.5; v.position.set(vx, TOP + deckY(vx, vz), vz); v.rotation.y = Math.atan2(dx, dz) - Math.PI / 2; }));
+  tickers.push((t) => traffic.forEach((v, i) => { const u = (t * 0.026 + i / 4) % 1; const p = ldnLoop.getPointAt(u), n = ldnLoop.getPointAt((u + 0.003) % 1); const dx = n.x - p.x, dz = n.z - p.z, l = Math.hypot(dx, dz) || 1; const vx = p.x - (dz / l) * 0.5, vz = p.z + (dx / l) * 0.5; v.position.set(vx, TOP + deckY(vx, vz), vz); v.rotation.y = Math.atan2(dx, dz) - Math.PI / 2; }));
   const ldnWalkers = Array.from({ length: 7 }, (_, i) => local([CE.white, "#2a2a2e", "#3f5f8f", "#8a2a2a", "#2f5d3f", CE.white, "#c9a86a"][i], { bowler: i % 3 === 0, brolly: i % 3 === 0, flatCap: i % 3 === 1 })); ldnWalkers.forEach((w) => group.add(w));
-  tickers.push((t) => ldnWalkers.forEach((w, i) => { const u = (t * 0.006 + i / 7) % 1; const p = ldnLoop.getPointAt(u), n = ldnLoop.getPointAt((u + 0.004) % 1); const dx = n.x - p.x, dz = n.z - p.z, l = Math.hypot(dx, dz) || 1; const wx = p.x - (dz / l) * 0.85, wz = p.z + (dx / l) * 0.85; w.position.set(wx, deckY(wx, wz), wz); w.rotation.y = Math.atan2(dx, dz); w.userData.walk?.(t + i); }));
+  tickers.push((t) => ldnWalkers.forEach((w, i) => { const u = (t * 0.006 + i / 7) % 1; const p = ldnLoop.getPointAt(u), n = ldnLoop.getPointAt((u + 0.004) % 1); const dx = n.x - p.x, dz = n.z - p.z, l = Math.hypot(dx, dz) || 1; const wx = p.x + (dz / l) * 0.7, wz = p.z - (dx / l) * 0.7; w.position.set(wx, deckY(wx, wz), wz); w.rotation.y = Math.atan2(dx, dz); w.userData.walk?.(t + i); }));
   for (const [x, z] of [[-31.5, -12], [-8.5, -26], [-8, -12], [-31, -25]] as [number, number][]) place(tree("round", 1.0), x, z, x);
   for (const [x, z] of [[-24, -19.5], [-22, -12]] as [number, number][]) { for (let i = 0; i < 2; i++) place(local([CE.white, "#3f5f8f"][i], { bowler: i === 0, brolly: i === 0 }), x + i * 0.6, z, -1.2 + i * 2.5); }
   const pigeons = birds(5, 4, 5); pigeons.position.set(-20, TOP, -15); group.add(pigeons); tickers.push(pigeons.userData.tick!);
@@ -75,9 +75,10 @@ function layoutCeurope({ group, tickers, place, tint, TOP }: LayoutCtx) {
   for (let i = 0; i < 2; i++) { const hiker = local(["#3f5f8f", "#c0392b"][i], { alpine: true }); place(hiker, -24 + i * 0.7, 8.5, 0.6 + i); }
 
   // ---------- Budapest & the puszta ----------
-  group.add(path([[-2, -22], [-2, -8], [0.5, -4], [12.5, -4], [18, -7], [18, -22], [14, -24], [-2, -22]], 1.8, "#cfc6a8"));
+  group.add(path([[10.6, -7], [10.6, -13], [10.5, -23], [14, -25.5], [19.5, -25.5], [22.5, -20], [22, -12], [19.5, -8], [13.5, -6], [11, -5.5], [10.6, -7]], 1.8, "#cfc6a8"));
+  for (let i = 0; i < 2; i++) place(local([CE.white, "#3f5f8f"][i], { flatCap: i === 0 }), 4.5 + i * 0.6, -12, -1.0 + i * 2.2);
   const bpWalkers = Array.from({ length: 6 }, (_, i) => local([CE.white, "#3f5f8f", "#8a2a2a", "#2a2a2e", "#2f5d3f", CE.white][i], { flatCap: i % 2 === 0 })); bpWalkers.forEach((w) => group.add(w));
-  const bpLoop = new THREE.CatmullRomCurve3([[-2, -22], [-2, -8], [0.5, -4], [12.5, -4], [18, -7], [18, -22], [14, -24]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true);
+  const bpLoop = new THREE.CatmullRomCurve3([[10.6, -7], [10.6, -13], [10.5, -23], [14, -25.5], [19.5, -25.5], [22.5, -20], [22, -12], [19.5, -8], [13.5, -6], [11, -5.5]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true);
   tickers.push((t) => bpWalkers.forEach((w, i) => { const u = (t * 0.005 + i / 6) % 1; const p = bpLoop.getPointAt(u), n = bpLoop.getPointAt((u + 0.004) % 1); w.position.set(p.x, deckY(p.x, p.z), p.z); w.rotation.y = Math.atan2(n.x - p.x, n.z - p.z); w.userData.walk?.(t + i); }));
   const trailPts: [number, number][] = [[10, 13.5], [18.5, 13], [19.5, 22], [11, 23.5]];
   const trail = new THREE.CatmullRomCurve3(trailPts.map(([x, z]) => new THREE.Vector3(x, 0, z)), true);
@@ -88,9 +89,9 @@ function layoutCeurope({ group, tickers, place, tint, TOP }: LayoutCtx) {
   const storks = birds(3, 6, 8); storks.position.set(13, TOP, 14); group.add(storks); tickers.push(storks.userData.tick!);
 
   // ---------- Georgia ----------
-  snowy(5, 10, false, 25, -24); snowy(4, 8, true, 33, -25); snowy(3.5, 6.5, false, 34.5, -18); place(mountain(3, 5.5, true), 20.5, -21);
-  group.add(path([[22, -9.5], [34, -9.5], [35, -1], [26, -1.5], [21, -4], [22, -9.5]], 1.6, "#d3c8ad"));
-  const geLoop = new THREE.CatmullRomCurve3([[22, -9.5], [34, -9.5], [35, -1], [26, -1.5], [21, -4]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true);
+  snowy(4, 8, false, 26.5, -25); snowy(4, 8, true, 33, -25); snowy(3.5, 6.5, false, 34.5, -18);
+  group.add(path([[22, -8.2], [34, -8.2], [35, -1], [26, -1.5], [21, -4], [22, -8.2]], 1.6, "#d3c8ad"));
+  const geLoop = new THREE.CatmullRomCurve3([[22, -8.2], [34, -8.2], [35, -1], [26, -1.5], [21, -4]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true);
   const geWalkers = Array.from({ length: 5 }, (_, i) => local(["#2a2a2e", CE.white, "#8a2a2a", "#3f5f8f", "#2a2a2e"][i], { papakha: i % 2 === 0, scarf: i === 1 ? "#c0392b" : undefined })); geWalkers.forEach((w) => group.add(w));
   tickers.push((t) => geWalkers.forEach((w, i) => { const u = (t * 0.005 + i / 5) % 1; const p = geLoop.getPointAt(u), n = geLoop.getPointAt((u + 0.004) % 1); w.position.set(p.x, 0, p.z); w.rotation.y = Math.atan2(n.x - p.x, n.z - p.z); w.userData.walk?.(t + i); }));
   for (const [x, z, s] of [[21, 0, 1.0], [34, 6, 0.9], [20, 24, 1.1], [30, 15, 1.0], [23, -1, 0.9]] as [number, number, number][]) place(tree("round", s), x, z, x);

@@ -8,6 +8,6 @@ export default defineConfig({
   build: {
     target: "es2022",
     outDir: "dist-pages",
-    rolldownOptions: { input: { index: resolve(__dirname, "world.html") } },
+    rolldownOptions: { input: { index: resolve(__dirname, "index.html") } },
   },
 });

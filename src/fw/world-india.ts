@@ -35,7 +35,7 @@ function layoutIndia({ group, tickers, place, tint, TOP }: LayoutCtx) {
   addFish({ group, tickers, place, tint, TOP }, water, [["#d9a441", "#f4e1a1"], ["#6f8f6f", "#c9d6b0"]], 1.0, 0.3);
   const boats = [houseboat(), houseboat()];
   boats.forEach((b) => { b.scale.setScalar(0.85); group.add(b); tickers.push(b.userData.tick!); });
-  tickers.push((t) => boats.forEach((b, i) => { const raw = (t * 0.015 + i * 0.9) % 2; const u = raw < 1 ? raw : 2 - raw; const uu = Math.min(0.84, Math.max(0.22, 0.22 + u * 0.62)); const p = water.getPointAt(uu), n = water.getPointAt(Math.min(0.83, Math.max(0.03, uu + (raw < 1 ? 0.01 : -0.01)))); b.position.set(p.x + (i ? 1.0 : -1.0), TOP + 0.05, p.z); b.rotation.y = Math.atan2(n.x - p.x, n.z - p.z) - Math.PI / 2; }));
+  tickers.push((t) => boats.forEach((b, i) => { const raw = (t * 0.02 + i * 0.7) % 2; const u = raw < 1 ? raw : 2 - raw; const uu = Math.min(0.84, Math.max(0.22, 0.22 + i * 0.32 + u * 0.28)); const p = water.getPointAt(uu), n = water.getPointAt(Math.min(0.83, Math.max(0.03, uu + (raw < 1 ? 0.01 : -0.01)))); b.position.set(p.x + (i ? 1.0 : -1.0), TOP + 0.05, p.z); b.rotation.y = Math.atan2(n.x - p.x, n.z - p.z) - Math.PI / 2; }));
   for (const [x, z, c] of [[20, 24.5, "#3f6fb5"], [30, 25.5, "#c0392b"], [-14, 25, "#f4f1ea"]] as [number, number, string][]) { const b = fishingBoat(c); place(b, x, z, x * 0.1).position.y = TOP + 0.05; tickers.push(b.userData.tick!); }
   // ---------- the Ganga crosses the whole table from west to east, between Punjab and the south ----------
   const ganga = new THREE.CatmullRomCurve3([new THREE.Vector3(-38, 0, -9), new THREE.Vector3(-36.5, 0, -9), new THREE.Vector3(-30, 0, -8), new THREE.Vector3(-22, 0, -6.5), new THREE.Vector3(-12, 0, -5.5), new THREE.Vector3(0, 0, -5.2), new THREE.Vector3(12, 0, -4.8), new THREE.Vector3(24, 0, -5), new THREE.Vector3(36.5, 0, -5.5), new THREE.Vector3(38, 0, -5.5)]);
@@ -81,7 +81,7 @@ function layoutIndia({ group, tickers, place, tint, TOP }: LayoutCtx) {
   // ---------- life ----------
   const loops: [THREE.CatmullRomCurve3, [string, string][], number][] = [
     [new THREE.CatmullRomCurve3([[-16, -8], [-8, -8], [2, -8], [10, -8], [15, -12], [15, -16], [9, -16], [2, -14.5], [-8, -16], [-16, -16]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), [["#f4f1ea", "turban"], ["#3f6fb5", ""], ["#e8558a", "sari"], ["#2f7f4a", "turban"], ["#e0b34c", "sari"], ["#2a2a2e", ""], ["#c0392b", "turban"]], 0.008],
-    [new THREE.CatmullRomCurve3([[-18, -1], [-12, -1], [-9.5, 2], [-13, 7.5], [-18, 8], [-25, 8], [-26, 2], [-24, -2]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), [["#f4f1ea", "turban"], ["#c0392b", "sari"], ["#e0b34c", "turban"], ["#9b59b6", "sari"], ["#2f7f4a", ""]], 0.007],
+    [new THREE.CatmullRomCurve3([[-18, -1], [-12, -1], [-9.5, 2], [-12, 4.2], [-15.5, 6.5], [-18, 8], [-25, 8], [-26, 2], [-24, -2]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), [["#f4f1ea", "turban"], ["#c0392b", "sari"], ["#e0b34c", "turban"], ["#9b59b6", "sari"], ["#2f7f4a", ""]], 0.007],
     [new THREE.CatmullRomCurve3([[-13, 6], [-13, 15], [-6, 16], [2, 16], [4.3, 9], [5, 4], [-2, 4]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), [["#3f6fb5", "cap"], ["#f4f1ea", ""], ["#e8558a", "sari"], ["#2a2a2e", ""], ["#2a8f8f", "sari"], ["#e0b34c", "cap"]], 0.009],
     [new THREE.CatmullRomCurve3([[11, 11], [20, 12.5], [21.5, 19.5], [19.5, 21], [10.5, 18.5]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), [["#f4f1ea", "dhoti"], ["#e8558a", "sari"], ["#3f6fb5", ""], ["#2a8f8f", "sari"]], 0.007],
   ];

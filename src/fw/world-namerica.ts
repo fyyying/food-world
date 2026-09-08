@@ -50,8 +50,8 @@ function layoutNamerica({ group, tickers, place, tint, TOP }: LayoutCtx) {
   // ---------- New York & New England ----------
   // Manhattan: two blocks of towers between three avenues, the Empire State and a Chrysler-style tower among them
   tint(22, -22, 16, 11, "#9a9a9e", 0.08);
-  place(empireState(), 18.8, -23.8, 0); place(chrysler(), 24.4, -23.9, 0);
-  for (const [x, z, w, d, h, c, glass] of [[26.4, -23.8, 1.6, 2.4, 8, "#a89f8c", false], [17.8, -21.3, 1.6, 1.6, 9, "#8fa3b5", false], [19.8, -21.3, 1.6, 1.6, 12, "#7f8f9f", true], [17.8, -19.3, 1.6, 1.6, 6, "#b88a6a", false], [19.8, -19.3, 1.6, 1.6, 10, "#c9b48c", false], [24.2, -21.3, 1.6, 1.6, 11, "#8fa3b5", false], [26.4, -21.3, 1.6, 1.6, 7, "#a8553a", false], [24.2, -19.3, 1.6, 1.6, 14, "#7f8f9f", true], [26.4, -19.3, 1.6, 1.6, 9, "#a89f8c", false], [13.6, -21, 1.6, 1.6, 7, "#c9b48c", false], [13.6, -18.6, 1.6, 1.6, 5, "#a8553a", false], [18.5, -14.2, 1.6, 1.6, 8, "#8fa3b5", false], [25.5, -14.2, 1.6, 1.6, 6, "#b88a6a", false]] as [number, number, number, number, number, string, boolean][]) place(skyscraper(w, h, d, c, glass), x, z, 0);
+  place(empireState(), 18.8, -23.8, 0); place(chrysler(), 24.5, -23.9, 0).scale.set(0.8, 1, 0.8);
+  for (const [x, z, w, d, h, c, glass] of [[26.3, -23.8, 1.4, 2.4, 8, "#a89f8c", false], [17.9, -21.3, 1.4, 1.6, 9, "#8fa3b5", false], [19.7, -21.3, 1.4, 1.6, 12, "#7f8f9f", true], [17.9, -19.3, 1.4, 1.6, 6, "#b88a6a", false], [19.7, -19.3, 1.4, 1.6, 10, "#c9b48c", false], [24.4, -21.3, 1.4, 1.6, 11, "#8fa3b5", false], [26.3, -21.3, 1.4, 1.6, 7, "#a8553a", false], [24.4, -19.3, 1.4, 1.6, 14, "#7f8f9f", true], [26.3, -19.3, 1.4, 1.6, 9, "#a89f8c", false], [13.6, -21, 1.6, 1.6, 7, "#c9b48c", false], [13.6, -18.6, 1.6, 1.6, 5, "#a8553a", false], [18.5, -14.2, 1.6, 1.6, 8, "#8fa3b5", false], [25.5, -14.2, 1.6, 1.6, 6, "#b88a6a", false]] as [number, number, number, number, number, string, boolean][]) place(skyscraper(w, h, d, c, glass), x, z, 0);
   group.add(path([[14.4, -26.5], [29.6, -26.5]], 2.2, "#6e6e72"));
   for (const x of [15.5, 22, 28.5]) { const av = path([[x, -27.6], [x, -16]], 2.2, "#6e6e72"); av.position.y = 0.008; group.add(av); }
   for (const [x0, x1, z] of [[15.5, 28.5, -26.5], [16.5, 27.5, -17]] as [number, number, number][]) for (let x = x0; x <= x1; x += 0.9) add(group, new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.06), mat("#e9e6da")), x, TOP + 0.048, z).rotation.x = -Math.PI / 2;   // the centre lines
@@ -65,13 +65,14 @@ function layoutNamerica({ group, tickers, place, tint, TOP }: LayoutCtx) {
   type Traffic = { curve: THREE.CatmullRomCurve3; vehicles: THREE.Object3D[]; dir: 1 | -1; speed: number; off: number };
   const traffic: Traffic[] = [];
   const fleet = (n: number, withBus = false) => { const v: THREE.Object3D[] = []; for (let i = 0; i < n; i++) v.push(i % 2 ? taxi() : withBus && i === 0 ? bus() : car(carColours[i % carColours.length])); v.forEach((c) => group.add(c)); return v; };
-  traffic.push({ curve: loopW, vehicles: fleet(3, true), dir: 1, speed: 0.03, off: 0.5 }, { curve: loopE, vehicles: fleet(3), dir: 1, speed: 0.027, off: 0.5 }, { curve: nyLoop, vehicles: fleet(3), dir: 1, speed: 0.03, off: 0.5 });
+  const outer = new THREE.CatmullRomCurve3([[15.5, -26.5], [28.5, -26.5], [28.5, -17], [15.5, -17]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true, "catmullrom", 0.0);
+  traffic.push({ curve: outer, vehicles: fleet(5, true), dir: 1, speed: 0.03, off: 0.6 }, { curve: nyLoop, vehicles: fleet(3), dir: 1, speed: 0.03, off: 0.6 });
   tickers.push((t) => { for (const tr of traffic) tr.vehicles.forEach((c, i) => { const u = ((tr.dir * t * tr.speed + i / tr.vehicles.length) % 1 + 1) % 1; const p = tr.curve.getPointAt(u), n = tr.curve.getPointAt(((u + tr.dir * 0.003) % 1 + 1) % 1); const dx = n.x - p.x, dz = n.z - p.z, l = Math.hypot(dx, dz) || 1; c.position.set(p.x + (dz / l) * tr.off, 0, p.z - (dx / l) * tr.off); c.rotation.y = Math.atan2(dx, dz) - Math.PI / 2; }); });
   // the sidewalks: crowds walking both ways along the avenues, and groups at the corners
-  const pedLoops: [THREE.CatmullRomCurve3, number, number][] = [[loopW, 1.3, 1], [loopE, 1.3, -1], [nyLoop, 1.35, 1]];
+  const pedLoops: [THREE.CatmullRomCurve3, number, number][] = [[loopW, 1.45, 1], [loopE, 1.35, -1], [nyLoop, 1.45, 1]];
   for (const [curve, off, dir] of pedLoops) { const n = curve === nyLoop ? 6 : 7; const walkers = Array.from({ length: n }, (_, i) => american([NA.white, "#2a2a2e", NA.denim, "#c0392b", NA.yellow, "#2f5d3f", "#e8558a"][i % 7], { cap: i % 3 === 0 ? "#2a2a2e" : undefined, beanie: i % 5 === 4 ? "#c0392b" : undefined })); walkers.forEach((w) => group.add(w)); tickers.push((t) => walkers.forEach((w, i) => { const u = ((dir * t * 0.006 + i / n + (dir > 0 ? 0 : 0.5 / n)) % 1 + 1) % 1; const p = curve.getPointAt(u), q = curve.getPointAt(((u + dir * 0.004) % 1 + 1) % 1); const dx = q.x - p.x, dz = q.z - p.z, l = Math.hypot(dx, dz) || 1; w.position.set(p.x - (dz / l) * off * (dir > 0 ? 1 : -1), 0, p.z + (dx / l) * off * (dir > 0 ? 1 : -1)); w.rotation.y = Math.atan2(dx, dz); w.userData.walk?.(t + i); })); }
   for (const [x, z, n] of [[19.8, -12.6, 3], [24.4, -13.2, 2], [14, -14.2, 2], [30, -13.6, 2]] as [number, number, number][]) for (let i = 0; i < n; i++) { const a = (i / n) * Math.PI * 2; place(american([NA.white, NA.denim, "#2a2a2e", NA.yellow][(i + Math.abs(Math.round(x))) % 4], { cap: i === 0 ? "#2a2a2e" : undefined }), x + Math.cos(a) * 0.4, z + Math.sin(a) * 0.4, -a - Math.PI / 2); }
-  for (const [x, z] of [[16.4, -13.6], [27.6, -13.4], [13.2, -23.6], [13.4, -15.8]] as [number, number][]) place(tree("round", 0.7), x, z, x);
+  for (const [x, z] of [[13.6, -13.6], [13.2, -23.6], [13.4, -15.8]] as [number, number][]) place(tree("round", 0.7), x, z, x);
   for (const [x, z] of [[18, -6], [29, -5], [14, -13]] as [number, number][]) place(tree("round", 0.9), x, z, x);
   for (const [x, z, s] of [[19, 4, 1.0], [30, 2, 0.9], [20, 12, 1.1], [24, 16, 0.9], [17, 20, 1.0], [21, 19, 1.1], [26, 11, 0.9], [15, 8, 0.9]] as [number, number, number][]) place(tree(s > 1 ? "pine" : "round", s), x, z, x + z);
   const boats = [lobsterBoat(), lobsterBoat()]; boats.forEach((b) => { group.add(b); tickers.push(b.userData.tick!); });
@@ -80,13 +81,13 @@ function layoutNamerica({ group, tickers, place, tint, TOP }: LayoutCtx) {
   const gulls = birds(6, 6, 8); gulls.position.set(31, TOP, 10); group.add(gulls); tickers.push(gulls.userData.tick!);
 
   // ---------- the Midwest ----------
-  group.add(path([[-13, -18], [-2, -18], [-2, -9], [3.5, -9], [3.5, -18], [12, -18], [13.5, -10], [8, -8.5], [3.5, -9]], 1.8, "#c9b784"));
-  group.add(path([[-13, -18], [-13, -4], [-8, -3], [-2, -3.5], [-2, -9]], 1.8, "#c9b784"));
+  group.add(path([[-3.2, -18], [-3.2, -9], [3.5, -9], [3.5, -18], [12, -18], [13.5, -10], [8, -8.5], [3.5, -9]], 1.8, "#c9b784"));
+  group.add(path([[-13, -18], [-3.2, -18], [-3.2, -9], [-4.5, -3.5], [-8, -2.5], [-13.2, -3.5], [-13.5, -13], [-13, -18]], 1.8, "#c9b784"));
   for (const [x, z] of [[-13, -25], [-3, -27], [-4, -8.5], [-3, -1], [14, -8], [10, -1]] as [number, number][]) place(tree("round", 1.0), x, z, x);
   const crate = new THREE.Group(); add(crate, new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.4, 0.6), mat("#a37a4f")), 0, 0.2, 0); for (let k = 0; k < 5; k++) add(crate, new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.5, 5), mat("#e0c84a")), -0.3 + k * 0.15, 0.42, (k % 2) * 0.15 - 0.05).rotation.z = 1.2; add(crate, new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.3, 0.02, 1), mat(NA.white)), 0.3, 0.55, 0.3); place(crate, 3.5, -1.5, 0.3);
 
   // ---------- Texas & the South ----------
-  group.add(path([[-13, 4], [-3, 4], [-2.5, 10], [-3, 15.5], [-13, 15.5], [-14, 9], [-13, 4]], 1.8, "#d9b98a"));
+  group.add(path([[-14, 4], [-5, 4], [-5, 10], [-5, 15.5], [-14, 15.5], [-15, 9], [-14, 4]], 1.8, "#d9b98a"));
   group.add(path([[3.5, 4], [14, 4], [14.5, 13], [4, 13.5], [3.5, 4]], 1.8, "#d9b98a"));
   place(mesa(4.5, 3, 3), -14, 25); place(mesa(3.5, 2.5, 2.5), -18.5, 26);
   // riders on the trail: a loop out past the mesas and back along the river
@@ -104,8 +105,8 @@ function layoutNamerica({ group, tickers, place, tint, TOP }: LayoutCtx) {
 
   // ---------- California ----------
   for (const [x, z, s] of [[-30, -24, 1.0], [-27, -21, 0.9], [-31, -18, 0.8], [-25, -25, 1.1], [-21, -23, 0.85], [-29, -14, 0.7]] as [number, number, number][]) place(redwood(s), x, z, x);
-  place(cableCar(), -25, -14, 0.5);
-  group.add(path([[-26, -12], [-21, -15], [-15, -11], [-14, 2], [-16, 6], [-25, 5], [-21, 1.5], [-20.5, -7], [-24, -11.5], [-26, -12]], 1.8, "#c9c0a8"));
+  place(cableCar(), -27.5, -16, 0.5);
+  group.add(path([[-26, -12], [-21, -15], [-15.5, -11], [-15.2, -4.5], [-15.2, -1.2], [-21, -1.0], [-21, -7], [-24, -11.5], [-26, -12]], 1.8, "#c9c0a8"));
   for (const [x, z, c] of [[-29, 15, "#e8558a"], [-29, 18.5, "#2f6fb5"]] as [number, number, string][]) {
     add(group, new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 1.8, 5), mat("#f4f1ea")), x, TOP + 0.9, z);
     add(group, new THREE.Mesh(new THREE.ConeGeometry(1.0, 0.45, 10), mat(c)), x, TOP + 1.9, z);
@@ -116,9 +117,9 @@ function layoutNamerica({ group, tickers, place, tint, TOP }: LayoutCtx) {
 
   // ---------- life ----------
   const loops: [THREE.CatmullRomCurve3, [string, string][], number][] = [
-    [new THREE.CatmullRomCurve3([[-13, -18], [-2, -18], [-2, -9], [-2, -3.5], [-8, -3], [-13, -4]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), [[NA.denim, "cap"], ["#c0392b", ""], [NA.white, "cap"], ["#2f5d3f", ""]], 0.006],
-    [new THREE.CatmullRomCurve3([[-13, 4], [-3, 4], [-2.5, 10], [-3, 15.5], [-13, 15.5], [-14, 9]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), [[NA.denim, "cowboy"], ["#c0392b", "cowboy"], [NA.white, ""], ["#2a2a2e", "cowboy"]], 0.006],
-    [new THREE.CatmullRomCurve3([[-26, -12], [-21, -15], [-15, -11], [-14, 2], [-16, 6], [-25, 5], [-21, 1.5], [-20.5, -7], [-24, -11.5]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), [["#e8558a", ""], [NA.yellow, "cap"], ["#2f6fb5", ""], [NA.white, "cap"], ["#3f8f5a", ""]], 0.006],
+    [new THREE.CatmullRomCurve3([[-13, -18], [-3.2, -18], [-3.2, -9], [-4.5, -3.5], [-8, -2.5], [-13.2, -3.5], [-13.5, -13]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), [[NA.denim, "cap"], ["#c0392b", ""], [NA.white, "cap"], ["#2f5d3f", ""]], 0.006],
+    [new THREE.CatmullRomCurve3([[-14, 4], [-5, 4], [-5, 10], [-5, 15.5], [-14, 15.5], [-15, 9]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), [[NA.denim, "cowboy"], ["#c0392b", "cowboy"], [NA.white, ""], ["#2a2a2e", "cowboy"]], 0.006],
+    [new THREE.CatmullRomCurve3([[-26, -12], [-21, -15], [-15.5, -11], [-15.2, -4.5], [-15.2, -1.2], [-21, -1.0], [-21, -7], [-24, -11.5]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), [["#e8558a", ""], [NA.yellow, "cap"], ["#2f6fb5", ""], [NA.white, "cap"], ["#3f8f5a", ""]], 0.006],
   ];
   for (const [curve, people, speed] of loops) {
     const walkers = people.map(([c, kind]) => american(c, { cowboy: kind === "cowboy", cap: kind === "cap" ? "#2a2a2e" : undefined, beanie: kind === "beanie" ? "#c0392b" : undefined }));

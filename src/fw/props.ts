@@ -5,7 +5,7 @@
  */
 import * as THREE from "three";
 import { CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
-import { wobble } from "../world/noise";
+import { wobble } from "./noise";
 
 /** A little speech bubble that pops over an object for a moment. */
 export function bubble(g: THREE.Object3D, text: string, y: number, ms = 1500) {
@@ -525,7 +525,7 @@ export function person(shirt = "#3f6b8f", opts: { hat?: boolean; pole?: boolean;
     legL.thigh.rotation.x = sw; legR.thigh.rotation.x = -sw;
     legL.shin.rotation.x = Math.max(0, -sw) * 0.9; legR.shin.rotation.x = Math.max(0, sw) * 0.9;   // knee bends as the leg swings back
     if (!opts.pole) { armL.rotation.x = -sw * 0.7; armR.rotation.x = sw * 0.7; } else armL.rotation.x = -sw * 0.7;   // the free arm swings
-    g.position.y = Math.abs(Math.cos(t * 7)) * 0.02;
+    upper.position.y = hipY + Math.abs(Math.cos(t * 7)) * 0.02;   // the bob lives on the torso, so a walker set on a bridge deck stays there
   };
   return g;
 }
@@ -715,7 +715,7 @@ export function cow(dark = false, wander = true, voice = "哞~ Moo~"): P {
   const legs = [-0.5, 0.5].flatMap((x) => [-0.25, 0.25].map((z) => add(body, box(0.18, 0.5, 0.18, dark ? C.buffalo : (x < 0 ? C.cowBrown : coat)), x, 0.25, z)));
   const tail = add(body, cyl(0.03, 0.03, 0.6, dark ? C.buffalo : C.cowBrown, 4), -0.78, 0.7, 0); tail.rotation.x = 0.3;
   // wander: a slow amble around the origin with grazing pauses
-  const ph = rnd() * 6, r = 1.1 + rnd() * 0.5;
+  const ph = rnd() * 6, r = wander ? 1.1 + rnd() * 0.5 : 0.25;   // a penned cow stays put
   const re = reaction(0.6);
   g.userData.poke = () => { re.poke(); bubble(body, voice, 1.9); };
   g.userData.tick = (t, dt) => {

@@ -314,7 +314,6 @@ app.post("/api/plan/remove", async (req, res) => {
 if (process.env.NODE_ENV === "production") {
   const dist = join(root, "dist");
   app.use(express.static(dist));
-  app.get(["/world", "/world/*"], (_req, res) => res.sendFile(join(dist, "world.html")));
   app.get("*", (_req, res) => res.sendFile(join(dist, "index.html")));
 }
 

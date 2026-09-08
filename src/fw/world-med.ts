@@ -79,9 +79,9 @@ function layoutMed({ group, tickers, place, tint, TOP }: LayoutCtx) {
 
   // ---------- life ----------
   const loops: [THREE.CatmullRomCurve3, [string, string][], number][] = [
-    [new THREE.CatmullRomCurve3([[24, 1.5], [29, 2], [32, -2.5], [28, -8.5], [24, -10], [23.5, -2]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), [["#f4f1ea", "hat"], ["#3f6fb5", ""], ["#c0392b", "scarf"], ["#2a2a2e", ""], ["#e0a52c", "hat"]], 0.008],
-    [new THREE.CatmullRomCurve3([[-22, -6], [-19.5, -5], [-19.5, 5.5], [-24, 8], [-31, 3.5], [-31, -5.5], [-26, -6]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), [["#c0392b", "flat"], ["#f4f1ea", ""], ["#3f6fb5", "hat"], ["#e8558a", "scarf"], ["#2a2a2e", "flat"], ["#f2c14e", ""]], 0.007],
-    [new THREE.CatmullRomCurve3([[-25.5, 14], [-26, 24], [-12, 27.2], [3, 24.5], [5, 15.5], [-8, 13.8]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), [["#f4f1ea", "fez"], ["#3f6fb5", "scarf"], ["#7a4a3a", ""], ["#c0392b", "fez"], ["#2f5d3f", "scarf"], ["#e0b34c", ""]], 0.007],
+    [new THREE.CatmullRomCurve3([[24, 1.5], [29, 2], [30.5, -0.5], [31.5, -4.5], [28.5, -6], [26.2, -7.6], [24.2, -5.5], [23.5, -2]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), [["#f4f1ea", "hat"], ["#3f6fb5", ""], ["#c0392b", "scarf"], ["#2a2a2e", ""], ["#e0a52c", "hat"]], 0.008],
+    [new THREE.CatmullRomCurve3([[-22, -6], [-19.5, -5], [-19.5, 5.5], [-24, 8], [-31, 3.5], [-31, 0], [-31, -5.5], [-26, -6]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), [["#c0392b", "flat"], ["#f4f1ea", ""], ["#3f6fb5", "hat"], ["#e8558a", "scarf"], ["#2a2a2e", "flat"], ["#f2c14e", ""]], 0.007],
+    [new THREE.CatmullRomCurve3([[-25.5, 14], [-24, 23.5], [-12, 24.6], [-7, 22.8], [-1, 22.6], [2.5, 16.5], [-8, 13.8]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), [["#f4f1ea", "fez"], ["#3f6fb5", "scarf"], ["#7a4a3a", ""], ["#c0392b", "fez"], ["#2f5d3f", "scarf"], ["#e0b34c", ""]], 0.007],
     [new THREE.CatmullRomCurve3([[-14, -16], [-4, -16], [12, -16.5], [12.2, -26], [-13, -26]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), [["#3f6fb5", ""], ["#f4f1ea", "flat"], ["#c0392b", ""], ["#2a2a2e", "hat"]], 0.008],
   ];
   for (const [curve, people, speed] of loops) {

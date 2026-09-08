@@ -1,4 +1,4 @@
-import { escapeHtml as esc } from "../world/plates";
+import { escapeHtml as esc } from "./plates";
 import { fetchBody, minutesLabel, type RecipeBody } from "../data";
 import { imageUrl } from "../data";
 import { AREAS, SPICE, objectById, type Area, type EnrichedRecipe, type MapRegion, type WorldObject } from "./graph";

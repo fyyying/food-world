@@ -2,7 +2,7 @@
 import * as THREE from "three";
 import { CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
 import { MAP_REGIONS, type MapRegion } from "./graph";
-import { wobble } from "../world/noise";
+import { wobble } from "./noise";
 import { mat, mountain, house, tree, temple, pagoda, birds, lanternString, gate } from "./props";
 import { colosseum, baroqueChurch, campanile, umbrellaPine, cypress, italianHouse } from "./props-italy";
 import { palaceGate, hanok, seoulTower } from "./props-korea";

@@ -43,7 +43,7 @@ function layoutMexico({ group, tickers, place, tint, TOP }: LayoutCtx) {
   place(aztecPyramid(), 11, -21, 0.1);
   const casas: [string, number, number, number, boolean, number][] = [
     [MX.pink, -9, -19.5, 0.1, true, 2], [MX.blue, -9, -23, 0, false, 1], [MX.yellow, 14, -14, -0.1, true, 1], [MX.green, 14, -10, 0.1, false, 2],
-    [MX.terracotta, 2, 0, 0.1, true, 1], [MX.cream, -14, -23.5, 0.05, true, 1], [MX.pink, -18, -24, -0.1, false, 2],
+    [MX.terracotta, 2, 2.4, 0.1, true, 1], [MX.cream, -14, -23.5, 0.05, true, 1], [MX.pink, -18, -24, -0.1, false, 2],
   ];
   for (const [c, x, z, rot, tiles, st] of casas) place(casa(c, 3.2, 2.6, 2.2, { tiles, storeys: st }), x, z, rot);
   for (const [x, z] of [[-9, -16.5], [14, -8]]) { const pp = papelPicado(6, 9, 2.6); place(pp, x, z, Math.PI / 2); tickers.push(pp.userData.tick!); }
@@ -74,16 +74,16 @@ function layoutMexico({ group, tickers, place, tint, TOP }: LayoutCtx) {
 
   // ---------- life: strollers on the zócalo, in Oaxaca's lanes, and on the beach ----------
   const loops: [THREE.CatmullRomCurve3, string[], number][] = [
-    [new THREE.CatmullRomCurve3([0, 1, 2, 3, 4, 5, 6, 7].map((i) => new THREE.Vector3(Math.cos(i / 8 * Math.PI * 2) * 4.8, 0, -12 + Math.sin(i / 8 * Math.PI * 2) * 4.8)), true), ["#3f6fb5", "#e8558a", "#f2c14e", "#f4f1ea", "#3f8f5a", "#2a2a2e", "#ec7a2b"], 0.008],
+    [new THREE.CatmullRomCurve3([0, 1, 2, 3, 4, 5, 6, 7].map((i) => new THREE.Vector3(Math.cos(i / 8 * Math.PI * 2) * 4.0, 0, -12.5 + Math.sin(i / 8 * Math.PI * 2) * 4.0)), true), ["#3f6fb5", "#e8558a", "#f2c14e", "#f4f1ea", "#3f8f5a", "#2a2a2e", "#ec7a2b"], 0.008],
     [new THREE.CatmullRomCurve3([[-13, 8.5], [-6, 8.5], [-4, 13], [-5, 16.5], [-12, 17.2], [-20, 17], [-22, 11]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), ["#e8558a", "#f2c14e", "#3f6fb5", "#f4f1ea", "#9b59b6"], 0.008],
-    [new THREE.CatmullRomCurve3([[-6, -8], [-6, -4], [-2, -1], [3, -1.5], [6, -3], [7, -7], [6, -12], [3, -6.5], [-2, -7]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), ["#3f8f5a", "#f4f1ea", "#c0392b", "#f2c14e"], 0.009],
+    [new THREE.CatmullRomCurve3([[-6, -9.5], [-6.5, -4], [-4.5, -1.2], [-1, 0.5], [3, 0.2], [6, -3], [7, -7], [5, -8.5], [1, -8], [-2, -8]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), ["#3f8f5a", "#f4f1ea", "#c0392b", "#f2c14e"], 0.009],
   ];
   for (const [curve, colours, speed] of loops) {
     const walkers = colours.map((c, i) => mexican(c, { hat: i % 3 === 1, rebozo: i % 3 === 2 ? MX.papel[i % 6] : undefined }));
     walkers.forEach((w) => group.add(w));
     tickers.push((t) => walkers.forEach((w, i) => { const u = (t * speed + i / walkers.length) % 1; const p = curve.getPointAt(u), n = curve.getPointAt((u + 0.004) % 1); w.position.set(p.x, 0, p.z); w.rotation.y = Math.atan2(n.x - p.x, n.z - p.z); w.userData.walk?.(t + i); }));
   }
-  for (const [x, z, n] of [[-4, -16.5, 2], [4, -16.5, 3], [-16, 10, 2]] as [number, number, number][]) for (let i = 0; i < n; i++) { const a = (i / n) * Math.PI * 2; place(mexican(["#f2c14e", "#3f6fb5", "#e8558a", "#f4f1ea"][(i + Math.abs(x)) % 4], { hat: i === 1 }), x + Math.cos(a) * 0.5, z + Math.sin(a) * 0.5, -a - Math.PI / 2); }
+  for (const [x, z, n] of [[-5.5, -18, 2], [5.5, -18, 3], [-16, 10, 2]] as [number, number, number][]) for (let i = 0; i < n; i++) { const a = (i / n) * Math.PI * 2; place(mexican(["#f2c14e", "#3f6fb5", "#e8558a", "#f4f1ea"][(i + Math.abs(x)) % 4], { hat: i === 1 }), x + Math.cos(a) * 0.5, z + Math.sin(a) * 0.5, -a - Math.PI / 2); }
   // beach umbrellas on the bay
   for (const [x, z, c] of [[14, 19, MX.pink], [18, 16.5, MX.yellow], [11, 21.5, MX.blue]] as [number, number, string][]) {
     add(group, new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 1.8, 5), mat("#f4f1ea")), x, TOP + 0.9, z);

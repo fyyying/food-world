@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
 import { AREAS, type EnrichedRecipe, type WorldId, type WorldObject } from "./graph";
 import { mat, add, fish, type P } from "./props";
-import { plateTexture, escapeHtml as esc } from "../world/plates";
+import { plateTexture, escapeHtml as esc } from "./plates";
 
 export type Placed = { obj: WorldObject; group: THREE.Group; hit: THREE.Mesh; labelEl: HTMLElement; anchor: THREE.Vector3; top: number; ring: THREE.Mesh; small: boolean };
 export type DishMarker = { recipe: EnrichedRecipe; host: Placed; group: THREE.Group; hit: THREE.Mesh; labelEl: HTMLElement; anchor: THREE.Vector3; ring: THREE.Mesh; base: THREE.Vector3; shown: boolean };

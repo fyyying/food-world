@@ -124,7 +124,7 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   const walkers = [person("#3f6b8f", { pole: true }), person("#c0392b", { hat: true }), person("#e0a52c"), person("#2f5d3f", { pole: true })];
   walkers.forEach((w) => group.add(w));
   // the loop follows the street: east along its north edge, back along the south edge
-  const walkPath = new THREE.CatmullRomCurve3([new THREE.Vector3(-22, 0, -6.6), new THREE.Vector3(-14, 0, -7.0), new THREE.Vector3(-6, 0, -6.2), new THREE.Vector3(2, 0, -5.8), new THREE.Vector3(10, 0, -6.8), new THREE.Vector3(16, 0, -8.6), new THREE.Vector3(12, 0, -6.0), new THREE.Vector3(4, 0, -4.6), new THREE.Vector3(-4, 0, -4.7), new THREE.Vector3(-12, 0, -5.6), new THREE.Vector3(-20, 0, -5.4)], true);
+  const walkPath = new THREE.CatmullRomCurve3([new THREE.Vector3(-18.5, 0, -5.5), new THREE.Vector3(-12, 0, -5.6), new THREE.Vector3(-4, 0, -5.6), new THREE.Vector3(4, 0, -5.4), new THREE.Vector3(12, 0, -6.4), new THREE.Vector3(16, 0, -8.6), new THREE.Vector3(10, 0, -7.4), new THREE.Vector3(2, 0, -6.6), new THREE.Vector3(-6, 0, -7.4), new THREE.Vector3(-17, 0, -7.6), new THREE.Vector3(-18.8, 0, -6.6)], true);
   tickers.push((t) => walkers.forEach((w, i) => { const u = ((t * 0.012 + i * 0.25) % 1); const p = walkPath.getPointAt(u), n = walkPath.getPointAt((u + 0.005) % 1); w.position.set(p.x, 0, p.z); w.rotation.y = Math.atan2(n.x - p.x, n.z - p.z); (w.userData as { walk?: (t: number) => void }).walk?.(t + i); }));
 
   // ---------- Jiangnan life: canal-side strollers over the bridge, a fisherman, washing, kids, laundry ----------
@@ -134,9 +134,9 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   const jnPath = new THREE.CatmullRomCurve3([
     // north bank: behind the red-braising kitchen and around the eastern houses, never through a wall
     new THREE.Vector3(20.6, 0, -0.6), new THREE.Vector3(21.8, 0, -7.6), new THREE.Vector3(26, 0, -8.6), new THREE.Vector3(30.6, 0, -6.2), new THREE.Vector3(32.6, 0, -2),
-    new THREE.Vector3(31.5, 0, 1.0), new THREE.Vector3(27.5, 0, -1.6), new THREE.Vector3(23.5, 0, -2.2), northEnd.clone(),
+    new THREE.Vector3(30.2, 0, -0.5), new THREE.Vector3(27.5, 0, -0.3), new THREE.Vector3(24, 0, -0.5), northEnd.clone(),
     // over the bridge and along the south-bank lane
-    new THREE.Vector3(bx, 0, bz), southEnd.clone(), new THREE.Vector3(17, 0, 9.4), new THREE.Vector3(13, 0, 13.2), new THREE.Vector3(17.5, 0, 14.4), new THREE.Vector3(23, 0, 12.6),
+    new THREE.Vector3(bx, 0, bz), southEnd.clone(), new THREE.Vector3(18.6, 0, 8.6), new THREE.Vector3(17.9, 0, 12.9), new THREE.Vector3(13, 0, 14.2), new THREE.Vector3(17.5, 0, 15.3), new THREE.Vector3(23.6, 0, 14.6),
     southEnd.clone().add(new THREE.Vector3(0.3, 0, 0.6)), new THREE.Vector3(bx + 0.3, 0, bz),
   ], true);
   tickers.push((t) => jnWalkers.forEach((w, i) => {

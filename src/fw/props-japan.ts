@@ -62,13 +62,14 @@ export function shibuya(): P {
   stripe(0, -3.2, 0, 9); stripe(0, 3.2, 0, 9); stripe(-3.2, 0, Math.PI / 2, 9); stripe(3.2, 0, Math.PI / 2, 9); stripe(0, 0, Math.PI / 4, 11);
   for (const [x, z] of [[-3.6, -3.6], [3.6, -3.6], [-3.6, 3.6], [3.6, 3.6]] as [number, number][]) { const b = tokyoBlock(1.8, 5 + rnd() * 3, 1.8, pick(["#c9c2b0", "#b8b4ad", "#a89f8c"]), pick([JP.vermilion, JP.indigo, "#3fa2b0"])); b.position.set(x, 0, z); g.add(b); const screen = add(b, box(1.4, 0.9, 0.05, "#1f2430"), 0, 3.2, -Math.sign(z) * 0.95); add(screen, box(1.2, 0.7, 0.02, pick(["#e8558a", "#3fa2b0", JP.gold])), 0, 0, -Math.sign(z) * 0.03); }
   add(g, box(0.06, 2.4, 0.06, "#2a2a2e"), -2.2, 1.2, -2.2); add(g, box(0.5, 0.2, 0.06, "#2a2a2e"), -2.0, 2.3, -2.2); add(g, ball(0.06, "#3fbf5a", 5), -1.85, 2.3, -2.15);
-  const crowd: { p: Fig; from: THREE.Vector3; to: THREE.Vector3; ph: number }[] = [];
-  const corners = [new THREE.Vector3(-2.4, 0, -2.4), new THREE.Vector3(2.4, 0, -2.4), new THREE.Vector3(2.4, 0, 2.4), new THREE.Vector3(-2.4, 0, 2.4)];
-  for (let i = 0; i < 14; i++) { const from = corners[i % 4].clone().add(new THREE.Vector3((rnd() - 0.5) * 1.2, 0, (rnd() - 0.5) * 1.2)); const to = corners[(i + 1 + Math.floor(rnd() * 3)) % 4].clone().add(new THREE.Vector3((rnd() - 0.5) * 1.2, 0, (rnd() - 0.5) * 1.2)); const p = local(pick([JP.white, "#2a2a2e", JP.indigo, "#e8558a", C.straw, "#3f8f5a"]), { cap: i % 5 === 0 }); p.position.copy(from); p.rotation.y = Math.atan2(to.x - from.x, to.z - from.z); g.add(p); crowd.push({ p, from, to, ph: rnd() }); }
+  const crowd: { p: Fig; from: THREE.Vector3; to: THREE.Vector3; grp: number }[] = [];
+  // two groups cross in turn along the two diagonals, each person in their own lane, so nobody walks through anyone
+  for (let i = 0; i < 14; i++) { const grp = i % 2; const lane = (Math.floor(i / 2) - 3) * 0.55; const d = grp ? new THREE.Vector3(1, 0, 1).normalize() : new THREE.Vector3(1, 0, -1).normalize(); const side = new THREE.Vector3(-d.z, 0, d.x).multiplyScalar(lane); const from = d.clone().multiplyScalar(-3.3).add(side), to = d.clone().multiplyScalar(3.3).add(side); const p = local(pick([JP.white, "#2a2a2e", JP.indigo, "#e8558a", C.straw, "#3f8f5a"]), { cap: i % 5 === 0 }); p.position.copy(from); p.rotation.y = Math.atan2(to.x - from.x, to.z - from.z); g.add(p); crowd.push({ p, from, to, grp }); }
   const re = reaction(0.25);
   let phase = 0;
   g.userData.poke = () => { re.poke(); bubble(g, "スクランブル! Scramble!", 2.2, 1400); };
-  g.userData.tick = (t, dt) => { const k = re.step(dt); phase = (phase + dt * (0.08 + k * 0.5)) % 1; for (const c of crowd) { const u = (phase + c.ph) % 1; const w = u < 0.5 ? u * 2 : (1 - u) * 2; const a = u < 0.5 ? c.from : c.to, b = u < 0.5 ? c.to : c.from; c.p.position.lerpVectors(a, b, w); c.p.rotation.y = Math.atan2(b.x - a.x, b.z - a.z); c.p.userData.walk?.(t + c.ph * 7); } };
+  let turn = 0;
+  g.userData.tick = (t, dt) => { const k = re.step(dt); phase += dt * (0.05 + k * 0.3); if (phase >= 1) { phase -= 1; turn++; for (const c of crowd) if (c.grp === (turn + 1) % 2) { const tmp = c.from; c.from = c.to; c.to = tmp; } } const active = turn % 2; for (const c of crowd) { const mine = c.grp === active; const w = mine ? Math.min(1, phase / 0.9) : 0; c.p.position.lerpVectors(c.from, c.to, w); if (mine && w < 1) { c.p.rotation.y = Math.atan2(c.to.x - c.from.x, c.to.z - c.from.z); c.p.userData.walk?.(t + c.grp * 3); } } };
   return g;
 }
 
@@ -172,12 +173,13 @@ export function toriiPath(): P {
   const g = group();
   const hill = new THREE.Mesh(new THREE.ConeGeometry(5.5, 2.4, 10), mat("#6f9f5f")); hill.position.y = 1.2; hill.scale.z = 0.7; g.add(hill);
   const gates: THREE.Group[] = [];
-  for (let i = 0; i < 8; i++) { const u = i / 7; const x = -3.6 + u * 7.2; const y = 2.4 * (1 - Math.abs(u - 0.5) * 2) * 0.55; const t = new THREE.Group(); t.position.set(x, y, 0); t.rotation.y = Math.PI / 2; g.add(t); gates.push(t); for (const sd of [-1, 1]) add(t, cyl(0.06, 0.07, 1.7, JP.vermilion, 8), sd * 0.45, 0.85, 0); add(t, box(1.3, 0.1, 0.1, JP.vermilion), 0, 1.72, 0); add(t, box(1.0, 0.07, 0.08, JP.vermilion), 0, 1.5, 0); add(t, box(1.34, 0.05, 0.12, "#2a2a2e"), 0, 1.8, 0); }
+  const hillY = (x: number) => 2.4 * (1 - Math.min(1, Math.abs(x) / 5.5)) * 0.92;
+  for (let i = 0; i < 8; i++) { const u = i / 7; const x = -3.6 + u * 7.2; const y = hillY(x); const t = new THREE.Group(); t.position.set(x, y, 0); t.rotation.y = Math.PI / 2; g.add(t); gates.push(t); for (const sd of [-1, 1]) add(t, cyl(0.06, 0.07, 1.7, JP.vermilion, 8), sd * 0.45, 0.85, 0); add(t, box(1.3, 0.1, 0.1, JP.vermilion), 0, 1.72, 0); add(t, box(1.0, 0.07, 0.08, JP.vermilion), 0, 1.5, 0); add(t, box(1.34, 0.05, 0.12, "#2a2a2e"), 0, 1.8, 0); }
   for (const sd of [-1, 1]) { add(g, box(0.4, 0.5, 0.4, "#8f857a"), -4.4, 0.25, sd * 0.8); const fox = add(g, box(0.16, 0.3, 0.3, JP.white), -4.4, 0.65, sd * 0.8); add(fox, box(0.14, 0.14, 0.14, JP.white), 0, 0.22, 0.12); add(fox, box(0.12, 0.05, 0.03, JP.vermilion), 0, 0.1, 0.27); add(fox, cone(0.04, 0.1, JP.white, 4), 0, 0.34, 0.08); }
   const climbers = [local(JP.white, { kimono: "#7a3a5a" }), local(JP.indigo), local("#e8558a", { kimono: "#3f8f5a" })]; climbers.forEach((c) => { c.scale.setScalar(0.85); g.add(c); });
   const re = reaction(0.5);
   g.userData.poke = () => { re.poke(); bubble(gates[3], "千本鳥居 · a thousand gates", 2.3, 1400); };
-  g.userData.tick = (t, dt) => { const k = re.step(dt); gates.forEach((gt, i) => { gt.rotation.z = k * Math.sin(t * 8 - i * 0.6) * 0.06; }); climbers.forEach((c, i) => { const u = ((t * 0.04 + i / 3) % 1); const x = -3.6 + u * 7.2; const y = 2.4 * (1 - Math.abs(u - 0.5) * 2) * 0.55; c.position.set(x, y, 0.2); c.rotation.y = Math.PI / 2; c.userData.walk?.(t + i); }); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); gates.forEach((gt, i) => { gt.rotation.z = k * Math.sin(t * 8 - i * 0.6) * 0.06; }); climbers.forEach((c, i) => { const u = ((t * 0.04 + i / 3) % 1); const x = -3.6 + u * 7.2; const y = hillY(x) + 0.02; c.position.set(x, y, 0.2); c.rotation.y = Math.PI / 2; c.userData.walk?.(t + i); }); };
   return g;
 }
 
@@ -232,8 +234,8 @@ export function fuji(): P {
   const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.95, flatShading: true })); m.position.y = 6; m.castShadow = true; m.receiveShadow = true; g.add(m);
   const cloud = new THREE.Group(); for (let k = 0; k < 4; k++) add(cloud, ball(0.9 - k * 0.1, JP.white, 7), -1.2 + k * 0.8, Math.sin(k) * 0.2, 0).scale.y = 0.6; cloud.position.set(6, 8.5, 2); g.add(cloud);
   g.userData.tick = (t) => { cloud.position.x = 6 + Math.sin(t * 0.2) * 1.5; };
-  g.scale.setScalar(0.66);
-  return g;
+  const outer = group(); g.scale.setScalar(0.66); outer.add(g); outer.userData.tick = g.userData.tick; g.userData.tick = undefined;
+  return outer;
 }
 
 /** A hot spring in the rocks with snow monkeys soaking; water added by the layout. */

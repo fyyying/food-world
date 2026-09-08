@@ -41,7 +41,7 @@ function layoutJapan({ group, tickers, place, tint, TOP }: LayoutCtx) {
   const bridge = new THREE.Group(); add(bridge, new THREE.Mesh(new THREE.BoxGeometry(6.2, 0.2, 1.8), mat(JP.wood)), 0, 0.7, 0); for (const sd of [-1, 1]) { add(bridge, new THREE.Mesh(new THREE.BoxGeometry(6.2, 0.06, 0.06), mat(JP.vermilion)), 0, 1.3, sd * 0.85); for (let k = 0; k < 6; k++) add(bridge, new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.6, 0.08), mat(JP.vermilion)), -2.6 + k * 1.04, 1.0, sd * 0.85); } for (const x of [-2.4, 2.4]) add(bridge, new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.7, 2.0), mat("#8f857a")), x, 0.3, 0); const bp = river.getPointAt(0.63); bridge.position.set(bp.x, TOP, bp.z); group.add(bridge);
   // Fuji's lake, the Mirror Pond at Kinkaku-ji, the hot spring
   const disc = (x: number, z: number, rx: number, rz: number, m: THREE.Material, rim: string, rimW = 0.8) => { const r = new THREE.Mesh(new THREE.CircleGeometry(1, 36), mat(rim)); r.rotation.x = -Math.PI / 2; r.position.set(x, TOP + 0.03, z); r.scale.set(rx + rimW, rz + rimW, 1); group.add(r); const w = new THREE.Mesh(new THREE.CircleGeometry(1, 36), m); w.rotation.x = -Math.PI / 2; w.position.set(x, TOP + 0.064, z); w.scale.set(rx, rz, 1); w.renderOrder = 2; group.add(w); };
-  disc(17, 9, 3.0, 2.4, lake, "#e6dfc4"); disc(-27.5, 8.4, 4.6, 3.2, pond, "#cfc6a8"); disc(-2, -2.5, 2.2, 1.5, spring, "#8f857a", 0.3);
+  disc(17, 9, 3.0, 2.4, lake, "#e6dfc4"); disc(-27.5, 8.4, 4.0, 3.0, pond, "#cfc6a8"); disc(-2, -2.5, 2.2, 1.5, spring, "#8f857a", 0.3);
   add(group, new THREE.Mesh(new THREE.BoxGeometry(3.0, 0.1, 1.0), mat(JP.wood)), 15.6, TOP + 0.12, 6.9);   // a jetty on the lake
   const rowboat = new THREE.Group(); add(rowboat, new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.3, 0.7), mat(JP.white)), 0, 0.15, 0); add(rowboat, new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.05, 0.74), mat(JP.vermilion)), 0, 0.3, 0); const rower = local(JP.indigo); rower.userData.sit?.(); rower.scale.setScalar(0.75); rower.position.set(-0.1, 0.3, 0); rowboat.add(rower); group.add(rowboat);
   tickers.push((t) => { const a = t * 0.25; rowboat.position.set(17 + Math.cos(a) * 1.7, TOP + 0.06, 9 + Math.sin(a) * 1.2); rowboat.rotation.y = -a; });
@@ -65,7 +65,7 @@ function layoutJapan({ group, tickers, place, tint, TOP }: LayoutCtx) {
   for (const [x, z] of [[-15, 3], [-15.5, 9], [-8, 8], [-8.5, 2], [-8, 14], [-15, 21], [-7.5, 20], [-30, 13], [-24, 4], [-33, 8]] as [number, number][]) place(sakura(0.9 + ((x + z) % 3) * 0.1), x, z, x);
   for (const [x, z] of [[-24, 1], [-31, 4.5], [-27, 16.5], [-13.5, 10]] as [number, number][]) place(stoneLantern(0.9), x, z, 0);
   for (const [x, z] of [[-36, 12], [-35, 24], [-24, 26], [-14, -6], [-6, 24]] as [number, number][]) place(tree("pine", 1.0), x, z, x);
-  const kyotoPts: [number, number][] = [[-27.5, 16.5], [-15.5, 16.5], [-14.5, 11], [-16, 5], [-22, 4.5], [-24, 11]];
+  const kyotoPts: [number, number][] = [[-28.6, 15.8], [-15.5, 16.5], [-14.5, 11], [-16, 5], [-21.8, 4.2], [-22.4, 10], [-26, 11.9], [-28.8, 14]];
   const kyotoLoop = new THREE.CatmullRomCurve3(kyotoPts.map(([x, z]) => new THREE.Vector3(x, 0, z)), true);
   group.add(path([...kyotoPts.slice(1), kyotoPts[0], kyotoPts[1]], 1.6, "#cfc6a8"));
   const kyotoWalkers = [local(JP.white, { kimono: "#7a3a5a" }), local(JP.white, { kimono: "#c8402a" }), local(JP.indigo), local(JP.white, { kimono: "#3f8f5a" }), local("#2a2a2e", { kimono: JP.indigo })]; kyotoWalkers.forEach((w) => group.add(w));

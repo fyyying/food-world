@@ -77,8 +77,8 @@ function layoutMideast({ group, tickers, place, tint, TOP }: LayoutCtx) {
   // ---------- life ----------
   const loops: [THREE.CatmullRomCurve3, [string, string][], number][] = [
     [new THREE.CatmullRomCurve3([[4, -18.6], [12, -18.8], [20, -18.6], [22, -12], [20, -5], [12, -5], [4, -5], [2.5, -12]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), [["#3f6fb5", "fez"], ["#c0392b", ""], ["#f4f1ea", "hijab"], ["#2a2a2e", "fez"], ["#e0b34c", ""], ["#2f5d3f", "hijab"], ["#7a4a3a", ""]], 0.008],
-    [new THREE.CatmullRomCurve3([[-16, -3.5], [-10, -3], [-9, 3], [-10, 11], [-19, 12], [-28, 12.5], [-31, 7], [-27, -3], [-24, -3]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), [["#f4f1ea", "keffiyeh"], ["#3f6fb5", ""], ["#e8558a", "hijab"], ["#2a2a2e", ""], ["#c0392b", "keffiyeh"], ["#9b59b6", "hijab"]], 0.007],
-    [new THREE.CatmullRomCurve3([[18, -4], [30, -4], [31, 2], [29, 7], [19, 7], [17, 2]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), [["#3f6fb5", "skull"], ["#f4f1ea", "hijab"], ["#2f5d3f", ""], ["#c0392b", "skull"]], 0.008],
+    [new THREE.CatmullRomCurve3([[-16, -3.5], [-10, -3], [-9, 3], [-10, 11], [-19, 12], [-26.2, 12.6], [-27.5, 7.5], [-26, 3.5], [-25, -2], [-22, -3.2]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), [["#f4f1ea", "keffiyeh"], ["#3f6fb5", ""], ["#e8558a", "hijab"], ["#2a2a2e", ""], ["#c0392b", "keffiyeh"], ["#9b59b6", "hijab"]], 0.007],
+    [new THREE.CatmullRomCurve3([[18, -4], [28.5, -4], [29.5, 1], [27, 4.5], [19, 4.5], [17, 1]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), [["#3f6fb5", "skull"], ["#f4f1ea", "hijab"], ["#2f5d3f", ""], ["#c0392b", "skull"]], 0.008],
   ];
   for (const [curve, people, speed] of loops) {
     const walkers = people.map(([c, hat]) => local(c, { fez: hat === "fez", keffiyeh: hat === "keffiyeh", skull: hat === "skull", hijab: hat === "hijab" ? ["#9b59b6", "#e8558a", "#2f4f9f"][c.length % 3] : undefined }));

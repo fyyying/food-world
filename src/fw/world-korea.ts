@@ -70,8 +70,8 @@ function layoutKorea({ group, tickers, place, tint, TOP }: LayoutCtx) {
   place(stoneWall(5), -18, 19.6, 0.05);
   for (const [x, z, rot, len] of [[-31, 12.5, 0, 7], [-31, 17.5, 0, 7], [-34.5, 15, Math.PI / 2, 5], [-27.5, 15, Math.PI / 2, 5]] as [number, number, number, number][]) place(fence(len), x, z, rot);
   for (let i = 0; i < 4; i++) place(tree(i % 2 ? "persimmon" : "round", 0.9), -30 + i * 2.5, 22 + (i % 2), i);
-  const calf = cow(false, false, "음메~ Moo~"); place(calf, -33, 16.5, 2.2).scale.setScalar(0.7); tickers.push((t, dt) => calf.userData.tick?.(t, dt));
-  group.add(path([[-21, 11.5], [-17, 14], [-12, 14.5], [-8, 16.8], [-8, 21], [-14, 21.2], [-20, 21.8], [-24, 17], [-25, 13], [-21, 11.5]], 1.8, "#d2c7a8"));
+  const calf = cow(false, false, "음메~ Moo~"); place(calf, -29.5, 13.4, 2.2).scale.setScalar(0.7); tickers.push((t, dt) => calf.userData.tick?.(t, dt));
+  group.add(path([[-21, 11.5], [-17, 14], [-12, 14.5], [-6.5, 16.8], [-6.5, 21], [-14, 21.2], [-20, 22.4], [-26.5, 21.5], [-26, 17], [-25, 13], [-21, 11.5]], 1.8, "#d2c7a8"));
 
   // ---------- Busan: the port, the hillside houses, the beach ----------
   const gam = ["#f2c6c6", "#8fc4c9", "#f2cf3a", "#a3d18a", "#f08a2a", "#c9d6ee", "#f4f1ea", "#e07aa0"];
@@ -90,13 +90,13 @@ function layoutKorea({ group, tickers, place, tint, TOP }: LayoutCtx) {
     add(group, new THREE.Mesh(new THREE.ConeGeometry(1.0, 0.45, 10), mat(c)), x, TOP + 1.9, z);
     const lg = lounger(c === "#c0392b" ? "#e07aa0" : "#3f6b8f", c); place(lg, x + 1.1, z + 0.3, -0.5); tickers.push(lg.userData.tick!);
   }
-  group.add(path([[5, 12], [10, 12.8], [14, 12], [13, 3], [8, 2.5], [4.5, 4], [3.9, 8], [5, 12]], 1.8, "#d2c7a8"));
+  group.add(path([[5, 11], [10, 11.6], [14, 11], [13, 3], [8, 2.5], [4.5, 4], [3.9, 7.5], [5, 11]], 1.8, "#d2c7a8"));
 
   // ---------- life ----------
   const loops: [THREE.CatmullRomCurve3, string[], number][] = [
     [new THREE.CatmullRomCurve3([[-8, -11.5], [-3, -11], [3, -10.5], [4.5, -7], [3.5, -3], [-2, -3.5], [-6, -4.5], [-8, -8]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), ["#3f6b8f", "#e0a52c", "#c0392b", "#f4f1ea", "#2f5d3f", "#e07aa0", "#2a2a2e"], 0.01],
-    [new THREE.CatmullRomCurve3([[-21, 11.5], [-17, 14], [-12, 14.5], [-8, 16.8], [-8, 21], [-14, 21.2], [-20, 21.8], [-24, 17], [-25, 13]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), ["#e07aa0", "#8fc4c9", "#f2cf3a", "#3f6b8f", "#c0392b"], 0.008],
-    [new THREE.CatmullRomCurve3([[5, 12], [10, 12.8], [14, 12], [13, 3], [8, 2.5], [4.5, 4], [3.9, 8]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), ["#3f6b8f", "#f4f1ea", "#e0a52c", "#2a2a2e"], 0.009],
+    [new THREE.CatmullRomCurve3([[-21, 11.5], [-17, 14], [-12, 14.5], [-6.5, 16.8], [-6.5, 21], [-14, 21.2], [-20, 22.4], [-26.5, 21.5], [-26, 17], [-25, 13]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), ["#e07aa0", "#8fc4c9", "#f2cf3a", "#3f6b8f", "#c0392b"], 0.008],
+    [new THREE.CatmullRomCurve3([[5, 11], [10, 11.6], [14, 11], [13, 3], [8, 2.5], [4.5, 4], [3.9, 7.5]].map(([x, z]) => new THREE.Vector3(x, 0, z)), true), ["#3f6b8f", "#f4f1ea", "#e0a52c", "#2a2a2e"], 0.009],
   ];
   for (const [curve, colours, speed] of loops) {
     const walkers = colours.map((c, i) => person(c, { hat: i % 3 === 1 }));

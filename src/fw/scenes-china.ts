@@ -3,7 +3,7 @@
 
 import { type SceneDef } from "./scene";
 import { hotpotPaintedScene } from "./scene-hotpot-painted";
-import { paintedScene, at } from "./scene-painted";
+import { paintedScene, at, pAt } from "./scene-painted";
 
 const noodleShop = (): SceneDef => {
   const f = "noodle_shop";
@@ -23,6 +23,11 @@ const noodleShop = (): SceneDef => {
     steam: [{ x: 167, y: 520, w: 120, rate: 16, a: 0.4 }, { x: 300, y: 760, w: 80, rate: 6, a: 0.3 }, { x: 760, y: 790, w: 60, rate: 5, a: 0.28 }],
     lamps: [{ x: 490, y: 80, r: 100 }, { x: 1580, y: 120, r: 90 }, { x: 720, y: 290, r: 40 }, { x: 1090, y: 280, r: 40 }, { x: 1230, y: 330, r: 35 }, { x: 1420, y: 330, r: 35 }],
     motes: 50,
+    portrait: {
+      steam: [{ ...pAt(f, 0.31, 0.42), w: 70, rate: 12, a: 0.36 }, { ...pAt(f, 0.5, 0.6), w: 40, rate: 5, a: 0.26 }, { ...pAt(f, 0.45, 0.85), w: 50, rate: 5, a: 0.28 }],
+      lamps: [{ ...pAt(f, 0.35, 0.09), r: 70 }, { ...pAt(f, 0.34, 0.2), r: 30 }, { ...pAt(f, 0.58, 0.29), r: 18 }, { ...pAt(f, 0.88, 0.31), r: 20 }],
+      walkers: [{ name: "bird", w: 40, y: 190, from: pAt(f, 0.6, 0).x, to: pAt(f, 0.95, 0).x, dur: 7, every: 40, fly: true }],
+    },
     light: { x: 500, y: 260, color: "rgba(255,200,130,0.3)" },
   });
 };
@@ -43,6 +48,11 @@ const teahouse = (): SceneDef => {
     steam: [{ x: 100, y: 420, w: 30, rate: 4, a: 0.22 }, { x: 1330, y: 720, w: 40, rate: 4, a: 0.26 }],
     lamps: [{ x: 590, y: 130, r: 90 }, { x: 1500, y: 120, r: 100 }, { x: 200, y: 140, r: 50 }, { x: 455, y: 230, r: 45 }, { x: 1320, y: 330, r: 50 }],
     leaves: 3, motes: 50,
+    portrait: {
+      steam: [{ ...pAt(f, 0.05, 0.43), w: 20, rate: 3, a: 0.2 }, { ...pAt(f, 0.86, 0.8), w: 30, rate: 4, a: 0.24 }],
+      lamps: [{ ...pAt(f, 0.09, 0.11), r: 60 }, { ...pAt(f, 0.97, 0.12), r: 60 }, { ...pAt(f, 0.24, 0.24), r: 30 }, { ...pAt(f, 0.86, 0.3), r: 25 }, { ...pAt(f, 0.76, 0.33), r: 20 }],
+      walkers: [{ name: "bird", w: 44, y: 250, from: pAt(f, 0.42, 0).x, to: pAt(f, 0.8, 0).x, dur: 8, every: 36, fly: true }],
+    },
     light: { x: 800, y: 200, color: "rgba(255,225,170,0.22)" },
   });
 };
@@ -63,6 +73,10 @@ const market = (): SceneDef => {
     steam: [{ x: 1550, y: 450, w: 60, rate: 6, a: 0.3 }],
     lamps: [{ x: 1359, y: 67, r: 80 }, { x: 1273, y: 143, r: 60 }, { x: 713, y: 206, r: 45 }, { x: 1411, y: 230, r: 60 }],
     leaves: 3.5, motes: 40,
+    portrait: {
+      steam: [{ ...pAt(f, 0.44, 0.38), w: 30, rate: 5, a: 0.28 }],
+      lamps: [{ ...pAt(f, 0.27, 0.22), r: 60 }, { ...pAt(f, 0.32, 0.06), r: 30 }, { ...pAt(f, 0.96, 0.2), r: 40 }, { ...pAt(f, 0.83, 0.42), r: 25 }],
+    },
     light: { x: 800, y: 250, color: "rgba(255,230,190,0.2)" },
   });
 };
@@ -84,6 +98,11 @@ const homeKitchen = (): SceneDef => {
     fire: [{ x: 287, y: 655, rx: 110, ry: 70 }],
     lamps: [{ x: 450, y: 40, r: 90 }],
     motes: 50,
+    portrait: {
+      steam: [{ ...pAt(f, 0.27, 0.48), w: 80, rate: 16, a: 0.4 }],
+      fire: [{ ...pAt(f, 0.3, 0.58), rx: 70, ry: 50 }],
+      lamps: [{ ...pAt(f, 0.4, 0.09), r: 70 }],
+    },
     light: { x: 300, y: 380, color: "rgba(255,180,100,0.3)" },
   });
 };
@@ -104,6 +123,9 @@ const tower = (): SceneDef => {
     ],
     lamps: [{ x: 235, y: 150, r: 90 }],
     leaves: 2.5, motes: 30,
+    portrait: {
+      lamps: [{ ...pAt(f, 0.07, 0.2), r: 70 }, { ...pAt(f, 0.22, 0.25), r: 50 }, { ...pAt(f, 0.35, 0.4), r: 22 }],
+    },
     light: { x: 800, y: 300, color: "rgba(255,190,120,0.24)" },
   });
 };

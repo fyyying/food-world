@@ -30,8 +30,8 @@ export type SceneDef = {
   layers: SceneLayer[];
   /** particle canvas depth (steam, bubbles) */
   fxDepth: number;
-  /** paints the particle canvas in stage coordinates; called every frame */
-  fx: (ctx: CanvasRenderingContext2D, t: number, dt: number) => void;
+  /** paints the particle canvas in stage coordinates; called every frame (`portrait` when a phone shows the portrait painting) */
+  fx: (ctx: CanvasRenderingContext2D, t: number, dt: number, portrait: boolean) => void;
   /** where the lantern light lives (stage coordinates) and its colour */
   light: { x: number; y: number; color: string };
   /** binds the live SVG elements once and returns the per-frame animator */
@@ -98,12 +98,17 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
   const ctx = fx.getContext("2d")!;
 
   // stage → viewport mapping (xMidYMid slice)
-  let W = 1, H = 1, S = 1, OX = 0, OY = 0, dpr = 1;
+  let W = 1, H = 1, S = 1, OX = 0, OY = 0, dpr = 1, isPortrait = false;
   function resize() {
     W = el.clientWidth || window.innerWidth; H = el.clientHeight || window.innerHeight;
     const portrait = W / H < 0.85;   // phones get the portrait painting where a room has one
     el.classList.toggle("portrait", portrait);
     el.querySelectorAll(".portrait-only").forEach((e) => e.setAttribute("visibility", portrait ? "visible" : "hidden"));
+    el.querySelectorAll(".wide-only").forEach((e) => e.setAttribute("visibility", portrait ? "hidden" : "visible"));
+    // the portrait painting covers whatever slice of the stage the screen shows (a tablet shows more than a phone)
+    const visibleW = W / S;
+    el.querySelectorAll<SVGImageElement>("image.portrait-only").forEach((im) => { const w = Math.max(Number(im.dataset.minw), visibleW); im.setAttribute("x", ((STAGE_W - w) / 2).toFixed(1)); im.setAttribute("width", w.toFixed(1)); });
+    isPortrait = portrait;
     S = Math.max(W / STAGE_W, H / STAGE_H);
     OX = (W - STAGE_W * S) / 2; OY = (H - STAGE_H * S) / 2;
     dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -151,7 +156,7 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
     ctx.setTransform(S * dpr, 0, 0, S * dpr, OX * dpr, OY * dpr);
-    def.fx(ctx, age, dt);
+    def.fx(ctx, age, dt, isPortrait);
   }
 
   function close() {

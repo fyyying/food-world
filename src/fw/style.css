@@ -78,7 +78,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 #card h2 { font-family: var(--display); font-weight: 700; font-size: 28px; line-height: 1.05; margin: 10px 0 2px; letter-spacing: -.015em; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; color: #3a2a1f; }
 #card h2 .zh { font-family: var(--zh); font-weight: 500; font-size: 19px; color: var(--red-ink); }
 #card .tagline { font-family: var(--display); font-style: italic; font-size: 16px; color: var(--ink-2); margin: 8px 0 10px; line-height: 1.3; }
-#card p.blurb { font-size: 13.5px; line-height: 1.55; color: var(--ink-2); margin: 0 0 6px; }
+#card p.blurb { font-size: 13.5px; line-height: 1.55; color: var(--ink-2); margin: 0 0 12px; }
+#card p.blurb:last-of-type { margin-bottom: 6px; }
 #card h4 { font-size: 10.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #a48b6a; margin: 16px 0 8px; display: flex; align-items: center; gap: 8px; }
 #card h4::after { content: ""; flex: 1; height: 2px; background: repeating-linear-gradient(90deg, #e3cfae 0 6px, transparent 6px 11px); border-radius: 2px; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }

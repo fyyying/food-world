@@ -30,6 +30,8 @@ export type Sprite = {
   mirror?: boolean;
 };
 
+export type Walker = { name: string; w: number; y: number; from: number; to: number; dur: number; every: number; fly?: boolean };
+
 export type PaintedCfg = {
   id: string;
   folder: string;
@@ -58,7 +60,9 @@ export type PaintedCfg = {
   /** the room is one painting that fills the stage (public/scenes/<folder>/wide.jpg), with a portrait twin for phones */
   painting?: boolean;
   /** figures that walk across the front now and then */
-  walkers?: { name: string; w: number; y: number; from: number; to: number; dur: number; every: number; fly?: boolean }[];
+  walkers?: Walker[];
+  /** the portrait painting is a different composition: where its steam, fire, lamps and flyers are */
+  portrait?: { steam?: PaintedCfg["steam"]; fire?: PaintedCfg["fire"]; lamps?: PaintedCfg["lamps"]; walkers?: Walker[] };
   light: { x: number; y: number; color: string };
 };
 
@@ -68,6 +72,8 @@ export function coverBox(folder: string) {
   const W = (STAGE_H * w) / h;
   return { x: (STAGE_W - W) / 2, y: 0, w: W, h: STAGE_H };
 }
+/** a point inside a room's portrait painting (centred, full height), as fractions of it */
+export const pAt = (folder: string, fx: number, fy: number) => { const [w, h] = PROPS.rooms[folder].portrait; const pw = (STAGE_H * w) / h; return { x: (STAGE_W - pw) / 2 + fx * pw, y: fy * STAGE_H }; };
 /** a point inside the cover painting, as fractions of it */
 export const at = (folder: string, fx: number, fy: number) => { const b = coverBox(folder); return { x: b.x + fx * b.w, y: b.y + fy * b.h }; };
 
@@ -100,10 +106,11 @@ export function paintedScene(cfg: PaintedCfg): SceneDef {
 
   const hangLayer = `${HALO}${(cfg.hang ?? []).map((s, i) => sprite(f, s, `hang-${i}`, "hang")).join("")}`;
 
-  const walkerSvg = (wk: NonNullable<PaintedCfg["walkers"]>[number], i: number) => { const { w, h } = size(f, wk.name, wk.w, true); return `<g id="walk-${i}" opacity="0"><image href="${propUrl(wk.name)}" x="0" y="${(wk.y - h).toFixed(1)}" width="${w}" height="${h.toFixed(1)}"/></g>`; };
+  const allWalkers: { wk: Walker; cls: string }[] = [...(cfg.walkers ?? []).map((wk) => ({ wk, cls: cfg.portrait?.walkers ? "wide-only" : "" })), ...(cfg.portrait?.walkers ?? []).map((wk) => ({ wk, cls: "portrait-only" }))];
+  const walkerSvg = ({ wk, cls }: { wk: Walker; cls: string }, i: number) => { const { w, h } = size(f, wk.name, wk.w, true); return `<g id="walk-${i}" class="${cls}" opacity="0"><image href="${propUrl(wk.name)}" x="0" y="${(wk.y - h).toFixed(1)}" width="${w}" height="${h.toFixed(1)}"/></g>`; };
   // people walk across the front; birds fly in the painting's own sky, so they live in the painting's layer
-  const walkers = (cfg.walkers ?? []).map((wk, i) => (wk.fly ? "" : walkerSvg(wk, i))).join("");
-  const flyers = (cfg.walkers ?? []).map((wk, i) => (wk.fly ? walkerSvg(wk, i) : "")).join("");
+  const walkers = allWalkers.map((w, i) => (w.wk.fly ? "" : walkerSvg(w, i))).join("");
+  const flyers = allWalkers.map((w, i) => (w.wk.fly ? walkerSvg(w, i) : "")).join("");
   const cover = url(f, "cover");
   const painting = cfg.painting ? `${import.meta.env.BASE_URL}scenes/${f}/` : null;
   const pb = painting ? PROPS.rooms[f].portrait : null;
@@ -120,12 +127,14 @@ export function paintedScene(cfg: PaintedCfg): SceneDef {
     ${HALO}
     ${painting
       ? `<image href="${painting}wide.jpg" x="-8" y="-5" width="${STAGE_W + 16}" height="${STAGE_H + 10}" preserveAspectRatio="none"/>
-         <image class="portrait-only" href="${painting}portrait.jpg" x="${((STAGE_W - pw) / 2).toFixed(1)}" y="-5" width="${pw.toFixed(1)}" height="${STAGE_H + 10}" preserveAspectRatio="none"/>`
+         <image class="portrait-only" data-minw="${pw.toFixed(1)}" href="${painting}portrait.jpg" x="${((STAGE_W - pw) / 2).toFixed(1)}" y="-5" width="${pw.toFixed(1)}" height="${STAGE_H + 10}" preserveAspectRatio="xMidYMid slice"/>`
       : `${wings}
     <rect x="-100" y="-60" width="${(cb.x + 140).toFixed(1)}" height="1020" fill="rgba(8,4,2,${dim})"/><rect x="${(cb.x + cb.w - 40).toFixed(1)}" y="-60" width="900" height="1020" fill="rgba(8,4,2,${dim})"/>
     <image href="${cover}" x="${cb.x.toFixed(1)}" y="0" width="${cb.w.toFixed(1)}" height="${STAGE_H}" preserveAspectRatio="none" mask="url(#coverMask)"/>`}
-    ${(cfg.fire ?? []).map((o, i) => `<ellipse id="fire-${i}" cx="${o.x}" cy="${o.y}" rx="${o.rx}" ry="${o.ry}" fill="url(#fireQ)"/>`).join("")}
-    ${(cfg.lamps ?? []).map((o, i) => `<ellipse id="lamp-${i}" cx="${o.x}" cy="${o.y}" rx="${o.r}" ry="${o.r * 0.85}" fill="url(#haloQ)" opacity=".7"/>`).join("")}
+    ${(cfg.fire ?? []).map((o, i) => `<ellipse id="fire-${i}" class="${cfg.portrait?.fire ? "wide-only" : ""}" cx="${o.x}" cy="${o.y}" rx="${o.rx}" ry="${o.ry}" fill="url(#fireQ)"/>`).join("")}
+    ${(cfg.portrait?.fire ?? []).map((o, i) => `<ellipse id="fire-p${i}" class="portrait-only" cx="${o.x.toFixed(1)}" cy="${o.y.toFixed(1)}" rx="${o.rx}" ry="${o.ry}" fill="url(#fireQ)"/>`).join("")}
+    ${(cfg.lamps ?? []).map((o, i) => `<ellipse id="lamp-${i}" class="${cfg.portrait?.lamps ? "wide-only" : ""}" cx="${o.x}" cy="${o.y}" rx="${o.r}" ry="${o.r * 0.85}" fill="url(#haloQ)" opacity=".7"/>`).join("")}
+    ${(cfg.portrait?.lamps ?? []).map((o, i) => `<ellipse id="lamp-p${i}" class="portrait-only" cx="${o.x.toFixed(1)}" cy="${o.y.toFixed(1)}" rx="${o.r}" ry="${o.r * 0.85}" fill="url(#haloQ)" opacity=".7"/>`).join("")}
     ${flyers}`;
 
   const frontLayer = `${HALO}${(cfg.front ?? []).map((s, i) => sprite(f, s, `front-${i}`, "front")).join("")}${walkers}`;
@@ -144,7 +153,7 @@ export function paintedScene(cfg: PaintedCfg): SceneDef {
       const sways = q("g.sway").map((el, i) => ({ el, amp: Number(el.dataset.amp), ph: i * 1.7, sp: 0.6 + (i % 3) * 0.12, halo: el.querySelector<SVGElement>(".halo") }));
       const fires = q("[id^=fire-]"), lamps = q("[id^=lamp-]");
       const staticHalos = q("g:not(.sway) > .halo");
-      const walks = (cfg.walkers ?? []).map((wk, i) => ({ el: q(`#walk-${i}`)[0], wk, next: 3 + i * 7, start: -1 }));
+      const walks = allWalkers.map(({ wk }, i) => ({ el: q(`#walk-${i}`)[0], wk, next: 3 + i * 7, start: -1 }));
       return (t: number) => {
         for (const w of walks) {
           if (!w.el) continue;
@@ -183,9 +192,10 @@ function makeFx(cfg: PaintedCfg) {
   const leafImgs = [2, 3, 5, 6, 7, 8].map((i) => { const im = new Image(); im.src = `${import.meta.env.BASE_URL}scenes/hotpot/leaf-${i}.png`; return im; });
   const motes = Array.from({ length: cfg.motes ?? 0 }, () => ({ x: rnd(0, STAGE_W), y: rnd(-20, 720), vy: rnd(4, 11), r: rnd(1, 2.4), a: rnd(0.25, 0.6), f: rnd(0.4, 1.1), ph: rnd(0, 6.28) }));
   const stars = cfg.sky ? Array.from({ length: 90 }, () => ({ x: rnd(0, STAGE_W), y: rnd(0, 300), r: rnd(0.6, 1.8), ph: rnd(0, 6.28), f: rnd(0.5, 2.2) })) : [];
-  const accs = (cfg.steam ?? []).map(() => 0);
+  const accs = Array.from({ length: Math.max(cfg.steam?.length ?? 0, cfg.portrait?.steam?.length ?? 0) }, () => 0);
   let leafAt = 1.5, lanternAt = 1;
-  return (ctx: CanvasRenderingContext2D, t: number, dt: number) => {
+  return (ctx: CanvasRenderingContext2D, t: number, dt: number, portrait: boolean) => {
+    const emitters = (portrait && cfg.portrait?.steam) || cfg.steam || [];
     if (cfg.mist) {
       const m = cfg.mist;
       for (let i = 0; i < 4; i++) {
@@ -214,7 +224,7 @@ function makeFx(cfg: PaintedCfg) {
         ctx.fillStyle = `rgba(255,236,190,${a.toFixed(3)})`; ctx.beginPath(); ctx.ellipse(l.x, l.y, l.r * 0.8, l.r, 0, 0, Math.PI * 2); ctx.fill();
       }
     }
-    (cfg.steam ?? []).forEach((e, i) => {
+    emitters.forEach((e, i) => {
       accs[i] += dt * e.rate;
       while (accs[i] > 1) { accs[i] -= 1; steam.push({ x: rnd(e.x - e.w / 2, e.x + e.w / 2), y: rnd(e.y - 8, e.y + 8), vx: rnd(-6, 6), vy: rnd(-42, -70), r: rnd(10, 18) * Math.max(0.6, e.w / 120), a: (e.a ?? 0.34) * rnd(0.8, 1.2), life: rnd(2.6, 4.4), age: 0, drift: rnd(0, 6.28) }); }
     });

@@ -11,7 +11,6 @@ const noodleShop = (): SceneDef => {
     id: "noodle_shop", folder: f, title: "Noodle shop", zh: "面馆", caption: "Hand-pulled noodles slapped on the board, broth that has been going since dawn, and a bowl in under a minute.",
     painting: true,
     hang: [
-      { name: "flag", prop: true, x: 690, y: -8, w: 110, sway: 2.5 },
       { name: "lantern", prop: true, x: 1225, y: -10, w: 118, sway: 3, halo: 1.3 },
       { name: "garlic-closeup", prop: true, x: 1400, y: -8, w: 96, sway: 3.5 },
     ],
@@ -38,7 +37,6 @@ const teahouse = (): SceneDef => {
     id: "teahouse", folder: f, title: "Tea house", zh: "茶馆", caption: "Bamboo chairs, lid-cups of jasmine refilled all afternoon, and the kettle on the brazier never quite off the boil.",
     painting: true,
     hang: [
-      { name: "flag", prop: true, x: 40, y: -8, w: 116, sway: 2.5 },
       { name: "lantern", prop: true, x: 1170, y: -10, w: 124, sway: 3, halo: 1.3 },
     ],
     front: [

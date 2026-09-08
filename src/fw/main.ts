@@ -460,7 +460,7 @@ window.addEventListener("keydown", (e) => {
 // ---------- loop ----------
 const clock = new THREE.Clock();
 function frame(forcedDt?: number) {
-  const dt = forcedDt ?? Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime + (forcedDt ? (stepT += forcedDt) : 0);
+  const dt = forcedDt ?? Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime + (forcedDt ? (stepT += forcedDt) : stepT);   // stepped time never runs backwards when a real frame follows
   if (livingScene) { livingScene.tick(t, dt); return; }   // inside a scene the 3D world rests
   if (flight) {
     flight.t = Math.min(1, flight.t + dt / flight.dur);

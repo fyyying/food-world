@@ -58,7 +58,7 @@ export type PaintedCfg = {
   /** the room is one painting that fills the stage (public/scenes/<folder>/wide.jpg), with a portrait twin for phones */
   painting?: boolean;
   /** figures that walk across the front now and then */
-  walkers?: { name: string; w: number; y: number; from: number; to: number; dur: number; every: number }[];
+  walkers?: { name: string; w: number; y: number; from: number; to: number; dur: number; every: number; fly?: boolean }[];
   light: { x: number; y: number; color: string };
 };
 
@@ -100,6 +100,10 @@ export function paintedScene(cfg: PaintedCfg): SceneDef {
 
   const hangLayer = `${HALO}${(cfg.hang ?? []).map((s, i) => sprite(f, s, `hang-${i}`, "hang")).join("")}`;
 
+  const walkerSvg = (wk: NonNullable<PaintedCfg["walkers"]>[number], i: number) => { const { w, h } = size(f, wk.name, wk.w, true); return `<g id="walk-${i}" opacity="0"><image href="${propUrl(wk.name)}" x="0" y="${(wk.y - h).toFixed(1)}" width="${w}" height="${h.toFixed(1)}"/></g>`; };
+  // people walk across the front; birds fly in the painting's own sky, so they live in the painting's layer
+  const walkers = (cfg.walkers ?? []).map((wk, i) => (wk.fly ? "" : walkerSvg(wk, i))).join("");
+  const flyers = (cfg.walkers ?? []).map((wk, i) => (wk.fly ? walkerSvg(wk, i) : "")).join("");
   const cover = url(f, "cover");
   const painting = cfg.painting ? `${import.meta.env.BASE_URL}scenes/${f}/` : null;
   const pb = painting ? PROPS.rooms[f].portrait : null;
@@ -121,9 +125,9 @@ export function paintedScene(cfg: PaintedCfg): SceneDef {
     <rect x="-100" y="-60" width="${(cb.x + 140).toFixed(1)}" height="1020" fill="rgba(8,4,2,${dim})"/><rect x="${(cb.x + cb.w - 40).toFixed(1)}" y="-60" width="900" height="1020" fill="rgba(8,4,2,${dim})"/>
     <image href="${cover}" x="${cb.x.toFixed(1)}" y="0" width="${cb.w.toFixed(1)}" height="${STAGE_H}" preserveAspectRatio="none" mask="url(#coverMask)"/>`}
     ${(cfg.fire ?? []).map((o, i) => `<ellipse id="fire-${i}" cx="${o.x}" cy="${o.y}" rx="${o.rx}" ry="${o.ry}" fill="url(#fireQ)"/>`).join("")}
-    ${(cfg.lamps ?? []).map((o, i) => `<ellipse id="lamp-${i}" cx="${o.x}" cy="${o.y}" rx="${o.r}" ry="${o.r * 0.85}" fill="url(#haloQ)" opacity=".7"/>`).join("")}`;
+    ${(cfg.lamps ?? []).map((o, i) => `<ellipse id="lamp-${i}" cx="${o.x}" cy="${o.y}" rx="${o.r}" ry="${o.r * 0.85}" fill="url(#haloQ)" opacity=".7"/>`).join("")}
+    ${flyers}`;
 
-  const walkers = (cfg.walkers ?? []).map((wk, i) => { const { w, h } = size(f, wk.name, wk.w, true); return `<g id="walk-${i}" opacity="0"><image href="${propUrl(wk.name)}" x="0" y="${(wk.y - h).toFixed(1)}" width="${w}" height="${h.toFixed(1)}"/></g>`; }).join("");
   const frontLayer = `${HALO}${(cfg.front ?? []).map((s, i) => sprite(f, s, `front-${i}`, "front")).join("")}${walkers}`;
 
   return {
@@ -147,10 +151,13 @@ export function paintedScene(cfg: PaintedCfg): SceneDef {
           if (w.start < 0 && t > w.next) w.start = t;
           if (w.start >= 0) {
             const k = (t - w.start) / w.wk.dur;
+            if (k < 0) { w.start = t; continue; }   // the clock moved back (debug stepping): restart the crossing
             if (k >= 1) { w.start = -1; w.next = t + w.wk.every; w.el.setAttribute("opacity", "0"); continue; }
-            const x = w.wk.from + (w.wk.to - w.wk.from) * k, bob = Math.abs(Math.sin(t * 5.5)) * 4;
-            w.el.setAttribute("opacity", String(Math.min(1, k * 12, (1 - k) * 12)));
-            w.el.setAttribute("transform", `translate(${x.toFixed(1)} ${(-bob).toFixed(1)}) rotate(${(Math.sin(t * 5.5) * 1.2).toFixed(2)} ${(w.wk.w / 2).toFixed(0)} ${w.wk.y})`);
+            const x = w.wk.from + (w.wk.to - w.wk.from) * k;
+            const bob = w.wk.fly ? Math.sin(t * 1.6) * 9 : Math.abs(Math.sin(t * 5.5)) * 4;   // a glide, or footsteps
+            const tilt = w.wk.fly ? Math.sin(t * 1.6 + 1) * 2 : Math.sin(t * 5.5) * 1.2;
+            w.el.setAttribute("opacity", String(Math.min(1, k * 8, (1 - k) * 8)));
+            w.el.setAttribute("transform", `translate(${x.toFixed(1)} ${(-bob).toFixed(1)}) rotate(${tilt.toFixed(2)} ${(w.wk.w / 2).toFixed(0)} ${w.wk.y})`);
           }
         }
         sways.forEach((s) => {

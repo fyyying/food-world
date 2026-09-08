@@ -12,14 +12,14 @@ const noodleShop = (): SceneDef => {
     painting: true,
     hang: [
       { name: "flag", prop: true, x: 690, y: -8, w: 110, sway: 2.5 },
-      { name: "light", prop: true, x: 1225, y: -10, w: 120, sway: 3, halo: 1.3 },
+      { name: "lantern", prop: true, x: 1225, y: -10, w: 118, sway: 3, halo: 1.3 },
       { name: "garlic-closeup", prop: true, x: 1400, y: -8, w: 96, sway: 3.5 },
     ],
     front: [
       { name: "doubanjiang-jar", prop: true, x: -40, w: 300 },
       { name: "bowls", prop: true, x: 1250, w: 370 },
     ],
-    walkers: [{ name: "bird", w: 250, y: 300, from: 1800, to: -420, dur: 26, every: 44 }],
+    walkers: [{ name: "bird", w: 72, y: 168, from: 1090, to: 1350, dur: 7, every: 40, fly: true }],   // the patch of sky above the street's roofs
     steam: [{ x: 167, y: 520, w: 120, rate: 16, a: 0.4 }, { x: 300, y: 760, w: 80, rate: 6, a: 0.3 }, { x: 760, y: 790, w: 60, rate: 5, a: 0.28 }],
     lamps: [{ x: 490, y: 80, r: 100 }, { x: 1580, y: 120, r: 90 }, { x: 720, y: 290, r: 40 }, { x: 1090, y: 280, r: 40 }, { x: 1230, y: 330, r: 35 }, { x: 1420, y: 330, r: 35 }],
     motes: 50,
@@ -34,12 +34,12 @@ const teahouse = (): SceneDef => {
     painting: true,
     hang: [
       { name: "flag", prop: true, x: 40, y: -8, w: 116, sway: 2.5 },
-      { name: "light", prop: true, x: 1170, y: -10, w: 128, sway: 3, halo: 1.3 },
+      { name: "lantern", prop: true, x: 1170, y: -10, w: 124, sway: 3, halo: 1.3 },
     ],
     front: [
       { name: "tea-chair", prop: true, x: -50, w: 290 },
     ],
-    walkers: [{ name: "bird", w: 260, y: 270, from: 1800, to: -420, dur: 28, every: 40 }],
+    walkers: [{ name: "bird", w: 90, y: 230, from: 590, to: 1140, dur: 9, every: 36, fly: true }],   // through the open side of the pavilion, over the hills
     steam: [{ x: 100, y: 420, w: 30, rate: 4, a: 0.22 }, { x: 1330, y: 720, w: 40, rate: 4, a: 0.26 }],
     lamps: [{ x: 590, y: 130, r: 90 }, { x: 1500, y: 120, r: 100 }, { x: 200, y: 140, r: 50 }, { x: 455, y: 230, r: 45 }, { x: 1320, y: 330, r: 50 }],
     leaves: 3, motes: 50,

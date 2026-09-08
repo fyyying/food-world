@@ -18,7 +18,7 @@ import { buildJapan } from "./world-japan";
 import { buildCeurope } from "./world-ceurope";
 import { auditDiorama } from "./audit";
 import { openLivingScene, type LivingScene } from "./scene";
-import { hotpotPaintedScene } from "./scene-hotpot-painted";
+import { SCENES } from "./scenes-china";
 import { type Diorama, type DishMarker, type Placed } from "./worldkit";
 const areaCenter = (a: Area) => new THREE.Vector3(AREAS[a].center[0], 0, AREAS[a].center[1]);
 import { mountUi, showRecipePage, setCrumbs, hint, toast } from "./ui";
@@ -285,7 +285,7 @@ function enterLivingScene(p: Placed, obj: WorldObject, recipes: EnrichedRecipe[]
       controls.enabled = false;
       // the dishes on the table, or, if no recipe sits here yet, what this kitchen cooks
       const dishes = recipes.length ? recipes : china.filter((r) => r.area === obj.area).slice(0, 5);
-      livingScene = openLivingScene(hotpotPaintedScene(), {
+      livingScene = openLivingScene(SCENES[obj.scene!](), {
         dishes, label: recipes.length ? "On the table" : "From this kitchen",
         onDish: (r) => ui.showRecipePreview(r),
         onStory: () => ui.showObject(obj, recipes, OBJECTS_NOW()),
@@ -328,10 +328,10 @@ function leaveLivingScene() {
 const COARSE = window.matchMedia("(pointer: coarse)").matches;
 let cardTimer: number | undefined, revealTimer: number | undefined;
 function openObject(p: Placed) {
-  if (p.obj.open === "reveal") { revealPlace(p); return; }
   const obj = p.obj.alias ? objectById(p.obj.alias) : p.obj;   // a market stall opens its ingredient's card
   const recipes = china.filter((r) => obj.match(r));
-  if (obj.scene) { enterLivingScene(p, obj, recipes); return; }
+  if (obj.scene && SCENES[obj.scene]) { enterLivingScene(p, obj, recipes); return; }
+  if (p.obj.open === "reveal") { revealPlace(p); return; }
   // the world answers first: the object reacts, its dishes rise and glow, and only then does the card come
   clearTimeout(cardTimer); clearTimeout(revealTimer);
   ui.hide();

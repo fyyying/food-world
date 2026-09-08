@@ -34,12 +34,14 @@ builds a static bundle; `.github/workflows/pages.yml` publishes it on every push
 - `src/fw/world-*.ts` — one layout per world; `src/fw/props*.ts` — the procedural clay-and-wood miniatures for each.
 - `src/fw/map.ts` — the atlas; `src/fw/ui.ts` — the cards; `src/fw/audit.ts` — a dev-only movement audit
   (`__fw.audit()` in the console) that reports anything walking into water, walls or each other.
-- `src/fw/scene.ts` — Living Scenes: 3D world → walk up to a place → paper fade → a living illustrated interior
-  (layered SVG with parallax, a particle canvas, lantern flicker, a slow camera push) → back to exactly where you
-  were. `src/fw/scene-hotpot.ts` is the first one (the Sichuan hotpot house, `scene: "hotpot"` on its object);
-  the room is painted art in `public/scenes/hotpot/` (cut from the painted sheets by `scripts/scenes/cut-hotpot-layers.py`,
-  run with `uv run --with pillow --with numpy --with scipy`), while `scene-hotpot.ts` + `scene-figures.ts` keep the earlier
-  hand-drawn SVG version. `__fw.sceneShot(name)` screenshots an open scene.
+- `src/fw/scene.ts` — Living Scenes: 3D world → walk up to a place → paper fade → a living painted room
+  (layered images with parallax, a particle canvas for steam and air, lantern flicker, a slow camera push) → back to
+  exactly where you were. `src/fw/scenes-china.ts` lists the rooms (hotpot house, noodle shop, tea house, village
+  market, home kitchen, the old tower) and which object opens each (`scene:` on the object); `scene-painted.ts`
+  lays a delivered painting set out on the stage, `scene-hotpot-painted.ts` is the hand-laid hotpot room. The art
+  lives in `public/scenes/<room>/`, cut from the painted sheets by `scripts/scenes/cut-hotpot-layers.py` and
+  `scripts/scenes/cut-sheets.py` (run with `uv run --with pillow --with numpy --with scipy`); `scene-hotpot.ts` +
+  `scene-figures.ts` keep the earlier hand-drawn SVG room. `__fw.sceneShot(name)` screenshots an open scene.
 
 ## The worlds
 

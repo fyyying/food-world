@@ -103,14 +103,15 @@ export function buildWorld(spec: WorldSpec): Diorama {
   const placed: Placed[] = OBJECTS.map((obj) => {
     if (obj.hitOnly) {
       // a clickable spot inside a place (a market stall): no prop of its own
-      const hit = new THREE.Mesh(new THREE.BoxGeometry(3.0, 2.6, 2.4), new THREE.MeshBasicMaterial({ visible: false }));
-      hit.position.set(obj.pos[0], 1.3, obj.pos[1]); group.add(hit);
+      const [hw, hh, hd, hy] = obj.hit ?? [3.0, 2.6, 2.4, 1.3];
+      const hit = new THREE.Mesh(new THREE.BoxGeometry(hw, hh, hd), new THREE.MeshBasicMaterial({ visible: false }));
+      hit.position.set(obj.pos[0], hy, obj.pos[1]); group.add(hit);
       const ring = ringMesh(1.6); ring.position.set(obj.pos[0], TOP + 0.07, obj.pos[1]); group.add(ring);
       const labelEl = document.createElement("div");
       labelEl.className = "obj-label";
       labelEl.innerHTML = `<span class="pill">${obj.emoji} ${esc(obj.name)}${obj.zh ? `<span class="zh">${obj.zh}</span>` : ""}<span class="k">${obj.kind}</span></span>`;
-      const label = new CSS2DObject(labelEl); label.position.set(obj.pos[0], 2.6, obj.pos[1]); group.add(label);
-      const p: Placed = { obj, group: new THREE.Group(), hit, labelEl, anchor: new THREE.Vector3(obj.pos[0], TOP, obj.pos[1]), top: 2.4, ring, small: false };
+      const label = new CSS2DObject(labelEl); label.position.set(obj.pos[0], hy + hh / 2 + 0.2, obj.pos[1]); group.add(label);
+      const p: Placed = { obj, group: new THREE.Group(), hit, labelEl, anchor: new THREE.Vector3(obj.pos[0], TOP, obj.pos[1]), top: hy + hh / 2, ring, small: false };
       hit.userData.placed = p;
       return p;
     }

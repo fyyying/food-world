@@ -48,8 +48,10 @@ export type WorldObject = {
   parent?: string;
   /** clicking this spot opens another object's card (the produce stall opens Vegetables) */
   alias?: string;
-  /** clicking walks into a Living Scene (an illustrated, animated interior) instead of opening the card */
-  scene?: "hotpot";
+  /** clicking walks into a Living Scene (a painted, animated room) instead of opening the card; see scenes-china.ts */
+  scene?: string;
+  /** hitOnly objects: a custom invisible click box [width, height, depth, centre y] */
+  hit?: [number, number, number, number];
   match: (r: EnrichedRecipe) => boolean;
 };
 
@@ -308,7 +310,7 @@ export const OBJECTS: WorldObject[] = [
   { id: "jars", world: "china", kind: "flavour", name: "Doubanjiang", zh: "豆瓣酱", emoji: "🏺", area: "sichuan", pos: [-20, -8], prop: "jars", rot: -0.3,
     tagline: "Fermented broad-bean and chilli paste.", blurb: "Doubanjiang comes from Pixian outside Chengdu, where by tradition a Fujian migrant named Chen salvaged his mouldy broad beans with chillies in the late 1600s. The beans and chillies ferment in open clay jars for a year or more, stirred by hand and uncovered on sunny days, until they turn deep red. It is the base of mapo tofu and twice-cooked pork. The smaller jars hold pickled mustard greens and fermented black beans.",
     flavour: ["salty", "deep", "umami"], partners: ["pork", "tofu", "chilli", "garlic"], match: (r) => has(r.core, /doubanjiang|preserved|pickled|black bean/) },
-  { id: "aromatics", world: "china", kind: "place", name: "Village market", zh: "菜市场", emoji: "🧺", area: "everyday", pos: MARKET, prop: "market", rot: 0, place: true, open: "reveal",
+  { id: "aromatics", world: "china", kind: "place", name: "Village market", zh: "菜市场", emoji: "🧺", area: "everyday", pos: MARKET, prop: "market", rot: 0, place: true, open: "reveal", scene: "market",
     tagline: "Everything the village cooks with, on seven stalls.", blurb: "Produce, a butcher, steamers, fish on ice, spices, tofu, and the garlic, ginger and scallion that start most dishes.",
     match: () => false },
   // stalls inside the market
@@ -327,7 +329,7 @@ export const OBJECTS: WorldObject[] = [
   { id: "stall-tofu", world: "china", kind: "ingredient", name: "Tofu", zh: "豆腐", emoji: "🫘", area: "everyday", pos: stallPos(5), prop: "none", hitOnly: true, parent: "aromatics", alias: "tofu", tagline: "", blurb: "", match: () => false },
 
   // --- techniques ---
-  { id: "wok", world: "china", kind: "technique", name: "Stir-frying", zh: "炒", emoji: "🔥", area: "sichuan", pos: [-14, -2], prop: "wokKitchen", rot: 0.5, place: true,
+  { id: "wok", world: "china", kind: "technique", name: "Stir-frying", placeName: "Home kitchen", zh: "炒", emoji: "🔥", area: "sichuan", pos: [-14, -2], prop: "wokKitchen", rot: 0.5, place: true, scene: "home_kitchen",
     tagline: "High heat, a few minutes.", blurb: "Stir-frying spread in the Song and Ming dynasties (960–1644) as iron woks became cheap and firewood became scarce around the cities: a hot pan cooks a dish in minutes on very little fuel. Aromatics go in first, then meat, then sauce. When the heat drops the same wok braises mapo tofu.",
     partners: ["garlic", "chilli", "doubanjiang"], match: (r) => has(r.techniques, /wok/) },
   { id: "claypot", world: "china", kind: "technique", name: "Red-braising", zh: "红烧", emoji: "🫕", area: "jiangnan", pos: [24, -3], prop: "clayPotKitchen", rot: -0.6, place: true,
@@ -341,7 +343,7 @@ export const OBJECTS: WorldObject[] = [
     partners: ["garlic", "black vinegar", "chilli oil"], match: (r) => has(r.techniques, /cold/) },
 
   // --- dish landmarks ---
-  { id: "noodle", world: "china", kind: "ingredient", name: "Noodles", placeName: "Noodle shop", zh: "面", emoji: "🍜", area: "sichuan", pos: [-9, -10], prop: "noodleStall", rot: 0.9, place: true,
+  { id: "noodle", world: "china", kind: "ingredient", name: "Noodles", placeName: "Noodle shop", zh: "面", emoji: "🍜", area: "sichuan", pos: [-9, -10], prop: "noodleStall", rot: 0.9, place: true, scene: "noodle_shop",
     tagline: "Dressed with chilli oil, sesame and pork.", blurb: "Dan dan noodles take their name from the shoulder pole, 担, that Chengdu hawkers carried through the streets in the 1840s with a stove on one end and bowls on the other. Sichuan noodles are sauced rather than souped: the sauce sits at the bottom of the bowl and you mix it in yourself.",
     match: (r) => has(r.core, /noodle/) },
   { id: "dumpling", world: "china", kind: "dish", name: "Dumplings", placeName: "Dumpling stall", zh: "饺子", emoji: "🥟", area: "northern", pos: [9, -12], prop: "dumplingStall", rot: -0.2, place: true,
@@ -350,7 +352,10 @@ export const OBJECTS: WorldObject[] = [
   { id: "hotpot", world: "china", kind: "dish", name: "Hotpot", placeName: "Hotpot house", zh: "火锅", emoji: "🫕", area: "sichuan", pos: [-2, -11.5], prop: "hotpot", rot: 0.6, place: true, scene: "hotpot",
     tagline: "A shared pot: fiery in Sichuan, clear and mutton-based in the north.", blurb: "Sichuan hotpot began with Chongqing dock workers in the late Qing dynasty (1800s), who boiled cheap offal in a fiercely spiced broth of chilli, Sichuan pepper and beef tallow to get through damp winters on the river. The north has its own, older version: Beijing-style instant-boiled mutton, thin slices swished for seconds in a plain broth kept boiling by a charcoal chimney in the middle of a copper pot, then dipped in sesame paste. Same idea, opposite temperament: the south flavours the broth, the north flavours the dip. Everyone cooks their own ingredients at the table.",
     match: (r) => has(r.core, /hotpot|hot pot/) },
-  { id: "teahouse", world: "china", kind: "ingredient", name: "Tea", placeName: "Tea house", zh: "茶", emoji: "🍵", area: "sichuan", pos: [-25.5, -11.5], prop: "teahouse", rot: -0.15, place: true,
+  { id: "tower", world: "china", kind: "place", name: "The old tower", placeName: "The old tower", zh: "锦官城楼", emoji: "🏯", area: "sichuan", pos: [-24, -19], prop: "none", hitOnly: true, hit: [5, 9, 5, 6.5], scene: "tower",
+    tagline: "Chengdu from above, at the hour the lanterns come on.", blurb: "Chengdu was the Brocade Officer's City, 锦官城, in the Han dynasty (206 BC–220 AD), when the state ran its silk weaving from here. Its towers looked out over a plain fed by the Dujiangyan irrigation works of 256 BC, which is why the Sichuan basin has fed itself, and everyone else, ever since. Climb one at dusk and you see where the food comes from: paddies, chilli fields, tea hills and a river full of boats.",
+    match: () => false },
+  { id: "teahouse", world: "china", kind: "ingredient", name: "Tea", placeName: "Tea house", zh: "茶", emoji: "🍵", area: "sichuan", pos: [-25.5, -11.5], prop: "teahouse", rot: -0.15, place: true, scene: "teahouse",
     tagline: "Tea between meals.", blurb: "Chengdu has had teahouses since the Tang dynasty (618–907) and still has more of them than any other Chinese city. Bamboo chairs, a copper kettle on the brazier, and lid-cups of jasmine or green tea refilled all afternoon.",
     match: (r) => has(r.core, /\btea\b|jasmine|oolong/) },
 ];

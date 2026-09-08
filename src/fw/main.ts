@@ -390,7 +390,17 @@ function castWorld(x: number, y: number): Placed | DishMarker | null {
   // plates and stalls sit inside their place's hit box, so test them first
   const inner = raycaster.intersectObjects([...diorama.dishes.map((d) => d.hit), ...diorama.placed.filter((p) => p.obj.hitOnly).map((p) => p.hit)], false);
   const u1 = inner[0]?.object.userData;
-  if (u1) return (u1.dish as DishMarker) ?? (u1.placed as Placed);
+  if (u1) {
+    const thing = (u1.dish as DishMarker) ?? (u1.placed as Placed);
+    // a stall inside a place is only meant from close up; from further away (and on a phone, from anywhere but
+    // very close) the tap means the place itself, whose room lists the stands
+    const stall = thing as Placed;
+    if (stall.obj?.parent) {
+      const far = camera.position.distanceTo(stall.anchor) > (COARSE ? 14 : 22);
+      if (far) return diorama.placed.find((p) => p.obj.id === stall.obj.parent) ?? thing;
+    }
+    return thing;
+  }
   const hits = raycaster.intersectObjects(diorama.placed.filter((p) => !p.obj.hitOnly).map((p) => p.hit), false);
   return (hits[0]?.object.userData.placed as Placed) ?? null;
 }

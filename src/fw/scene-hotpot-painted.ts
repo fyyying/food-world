@@ -76,36 +76,36 @@ type Leaf = { img: HTMLImageElement; x: number; y: number; vy: number; rot: numb
 function makeFx() {
   const steam: Steam[] = [], bubbles: Bubble[] = [], leaves: Leaf[] = [];
   const leafImgs = [2, 3, 5, 6, 7, 8].map((i) => { const im = new Image(); im.src = A(`leaf-${i}`); return im; });
-  let acc = 0, bacc = 0, leafAt = 2.5;
+  const motes = Array.from({ length: 70 }, () => ({ x: rnd(0, 1600), y: rnd(-20, 720), vy: rnd(4, 11), r: rnd(1, 2.4), a: rnd(0.25, 0.6), f: rnd(0.4, 1.1), ph: rnd(0, 6.28) }));
+  let acc = 0, bacc = 0, leafAt = 1;
   return (ctx: CanvasRenderingContext2D, t: number, dt: number) => {
-    // broth
-    bacc += dt * 16;
+    // broth: domes swell out of the surface, burst, and leave a ripple that spreads and fades
+    bacc += dt * 14;
     while (bacc > 1) {
       bacc -= 1;
-      const a = rnd(0, Math.PI * 2), r = Math.sqrt(Math.random()) * 0.9;
-      bubbles.push({ x: POT.x + Math.cos(a) * POT.rx * r, y: POT.y + Math.sin(a) * POT.ry * r, r: rnd(5, 12), age: 0, life: rnd(0.45, 0.85) });
+      const hot = Math.random() < 0.6 ? 0.55 : 1;   // most of the boil is around the middle
+      const a = rnd(0, Math.PI * 2), r = Math.sqrt(Math.random()) * 0.92 * hot;
+      bubbles.push({ x: POT.x + Math.cos(a) * POT.rx * r, y: POT.y + Math.sin(a) * POT.ry * r, r: rnd(3.5, 9), age: 0, life: rnd(0.55, 1.1) });
     }
-    // the surface itself heaves: a shimmering, breathing sheen over the whole broth
-    const heave = 0.5 + Math.sin(t * 6.3) * 0.25 + Math.sin(t * 9.1) * 0.25;
     ctx.beginPath(); ctx.ellipse(POT.x, POT.y, POT.rx, POT.ry, 0, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(255,120,50,${(0.1 + heave * 0.14).toFixed(3)})`; ctx.fill();
+    ctx.fillStyle = `rgba(255,120,50,${(0.05 + (0.5 + Math.sin(t * 5.1) * 0.5) * 0.06).toFixed(3)})`; ctx.fill();
     for (let i = bubbles.length - 1; i >= 0; i--) {
       const b = bubbles[i]; b.age += dt;
       const k = b.age / b.life;
       if (k >= 1) { bubbles.splice(i, 1); continue; }
-      const rr = b.r * (k < 0.7 ? k / 0.7 : 1 + (k - 0.7) * 2);
-      ctx.beginPath(); ctx.ellipse(b.x, b.y - rr * 0.3, rr, rr * 0.6, 0, 0, Math.PI * 2);
-      if (k < 0.7) {
-        ctx.fillStyle = "rgba(255,150,90,.85)"; ctx.fill();
-        ctx.beginPath(); ctx.ellipse(b.x - rr * 0.3, b.y - rr * 0.55, rr * 0.35, rr * 0.2, 0, 0, Math.PI * 2); ctx.fillStyle = "rgba(255,240,215,.85)"; ctx.fill();
-        ctx.beginPath(); ctx.ellipse(b.x, b.y - rr * 0.3, rr, rr * 0.6, 0, 0, Math.PI * 2); ctx.strokeStyle = "rgba(150,30,10,.5)"; ctx.lineWidth = 1.2; ctx.stroke();
-      } else { ctx.strokeStyle = `rgba(255,200,140,${((1 - k) * 3.3).toFixed(2)})`; ctx.lineWidth = 2; ctx.stroke(); }
-    }
-    // rolling ridges that drift across the surface
-    for (let i = 0; i < 5; i++) {
-      const ph = t * 1.4 + i * 1.3;
-      ctx.beginPath(); ctx.ellipse(POT.x + Math.sin(ph) * POT.rx * 0.65, POT.y + Math.cos(ph * 0.7 + i) * POT.ry * 0.55, 26 + Math.sin(ph * 3) * 8, 6, 0, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(255,220,160,.45)"; ctx.lineWidth = 2.5; ctx.stroke();
+      if (k < 0.62) {
+        // a dome swelling out of the broth
+        const g = Math.sin((k / 0.62) * Math.PI * 0.5), rr = b.r * g;
+        const grad = ctx.createRadialGradient(b.x - rr * 0.35, b.y - rr * 0.45, rr * 0.1, b.x, b.y, rr);
+        grad.addColorStop(0, "rgba(255,225,190,.85)"); grad.addColorStop(0.55, "rgba(240,110,60,.7)"); grad.addColorStop(1, "rgba(150,35,15,.55)");
+        ctx.beginPath(); ctx.ellipse(b.x, b.y - rr * 0.25, rr, rr * 0.62, 0, 0, Math.PI * 2); ctx.fillStyle = grad; ctx.fill();
+      } else {
+        // burst: a ripple ring spreading out and dying
+        const q = (k - 0.62) / 0.38, rr = b.r * (1 + q * 2.4);
+        ctx.beginPath(); ctx.ellipse(b.x, b.y, rr, rr * 0.45, 0, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(255,215,170,${((1 - q) * 0.7).toFixed(2)})`; ctx.lineWidth = 1.6 - q; ctx.stroke();
+        if (q < 0.25) { ctx.beginPath(); ctx.ellipse(b.x, b.y - b.r * 0.2, b.r * 0.5 * (1 - q * 4), b.r * 0.3 * (1 - q * 4), 0, 0, Math.PI * 2); ctx.fillStyle = "rgba(255,235,205,.8)"; ctx.fill(); }
+      }
     }
     // steam
     acc += dt * 22;
@@ -120,19 +120,27 @@ function makeFx() {
       g.addColorStop(0, `rgba(255,246,236,${a})`); g.addColorStop(0.5, `rgba(255,240,226,${a * 0.45})`); g.addColorStop(1, "rgba(255,244,232,0)");
       ctx.fillStyle = g; ctx.beginPath(); ctx.arc(s.x, s.y, r, 0, Math.PI * 2); ctx.fill();
     }
-    // a leaf lets go of the vine now and then
+    // warm motes drifting in the lantern light
+    for (const m of motes) {
+      m.y -= m.vy * dt; m.x += Math.sin(t * m.f + m.ph) * 9 * dt;
+      if (m.y < -20) { m.y = 720; m.x = rnd(0, 1600); }
+      const a = m.a * (0.55 + 0.45 * Math.sin(t * m.f * 3 + m.ph));
+      ctx.beginPath(); ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2); ctx.fillStyle = `rgba(255,214,150,${a.toFixed(3)})`; ctx.fill();
+    }
+    // leaves and chilli tips let go of the vines and strings and tumble down
     leafAt -= dt;
     if (leafAt < 0) {
-      leafAt = rnd(4, 9);
+      leafAt = rnd(1.2, 2.6);
       const im = leafImgs[Math.floor(Math.random() * leafImgs.length)];
-      if (im.complete && im.naturalWidth) leaves.push({ img: im, x: Math.random() < 0.5 ? rnd(40, 260) : rnd(1380, 1560), y: rnd(-40, 120), vy: rnd(28, 44), rot: rnd(0, 6.28), vr: rnd(-1.2, 1.2), sway: rnd(0, 6.28), age: 0, life: rnd(14, 20), s: rnd(0.9, 1.4) });
+      if (im.complete && im.naturalWidth) leaves.push({ img: im, x: rnd(20, 1580), y: rnd(-60, 60), vy: rnd(22, 40), rot: rnd(0, 6.28), vr: rnd(-1.6, 1.6), sway: rnd(0, 6.28), age: 0, life: rnd(16, 24), s: rnd(0.8, 1.5) });
     }
     for (let i = leaves.length - 1; i >= 0; i--) {
       const l = leaves[i]; l.age += dt;
       if (l.age > l.life || l.y > 960) { leaves.splice(i, 1); continue; }
-      l.y += l.vy * dt; l.x += Math.sin(t * 0.9 + l.sway) * 22 * dt; l.rot += l.vr * dt;
+      const flutter = Math.sin(t * 1.1 + l.sway);
+      l.y += (l.vy + flutter * 8) * dt; l.x += flutter * 34 * dt; l.rot += (l.vr + flutter * 1.2) * dt;
       const a = Math.min(1, l.age / 1.2) * Math.min(1, (l.life - l.age) / 2);
-      ctx.save(); ctx.globalAlpha = a; ctx.translate(l.x, l.y); ctx.rotate(l.rot); ctx.scale(l.s, l.s);
+      ctx.save(); ctx.globalAlpha = a; ctx.translate(l.x, l.y); ctx.rotate(l.rot); ctx.scale(l.s * (0.75 + 0.25 * Math.abs(Math.cos(t * 1.7 + l.sway))), l.s);
       ctx.drawImage(l.img, -l.img.naturalWidth / 2, -l.img.naturalHeight / 2); ctx.restore();
     }
   };

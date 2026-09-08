@@ -939,19 +939,36 @@ export function vegPlot(): P {
 }
 
 export function mushroomLogs(): P {
+  // shiitake the traditional way: oak logs about a metre long leaning against a rail in an A-frame under a straw
+  // shelter, the caps growing out of the bark
   const g = group();
-  const caps: THREE.Mesh[] = [];
-  for (let i = 0; i < 5; i++) {
-    const l = add(g, cyl(0.18, 0.2, 2.2, "#5f4432", 7), -1.2 + i * 0.6, 0.6, 0);
-    l.rotation.z = 0.35 + (i % 2) * 0.1; l.rotation.x = (rnd() - 0.5) * 0.3;
-    for (let k = 0; k < 4; k++) { const cap = add(g, ball(0.12, "#8a5a3c", 6), l.position.x + (rnd() - 0.5) * 0.5, 0.35 + rnd() * 0.9, (rnd() - 0.5) * 0.5); cap.scale.y = 0.5; caps.push(cap); add(g, cyl(0.04, 0.05, 0.12, "#e7d9c3", 5), cap.position.x, cap.position.y - 0.06, cap.position.z); }
+  const caps: THREE.Group[] = [];
+  add(g, cyl(0.03, 0.03, 3.0, C.woodDark, 6), 0, 0.78, 0).rotation.z = Math.PI / 2;   // the rail
+  for (const x of [-1.4, 1.4]) add(g, cyl(0.035, 0.04, 0.78, C.woodDark, 5), x, 0.39, 0);
+  for (let i = 0; i < 14; i++) {
+    const side = i % 2 ? 1 : -1, x = -1.2 + Math.floor(i / 2) * 0.4 + (side > 0 ? 0.1 : -0.1);
+    const log = group();
+    add(log, cyl(0.055, 0.065, 1.0, "#5f4432", 7), 0, 0.5, 0);
+    for (let k = 0; k < 3; k++) {
+      const a = (side > 0 ? Math.PI : 0) + (rnd() - 0.5) * 2.2, y = 0.22 + k * 0.24 + (rnd() - 0.5) * 0.1, r = 0.06;
+      const cap = group();
+      add(cap, cyl(0.012, 0.014, 0.05, "#e9dcc4", 5), 0, 0.025, 0);
+      const head = add(cap, ball(0.05, "#8a5a3c", 7), 0, 0.055, 0); head.scale.y = 0.55;
+      cap.position.set(Math.cos(a) * r, y, Math.sin(a) * r);
+      cap.rotation.set(0, -a, -Math.PI / 2 + 0.35);   // stem points out of the bark, cap tipped a little upward
+      log.add(cap); caps.push(cap);
+    }
+    log.position.set(x, 0, side * 0.36);
+    log.rotation.x = -side * 0.46;   // leaning in to rest on the rail
+    log.rotation.z = (rnd() - 0.5) * 0.08;
+    g.add(log);
   }
-  add(g, chineseRoof(3.4, 1.8, 0.3, C.straw, 0.1), 0, 1.8, 0);
-  for (const x of [-1.4, 1.4]) for (const z of [-0.6, 0.6]) add(g, cyl(0.04, 0.04, 1.8, C.woodDark, 4), x, 0.9, z);
-  for (let i = 0; i < 3; i++) add(g, cyl(0.3, 0.3, 0.06, C.straw, 9), -1.8, 0.03 + i * 0.07, 1.4 + i * 0.1);
+  add(g, chineseRoof(3.4, 1.6, 0.26, C.straw, 0.1), 0, 1.35, 0);
+  for (const x of [-1.5, 1.5]) for (const z of [-0.6, 0.6]) add(g, cyl(0.035, 0.035, 1.35, C.woodDark, 4), x, 0.67, z);
+  for (let i = 0; i < 3; i++) add(g, cyl(0.3, 0.3, 0.06, C.straw, 9), -1.9, 0.03 + i * 0.07, 1.3 + i * 0.1);   // stacked drying trays
   const re = reaction(0.8);
   g.userData.poke = () => re.poke();
-  g.userData.tick = (t, dt) => { const k = re.step(dt); caps.forEach((c, i) => { const s = 1 + Math.max(0, Math.sin(k * Math.PI * 2 + i)) * 0.5 * k; c.scale.set(s, 0.5 * s, s); }); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); caps.forEach((c, i) => { const s = 1 + Math.max(0, Math.sin(k * Math.PI * 2 + i)) * 0.5 * k; c.scale.setScalar(s); }); };
   return g;
 }
 
@@ -1345,19 +1362,28 @@ export function noodleStall(): P {
   for (const x of [-0.9, 0, 0.9]) { add(g, cyl(0.18, 0.18, 0.4, C.woodDark, 8), x, 0.2, 2.0); }
   for (const x of [-0.9, 0.9]) add(g, person(pick(["#3f6b8f", "#6a7fb0"])), x, 0.2, 2.0).rotation.y = Math.PI;
   const noodleCook = add(g, person("#f1f1f1", { apron: true }), -0.3, 0, -0.3);
-  const strand = add(g, cyl(0.02, 0.02, 1.0, "#f3ead8", 4), -0.3, 1.2, 0.2); strand.visible = false;
+  // a bamboo strainer of noodles resting in the pot; on a click the cook lifts it, shakes it and drops it back
+  const lift = group();
+  add(lift, cyl(0.17, 0.15, 0.04, C.straw, 10), 0, 0, 0);
+  add(lift, cyl(0.015, 0.015, 0.5, C.woodDark, 5), 0.3, 0.1, 0).rotation.z = -0.9;
+  const strands: THREE.Mesh[] = [];
+  for (let i = 0; i < 7; i++) { const a = i * 0.9, r = 0.05 + (i % 3) * 0.035; strands.push(add(lift, cyl(0.012, 0.012, 0.3, "#f3ead8", 3), Math.cos(a) * r, -0.16, Math.sin(a) * r)); }
+  add(g, lift, -0.9, 1.15, 0.6);
   // noodles drying on a rack
   add(g, box(0.05, 1.6, 0.05, C.woodDark), 2.2, 0.8, 0.4); add(g, box(0.05, 1.6, 0.05, C.woodDark), 2.2, 0.8, -1.0); add(g, box(0.05, 0.05, 1.4, C.woodDark), 2.2, 1.6, -0.3);
   for (let i = 0; i < 8; i++) add(g, cyl(0.015, 0.015, 1.2, "#f3ead8", 3), 2.2, 1.0, -0.9 + i * 0.16);
   g.userData.steam = new THREE.Vector3(-0.9, 1.5, 0.6);
   const re = reaction(0.6);
-  g.userData.poke = () => { re.poke(); strand.visible = true; };
+  g.userData.poke = () => re.poke();
   g.userData.tick = (t, dt) => {
     const k = re.step(dt);
     const up = (noodleCook.userData as { upper?: THREE.Group }).upper;
     if (up) { up.rotation.z = k * Math.sin(t * 5) * 0.3; }
-    // the cook pulls a long noodle up out of the pot and drops it back
-    if (strand.visible) { const s = Math.sin(k * Math.PI); strand.scale.y = 0.2 + s * 2.2; strand.position.y = 1.0 + strand.scale.y * 0.5; strand.rotation.z = Math.sin(t * 5) * 0.15 * s; if (k === 0) strand.visible = false; }
+    // the strainer comes up out of the pot, the noodles hang and drip, a couple of shakes, and back it goes
+    const s = Math.sin(k * Math.PI);
+    lift.position.y = 1.15 + s * 0.55;
+    lift.rotation.z = Math.sin(t * 9) * 0.12 * s;
+    strands.forEach((st, i) => { const len = 0.3 + s * 0.35 * (0.6 + (i % 3) * 0.2); st.scale.y = len / 0.3; st.position.y = -0.02 - len / 2; });
     tickChildren(g)(t, dt);
   };
   return g;

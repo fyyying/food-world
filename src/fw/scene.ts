@@ -139,7 +139,7 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
       const ax = px * d * 26, ay = py * d * 16;
       l.style.transform = `translate3d(${ax.toFixed(1)}px, ${ay.toFixed(1)}px, 0) scale(${(1 + d * 0.05).toFixed(3)})`;
     }
-    light.style.opacity = (0.55 + flickerNoise(age) * 0.22).toFixed(3);
+    light.style.opacity = (0.35 + flickerNoise(age) * 0.55).toFixed(3);   // the room breathes with the lanterns
     animate(age, dt);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);

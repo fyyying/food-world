@@ -17,9 +17,13 @@ const WALL_H = WALL.h * S, TABLE_H = TABLE.h * S, FENCE_H = FENCE.h * S;
 const POT = { x: 831, y: 690, rx: 138, ry: 22 };
 
 /** a hanging sprite: pivot at the top of the string so it can sway */
-function hang(id: string, name: string, x: number, top: number, w: number, h: number) {
-  return `<g id="${id}" data-px="${x + w / 2}" data-py="${top}">${img(name, x, top, w, h)}</g>`;
+function hang(id: string, name: string, x: number, top: number, w: number, h: number, glow = 0) {
+  const halo = glow ? `<ellipse class="halo" cx="${x + w / 2}" cy="${top + h * 0.42}" rx="${w * glow}" ry="${h * glow * 0.55}" fill="url(#haloP)" opacity=".8"/>` : "";
+  return `<g id="${id}" data-px="${x + w / 2}" data-py="${top}">${halo}${img(name, x, top, w, h)}</g>`;
 }
+const HALO_DEFS = `<defs><radialGradient id="haloP"><stop offset="0" stop-color="#ffc070" stop-opacity=".75"/><stop offset=".45" stop-color="#ff8a3a" stop-opacity=".28"/><stop offset="1" stop-color="#ff6a2a" stop-opacity="0"/></radialGradient></defs>`;
+/** a pulsing pool of light on a lamp that is painted into the wall */
+const lamp = (id: string, cx: number, cy: number, rx: number, ry: number) => `<ellipse id="${id}" cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="url(#haloP)" opacity=".7"/>`;
 
 function backLayer() {
   return `
@@ -32,16 +36,19 @@ function backLayer() {
     ${img("wall", 0, 0, 1600, WALL_H, 'preserveAspectRatio="none"')}
     <rect x="-100" y="${WALL_H - 40}" width="1800" height="${960 - WALL_H}" fill="url(#floorP)"/>
     <rect x="-100" y="${WALL_H - 150}" width="1800" height="112" fill="url(#blendP)"/>
-    <ellipse id="fire-glow" cx="1522" cy="500" rx="120" ry="90" fill="url(#fireP)"/>
+    <ellipse id="fire-glow" cx="1522" cy="500" rx="150" ry="110" fill="url(#fireP)"/>
+    ${HALO_DEFS}
+    ${lamp("lamp-1", 690, 60, 130, 120)}${lamp("lamp-2", 1330, 70, 120, 110)}${lamp("lamp-3", 898, 402, 70, 60)}${lamp("lamp-4", 1462, 300, 70, 70)}${lamp("lamp-5", 190, 100, 90, 90)}
   `;
 }
 
 function decorLayer() {
   return `
-    ${hang("lan-a", "lantern-a", 190, -8, 119 * 1.05, 282 * 1.05)}
+    ${HALO_DEFS}
+    ${hang("lan-a", "lantern-a", 190, -8, 119 * 1.05, 282 * 1.05, 1.5)}
     ${hang("chilli-a", "chilli", 336, -8, 79 * 1.1, 280 * 1.1)}
     ${hang("garlic-a", "garlic", 1246, -8, 52 * 1.1, 258 * 1.1)}
-    ${hang("lan-b", "lantern-b", 1372, -8, 81 * 1.15, 213 * 1.15)}
+    ${hang("lan-b", "lantern-b", 1372, -8, 81 * 1.15, 213 * 1.15, 1.6)}
   `;
 }
 
@@ -55,7 +62,8 @@ function frontLayer() {
     ${img("jar", -6, 722, 150 * 1.2, 167 * 1.2)}
     ${img("sign", 166, 738, 142 * 1.05, 169 * 1.05)}
     ${img("props-table", 1290, 782, 482 * 0.66, 182 * 0.66)}
-    ${hang("lan-c", "lantern-c", 26, -10, 98 * 1.5, 176 * 1.5)}
+    ${HALO_DEFS}
+    ${hang("lan-c", "lantern-c", 26, -10, 98 * 1.5, 176 * 1.5, 1.4)}
   `;
 }
 
@@ -71,37 +79,45 @@ function makeFx() {
   let acc = 0, bacc = 0, leafAt = 2.5;
   return (ctx: CanvasRenderingContext2D, t: number, dt: number) => {
     // broth
-    bacc += dt * 8;
+    bacc += dt * 16;
     while (bacc > 1) {
       bacc -= 1;
       const a = rnd(0, Math.PI * 2), r = Math.sqrt(Math.random()) * 0.9;
-      bubbles.push({ x: POT.x + Math.cos(a) * POT.rx * r, y: POT.y + Math.sin(a) * POT.ry * r, r: rnd(3, 7), age: 0, life: rnd(0.5, 0.9) });
+      bubbles.push({ x: POT.x + Math.cos(a) * POT.rx * r, y: POT.y + Math.sin(a) * POT.ry * r, r: rnd(5, 12), age: 0, life: rnd(0.45, 0.85) });
     }
+    // the surface itself heaves: a shimmering, breathing sheen over the whole broth
+    const heave = 0.5 + Math.sin(t * 6.3) * 0.25 + Math.sin(t * 9.1) * 0.25;
+    ctx.beginPath(); ctx.ellipse(POT.x, POT.y, POT.rx, POT.ry, 0, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,120,50,${(0.1 + heave * 0.14).toFixed(3)})`; ctx.fill();
     for (let i = bubbles.length - 1; i >= 0; i--) {
       const b = bubbles[i]; b.age += dt;
       const k = b.age / b.life;
       if (k >= 1) { bubbles.splice(i, 1); continue; }
-      const rr = b.r * (k < 0.75 ? k / 0.75 : 1 + (k - 0.75) * 1.6);
-      ctx.beginPath(); ctx.ellipse(b.x, b.y, rr, rr * 0.5, 0, 0, Math.PI * 2);
-      if (k < 0.75) { ctx.fillStyle = "rgba(255,130,80,.7)"; ctx.fill(); ctx.beginPath(); ctx.ellipse(b.x - rr * 0.3, b.y - rr * 0.2, rr * 0.3, rr * 0.16, 0, 0, Math.PI * 2); ctx.fillStyle = "rgba(255,235,210,.7)"; ctx.fill(); }
-      else { ctx.strokeStyle = `rgba(255,180,120,${(1 - k) * 2})`; ctx.lineWidth = 1.4; ctx.stroke(); }
+      const rr = b.r * (k < 0.7 ? k / 0.7 : 1 + (k - 0.7) * 2);
+      ctx.beginPath(); ctx.ellipse(b.x, b.y - rr * 0.3, rr, rr * 0.6, 0, 0, Math.PI * 2);
+      if (k < 0.7) {
+        ctx.fillStyle = "rgba(255,150,90,.85)"; ctx.fill();
+        ctx.beginPath(); ctx.ellipse(b.x - rr * 0.3, b.y - rr * 0.55, rr * 0.35, rr * 0.2, 0, 0, Math.PI * 2); ctx.fillStyle = "rgba(255,240,215,.85)"; ctx.fill();
+        ctx.beginPath(); ctx.ellipse(b.x, b.y - rr * 0.3, rr, rr * 0.6, 0, 0, Math.PI * 2); ctx.strokeStyle = "rgba(150,30,10,.5)"; ctx.lineWidth = 1.2; ctx.stroke();
+      } else { ctx.strokeStyle = `rgba(255,200,140,${((1 - k) * 3.3).toFixed(2)})`; ctx.lineWidth = 2; ctx.stroke(); }
     }
-    for (let i = 0; i < 3; i++) {
-      const ph = t * 0.9 + i * 2.1;
-      ctx.beginPath(); ctx.ellipse(POT.x + Math.sin(ph) * POT.rx * 0.6, POT.y + Math.cos(ph * 0.7) * POT.ry * 0.5, 22 + Math.sin(ph * 3) * 5, 5, 0, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(255,200,140,.22)"; ctx.lineWidth = 2; ctx.stroke();
+    // rolling ridges that drift across the surface
+    for (let i = 0; i < 5; i++) {
+      const ph = t * 1.4 + i * 1.3;
+      ctx.beginPath(); ctx.ellipse(POT.x + Math.sin(ph) * POT.rx * 0.65, POT.y + Math.cos(ph * 0.7 + i) * POT.ry * 0.55, 26 + Math.sin(ph * 3) * 8, 6, 0, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(255,220,160,.45)"; ctx.lineWidth = 2.5; ctx.stroke();
     }
     // steam
-    acc += dt * 13;
-    while (acc > 1) { acc -= 1; steam.push({ x: rnd(POT.x - 110, POT.x + 110), y: rnd(POT.y - 40, POT.y - 20), vx: rnd(-6, 6), vy: rnd(-44, -68), r: rnd(12, 20), a: rnd(0.2, 0.32), life: rnd(3, 4.6), age: 0, drift: rnd(0, 6.28) }); }
+    acc += dt * 22;
+    while (acc > 1) { acc -= 1; steam.push({ x: rnd(POT.x - 120, POT.x + 120), y: rnd(POT.y - 40, POT.y - 16), vx: rnd(-8, 8), vy: rnd(-50, -80), r: rnd(16, 28), a: rnd(0.3, 0.46), life: rnd(3, 5), age: 0, drift: rnd(0, 6.28) }); }
     for (let i = steam.length - 1; i >= 0; i--) {
       const s = steam[i]; s.age += dt;
       const k = s.age / s.life;
       if (k >= 1) { steam.splice(i, 1); continue; }
       s.x += (s.vx + Math.sin(t * 1.3 + s.drift) * 14) * dt; s.y += s.vy * dt;
-      const r = s.r + k * 60, a = s.a * (k < 0.15 ? k / 0.15 : 1 - (k - 0.15) / 0.85);
+      const r = s.r + k * 85, a = s.a * (k < 0.15 ? k / 0.15 : 1 - (k - 0.15) / 0.85);
       const g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, r);
-      g.addColorStop(0, `rgba(255,244,232,${a})`); g.addColorStop(1, "rgba(255,244,232,0)");
+      g.addColorStop(0, `rgba(255,246,236,${a})`); g.addColorStop(0.5, `rgba(255,240,226,${a * 0.45})`); g.addColorStop(1, "rgba(255,244,232,0)");
       ctx.fillStyle = g; ctx.beginPath(); ctx.arc(s.x, s.y, r, 0, Math.PI * 2); ctx.fill();
     }
     // a leaf lets go of the vine now and then
@@ -126,13 +142,19 @@ function makeAnimate(root: HTMLElement) {
   const q = (id: string) => root.querySelector<SVGGraphicsElement>(`#${id}`);
   const rot = (el: SVGGraphicsElement | null, deg: number) => { el?.setAttribute("transform", `rotate(${deg.toFixed(2)} ${el.dataset.px} ${el.dataset.py})`); };
   const swing = [
-    { el: q("lan-a"), ph: 0, sp: 0.9, amp: 2.4 }, { el: q("chilli-a"), ph: 1.4, sp: 0.75, amp: 1.5 },
-    { el: q("garlic-a"), ph: 2.2, sp: 0.8, amp: 1.6 }, { el: q("lan-b"), ph: 3.1, sp: 1.05, amp: 2.2 }, { el: q("lan-c"), ph: 4.3, sp: 0.85, amp: 1.8 },
+    { el: q("lan-a"), ph: 0, sp: 0.7, amp: 5.5 }, { el: q("chilli-a"), ph: 1.4, sp: 0.62, amp: 4.5 },
+    { el: q("garlic-a"), ph: 2.2, sp: 0.66, amp: 4 }, { el: q("lan-b"), ph: 3.1, sp: 0.78, amp: 5 }, { el: q("lan-c"), ph: 4.3, sp: 0.6, amp: 4.5 },
   ];
+  const halos = swing.map((s) => s.el?.querySelector<SVGElement>(".halo") ?? null);
+  const lamps = [1, 2, 3, 4, 5].map((i) => q(`lamp-${i}`));
   const fire = q("fire-glow");
   return (t: number) => {
-    for (const s of swing) rot(s.el, Math.sin(t * s.sp + s.ph) * s.amp + Math.sin(t * s.sp * 2.3 + s.ph) * 0.4);
-    fire?.setAttribute("opacity", (0.6 + flickerNoise(t, 2) * 0.4).toFixed(3));
+    swing.forEach((s, i) => {
+      rot(s.el, Math.sin(t * s.sp + s.ph) * s.amp + Math.sin(t * s.sp * 2.3 + s.ph) * 0.8);
+      halos[i]?.setAttribute("opacity", (0.35 + flickerNoise(t, s.ph) * 0.65).toFixed(3));
+    });
+    lamps.forEach((l, i) => l?.setAttribute("opacity", (0.3 + flickerNoise(t, i * 1.9 + 7) * 0.7).toFixed(3)));
+    fire?.setAttribute("opacity", (0.4 + flickerNoise(t, 2) * 0.6).toFixed(3));
   };
 }
 
@@ -150,7 +172,7 @@ export function hotpotPaintedScene(): SceneDef {
     ],
     fxDepth: 0.5,
     fx: makeFx(),
-    light: { x: POT.x, y: 320, color: "rgba(255,190,110,0.28)" },
+    light: { x: POT.x, y: 320, color: "rgba(255,190,110,0.36)" },
     animate: makeAnimate,
   };
 }

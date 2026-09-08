@@ -33,7 +33,9 @@ export function tokyoTower(): P {
   add(g, box(1.8, 0.6, 1.8, JP.white), 0, 3.1, 0); add(g, box(1.1, 0.5, 1.1, JP.white), 0, 7.6, 0);
   add(g, cyl(0.1, 0.32, 3.2, JP.vermilion, 5), 0, 9.5, 0); add(g, cyl(0.03, 0.06, 2.2, JP.white, 4), 0, 12.0, 0);
   const light = add(g, ball(0.1, "#f2e6a0", 5), 0, 13.1, 0);
-  g.userData.tick = (t) => { light.visible = Math.sin(t * 4) > 0; };
+  const re = reaction(0.6);
+  g.userData.poke = () => { re.poke(); bubble(g, "東京タワー · 333 m", 13.8, 1400); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); light.visible = Math.sin(t * (4 + k * 20)) > 0; light.scale.setScalar(1 + k * 2); };
   return g;
 }
 
@@ -193,14 +195,20 @@ export function kinkakuji(): P {
   const roof = add(g, new THREE.Mesh(new THREE.ConeGeometry(1.9, 0.9, 4), mat(JP.tile)), 0, 4.45, 0); roof.rotation.y = Math.PI / 4; roof.scale.z = 0.8;
   add(g, ball(0.12, JP.gold, 6), 0, 4.95, 0); const phoenix = add(g, box(0.16, 0.2, 0.3, JP.gold), 0, 5.15, 0); add(phoenix, cone(0.05, 0.2, JP.gold, 4), 0, 0.15, -0.15);
   add(g, cyl(0.1, 0.14, 1.4, "#5a3d28", 6), -2.6, 0.7, 1.2); add(g, ball(0.8, "#3a6b48", 8), -2.6, 1.6, 1.2).scale.y = 0.5; add(g, ball(0.5, "#3a6b48", 7), -2.2, 2.0, 1.4).scale.y = 0.5;   // the pine
-  g.userData.tick = (t) => { phoenix.position.y = 5.15 + Math.sin(t * 2) * 0.03; };
+  const re = reaction(0.6);
+  g.userData.poke = () => { re.poke(); bubble(phoenix, "金閣寺 · the phoenix", 0.8, 1400); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); phoenix.position.y = 5.15 + Math.sin(t * 2) * 0.03 + k * Math.sin(Math.min(1, k * 2) * Math.PI) * 1.2; phoenix.rotation.y = k * t * 4; phoenix.scale.y = 1 + k * Math.abs(Math.sin(t * 14)) * 0.6; };
   return g;
 }
 
 export function pagodaJp(): P {
   const g = group();
-  for (let i = 0; i < 5; i++) { const s = 1.6 - i * 0.2; add(g, box(s, 0.9, s, JP.wood), 0, 0.45 + i * 1.1, 0); const r = add(g, box(s + 1.0, 0.1, s + 1.0, JP.tile), 0, 1.0 + i * 1.1, 0); r.rotation.y = 0; for (const sx of [-1, 1]) for (const sz of [-1, 1]) add(g, box(0.4, 0.06, 0.4, JP.tile), sx * (s / 2 + 0.4), 1.12 + i * 1.1, sz * (s / 2 + 0.4)).rotation.set(-sz * 0.3, 0, sx * 0.3); }
+  const roofs: THREE.Mesh[] = [];
+  for (let i = 0; i < 5; i++) { const s = 1.6 - i * 0.2; add(g, box(s, 0.9, s, JP.wood), 0, 0.45 + i * 1.1, 0); const r = add(g, box(s + 1.0, 0.1, s + 1.0, JP.tile), 0, 1.0 + i * 1.1, 0); roofs.push(r); for (const sx of [-1, 1]) for (const sz of [-1, 1]) add(g, box(0.4, 0.06, 0.4, JP.tile), sx * (s / 2 + 0.4), 1.12 + i * 1.1, sz * (s / 2 + 0.4)).rotation.set(-sz * 0.3, 0, sx * 0.3); }
   add(g, cyl(0.04, 0.06, 1.6, JP.gold, 6), 0, 6.2, 0); for (let k = 0; k < 5; k++) add(g, new THREE.Mesh(new THREE.TorusGeometry(0.16 - k * 0.02, 0.02, 4, 8), mat(JP.gold)), 0, 5.7 + k * 0.25, 0).rotation.x = Math.PI / 2;
+const re = reaction(0.6);
+  g.userData.poke = () => { re.poke(); bubble(g, "五重塔 · the wind bells", 7.2, 1400); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); roofs.forEach((r, i) => { r.rotation.z = k * Math.sin(t * 9 + i * 0.8) * 0.05; r.rotation.x = k * Math.cos(t * 9 + i * 0.8) * 0.05; }); };
   return g;
 }
 
@@ -233,8 +241,10 @@ export function fuji(): P {
   geo.setAttribute("color", new THREE.Float32BufferAttribute(col, 3)); geo.computeVertexNormals();
   const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.95, flatShading: true })); m.position.y = 6; m.castShadow = true; m.receiveShadow = true; g.add(m);
   const cloud = new THREE.Group(); for (let k = 0; k < 4; k++) add(cloud, ball(0.9 - k * 0.1, JP.white, 7), -1.2 + k * 0.8, Math.sin(k) * 0.2, 0).scale.y = 0.6; cloud.position.set(6, 8.5, 2); g.add(cloud);
-  g.userData.tick = (t) => { cloud.position.x = 6 + Math.sin(t * 0.2) * 1.5; };
-  const outer = group(); g.scale.setScalar(0.66); outer.add(g); outer.userData.tick = g.userData.tick; g.userData.tick = undefined;
+  const re = reaction(0.6);
+  g.userData.poke = () => { re.poke(); bubble(cloud, "富士山 · 3,776 m", 1.4, 1500); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); cloud.position.x = 6 + Math.sin(t * 0.2) * 1.5; cloud.scale.setScalar(1 + k * 0.8); cloud.position.y = 8.5 + k * Math.sin(t * 5) * 0.4; };
+  const outer = group(); g.scale.setScalar(0.66); outer.add(g); outer.userData.tick = g.userData.tick; outer.userData.poke = g.userData.poke; g.userData.tick = undefined;
   return outer;
 }
 
@@ -334,6 +344,10 @@ export function floatingTorii(): P {
   const g = group();
   for (const sd of [-1, 1]) { add(g, cyl(0.16, 0.2, 3.6, JP.vermilion, 8), sd * 1.3, 1.8, 0); for (const sz of [-1, 1]) add(g, cyl(0.08, 0.1, 2.6, JP.vermilion, 6), sd * 1.3, 1.3, sz * 0.5).rotation.x = sz * 0.2; }
   add(g, box(3.6, 0.25, 0.3, JP.vermilion), 0, 3.5, 0); add(g, box(2.9, 0.2, 0.2, JP.vermilion), 0, 3.0, 0); add(g, box(3.9, 0.14, 0.4, "#2a2a2e"), 0, 3.72, 0); add(g, box(0.16, 0.3, 0.16, JP.vermilion), 0, 3.25, 0);
+  const gull = ball(0.08, JP.white, 5); gull.scale.set(1.6, 0.6, 1); g.add(gull);
+  const re = reaction(0.6);
+  g.userData.poke = () => { re.poke(); bubble(g, "厳島 · the tide is out", 4.4, 1500); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); gull.position.set(Math.cos(t * 0.9) * (2.5 + k * 2), 4.2 + Math.sin(t * 2) * 0.3 + k * 1.5, Math.sin(t * 0.9) * 2.5); gull.rotation.y = -t * 0.9; };
   return g;
 }
 
@@ -351,6 +365,10 @@ export function bambooGrove(n = 12): P {
   const g = group();
   for (let i = 0; i < n; i++) { const b = tree("bamboo", 0.9 + rnd() * 0.5); b.position.set((rnd() - 0.5) * 5, 0, (rnd() - 0.5) * 3.5); g.add(b); }
   const walker = local(JP.white, { kimono: JP.vermilion }); add(g, walker, 0.4, 0, 2.2); walker.rotation.y = 0.5;
+const re = reaction(0.6);
+  const stems = g.children.filter((c) => c !== walker);
+  g.userData.poke = () => { re.poke(); bubble(walker, "竹林 · listen to the leaves", 1.5, 1500); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); stems.forEach((s, i) => { s.rotation.z = Math.sin(t * 1.5 + i) * 0.03 + k * Math.sin(t * 7 + i * 1.3) * 0.18; }); };
   return g;
 }
 

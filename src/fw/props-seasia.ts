@@ -44,7 +44,9 @@ export function wat(): P {
   const monk = local("", { monk: true }); add(g, monk, 1.2, 0.5, 2.6); monk.rotation.y = Math.PI;
   g.userData.smoke = new THREE.Vector3(-3.0, 1.0, 3.3);
   const bells: THREE.Mesh[] = []; for (let k = 0; k < 4; k++) bells.push(add(g, cone(0.06, 0.12, SE.gold, 6), -4.5 + k * 2.0, 4.6 + (k % 2) * 0.9, 2.6 + (k % 2) * -0.5));
-  g.userData.tick = (t) => bells.forEach((b, i) => { b.rotation.z = Math.sin(t * 2 + i) * 0.2; });
+  const re = reaction(0.6);
+  g.userData.poke = () => { re.poke(); bubble(monk, "สาธุ · Sadhu", 1.5, 1400); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); bells.forEach((b, i) => { b.rotation.z = Math.sin(t * (2 + k * 10) + i) * (0.2 + k * 0.8); }); };
   return g;
 }
 
@@ -61,7 +63,9 @@ export function hoanKiem(): P {
   for (let k = 0; k < 4; k++) add(g, cyl(0.04, 0.04, 0.5, "#8a6a3a", 4), 2.6, 0.25, 1.6 - 1.2 + k * 0.8);
   add(g, tree("willow", 1.2), -4.2, 0, 2.6); add(g, tree("willow", 1.0), 3.8, 0, -2.4);
   const turtle = new THREE.Group(); g.add(turtle); add(turtle, ball(0.22, "#3f5a3a", 8), 0, 0.08, 0).scale.set(1.3, 0.5, 1); add(turtle, ball(0.08, "#4f6a4a", 5), 0.3, 0.08, 0);
-  g.userData.tick = (t) => { waterMat.uniforms.uTime.value = t; const a = t * 0.15; turtle.position.set(Math.cos(a) * 2.6, 0.06, Math.sin(a) * 2.6); turtle.rotation.y = -a + Math.PI / 2; };
+  const re = reaction(0.6);
+  g.userData.poke = () => { re.poke(); bubble(turtle, "Cụ Rùa! The turtle!", 0.8, 1400); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); waterMat.uniforms.uTime.value = t; const a = t * 0.15; turtle.position.set(Math.cos(a) * 2.6, 0.06 + k * Math.abs(Math.sin(t * 5)) * 0.35, Math.sin(a) * 2.6); turtle.rotation.y = -a + Math.PI / 2; };
   return g;
 }
 

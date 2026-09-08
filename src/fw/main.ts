@@ -441,6 +441,7 @@ const dbg = () => ({ level, flying: Boolean(flight), diorama: Boolean(diorama), 
   for (const [name, build] of poses) for (const az of [0.9, 0.05]) { const img = document.createElement("img"); img.src = snapshotObject(build(), 256, az); img.title = name; img.style.cssText = "width:256px;height:256px;border:1px solid #ccc;background:#eee"; wrap.appendChild(img); }
   document.body.appendChild(wrap);
 };
+(dbg as unknown as { diorama: () => unknown }).diorama = () => diorama;
 (dbg as unknown as { audit: (seconds?: number) => unknown }).audit = (seconds = 30) => (diorama ? auditDiorama(diorama, seconds) : null);
 (dbg as unknown as { open: (id: string) => void }).open = (id: string) => { const p = diorama?.placed.find((x) => x.obj.id === id); if (p) openObject(p); };
 (dbg as unknown as { enter: (id: string) => void }).enter = (id: string) => { const r = MAP_REGIONS.find((x) => x.id === id); if (r) enterRegion(r); };

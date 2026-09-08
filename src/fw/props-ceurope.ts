@@ -39,7 +39,10 @@ export function bigBen(): P {
   for (const sx of [-1, 1]) for (const sz of [-1, 1]) add(g, cone(0.18, 0.9, CE.limestone, 4), sx * 0.95, 11.3, sz * 0.95);
   add(g, box(5, 3.2, 3.0, CE.limestone), 3.6, 1.6, 0); add(g, box(5.2, 0.3, 3.2, CE.slate), 3.6, 3.35, 0); for (let k = 0; k < 6; k++) { add(g, box(0.25, 1.0, 0.04, "#5a6a7a"), 1.5 + k * 0.85, 1.2, 1.52); add(g, box(0.25, 1.0, 0.04, "#5a6a7a"), 1.5 + k * 0.85, 2.4, 1.52); add(g, cone(0.15, 0.7, CE.limestone, 4), 1.5 + k * 0.85, 3.8, 1.3); }
   add(g, box(1.6, 4.4, 1.6, CE.limestone), 6.9, 2.2, 0); add(g, box(1.8, 0.5, 1.8, CE.limestone), 6.9, 4.6, 0); for (const sx of [-1, 1]) for (const sz of [-1, 1]) add(g, cone(0.16, 0.8, CE.limestone, 4), 6.9 + sx * 0.75, 5.2, sz * 0.75);   // Victoria Tower
-  g.userData.tick = (t) => { g.traverse((c) => { const m = (c.userData as { m?: THREE.Mesh }).m; if (m) m.rotation.z = -t * 0.3; }); };
+  const re = reaction(0.6);
+  let hands = 0;
+  g.userData.poke = () => { re.poke(); bubble(g, "Bong!", 15.2, 1200); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); hands += dt * (0.3 + k * 12); g.traverse((c) => { const m = (c.userData as { m?: THREE.Mesh }).m; if (m) m.rotation.z = -hands; }); };
   return g;
 }
 
@@ -64,7 +67,10 @@ export function londonEye(): P {
   add(wheel, new THREE.Mesh(new THREE.TorusGeometry(4.0, 0.07, 6, 32), mat(CE.white)), 0, 0, 0);
   for (let i = 0; i < 16; i++) { const a = (i / 16) * Math.PI * 2; add(wheel, cyl(0.02, 0.02, 4.0, CE.white, 3), Math.cos(a) * 2, Math.sin(a) * 2, 0).rotation.z = a + Math.PI / 2; }
   const pods: THREE.Mesh[] = []; for (let i = 0; i < 12; i++) { const a = (i / 12) * Math.PI * 2; const p = add(wheel, ball(0.32, CE.glass, 8), Math.cos(a) * 4.1, Math.sin(a) * 4.1, 0); p.scale.set(1.3, 0.8, 0.8); pods.push(p); }
-  g.userData.tick = (t) => { wheel.rotation.z = t * 0.12; pods.forEach((p) => { p.rotation.z = -wheel.rotation.z; }); };
+  const re = reaction(0.6);
+  let spin = 0;
+  g.userData.poke = () => { re.poke(); bubble(g, "Round we go!", 10.2, 1200); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); spin += dt * (0.12 + k * 1.5); wheel.rotation.z = spin; pods.forEach((p) => { p.rotation.z = -wheel.rotation.z; }); };
   return g;
 }
 
@@ -81,6 +87,9 @@ export function phoneBox(): P {
   add(g, box(0.7, 1.8, 0.7, CE.busRed), 0, 0.9, 0); for (const rot of [0, 1, 2, 3]) { const f = new THREE.Group(); f.rotation.y = rot * Math.PI / 2; g.add(f); for (let k = 0; k < 3; k++) add(f, box(0.5, 0.35, 0.02, CE.glass), 0, 0.6 + k * 0.42, 0.36); add(f, box(0.5, 0.12, 0.02, "#1a1a1e"), 0, 1.65, 0.36); }
   add(g, box(0.8, 0.12, 0.8, CE.busRed), 0, 1.86, 0); add(g, ball(0.34, CE.busRed, 6), 0, 1.9, 0).scale.y = 0.35; add(g, box(0.16, 0.06, 0.16, CE.busRed), 0, 2.05, 0);
   add(g, cyl(0.16, 0.16, 1.0, CE.busRed, 10), 1.0, 0.5, 0.2); add(g, ball(0.18, CE.busRed, 6), 1.0, 1.02, 0.2).scale.y = 0.6; add(g, box(0.2, 0.03, 0.04, "#1a1a1e"), 1.0, 0.85, 0.37);   // the pillar box
+const re = reaction(0.6);
+  g.userData.poke = () => { re.poke(); bubble(g, "Ring ring!", 2.5, 1300); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); g.rotation.z = k * Math.sin(t * 30) * 0.05; };
   return g;
 }
 
@@ -151,6 +160,9 @@ export function parliamentHu(): P {
   for (const sd of [-1, 1]) { add(g, box(1.6, 3.6, 1.6, c), sd * 4.2, 3.4, 0); add(g, cone(1.0, 2.0, "#8a3a2a", 4), sd * 4.2, 6.2, 0).rotation.y = Math.PI / 4; for (const sx of [-1, 1]) for (const sz of [-1, 1]) add(g, cone(0.14, 0.8, c, 4), sd * 4.2 + sx * 0.7, 5.5, sz * 0.7); }
   for (let k = 0; k < 6; k++) add(g, box(0.3, 0.7, 0.04, "#5a6a7a"), -1.2 + k * 0.5, 4.2, 1.72);
   add(g, box(11.4, 0.14, 1.2, CE.stone), 0, 0.07, 2.2);   // the embankment
+const re = reaction(0.6);
+  g.userData.poke = () => { re.poke(); bubble(g, "Országház · 1904", 9.8, 1400); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); g.rotation.y = k * Math.sin(t * 6) * 0.015; };
   return g;
 }
 
@@ -163,6 +175,9 @@ export function chainBridge(len = 8): P {
   for (const z of [-1.2, 1.2]) { cable(-len * 0.28, len * 0.28, 4.5, 4.5, 1.8, z); cable(-len / 2 - 1, -len * 0.28, 1.1, 4.5, 0.3, z); cable(len * 0.28, len / 2 + 1, 4.5, 1.1, 0.3, z); }
   for (const sd of [-1, 1]) for (const sz of [-1, 1]) { const lion = add(g, box(0.5, 0.35, 0.3, "#8f857a"), sd * (len / 2 + 0.6), 1.1, sz * 1.05); add(lion, box(0.24, 0.26, 0.26, "#8f857a"), -sd * 0.28, 0.2, 0); add(lion, ball(0.18, "#7a6a5a", 6), -sd * 0.3, 0.22, 0); }
   for (const sd of [-1, 1]) add(g, box(2.2, 0.6, 2.8, CE.stone), sd * (len / 2 + 0.6), 0.3, 0);
+const re = reaction(0.6);
+  g.userData.poke = () => { re.poke(); bubble(g, "Lánchíd · Roar!", 5.4, 1300); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); g.position.y = k * Math.abs(Math.sin(t * 10)) * 0.08; };
   return g;
 }
 
@@ -304,6 +319,10 @@ export function sulfurBaths(): P {
   for (let i = 0; i < 4; i++) { const x = -2.4 + (i % 2) * 2.4, z = -1.0 + Math.floor(i / 2) * 2.2; add(g, box(2.0, 0.9, 2.0, CE.brick), x, 0.45, z); add(g, new THREE.Mesh(new THREE.SphereGeometry(1.0, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2), mat(CE.brick)), x, 0.9, z); add(g, cyl(0.22, 0.22, 0.3, CE.brick, 8), x, 1.9, z); add(g, ball(0.2, "#3fa2b0", 6), x, 2.1, z).scale.y = 0.5; }
   add(g, box(1.6, 2.2, 1.4, "#3f7a8a"), 2.6, 1.1, 0); add(g, box(0.5, 1.0, 0.04, "#2a3a4a"), 2.6, 0.7, 0.72); for (let k = 0; k < 6; k++) add(g, box(0.16, 0.16, 0.04, [CE.gold, "#3fa2b0", "#c0392b"][k % 3]), 2.1 + k * 0.2, 1.8, 0.72);   // the Orbeliani bathhouse with its tiled front
   g.userData.steam = new THREE.Vector3(0, 2.3, 0);
+  const puffs: THREE.Mesh[] = []; for (let i = 0; i < 6; i++) { const m = ball(0.3, CE.white, 6); m.visible = false; g.add(m); puffs.push(m); }
+  const re = reaction(0.6);
+  g.userData.poke = () => { re.poke(); bubble(g, "აბანო · hot sulfur!", 3.2, 1400); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); puffs.forEach((m, i) => { m.visible = k > 0.05; const a = (t * 1.5 + i * 0.9) % 3; m.position.set(-2.4 + (i % 2) * 2.4 + Math.sin(a * 3 + i) * 0.3, 2.2 + a * 0.9, -1.0 + Math.floor(i / 2) * 1.1); m.scale.setScalar(k * (0.6 + a * 0.4)); }); };
   return g;
 }
 

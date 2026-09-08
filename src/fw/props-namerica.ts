@@ -86,8 +86,11 @@ export function liberty(): P {
   add(s, cone(1.0, 3.6, NA.copper, 8), 0, 1.8, 0);                    // the robe
   add(s, box(1.0, 1.2, 0.8, NA.copper), 0, 3.9, 0); add(s, ball(0.42, NA.copper, 8), 0, 4.9, 0);
   for (let k = 0; k < 7; k++) add(s, cone(0.06, 0.6, NA.copper, 4), Math.cos(k * 0.45 + 1.2) * 0.45, 5.4, Math.sin(k * 0.45 + 1.2) * 0.45).rotation.z = -(k - 3) * 0.3;   // the crown
-  const arm = add(s, cyl(0.16, 0.16, 2.4, NA.copper, 6), 0.7, 5.0, 0); arm.rotation.z = -0.2; add(s, cone(0.22, 0.5, NA.yellow, 6), 0.95, 6.5, 0);   // the torch
+  const arm = add(s, cyl(0.16, 0.16, 2.4, NA.copper, 6), 0.7, 5.0, 0); arm.rotation.z = -0.2; const flame = add(s, cone(0.22, 0.5, NA.yellow, 6), 0.95, 6.5, 0);   // the torch
   add(s, box(0.6, 0.8, 0.2, NA.copper), -0.7, 3.8, 0.2).rotation.z = 0.3;   // the tablet
+const re = reaction(0.6);
+  g.userData.poke = () => { re.poke(); bubble(g, "Welcome to New York!", 11.5, 1500); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); flame.scale.setScalar(1 + k * (0.8 + Math.sin(t * 12) * 0.4)); };
   return g;
 }
 
@@ -131,7 +134,10 @@ export function lighthouse(): P {
   add(g, cyl(0.8, 0.8, 0.2, "#2a2a2e", 12), 0, 5.7, 0); add(g, cyl(0.55, 0.55, 0.9, NA.glass, 10), 0, 6.25, 0); add(g, cone(0.7, 0.6, NA.red, 10), 0, 7.0, 0);
   const beam = add(g, box(2.6, 0.2, 0.06, NA.yellow), 1.3, 6.25, 0); void beam;
   add(g, box(2.2, 1.6, 1.6, NA.white), 1.9, 0.8, 0.5); add(g, cone(1.5, 0.9, "#4a4a50", 4), 1.9, 2.05, 0.5).rotation.y = Math.PI / 4;
-  g.userData.tick = (t) => { beam.rotation.y = t * 1.2; beam.position.set(Math.cos(t * 1.2) * 1.3, 6.25, -Math.sin(t * 1.2) * 1.3); };
+  const re = reaction(0.6);
+  let spin = 0;
+  g.userData.poke = () => { re.poke(); bubble(g, "Foghorn!", 8.2, 1400); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); spin += dt * (1.2 + k * 8); beam.rotation.y = spin; beam.position.set(Math.cos(spin) * 1.3, 6.25, -Math.sin(spin) * 1.3); };
   return g;
 }
 
@@ -175,7 +181,9 @@ export function barn(): P {
   add(g, cyl(0.9, 0.9, 5, "#c9cfd6", 12), 3.4, 2.5, -0.6); add(g, new THREE.Mesh(new THREE.SphereGeometry(0.95, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2), mat("#8c9096")), 3.4, 5.0, -0.6);   // the silo
   const vane = add(g, box(0.5, 0.04, 0.04, "#2a2a2e"), 0, 4.3, 0); add(g, box(0.04, 0.5, 0.04, "#2a2a2e"), 0, 4.1, 0); add(vane, box(0.16, 0.14, 0.02, "#2a2a2e"), 0.2, 0.08, 0);   // the weathervane
   add(g, box(1.6, 0.4, 1.2, C.straw), -3.2, 0.2, 1.0); add(g, box(1.6, 0.4, 1.2, C.straw), -3.2, 0.6, 1.0).rotation.y = 0.1;   // hay bales
-  g.userData.tick = (t) => { vane.rotation.y = Math.sin(t * 0.4) * 0.6 + t * 0.05; };
+  const re = reaction(0.6);
+  g.userData.poke = () => { re.poke(); bubble(g, "Hay's in!", 5.2, 1300); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); vane.rotation.y = Math.sin(t * 0.4) * 0.6 + t * (0.05 + k * 8); };
   return g;
 }
 
@@ -185,6 +193,9 @@ export function waterTower(): P {
   for (const y of [1.3, 2.9]) { for (const sd of [-1, 1]) { add(g, box(2.2, 0.06, 0.06, NA.steel), 0, y, sd * 1.05); add(g, box(0.06, 0.06, 2.2, NA.steel), sd * 1.05, y, 0); for (const rot of [0.75, -0.75]) { add(g, box(2.4, 0.04, 0.04, NA.steel), 0, y, sd * 1.05).rotation.z = rot; add(g, box(0.04, 0.04, 2.4, NA.steel), sd * 1.05, y, 0).rotation.x = rot; } } }   // the cross bracing
   add(g, box(2.6, 0.16, 2.6, "#5a5a5a"), 0, 4.65, 0);
   add(g, cyl(1.3, 1.1, 1.6, "#c9cfd6", 12), 0, 5.55, 0); add(g, cone(1.35, 0.7, "#8c9096", 12), 0, 6.7, 0); add(g, box(2.0, 0.4, 0.04, "#2f6fb5"), 0, 5.55, 1.32); add(g, cyl(0.06, 0.06, 4.6, NA.steel, 5), 0, 2.4, 0);   // the riser pipe
+const re = reaction(0.6);
+  g.userData.poke = () => { re.poke(); bubble(g, "Pop. 1,204 · Welcome!", 7.3, 1500); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); g.rotation.y = k * Math.sin(t * 6) * 0.04; };
   return g;
 }
 
@@ -287,7 +298,10 @@ export function ferrisWheel(): P {
   add(wheel, new THREE.Mesh(new THREE.TorusGeometry(3.0, 0.06, 6, 24), mat(NA.steel)), 0, 0, 0);
   for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2; add(wheel, cyl(0.03, 0.03, 3.0, NA.steel, 4), Math.cos(a) * 1.5, Math.sin(a) * 1.5, 0).rotation.z = a + Math.PI / 2; }
   const cars: THREE.Mesh[] = []; for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2; const c = add(wheel, box(0.5, 0.4, 0.5, [NA.red, NA.yellow, "#2f6fb5", "#3f8f5a"][i % 4]), Math.cos(a) * 3.0, Math.sin(a) * 3.0 - 0.3, 0); cars.push(c); }
-  g.userData.tick = (t) => { wheel.rotation.z = t * 0.2; cars.forEach((c) => { c.rotation.z = -wheel.rotation.z; }); };
+  const re = reaction(0.6);
+  let spin = 0;
+  g.userData.poke = () => { re.poke(); bubble(g, "Wheee!", 8.0, 1200); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); spin += dt * (0.2 + k * 2.5); wheel.rotation.z = spin; cars.forEach((c) => { c.rotation.z = -wheel.rotation.z; }); };
   return g;
 }
 
@@ -414,6 +428,10 @@ export function goldenGate(len = 8): P {
   for (const sd of [-1, 1]) { const x = sd * len * 0.3; for (const z of [-0.8, 0.8]) add(g, box(0.5, 7.5, 0.5, c), x, 3.75, z); for (const y of [4.2, 6.0, 7.4]) add(g, box(1.6, 0.4, 0.4, c), x, y, 0); }
   const cable = (x0: number, x1: number, y0: number, y1: number, sag: number) => { const pts: THREE.Vector3[] = []; for (let i = 0; i <= 12; i++) { const u = i / 12; pts.push(new THREE.Vector3(x0 + (x1 - x0) * u, y0 + (y1 - y0) * u - Math.sin(u * Math.PI) * sag, 0)); } return new THREE.CatmullRomCurve3(pts); };
   for (const z of [-0.8, 0.8]) { for (const [a, b, ya, yb, sg] of [[-len * 0.3, len * 0.3, 7.4, 7.4, 3.0], [-len / 2 - 1, -len * 0.3, 2.6, 7.4, 0.4], [len * 0.3, len / 2 + 1, 7.4, 2.6, 0.4]] as [number, number, number, number, number][]) { const tube = new THREE.Mesh(new THREE.TubeGeometry(cable(a, b, ya, yb, sg), 12, 0.05, 5, false), mat(c)); tube.position.z = z; g.add(tube); } for (let i = 0; i < 9; i++) { const x = -len * 0.3 + (i / 8) * len * 0.6; const y = 7.4 - Math.sin((i / 8) * Math.PI) * 3.0; add(g, cyl(0.015, 0.015, y - 2.4, c, 3), x, (y + 2.4) / 2, z); } }
+  const fog: THREE.Mesh[] = []; for (let i = 0; i < 4; i++) { const m = ball(0.9, "#f4f1ea", 7); m.scale.set(1.6, 0.6, 1); m.visible = false; g.add(m); fog.push(m); }
+  const re = reaction(0.6);
+  g.userData.poke = () => { re.poke(); bubble(g, "Foghorn!", 9.5, 1400); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); fog.forEach((m, i) => { m.visible = k > 0.05; const a = (t * 1.2 + i * 1.7) % 6; m.position.set(-len / 2 + a * len / 6, 1.2 + Math.sin(a * 2) * 0.2, (i % 2 ? 1 : -1) * 1.6); m.scale.setScalar(k * (0.8 + i * 0.15)); }); };
   return g;
 }
 
@@ -585,7 +603,7 @@ NAMERICA_PROPS.chilliRacks = chilliRacks;
 NAMERICA_PROPS.lighthouse = lighthouse;
 NAMERICA_PROPS.saloon = saloon;
 NAMERICA_PROPS.goldenGate = () => goldenGate(8);
-NAMERICA_PROPS.liberty = () => { const g = group(); const l = liberty(); l.scale.setScalar(0.62); g.add(l); return g; };
+NAMERICA_PROPS.liberty = () => { const g = group(); const l = liberty(); l.scale.setScalar(0.62); g.add(l); g.userData.tick = l.userData.tick; g.userData.poke = l.userData.poke; l.userData.tick = undefined; return g; };
 NAMERICA_PROPS.ferrisWheel = ferrisWheel;
 NAMERICA_PROPS.foodTruck = foodTruck;
 NAMERICA_PROPS.hotDogCart = hotDogCart;

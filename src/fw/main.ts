@@ -18,7 +18,7 @@ import { buildJapan } from "./world-japan";
 import { buildCeurope } from "./world-ceurope";
 import { auditDiorama } from "./audit";
 import { openLivingScene, type LivingScene } from "./scene";
-import { hotpotScene } from "./scene-hotpot";
+import { hotpotPaintedScene } from "./scene-hotpot-painted";
 import { type Diorama, type DishMarker, type Placed } from "./worldkit";
 const areaCenter = (a: Area) => new THREE.Vector3(AREAS[a].center[0], 0, AREAS[a].center[1]);
 import { mountUi, showRecipePage, setCrumbs, hint, toast } from "./ui";
@@ -285,7 +285,7 @@ function enterLivingScene(p: Placed, obj: WorldObject, recipes: EnrichedRecipe[]
       controls.enabled = false;
       // the dishes on the table, or, if no recipe sits here yet, what this kitchen cooks
       const dishes = recipes.length ? recipes : china.filter((r) => r.area === obj.area).slice(0, 5);
-      livingScene = openLivingScene(hotpotScene(), {
+      livingScene = openLivingScene(hotpotPaintedScene(), {
         dishes, label: recipes.length ? "On the table" : "From this kitchen",
         onDish: (r) => ui.showRecipePreview(r),
         onStory: () => ui.showObject(obj, recipes, OBJECTS_NOW()),

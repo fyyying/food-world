@@ -165,7 +165,14 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
     g.fillStyle = "#2a1410"; g.fillRect(0, 0, W, H);
     for (const l of layers) {
       if (l instanceof HTMLCanvasElement) { g.drawImage(l, 0, 0, W, H); continue; }
-      const svg = l.querySelector("svg")!;
+      const svg = l.querySelector("svg")!.cloneNode(true) as SVGSVGElement;
+      // an SVG drawn as an image cannot fetch external pictures: inline them first
+      for (const im of Array.from(svg.querySelectorAll("image"))) {
+        const href = im.getAttribute("href"); if (!href || href.startsWith("data:")) continue;
+        const blob = await fetch(href).then((r) => r.blob());
+        const data = await new Promise<string>((res) => { const fr = new FileReader(); fr.onload = () => res(fr.result as string); fr.readAsDataURL(blob); });
+        im.setAttribute("href", data);
+      }
       const xml = new XMLSerializer().serializeToString(svg);
       const img = new Image();
       await new Promise<void>((res) => { img.onload = () => res(); img.onerror = () => res(); img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(xml)}`; });

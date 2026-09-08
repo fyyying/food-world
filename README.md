@@ -37,7 +37,9 @@ builds a static bundle; `.github/workflows/pages.yml` publishes it on every push
 - `src/fw/scene.ts` — Living Scenes: 3D world → walk up to a place → paper fade → a living illustrated interior
   (layered SVG with parallax, a particle canvas, lantern flicker, a slow camera push) → back to exactly where you
   were. `src/fw/scene-hotpot.ts` is the first one (the Sichuan hotpot house, `scene: "hotpot"` on its object);
-  `src/fw/scene-figures.ts` draws the people. `__fw.sceneShot(name)` screenshots an open scene.
+  the room is painted art in `public/scenes/hotpot/` (cut from the painted sheets by `scripts/scenes/cut-hotpot-layers.py`,
+  run with `uv run --with pillow --with numpy --with scipy`), while `scene-hotpot.ts` + `scene-figures.ts` keep the earlier
+  hand-drawn SVG version. `__fw.sceneShot(name)` screenshots an open scene.
 
 ## The worlds
 

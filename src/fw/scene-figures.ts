@@ -94,18 +94,36 @@ export function head(id: string, cx: number, cy: number, d: number, look: Look):
   </g>`;
 }
 
-/** an arm as three strokes: upper arm, forearm, hand (with a thumb); `long` sleeves cover the forearm */
-export function arm(sx: number, sy: number, ex: number, ey: number, hx: number, hy: number, o: { sleeve: string; skin: string; long?: boolean; w?: number }): string {
-  const w = o.w ?? 26, fw = w * 0.8;
-  const skinDark = mix(o.skin, -0.22);
-  return `<path d="M${sx},${sy} L${ex},${ey}" stroke="${mix(o.sleeve, -0.28)}" stroke-width="${w}" fill="none" stroke-linecap="round"/>
-    <path d="M${sx},${sy} L${ex},${ey}" stroke="${o.sleeve}" stroke-width="${w - 5}" fill="none" stroke-linecap="round"/>
-    <path d="M${ex},${ey} L${hx},${hy}" stroke="${o.long ? mix(o.sleeve, -0.18) : skinDark}" stroke-width="${fw}" fill="none" stroke-linecap="round"/>
-    <path d="M${ex},${ey} L${hx},${hy}" stroke="${o.long ? o.sleeve : o.skin}" stroke-width="${fw - 5}" fill="none" stroke-linecap="round"/>
-    ${o.long ? `<circle cx="${hx - (hx - ex) * 0.12}" cy="${hy - (hy - ey) * 0.12}" r="${fw / 2 + 1}" fill="${mix(o.sleeve, 0.2)}"/>` : ""}
-    <ellipse cx="${hx}" cy="${hy}" rx="${fw * 0.62}" ry="${fw * 0.5}" fill="${o.skin}"/>
-    <ellipse cx="${hx - (hy - ey) * 0.18}" cy="${hy + (hx - ex) * 0.18}" rx="5" ry="3.6" fill="${mix(o.skin, -0.1)}"/>
-    <path d="M${hx - 4},${hy + 4} q4,3 8,0" stroke="${skinDark}" stroke-width="1.2" fill="none" opacity=".5"/>`;
+/** a hand at the wrist (hx, hy); `angle` is the forearm direction in degrees; a fist grips things, an open hand rests */
+export function hand(hx: number, hy: number, angle: number, skin: string, kind: "fist" | "open" = "fist"): string {
+  const dark = mix(skin, -0.28), lit = mix(skin, 0.08);
+  const body = kind === "fist"
+    ? `<path d="M-6,-9 L13,-10 Q22,-9 22,-1 L22,6 Q21,12 13,12 L-6,10 Z" fill="${skin}"/>
+       <circle cx="20" cy="-5" r="4.2" fill="${lit}"/><circle cx="21" cy="1.5" r="4.2" fill="${lit}"/><circle cx="20" cy="8" r="4.2" fill="${lit}"/>
+       <path d="M15,-8 l5,0 M16,-1 l5,0 M15,6 l5,0" stroke="${dark}" stroke-width="1.3" fill="none" opacity=".45"/>
+       <path d="M2,-9 Q7,-19 16,-13 Q13,-8 6,-8 Z" fill="${skin}"/><path d="M4,-10 Q8,-16 14,-13" stroke="${dark}" stroke-width="1.2" fill="none" opacity=".4"/>
+       <path d="M-6,10 L13,12 Q21,12 22,6" stroke="${dark}" stroke-width="1.6" fill="none" opacity=".35"/>`
+    : `<path d="M-6,-9 L12,-10 L13,10 L-6,9 Z" fill="${skin}"/>
+       ${[-7, -2, 3, 8].map((y, i) => `<path d="M12,${y} L${26 - Math.abs(i - 1.5) * 2},${y - 1}" stroke="${skin}" stroke-width="5" stroke-linecap="round"/>`).join("")}
+       <path d="M0,-8 L9,-17" stroke="${skin}" stroke-width="5" stroke-linecap="round"/>
+       <path d="M12,-8 L12,10" stroke="${dark}" stroke-width="1.2" fill="none" opacity=".35"/>`;
+  return `<g transform="translate(${hx} ${hy}) rotate(${angle.toFixed(1)})">${body}</g>`;
+}
+
+/** an arm: shoulder → elbow → wrist as a bent limb with a lit upper edge, ending in a hand; `long` sleeves cover the forearm */
+export function arm(sx: number, sy: number, ex: number, ey: number, hx: number, hy: number, o: { sleeve: string; skin: string; long?: boolean; w?: number; hand?: "fist" | "open" }): string {
+  const w = o.w ?? 26, fw = w * 0.82;
+  const angle = (Math.atan2(hy - ey, hx - ex) * 180) / Math.PI;
+  const fore = o.long ? o.sleeve : o.skin;
+  const nx = -(hy - ey), ny = hx - ex, nl = Math.hypot(nx, ny) || 1;   // normal to the forearm, for the shading offset
+  const ox = (nx / nl) * 1.6, oy = (ny / nl) * 1.6;
+  return `<path d="M${sx},${sy} L${ex},${ey}" stroke="${mix(o.sleeve, -0.3)}" stroke-width="${w}" fill="none" stroke-linecap="round"/>
+    <path d="M${sx - ox},${sy - oy} L${ex - ox},${ey - oy}" stroke="${o.sleeve}" stroke-width="${w - 5}" fill="none" stroke-linecap="round"/>
+    <path d="M${ex},${ey} L${hx},${hy}" stroke="${mix(fore, -0.26)}" stroke-width="${fw}" fill="none" stroke-linecap="round"/>
+    <path d="M${ex - ox},${ey - oy} L${hx - ox},${hy - oy}" stroke="${fore}" stroke-width="${fw - 5}" fill="none" stroke-linecap="round"/>
+    <circle cx="${ex}" cy="${ey}" r="${(w - 5) / 2}" fill="${o.sleeve}"/>
+    ${o.long ? `<path d="M${hx - (hx - ex) * 0.1},${hy - (hy - ey) * 0.1} L${hx - (hx - ex) * 0.02},${hy - (hy - ey) * 0.02}" stroke="${mix(o.sleeve, 0.22)}" stroke-width="${fw - 3}" fill="none" stroke-linecap="butt"/>` : ""}
+    ${hand(hx, hy, angle, o.skin, o.hand ?? "fist")}`;
 }
 
 /** a torso seen from the front; the neck base is at (cx, top) */

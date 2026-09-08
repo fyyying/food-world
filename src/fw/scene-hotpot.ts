@@ -121,13 +121,13 @@ function dinerA(cx: number, cy: number) {
   const id = "da", top = cy + 62, skin = "#f1c8a4", cloth = "#d9a441";
   return `<g id="${id}">
     ${torsoFront(id, cx, top, cloth, { skin, collar: "round" })}
-    ${arm(cx - 58, top + 18, cx - 70, top + 74, cx - 24, top + 70, { sleeve: cloth, skin })}
-    <g id="da-bowl"><ellipse cx="${cx - 8}" cy="${top + 68}" rx="30" ry="11" fill="#f4ede0"/><path d="M${cx - 38},${top + 68} q30,30 60,0 z" fill="#e6dcc6"/><ellipse cx="${cx - 8}" cy="${top + 68}" rx="24" ry="8" fill="#c9401f"/><path d="M${cx - 26},${top + 66} q18,-6 36,0" stroke="#f1e2b0" stroke-width="3" fill="none"/></g>
+    ${arm(cx - 58, top + 18, cx - 78, top + 82, cx - 34, top + 76, { sleeve: cloth, skin })}
+    <g id="da-bowl"><ellipse cx="${cx - 8}" cy="${top + 66}" rx="30" ry="11" fill="#f4ede0"/><path d="M${cx - 38},${top + 66} q30,30 60,0 z" fill="#e6dcc6"/><ellipse cx="${cx - 8}" cy="${top + 66}" rx="24" ry="8" fill="#c9401f"/><path d="M${cx - 26},${top + 64} q18,-6 36,0" stroke="#f1e2b0" stroke-width="3" fill="none"/></g>
     ${head(id, cx, cy, 0, { skin, hair: "#2a1a14", style: "bob", mood: "smile" })}
     <g id="da-chop" data-px="${cx + 58}" data-py="${top + 18}">
-      ${arm(cx + 58, top + 18, cx + 86, top + 62, cx + 36, top + 30, { sleeve: cloth, skin })}
-      <line x1="${cx + 40}" y1="${top + 26}" x2="${cx + 12}" y2="${cy + 28}" stroke="#7a4a2a" stroke-width="3" stroke-linecap="round"/>
-      <line x1="${cx + 46}" y1="${top + 32}" x2="${cx + 16}" y2="${cy + 32}" stroke="#7a4a2a" stroke-width="3" stroke-linecap="round"/>
+      ${arm(cx + 58, top + 18, cx + 86, top + 70, cx + 42, top + 36, { sleeve: cloth, skin })}
+      <line x1="${cx + 34}" y1="${top + 22}" x2="${cx + 12}" y2="${cy + 28}" stroke="#7a4a2a" stroke-width="3" stroke-linecap="round"/>
+      <line x1="${cx + 40}" y1="${top + 28}" x2="${cx + 17}" y2="${cy + 33}" stroke="#7a4a2a" stroke-width="3" stroke-linecap="round"/>
       <path d="M${cx + 8},${cy + 26} q8,-6 14,2 q-4,8 -12,6 z" fill="#e58e86"/>
     </g>
   </g>`;
@@ -138,9 +138,9 @@ function dinerB(cx: number, cy: number) {
   const id = "db", top = cy + 62, skin = "#e6b48c", cloth = "#3b7a6a";
   return `<g id="${id}">
     ${torsoFront(id, cx, top, cloth, { skin, collar: "v" })}
-    ${arm(cx - 60, top + 18, cx - 94, top + 72, cx - 66, top + 100, { sleeve: cloth, skin })}
-    ${arm(cx + 60, top + 18, cx + 106, top + 44, cx + 98, top - 26, { sleeve: cloth, skin })}
-    <path d="M${cx + 86},${top - 74} l24,0 l-3,42 l-18,0 z" fill="rgba(240,230,200,.6)" stroke="rgba(255,255,255,.55)" stroke-width="1.5"/><path d="M${cx + 88},${top - 58} l20,0 l-2,26 l-16,0 z" fill="#e9b53a"/><ellipse cx="${cx + 98}" cy="${top - 60}" rx="10" ry="3.5" fill="#fff6d8"/>
+    ${arm(cx - 60, top + 18, cx - 94, top + 78, cx - 66, top + 104, { sleeve: cloth, skin, hand: "open" })}
+    ${arm(cx + 60, top + 18, cx + 106, top + 52, cx + 96, top - 12, { sleeve: cloth, skin })}
+    <path d="M${cx + 84},${top - 70} l24,0 l-3,50 l-18,0 z" fill="rgba(240,230,200,.62)" stroke="rgba(255,255,255,.55)" stroke-width="1.5"/><path d="M${cx + 86},${top - 52} l20,0 l-2,32 l-16,0 z" fill="#e9b53a"/><ellipse cx="${cx + 96}" cy="${top - 56}" rx="10" ry="3.5" fill="#fff6d8"/>
     ${head(id, cx, cy, 0, { skin, hair: "#1e1512", style: "short", mood: "laugh" })}
   </g>`;
 }
@@ -149,14 +149,14 @@ function dinerB(cx: number, cy: number) {
 function dinerC(cx: number, cy: number) {
   const id = "dc", top = cy + 62, skin = "#f1c8a4", cloth = "#b9302a";
   return `<g id="${id}">
-    ${arm(cx - 8, top + 22, cx + 46, top + 72, cx + 106, top + 62, { sleeve: cloth, skin, long: true })}
+    ${arm(cx - 8, top + 22, cx + 40, top + 86, cx + 104, top + 70, { sleeve: cloth, skin, long: true, hand: "open" })}
     ${torsoSide(id, cx, top, 1, cloth, { skin, trousers: "#4a4670" })}
     ${head(id, cx, cy, 1, { skin, hair: "#2a1a14", style: "ponytail", mood: "smile" })}
     <g id="dc-arm" data-px="${cx + 34}" data-py="${top + 16}">
-      ${arm(cx + 34, top + 16, cx + 128, top + 62, cx + 218, top + 36, { sleeve: cloth, skin, long: true })}
-      <line x1="${cx + 214}" y1="${top + 30}" x2="${cx + 312}" y2="${top + 46}" stroke="#6b3d1f" stroke-width="3.5" stroke-linecap="round"/>
-      <line x1="${cx + 216}" y1="${top + 42}" x2="${cx + 312}" y2="${top + 56}" stroke="#6b3d1f" stroke-width="3.5" stroke-linecap="round"/>
-      <g id="dc-slice" opacity="0"><path d="M${cx + 306},${top + 44} q12,-8 18,4 q-4,12 -16,10 q-8,-6 -2,-14 z" fill="#e58e86"/><path d="M${cx + 310},${top + 48} q6,-2 8,4" stroke="#fbe0da" stroke-width="2" fill="none"/></g>
+      ${arm(cx + 34, top + 16, cx + 112, top + 86, cx + 198, top + 42, { sleeve: cloth, skin, long: true })}
+      <line x1="${cx + 210}" y1="${top + 32}" x2="${cx + 312}" y2="${top + 42}" stroke="#6b3d1f" stroke-width="3.5" stroke-linecap="round"/>
+      <line x1="${cx + 212}" y1="${top + 46}" x2="${cx + 312}" y2="${top + 54}" stroke="#6b3d1f" stroke-width="3.5" stroke-linecap="round"/>
+      <g id="dc-slice" opacity="0"><path d="M${cx + 306},${top + 42} q12,-8 18,4 q-4,12 -16,10 q-8,-6 -2,-14 z" fill="#e58e86"/><path d="M${cx + 310},${top + 46} q6,-2 8,4" stroke="#fbe0da" stroke-width="2" fill="none"/></g>
     </g>
   </g>`;
 }
@@ -165,28 +165,31 @@ function dinerC(cx: number, cy: number) {
 function dinerD(cx: number, cy: number) {
   const id = "dd", top = cy + 62, skin = "#e6b48c", cloth = "#6a7fb5";
   return `<g id="${id}">
-    ${arm(cx + 8, top + 22, cx - 36, top + 78, cx - 96, top + 66, { sleeve: cloth, skin })}
+    ${arm(cx + 8, top + 22, cx - 30, top + 86, cx - 92, top + 70, { sleeve: cloth, skin, hand: "open" })}
     ${torsoSide(id, cx, top, -1, cloth, { skin, trousers: "#4d4a48" })}
     ${head(id, cx, cy, -1, { skin, hair: "#3a2a24", style: "short", mood: "calm", glasses: true })}
     <g id="dd-arm" data-px="${cx - 34}" data-py="${top + 16}">
-      ${arm(cx - 34, top + 16, cx - 92, top + 72, cx - 124, top + 30, { sleeve: cloth, skin })}
-      <path d="M${cx - 138},${top + 8} l28,0 l-4,26 l-20,0 z" fill="#f4ede0"/><ellipse cx="${cx - 124}" cy="${top + 8}" rx="14" ry="4" fill="#e6dcc6"/><ellipse cx="${cx - 124}" cy="${top + 8}" rx="9" ry="2.5" fill="#c99447"/>
+      ${arm(cx - 34, top + 16, cx - 86, top + 82, cx - 118, top + 36, { sleeve: cloth, skin })}
+      <path d="M${cx - 134},${top + 8} l28,0 l-4,28 l-20,0 z" fill="#f4ede0"/><ellipse cx="${cx - 120}" cy="${top + 8}" rx="14" ry="4" fill="#e6dcc6"/><ellipse cx="${cx - 120}" cy="${top + 8}" rx="9" ry="2.5" fill="#c99447"/>
     </g>
   </g>`;
 }
 
-/** the cook behind the counter: toque, white jacket, a cleaver that comes down in bursts */
+/** the cook behind the counter: toque, white jacket; one hand steadies the meat on the board, the other brings the cleaver down */
 function cook(cx: number, cy: number) {
   const id = "cook", top = cy + 62, skin = "#f1c8a4", cloth = "#f4f0e8";
   return `<g id="${id}">
     ${torsoFront(id, cx, top, cloth, { skin, collar: "shirt", height: 100 })}
     ${[0, 1, 2].map((i) => `<circle cx="${cx - 12}" cy="${top + 34 + i * 18}" r="3" fill="#cfc8bc"/><circle cx="${cx + 12}" cy="${top + 34 + i * 18}" r="3" fill="#cfc8bc"/>`).join("")}
-    ${arm(cx - 58, top + 16, cx - 86, top + 56, cx - 60, top + 70, { sleeve: cloth, skin, long: true })}
-    <g id="cook-arm" data-px="${cx + 58}" data-py="${top + 16}">
-      ${arm(cx + 58, top + 16, cx + 102, top + 42, cx + 142, top + 18, { sleeve: cloth, skin, long: true })}
-      <path d="M${cx + 150},${top + 2} l48,0 l0,30 l-54,0 z" fill="#c9ccd2"/><path d="M${cx + 150},${top + 2} l48,0 l0,8 l-52,0 z" fill="#e8eaee"/><rect x="${cx + 130}" y="${top + 8}" width="24" height="9" rx="3" fill="#5a3a22"/>
-    </g>
+    <rect x="${cx - 30}" y="${top + 56}" width="110" height="12" rx="3" fill="#b78a56"/><rect x="${cx - 30}" y="${top + 66}" width="110" height="4" fill="#8a6238"/>
+    ${[-14, 4, 22].map((dx) => `<ellipse cx="${cx + dx}" cy="${top + 55}" rx="9" ry="4" fill="#d98a80"/><ellipse cx="${cx + dx}" cy="${top + 54}" rx="6" ry="2.5" fill="#f2c0b6"/>`).join("")}
+    ${arm(cx - 58, top + 16, cx - 92, top + 68, cx - 30, top + 50, { sleeve: cloth, skin, long: true, hand: "open" })}
     ${head(id, cx, cy, 0, { skin, hair: "#2a1a14", style: "toque", mood: "smile" })}
+    <g id="cook-arm" data-px="${cx + 58}" data-py="${top + 16}">
+      ${arm(cx + 58, top + 16, cx + 100, top + 68, cx + 76, top + 20, { sleeve: cloth, skin, long: true })}
+      <rect x="${cx + 44}" y="${top + 16}" width="34" height="10" rx="4" fill="#5a3a22"/>
+      <path d="M${cx + 46},${top + 8} L${cx - 10},${top + 10} L${cx - 12},${top + 52} L${cx + 46},${top + 50} Z" fill="#c9ccd2"/><path d="M${cx + 46},${top + 8} L${cx - 10},${top + 10} L${cx - 10},${top + 18} L${cx + 46},${top + 16} Z" fill="#e8eaee"/><path d="M${cx - 12},${top + 52} L${cx + 46},${top + 50}" stroke="#f4f6f8" stroke-width="2"/>
+    </g>
   </g>`;
 }
 
@@ -200,20 +203,12 @@ function server() {
     </g>
     ${torsoFront(id, 0, top, cloth, { skin, collar: "shirt", height: 130 })}
     <path d="M-56,${top + 10} L-20,${top + 2} L0,${top + 40} L20,${top + 2} L56,${top + 10} L56,${top + 130} L-56,${top + 130} Z" fill="#b9302a"/><path d="M20,${top + 2} L56,${top + 10} L56,${top + 130} L26,${top + 130} Z" fill="rgba(0,0,0,.18)"/>
-    ${arm(-58, top + 18, -72, top + 70, -22, top + 58, { sleeve: cloth, skin, long: true })}${arm(58, top + 18, 72, top + 70, 22, top + 58, { sleeve: cloth, skin, long: true })}
+    ${arm(-58, top + 18, -76, top + 76, -30, top + 62, { sleeve: cloth, skin, long: true })}${arm(58, top + 18, 76, top + 76, 30, top + 62, { sleeve: cloth, skin, long: true })}
     <g id="server-tray"><ellipse cx="0" cy="${top + 52}" rx="76" ry="14" fill="#6b3a22"/><ellipse cx="0" cy="${top + 49}" rx="76" ry="14" fill="#8a5a30"/><ellipse cx="-30" cy="${top + 42}" rx="26" ry="10" fill="#f4ede0"/><ellipse cx="-30" cy="${top + 40}" rx="18" ry="6" fill="#e07f78"/><ellipse cx="26" cy="${top + 42}" rx="22" ry="9" fill="#f4ede0"/><ellipse cx="26" cy="${top + 40}" rx="14" ry="5" fill="#6fa35a"/><rect x="42" y="${top + 8}" width="14" height="36" rx="4" fill="#3f7a3a"/></g>
     ${head(id, 0, cy, 1, { skin, hair: "#1e1512", style: "cropped", mood: "calm" })}
   </g>`;
 }
 
-/** a dim figure at the back table */
-function crowd(id: string, cx: number, cy: number, cloth: string, style: "bun" | "short" | "bob") {
-  const top = cy + 52, skin = "#b98d70";
-  return `<g id="${id}" opacity=".82" transform="translate(${cx} ${cy}) scale(.84) translate(${-cx} ${-cy})">
-    ${torsoFront(id, cx, top, cloth, { skin, collar: "round", height: 120 })}
-    ${head(id, cx, cy - 10, 0, { skin, hair: "#1a100c", style, mood: "calm" })}
-  </g>`;
-}
 
 // ---------- the layers ----------
 
@@ -261,10 +256,17 @@ function backLayer() {
     ${[760, 786, 812, 838].map((x, i) => `<ellipse cx="${x + 12}" cy="${380 - i * 0}" rx="22" ry="7" fill="#f4ede0"/><ellipse cx="${x + 12}" cy="${370}" rx="22" ry="7" fill="#f4ede0"/><ellipse cx="${x + 12}" cy="${360}" rx="22" ry="7" fill="#f4ede0"/>`).join("")}
     ${[900, 936, 972].map((x) => `<path d="M${x},386 l0,-30 q0,-14 14,-14 q14,0 14,14 l0,30 z" fill="#c9a06a"/><rect x="${x + 4}" y="352" width="20" height="14" fill="#7a3a2a"/>`).join("")}
     ${chilliString("chilli-1", 520, 122, 230)}${chilliString("chilli-2", 1080, 122, 230)}
-    <ellipse cx="410" cy="546" rx="215" ry="46" fill="#4a2914"/><ellipse cx="410" cy="540" rx="215" ry="46" fill="#5a3319"/>
-    ${crowd("crowd-1", 290, 452, "#5c3a45", "bun")}${crowd("crowd-2", 410, 440, "#4a3d5a", "short")}${crowd("crowd-3", 530, 452, "#5a4a3c", "bob")}
-    <ellipse cx="410" cy="536" rx="70" ry="22" fill="#8f5a2c"/><ellipse cx="410" cy="524" rx="60" ry="18" fill="#c8321f"/>
-    ${Array.from({ length: 4 }, (_, i) => `<ellipse id="csteam-${i}" cx="${400 + i * 8}" cy="512" rx="${16 + i * 4}" ry="${9 + i * 2}" fill="#fff" opacity="0"/>`).join("")}
+    <!-- a folding screen, the chalk menu and the tea station -->
+    ${[0, 1, 2].map((i) => `<rect x="${196 + i * 142}" y="330" width="134" height="310" rx="4" fill="#4a2617"/><rect x="${206 + i * 142}" y="342" width="114" height="286" fill="#7a2a24"/><path d="M${232 + i * 142},560 q22,-90 12,-190 M${262 + i * 142},600 q18,-120 26,-230 M${292 + i * 142},580 q-14,-70 -2,-160" stroke="#9c4a3c" stroke-width="4" fill="none" stroke-linecap="round"/>${[0, 1, 2, 3].map((k) => `<path d="M${226 + i * 142 + k * 18},${420 + k * 40} l14,-8 l6,10 z" fill="#b25a4a" opacity=".8"/>`).join("")}`).join("")}
+    <rect x="96" y="446" width="176" height="212" rx="6" fill="#2a2420" stroke="#8a5a30" stroke-width="6"/>
+    <text x="184" y="484" text-anchor="middle" ${ZH} font-size="24" font-weight="700" fill="#f0c25a">今日 · 菜单</text>
+    <line x1="114" y1="494" x2="254" y2="494" stroke="#f0c25a" stroke-width="1.5" opacity=".6"/>
+    <text x="120" y="506" ${ZH} font-size="21" fill="#f3e9d2" opacity=".92">毛肚</text><text x="258" y="506" text-anchor="end" ${ZH} font-size="19" fill="#f0c25a" opacity=".92">¥38</text><text x="120" y="536" ${ZH} font-size="21" fill="#f3e9d2" opacity=".92">鸭血</text><text x="258" y="536" text-anchor="end" ${ZH} font-size="19" fill="#f0c25a" opacity=".92">¥18</text><text x="120" y="566" ${ZH} font-size="21" fill="#f3e9d2" opacity=".92">黄喉</text><text x="258" y="566" text-anchor="end" ${ZH} font-size="19" fill="#f0c25a" opacity=".92">¥32</text><text x="120" y="596" ${ZH} font-size="21" fill="#f3e9d2" opacity=".92">嫩牛肉</text><text x="258" y="596" text-anchor="end" ${ZH} font-size="19" fill="#f0c25a" opacity=".92">¥42</text><text x="120" y="626" ${ZH} font-size="21" fill="#f3e9d2" opacity=".92">藕片</text><text x="258" y="626" text-anchor="end" ${ZH} font-size="19" fill="#f0c25a" opacity=".92">¥12</text><text x="120" y="656" ${ZH} font-size="21" fill="#f3e9d2" opacity=".92">豆皮</text><text x="258" y="656" text-anchor="end" ${ZH} font-size="19" fill="#f0c25a" opacity=".92">¥14</text>
+    <path d="M84,658 l-14,36 M284,658 l14,36" stroke="#8a5a30" stroke-width="8" stroke-linecap="round"/>
+    <rect x="452" y="500" width="176" height="140" fill="#5a3319"/><rect x="452" y="492" width="176" height="14" fill="#7a4a26"/><rect x="464" y="520" width="152" height="52" rx="4" fill="none" stroke="rgba(0,0,0,.28)" stroke-width="5"/>
+    <ellipse cx="500" cy="490" rx="30" ry="9" fill="#3a3a40"/><path d="M472,490 q0,-40 28,-42 q28,2 28,42 z" fill="#4a4a52"/><path d="M528,470 q18,-6 22,10" stroke="#4a4a52" stroke-width="6" fill="none" stroke-linecap="round"/><rect x="494" y="440" width="12" height="10" rx="2" fill="#2b2b2e"/>
+    ${[0, 1, 2, 3].map((i) => `<ellipse cx="${560 + (i % 2) * 34}" cy="${486 - Math.floor(i / 2) * 12}" rx="15" ry="5" fill="#f4ede0"/><path d="M${545 + (i % 2) * 34},${486 - Math.floor(i / 2) * 12} l4,-10 l22,0 l4,10 z" fill="#e6dcc6"/>`).join("")}
+    ${[0, 1, 2, 3].map((i) => `<ellipse id="tsteam-${i}" cx="${500 + i * 6}" cy="446" rx="${12 + i * 3}" ry="${7 + i}" fill="#fff" opacity="0"/>`).join("")}
     <rect x="1090" y="460" width="520" height="180" fill="url(#counter)"/><rect x="1090" y="452" width="520" height="16" fill="#8a5a30"/>
     ${[1120, 1240, 1360, 1480].map((x) => `<rect x="${x}" y="490" width="90" height="120" rx="6" fill="none" stroke="rgba(0,0,0,.25)" stroke-width="6"/>`).join("")}
     ${cook(1231, 322)}
@@ -422,9 +424,8 @@ function makeAnimate(root: HTMLElement) {
   const move = (el: SVGGraphicsElement | null, x: number, y: number) => { el?.setAttribute("transform", `translate(${x.toFixed(1)} ${y.toFixed(1)})`); };
   const lanterns = ["lan-1", "lan-2", "lan-3", "lan-4", "lan-f"].map((id, i) => ({ el: q(id), glow: q(id)?.querySelector<SVGElement>(".glow, ellipse") ?? null, ph: i * 1.7, sp: 0.9 + (i % 3) * 0.17, amp: i === 4 ? 1.6 : 2.6 }));
   const chillies = [q("chilli-1"), q("chilli-2")];
-  const crowd = [q("crowd-1-head"), q("crowd-2-head"), q("crowd-3-head")];
   const bsteam = [0, 1, 2, 3, 4].map((i) => q(`bsteam-${i}`));
-  const csteam = [0, 1, 2, 3].map((i) => q(`csteam-${i}`));
+  const tsteam = [0, 1, 2, 3].map((i) => q(`tsteam-${i}`));
   const cookArm = q("cook-arm"), cookHead = q("cook-head");
   const srv = q("server"), srvLegs = q("server-legs"), srvTray = q("server-tray");
   const daHead = q("da-head"), daBowl = q("da-bowl"), daChop = q("da-chop"), db = q("db"), dbHead = q("db-head");
@@ -442,12 +443,11 @@ function makeAnimate(root: HTMLElement) {
       l.glow?.setAttribute("opacity", (0.5 + flickerNoise(t, l.ph) * 0.35).toFixed(3));
     }
     chillies.forEach((c, i) => rot(c, Math.sin(t * 0.8 + i * 2) * 1.4));
-    crowd.forEach((c, i) => rot(c, Math.sin(t * 1.1 + i) * 3, `translate(0 ${(Math.sin(t * 1.6 + i * 1.3) * 3).toFixed(1)})`));
     bsteam.forEach((s, i) => { const k = ((t * 0.32 + i * 0.2) % 1); s?.setAttribute("transform", `translate(${(Math.sin(t + i) * 8).toFixed(1)} ${(-k * 110).toFixed(1)}) scale(${(1 + k * 1.6).toFixed(2)})`); s?.setAttribute("transform-origin", `${1150 + (i % 2) * 14} 392`); s?.setAttribute("opacity", (0.4 * Math.sin(k * Math.PI)).toFixed(3)); });
-    csteam.forEach((s, i) => { const k = ((t * 0.28 + i * 0.25) % 1); s?.setAttribute("transform", `translate(${(Math.sin(t * 0.9 + i) * 6).toFixed(1)} ${(-k * 80).toFixed(1)})`); s?.setAttribute("opacity", (0.35 * Math.sin(k * Math.PI)).toFixed(3)); });
+    tsteam.forEach((s, i) => { const k = ((t * 0.3 + i * 0.25) % 1); s?.setAttribute("transform", `translate(${(Math.sin(t * 0.9 + i) * 5).toFixed(1)} ${(-k * 70).toFixed(1)})`); s?.setAttribute("opacity", (0.3 * Math.sin(k * Math.PI)).toFixed(3)); });
     // the cook chops in bursts
-    const chop = (t % 5) < 2.2 ? Math.abs(Math.sin(t * 9)) : 0;
-    rot(cookArm, -8 - chop * 22); rot(cookHead, Math.sin(t * 1.3) * 2, `translate(0 ${(chop * 3).toFixed(1)})`);
+    const chop = (t % 5) < 2.2 ? Math.abs(Math.sin(t * 9)) : 0;   // the cleaver rests on the board, lifts and comes down in bursts
+    rot(cookArm, -chop * 24); rot(cookHead, Math.sin(t * 1.3) * 2, `translate(0 ${(chop * 2).toFixed(1)})`);
     // the server passes every so often
     serverT -= dt;
     if (serverT < 0) { serverT = 15 + Math.random() * 8; serverDir = -serverDir; }

@@ -40,9 +40,11 @@ export type SceneDef = {
 
 export type SceneOpts = {
   dishes: EnrichedRecipe[];
-  /** heading over the dish chips */
+  /** heading over the dish thumbnails */
   label?: string;
   onDish: (r: EnrichedRecipe) => void;
+  /** opens the place's story card (history, flavours, dishes) */
+  onStory: () => void;
   onClose: () => void;
 };
 
@@ -78,8 +80,11 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
         ${def.zh ? `<span class="zh">${esc(def.zh)}</span>` : ""}
         <h2>${esc(def.title)}</h2>
         <p>${esc(def.caption)}</p>
+        <div class="scene-actions">
+          <button class="story" type="button">📖 The story</button>
+          ${opts.dishes.length ? `<span class="lbl">${esc(opts.label ?? "On the table")}</span><span class="plates">${opts.dishes.map((r) => `<button class="dish" type="button" data-recipe="${r.id}" title="${esc(r.title)}" aria-label="${esc(r.title)}"><span class="th" ${r.imageUrl ? `style="background-image:url(${imageUrl(r.id)})"` : ""}></span></button>`).join("")}</span>` : ""}
+        </div>
       </div>
-      ${opts.dishes.length ? `<div class="scene-dishes"><span class="lbl">${esc(opts.label ?? "On the table")}</span>${opts.dishes.map((r) => `<button class="chip" type="button" data-recipe="${r.id}"><span class="th" ${r.imageUrl ? `style="background-image:url(${imageUrl(r.id)})"` : ""}></span><span class="tx">${esc(r.title)}${r.zh ? `<small>${esc(r.zh)}</small>` : ""}</span></button>`).join("")}</div>` : ""}
     </div>`;
   document.getElementById("app")!.appendChild(el);
 
@@ -112,7 +117,8 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
   el.addEventListener("pointerleave", onLeave);
 
   el.querySelector(".scene-back")!.addEventListener("click", close);   // Escape is handled by the app, after cards
-  el.querySelectorAll<HTMLButtonElement>(".chip").forEach((b) => b.addEventListener("click", () => { const r = opts.dishes.find((x) => x.id === b.dataset.recipe); if (r) opts.onDish(r); }));
+  el.querySelector(".story")!.addEventListener("click", () => opts.onStory());
+  el.querySelectorAll<HTMLButtonElement>(".dish").forEach((b) => b.addEventListener("click", () => { const r = opts.dishes.find((x) => x.id === b.dataset.recipe); if (r) opts.onDish(r); }));
 
   const animate = def.animate(el);
   let now = 0, t0 = -1, alive = true;

@@ -119,15 +119,15 @@ let currentArea: Area | null = null;
 const ui = mountUi({
   onClose: () => { ui.hide(); diorama?.highlight(null, null); diorama?.pin(null); },
   onOpenRecipe: (r) => openDish(r),
-  onExploreDishes: (_o, recipes) => {
+  onExploreDishes: (_o, recipes) => afterScene(() => {
     const ids = new Set(recipes.map((r) => r.id));
     diorama!.highlight(null, ids);
     frameDishes(recipes);
     hint(`${recipes.length === 1 ? "The dish is" : "The dishes are"} glowing in the world. Click a plate to see it.`);
-  },
-  onGoObject: (o) => openObject(diorama!.placed.find((p) => p.obj.id === o.id)!),
+  }),
+  onGoObject: (o) => afterScene(() => openObject(diorama!.placed.find((p) => p.obj.id === o.id)!)),
   onCook: (r) => { showRecipePage(r, () => {}); },
-  onExploreIngredients: (r) => {
+  onExploreIngredients: (r) => afterScene(() => {
     const ids = new Set(OBJECTS_NOW().filter((o) => (o.kind === "ingredient" || o.kind === "flavour") && !o.alias && o.match(r)).map((o) => o.id));
     diorama!.highlight(null, null);
     ui.hide();
@@ -136,7 +136,7 @@ const ui = mountUi({
     if (spots.length) frameThings(spots.map((p) => p.anchor));
     const names = spots.map((p) => p.obj.name).join(", ");
     hint(`${r.title} is made from: ${names}. Tap a label to read about it.`, 9000);
-  },
+  }),
   onEnterRegion: (region) => enterRegion(region),
 });
 
@@ -285,7 +285,12 @@ function enterLivingScene(p: Placed, obj: WorldObject, recipes: EnrichedRecipe[]
       controls.enabled = false;
       // the dishes on the table, or, if no recipe sits here yet, what this kitchen cooks
       const dishes = recipes.length ? recipes : china.filter((r) => r.area === obj.area).slice(0, 5);
-      livingScene = openLivingScene(hotpotScene(), { dishes, label: recipes.length ? "On the table" : "From this kitchen", onDish: (r) => ui.showRecipePreview(r), onClose: leaveLivingScene });
+      livingScene = openLivingScene(hotpotScene(), {
+        dishes, label: recipes.length ? "On the table" : "From this kitchen",
+        onDish: (r) => ui.showRecipePreview(r),
+        onStory: () => ui.showObject(obj, recipes, OBJECTS_NOW()),
+        onClose: leaveLivingScene,
+      });
       livingScene.tick(clock.elapsedTime, 0);
       window.setTimeout(() => fade.classList.remove("on"), 80);   // (timers, not rAF: a background tab must still settle)
     }, 620);
@@ -298,6 +303,13 @@ function dropScene() {
   controls.enabled = true; flight = null;   // nothing pending may carry the camera away from where it was
   if (sceneReturn) { camera.position.copy(sceneReturn.pos); controls.target.copy(sceneReturn.target); sceneReturn = null; }
   diorama?.highlight(null, null);
+}
+
+/** run a world action now, or after walking out of the open scene */
+function afterScene(fn: () => void) {
+  if (!livingScene) { fn(); return; }
+  leaveLivingScene();
+  window.setTimeout(fn, 720);
 }
 
 function leaveLivingScene() {

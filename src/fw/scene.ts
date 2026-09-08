@@ -101,6 +101,9 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
   let W = 1, H = 1, S = 1, OX = 0, OY = 0, dpr = 1;
   function resize() {
     W = el.clientWidth || window.innerWidth; H = el.clientHeight || window.innerHeight;
+    const portrait = W / H < 0.85;   // phones get the portrait painting where a room has one
+    el.classList.toggle("portrait", portrait);
+    el.querySelectorAll(".portrait-only").forEach((e) => e.setAttribute("visibility", portrait ? "visible" : "hidden"));
     S = Math.max(W / STAGE_W, H / STAGE_H);
     OX = (W - STAGE_W * S) / 2; OY = (H - STAGE_H * S) / 2;
     dpr = Math.min(window.devicePixelRatio || 1, 2);

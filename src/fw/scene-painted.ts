@@ -5,13 +5,18 @@
 
 import { flickerNoise, STAGE_W, STAGE_H, type SceneDef } from "./scene";
 import sizes from "./scenes.json";
+import propSizes from "./scenes-props.json";
 
 const SIZES = sizes as unknown as Record<string, Record<string, [number, number]>>;
+const PROPS = (propSizes as unknown as { rooms: Record<string, Record<string, [number, number]>>; props: Record<string, [number, number]> });
 const rnd = (a: number, b: number) => a + Math.random() * (b - a);
 const url = (folder: string, name: string) => `${import.meta.env.BASE_URL}scenes/${folder}/${name}.png`;
+const propUrl = (name: string) => `${import.meta.env.BASE_URL}scenes/props/${name}.webp`;
 
 export type Sprite = {
+  /** a piece from the room's cut sheet, or, with `prop`, a sprite from the shared prop library (public/scenes/props) */
   name: string;
+  prop?: boolean;
   /** left edge on the stage; with `mirror` the sprite is flipped around its own centre */
   x: number;
   /** top edge; omit to stand the sprite on the stage floor */
@@ -50,6 +55,10 @@ export type PaintedCfg = {
   sky?: boolean;
   /** a slow river mist */
   mist?: { x: number; y: number; w: number; h: number };
+  /** the room is one painting that fills the stage (public/scenes/<folder>/wide.jpg), with a portrait twin for phones */
+  painting?: boolean;
+  /** figures that walk across the front now and then */
+  walkers?: { name: string; w: number; y: number; from: number; to: number; dur: number; every: number }[];
   light: { x: number; y: number; color: string };
 };
 
@@ -62,15 +71,15 @@ export function coverBox(folder: string) {
 /** a point inside the cover painting, as fractions of it */
 export const at = (folder: string, fx: number, fy: number) => { const b = coverBox(folder); return { x: b.x + fx * b.w, y: b.y + fy * b.h }; };
 
-function size(folder: string, name: string, w: number) { const [pw, ph] = SIZES[folder][name]; return { w, h: (w * ph) / pw }; }
+function size(folder: string, name: string, w: number, prop = false) { const [pw, ph] = prop ? PROPS.props[name] : SIZES[folder][name]; return { w, h: (w * ph) / pw }; }
 
 function sprite(folder: string, s: Sprite, id: string, group: "hang" | "front") {
-  const { w, h } = size(folder, s.name, s.w);
+  const { w, h } = size(folder, s.name, s.w, s.prop);
   const y = s.y ?? STAGE_H - h + 4;   // standing pieces sit on the bottom edge; their cut edges are dissolved by the cutter
   const cx = s.x + w / 2;
   const flip = s.mirror ? `transform="translate(${(2 * cx).toFixed(1)} 0) scale(-1 1)"` : "";
   const halo = s.halo ? `<ellipse class="halo" cx="${cx.toFixed(1)}" cy="${(y + h * 0.4).toFixed(1)}" rx="${(w * s.halo).toFixed(1)}" ry="${(h * s.halo * 0.6).toFixed(1)}" fill="url(#haloQ)" opacity=".8"/>` : "";
-  const image = `<image href="${url(folder, s.name)}" x="${s.x}" y="${y.toFixed(1)}" width="${w}" height="${h.toFixed(1)}" ${flip}/>`;
+  const image = `<image href="${s.prop ? propUrl(s.name) : url(folder, s.name)}" x="${s.x}" y="${y.toFixed(1)}" width="${w}" height="${h.toFixed(1)}" ${flip}/>`;
   return group === "hang" && s.sway
     ? `<g id="${id}" class="sway" data-amp="${s.sway}" data-px="${cx.toFixed(1)}" data-py="${y.toFixed(1)}">${halo}${image}</g>`
     : `<g id="${id}">${halo}${image}</g>`;
@@ -81,7 +90,7 @@ const HALO = `<defs><radialGradient id="haloQ"><stop offset="0" stop-color="#ffc
 
 export function paintedScene(cfg: PaintedCfg): SceneDef {
   const f = cfg.folder;
-  const cb = coverBox(f);
+  const cb = cfg.painting ? { x: 0, y: 0, w: STAGE_W, h: STAGE_H } : coverBox(f);
   const dim = cfg.night ? 0.5 : 0.42;
 
   // the sides of the stage continue the painting itself: mirrored, out of focus and dimmed, in the same layer,
@@ -92,6 +101,9 @@ export function paintedScene(cfg: PaintedCfg): SceneDef {
   const hangLayer = `${HALO}${(cfg.hang ?? []).map((s, i) => sprite(f, s, `hang-${i}`, "hang")).join("")}`;
 
   const cover = url(f, "cover");
+  const painting = cfg.painting ? `${import.meta.env.BASE_URL}scenes/${f}/` : null;
+  const pb = painting ? PROPS.rooms[f].portrait : null;
+  const pw = pb ? (STAGE_H * pb[0]) / pb[1] : 0;
   const paint = (x: number, mirrorAt?: number) => `<image href="${cover}" x="${x.toFixed(1)}" y="-8" width="${cb.w.toFixed(1)}" height="${STAGE_H + 16}" preserveAspectRatio="none" ${mirrorAt !== undefined ? `transform="translate(${(2 * mirrorAt).toFixed(1)} 0) scale(-1 1)"` : ""}/>`;
   // one continuous strip (mirror · painting · mirror) blurred as a whole, so the blur runs across the seams
   const wings = `<g filter="url(#wingBlur)">${paint(cb.x, cb.x)}${paint(cb.x)}${paint(cb.x, cb.x + cb.w)}</g>`;
@@ -102,22 +114,24 @@ export function paintedScene(cfg: PaintedCfg): SceneDef {
       <mask id="coverMask"><rect x="${cb.x}" y="0" width="${cb.w}" height="${STAGE_H}" fill="url(#featherQ)"/></mask>
     </defs>
     ${HALO}
-    ${wings}
+    ${painting
+      ? `<image href="${painting}wide.jpg" x="-8" y="-5" width="${STAGE_W + 16}" height="${STAGE_H + 10}" preserveAspectRatio="none"/>
+         <image class="portrait-only" href="${painting}portrait.jpg" x="${((STAGE_W - pw) / 2).toFixed(1)}" y="-5" width="${pw.toFixed(1)}" height="${STAGE_H + 10}" preserveAspectRatio="none"/>`
+      : `${wings}
     <rect x="-100" y="-60" width="${(cb.x + 140).toFixed(1)}" height="1020" fill="rgba(8,4,2,${dim})"/><rect x="${(cb.x + cb.w - 40).toFixed(1)}" y="-60" width="900" height="1020" fill="rgba(8,4,2,${dim})"/>
-    <image href="${cover}" x="${cb.x.toFixed(1)}" y="0" width="${cb.w.toFixed(1)}" height="${STAGE_H}" preserveAspectRatio="none" mask="url(#coverMask)"/>
+    <image href="${cover}" x="${cb.x.toFixed(1)}" y="0" width="${cb.w.toFixed(1)}" height="${STAGE_H}" preserveAspectRatio="none" mask="url(#coverMask)"/>`}
     ${(cfg.fire ?? []).map((o, i) => `<ellipse id="fire-${i}" cx="${o.x}" cy="${o.y}" rx="${o.rx}" ry="${o.ry}" fill="url(#fireQ)"/>`).join("")}
     ${(cfg.lamps ?? []).map((o, i) => `<ellipse id="lamp-${i}" cx="${o.x}" cy="${o.y}" rx="${o.r}" ry="${o.r * 0.85}" fill="url(#haloQ)" opacity=".7"/>`).join("")}`;
 
-  const frontLayer = `${HALO}${(cfg.front ?? []).map((s, i) => sprite(f, s, `front-${i}`, "front")).join("")}`;
+  const walkers = (cfg.walkers ?? []).map((wk, i) => { const { w, h } = size(f, wk.name, wk.w, true); return `<g id="walk-${i}" opacity="0"><image href="${propUrl(wk.name)}" x="0" y="${(wk.y - h).toFixed(1)}" width="${w}" height="${h.toFixed(1)}"/></g>`; }).join("");
+  const frontLayer = `${HALO}${(cfg.front ?? []).map((s, i) => sprite(f, s, `front-${i}`, "front")).join("")}${walkers}`;
 
   return {
     id: cfg.id, title: cfg.title, zh: cfg.zh, caption: cfg.caption,
-    layers: [
-      { svg: backLayer, depth: 0.15 },
-      { svg: hangLayer, depth: 0.42 },
-      { svg: coverLayer, depth: 0.5 },
-      { svg: frontLayer, depth: 1, blur: 0.5 },
-    ],
+    // with a full painting the hanging pieces must sit in front of it; with a cut sheet they hang behind the cover
+    layers: cfg.painting
+      ? [{ svg: backLayer, depth: 0.15 }, { svg: coverLayer, depth: 0.5 }, { svg: hangLayer, depth: 0.62 }, { svg: frontLayer, depth: 1, blur: 0.5 }]
+      : [{ svg: backLayer, depth: 0.15 }, { svg: hangLayer, depth: 0.42 }, { svg: coverLayer, depth: 0.5 }, { svg: frontLayer, depth: 1, blur: 0.5 }],
     fxDepth: 0.5,
     fx: makeFx(cfg),
     light: cfg.light,
@@ -126,7 +140,19 @@ export function paintedScene(cfg: PaintedCfg): SceneDef {
       const sways = q("g.sway").map((el, i) => ({ el, amp: Number(el.dataset.amp), ph: i * 1.7, sp: 0.6 + (i % 3) * 0.12, halo: el.querySelector<SVGElement>(".halo") }));
       const fires = q("[id^=fire-]"), lamps = q("[id^=lamp-]");
       const staticHalos = q("g:not(.sway) > .halo");
+      const walks = (cfg.walkers ?? []).map((wk, i) => ({ el: q(`#walk-${i}`)[0], wk, next: 3 + i * 7, start: -1 }));
       return (t: number) => {
+        for (const w of walks) {
+          if (!w.el) continue;
+          if (w.start < 0 && t > w.next) w.start = t;
+          if (w.start >= 0) {
+            const k = (t - w.start) / w.wk.dur;
+            if (k >= 1) { w.start = -1; w.next = t + w.wk.every; w.el.setAttribute("opacity", "0"); continue; }
+            const x = w.wk.from + (w.wk.to - w.wk.from) * k, bob = Math.abs(Math.sin(t * 5.5)) * 4;
+            w.el.setAttribute("opacity", String(Math.min(1, k * 12, (1 - k) * 12)));
+            w.el.setAttribute("transform", `translate(${x.toFixed(1)} ${(-bob).toFixed(1)}) rotate(${(Math.sin(t * 5.5) * 1.2).toFixed(2)} ${(w.wk.w / 2).toFixed(0)} ${w.wk.y})`);
+          }
+        }
         sways.forEach((s) => {
           s.el.setAttribute("transform", `rotate(${(Math.sin(t * s.sp + s.ph) * s.amp + Math.sin(t * s.sp * 2.3 + s.ph) * 0.6).toFixed(2)} ${s.el.dataset.px} ${s.el.dataset.py})`);
           s.halo?.setAttribute("opacity", (0.35 + flickerNoise(t, s.ph) * 0.65).toFixed(3));

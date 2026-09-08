@@ -1,0 +1,144 @@
+{
+ "rooms": {
+  "home_kitchen": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "market": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    940,
+    1672
+   ]
+  },
+  "historical_tower": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  }
+ },
+ "props": {
+  "bell": [
+   397,
+   960
+  ],
+  "bowls": [
+   960,
+   793
+  ],
+  "cat": [
+   960,
+   404
+  ],
+  "chilli-basket": [
+   955,
+   960
+  ],
+  "chilli-hanging": [
+   290,
+   960
+  ],
+  "cutting-board": [
+   960,
+   723
+  ],
+  "doubanjiang-jar": [
+   960,
+   908
+  ],
+  "fence": [
+   960,
+   581
+  ],
+  "garlic-hanging": [
+   313,
+   960
+  ],
+  "lantern": [
+   450,
+   960
+  ],
+  "light-standing": [
+   563,
+   960
+  ],
+  "man": [
+   416,
+   960
+  ],
+  "maple-leaves": [
+   960,
+   638
+  ],
+  "market-woman-with-basket": [
+   523,
+   960
+  ],
+  "market-woman": [
+   516,
+   960
+  ],
+  "mushroom-basket": [
+   960,
+   833
+  ],
+  "pantry": [
+   960,
+   893
+  ],
+  "red-lantern": [
+   328,
+   960
+  ],
+  "smoke": [
+   554,
+   960
+  ],
+  "stand-sign": [
+   817,
+   960
+  ],
+  "stand": [
+   960,
+   630
+  ],
+  "tofu": [
+   960,
+   667
+  ],
+  "veggie-basket-2": [
+   960,
+   840
+  ],
+  "veggie-basket": [
+   960,
+   930
+  ],
+  "veggie-cart": [
+   960,
+   785
+  ],
+  "wok": [
+   960,
+   785
+  ],
+  "woman-cooking": [
+   563,
+   960
+  ]
+ }
+}

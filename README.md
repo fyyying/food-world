@@ -38,9 +38,11 @@ builds a static bundle; `.github/workflows/pages.yml` publishes it on every push
   (layered images with parallax, a particle canvas for steam and air, lantern flicker, a slow camera push) → back to
   exactly where you were. `src/fw/scenes-china.ts` lists the rooms (hotpot house, noodle shop, tea house, village
   market, home kitchen, the old tower) and which object opens each (`scene:` on the object); `scene-painted.ts`
-  lays a delivered painting set out on the stage, `scene-hotpot-painted.ts` is the hand-laid hotpot room. The art
-  lives in `public/scenes/<room>/`, cut from the painted sheets by `scripts/scenes/cut-hotpot-layers.py` and
-  `scripts/scenes/cut-sheets.py` (run with `uv run --with pillow --with numpy --with scipy`); `scene-hotpot.ts` +
+  lays a room out on the stage: a full painting (`public/scenes/<room>/wide.jpg`, with `portrait.jpg` for phones)
+  or a cut sheet, plus sprites from the shared prop library `public/scenes/props/` (WebP with alpha, cut from
+  white-background paintings by `scripts/scenes/cut-props.py`); `scene-hotpot-painted.ts` is the hand-laid hotpot
+  room. Older sheet-based rooms are cut by `scripts/scenes/cut-hotpot-layers.py` and `scripts/scenes/cut-sheets.py`
+  (all run with `uv run --with pillow --with numpy --with scipy`); `scene-hotpot.ts` +
   `scene-figures.ts` keep the earlier hand-drawn SVG room. `__fw.sceneShot(name)` screenshots an open scene.
 
 ## The worlds

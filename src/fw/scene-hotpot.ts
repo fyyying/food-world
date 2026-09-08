@@ -210,6 +210,60 @@ function server() {
 }
 
 
+/** deterministic spots inside a platter (fraction of the rim) */
+function spots(cx: number, cy: number, rx: number, ry: number, n: number, k = 0.62): [number, number][] {
+  const out: [number, number][] = [];
+  for (let i = 0; i < n; i++) { const a = i * 2.399 + n, r = Math.sqrt((i + 0.5) / n) * k; out.push([cx + Math.cos(a) * rx * r, cy + Math.sin(a) * ry * r]); }
+  return out;
+}
+const lambRolls = (cx: number, cy: number, rx: number, ry: number) => spots(cx, cy, rx, ry, 7).map(([x, y], i) => `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="11" ry="7" transform="rotate(${i * 40} ${x.toFixed(1)} ${y.toFixed(1)})" fill="#e9a4a0"/><path d="M${(x - 6).toFixed(1)},${y.toFixed(1)} q3,-4 6,0 q3,4 6,0" stroke="#fbe6e2" stroke-width="2.2" fill="none" transform="rotate(${i * 40} ${x.toFixed(1)} ${y.toFixed(1)})"/>`).join("");
+const tripe = (cx: number, cy: number, rx: number, ry: number) => spots(cx, cy, rx, ry, 8, 0.7).map(([x, y], i) => `<path d="M${(x - 9).toFixed(1)},${y.toFixed(1)} q3,-7 9,-3 q6,-4 9,3 q-3,7 -9,4 q-6,3 -9,-4 z" fill="${i % 2 ? "#4a4a50" : "#5c5a5e"}" transform="rotate(${i * 55} ${x.toFixed(1)} ${y.toFixed(1)})"/><path d="M${(x - 5).toFixed(1)},${(y - 1).toFixed(1)} l3,2 M${x.toFixed(1)},${(y + 2).toFixed(1)} l3,-2" stroke="#8a888c" stroke-width="1.2"/>`).join("");
+const duckBlood = (cx: number, cy: number, rx: number, ry: number) => spots(cx, cy, rx, ry, 6, 0.6).map(([x, y]) => `<path d="M${(x - 9).toFixed(1)},${(y - 2).toFixed(1)} l9,-5 l9,5 l-9,5 z" fill="#8e2a30"/><path d="M${(x - 9).toFixed(1)},${(y - 2).toFixed(1)} l9,5 l0,7 l-9,-5 z" fill="#6a1c22"/><path d="M${x.toFixed(1)},${(y + 3).toFixed(1)} l9,-5 l0,7 l-9,5 z" fill="#5a161c"/>`).join("");
+const potato = (cx: number, cy: number, rx: number, ry: number) => spots(cx, cy, rx, ry, 8, 0.72).map(([x, y], i) => `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="12" ry="7" transform="rotate(${i * 30} ${x.toFixed(1)} ${y.toFixed(1)})" fill="#f2dc9c" stroke="#d9bd6a" stroke-width="1.2"/>`).join("");
+const enoki = (cx: number, cy: number, rx: number, ry: number) => `${Array.from({ length: 11 }, (_, i) => `<line x1="${(cx - rx * 0.4 + i * rx * 0.08).toFixed(1)}" y1="${(cy + ry * 0.6).toFixed(1)}" x2="${(cx - rx * 0.5 + i * rx * 0.1).toFixed(1)}" y2="${(cy - ry * 0.9 - (i % 3) * 3).toFixed(1)}" stroke="#f6f0dc" stroke-width="2.6" stroke-linecap="round"/><circle cx="${(cx - rx * 0.5 + i * rx * 0.1).toFixed(1)}" cy="${(cy - ry * 0.9 - (i % 3) * 3 - 1).toFixed(1)}" r="2.6" fill="#e8dcbf"/>`).join("")}<path d="M${(cx - rx * 0.45).toFixed(1)},${(cy + ry * 0.55).toFixed(1)} q${rx * 0.45},8 ${rx * 0.9},0" stroke="#d9cdb0" stroke-width="3" fill="none"/>`;
+const tofuSkin = (cx: number, cy: number, rx: number, ry: number) => spots(cx, cy, rx, ry, 6, 0.62).map(([x, y], i) => `<rect x="${(x - 12).toFixed(1)}" y="${(y - 5).toFixed(1)}" width="24" height="10" rx="5" transform="rotate(${i * 50} ${x.toFixed(1)} ${y.toFixed(1)})" fill="#e9c574"/><path d="M${(x - 8).toFixed(1)},${(y - 2).toFixed(1)} q8,3 16,0" stroke="#c9a04a" stroke-width="1.4" fill="none" transform="rotate(${i * 50} ${x.toFixed(1)} ${y.toFixed(1)})"/>`).join("");
+const shrimpPaste = (cx: number, cy: number, rx: number, ry: number) => `<ellipse cx="${cx}" cy="${cy}" rx="${rx * 0.62}" ry="${ry * 0.62}" fill="#f0a08e"/>${spots(cx, cy, rx, ry, 5, 0.4).map(([x, y]) => `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="5" fill="#f7bcaa"/>`).join("")}<path d="M${(cx - rx * 0.3).toFixed(1)},${(cy - ry * 0.3).toFixed(1)} q6,-4 12,0" stroke="#fde0d4" stroke-width="2" fill="none"/>`;
+const glassNoodles = (cx: number, cy: number, rx: number, ry: number) => `${[0, 1, 2, 3, 4, 5].map((i) => `<ellipse cx="${cx}" cy="${cy}" rx="${(rx * (0.62 - i * 0.07)).toFixed(1)}" ry="${(ry * (0.62 - i * 0.07)).toFixed(1)}" fill="none" stroke="rgba(255,250,235,.7)" stroke-width="2" transform="rotate(${i * 13} ${cx} ${cy})"/>`).join("")}<path d="M${(cx - rx * 0.5).toFixed(1)},${(cy + 2).toFixed(1)} q${rx * 0.5},-14 ${rx},2" stroke="rgba(255,250,235,.8)" stroke-width="2" fill="none"/>`;
+const meatballs = (cx: number, cy: number, rx: number, ry: number) => spots(cx, cy, rx, ry, 7, 0.6).map(([x, y]) => `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="7" fill="#c98a5c"/><circle cx="${(x - 2).toFixed(1)}" cy="${(y - 2.5).toFixed(1)}" r="2.4" fill="#e8b48a"/>`).join("");
+const tofuPuffs = (cx: number, cy: number, rx: number, ry: number) => spots(cx, cy, rx, ry, 6, 0.6).map(([x, y]) => `<rect x="${(x - 7).toFixed(1)}" y="${(y - 6).toFixed(1)}" width="14" height="12" rx="4" fill="#e2a84a"/><rect x="${(x - 5).toFixed(1)}" y="${(y - 4).toFixed(1)}" width="6" height="3" rx="1.5" fill="#f4cf88"/>`).join("");
+const quailEggs = (cx: number, cy: number, rx: number, ry: number) => spots(cx, cy, rx, ry, 7, 0.62).map(([x, y]) => `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="6" ry="7.5" fill="#f1e9d4"/><circle cx="${(x - 2).toFixed(1)}" cy="${(y - 3).toFixed(1)}" r="1.5" fill="#8a6a4a"/><circle cx="${(x + 2.5).toFixed(1)}" cy="${(y + 2).toFixed(1)}" r="1.2" fill="#8a6a4a"/>`).join("");
+const dipBowl = (cx: number, cy: number, sauce: string, bits: string) => `<ellipse cx="${cx}" cy="${cy + 3}" rx="30" ry="12" fill="rgba(0,0,0,.25)"/><ellipse cx="${cx}" cy="${cy}" rx="30" ry="12" fill="#f4ede0"/><path d="M${cx - 30},${cy} q30,26 60,0 z" fill="#e6dcc6"/><ellipse cx="${cx}" cy="${cy - 2}" rx="24" ry="8" fill="${sauce}"/>${bits}`;
+const saucer = (cx: number, cy: number, inner: string) => `<ellipse cx="${cx}" cy="${cy + 2}" rx="20" ry="8" fill="rgba(0,0,0,.22)"/><ellipse cx="${cx}" cy="${cy}" rx="20" ry="8" fill="#f4ede0"/><ellipse cx="${cx}" cy="${cy}" rx="15" ry="5.5" fill="none" stroke="#c9d6d5" stroke-width="1.4"/>${inner}`;
+const teacup = (cx: number, cy: number) => `<path d="M${cx - 9},${cy} l18,0 l-2,-16 l-14,0 z" fill="#e6dcc6"/><ellipse cx="${cx}" cy="${cy - 16}" rx="7" ry="2.5" fill="#c99447"/>`;
+const chopsticksPair = (cx: number, cy: number, deg: number) => `<g transform="rotate(${deg} ${cx} ${cy})"><rect x="${cx - 40}" y="${cy - 5}" width="80" height="5" rx="2.5" fill="#6b3d1f"/><rect x="${cx - 40}" y="${cy + 2}" width="80" height="5" rx="2.5" fill="#6b3d1f"/><rect x="${cx - 40}" y="${cy - 5}" width="18" height="12" rx="2" fill="#b9302a"/></g>`;
+
+/** the platters behind the pot (drawn before it, so the pot hides their far edges) */
+function backPlates() {
+  return `${plate(700, 588, 42, 14, tofuPuffs(700, 588, 42, 14))}${plate(900, 588, 42, 14, quailEggs(900, 588, 42, 14))}
+    ${bottle(472, 630)}${bottle(1128, 630)}
+    <path d="M1010,606 q-30,0 -32,-22 q2,-24 32,-24 l40,0 q30,0 30,24 q0,22 -30,22 z" fill="#8a4a2a"/><path d="M980,582 q-20,-8 -22,-24" stroke="#8a4a2a" stroke-width="8" fill="none" stroke-linecap="round"/><rect x="1016" y="546" width="28" height="12" rx="3" fill="#8a4a2a"/><path d="M1018,554 l0,-8 M1042,554 l0,-8" stroke="#8a4a2a" stroke-width="4"/>
+    ${teacup(622, 604)}${teacup(978, 604)}`;
+}
+
+/** the platters around the burner: left of it, right of it and along the front edge; nothing under the pot */
+function frontPlates() {
+  return `
+    ${plate(540, 612, 54, 19, lambRolls(540, 612, 54, 19))}
+    ${plate(1060, 612, 54, 19, tripe(1060, 612, 54, 19))}
+    ${plate(486, 668, 46, 17, duckBlood(486, 668, 46, 17))}
+    ${plate(574, 664, 44, 16, potato(574, 664, 44, 16))}
+    ${plate(1114, 668, 46, 17, tofuSkin(1114, 668, 46, 17))}
+    ${plate(1026, 664, 44, 16, shrimpPaste(1026, 664, 44, 16))}
+    ${plate(500, 720, 56, 20, tofuLotus(500, 720))}
+    ${plate(590, 716, 42, 15, enoki(590, 716, 42, 15))}
+    ${plate(1100, 720, 56, 20, greens(1100, 720))}
+    ${plate(1010, 716, 42, 15, mushroomsEggs(1010, 716))}
+    ${plate(520, 762, 62, 22, beefRolls(520, 762))}
+    ${plate(1080, 762, 62, 22, glassNoodles(1080, 762, 62, 22))}
+    ${plate(800, 752, 48, 16, meatballs(800, 752, 48, 16))}
+    ${dipBowl(690, 782, "#c9a06a", `<circle cx="684" cy="780" r="3" fill="#6fa35a"/><circle cx="696" cy="783" r="2.5" fill="#e8dcbf"/><circle cx="690" cy="777" r="2" fill="#9c1f12"/>`)}
+    ${dipBowl(910, 784, "#8a4a2a", `<ellipse cx="910" cy="782" rx="18" ry="5" fill="#d8382c"/><circle cx="902" cy="782" r="2" fill="#f4ede0"/><circle cx="918" cy="781" r="2" fill="#f4ede0"/>`)}
+    ${saucer(760, 800, `<circle cx="754" cy="799" r="3.5" fill="#efe6d6"/><circle cx="763" cy="801" r="3.5" fill="#efe6d6"/><circle cx="759" cy="795" r="3" fill="#efe6d6"/>`)}
+    ${saucer(842, 802, `<rect x="830" y="800" width="10" height="3" rx="1.5" fill="#6fa35a"/><rect x="840" y="803" width="10" height="3" rx="1.5" fill="#6fa35a" transform="rotate(20 845 804)"/><rect x="836" y="796" width="9" height="3" rx="1.5" fill="#6fa35a" transform="rotate(-30 840 797)"/>`)}
+    ${chopsticksPair(636, 796, -14)}${chopsticksPair(964, 798, 14)}
+    ${glass(610, 748)}${glass(990, 748)}`;
+}
+
 // ---------- the layers ----------
 
 function backLayer() {
@@ -235,6 +289,7 @@ function backLayer() {
       <radialGradient id="lanBody" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#ff6a4a"/><stop offset=".55" stop-color="#e0392f"/><stop offset="1" stop-color="#9e1f18"/></radialGradient>
       <linearGradient id="windowGlow" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3b05f"/><stop offset="1" stop-color="#c66a30"/></linearGradient>
       <linearGradient id="sign" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a1a16"/><stop offset="1" stop-color="#160c0a"/></linearGradient>
+      <radialGradient id="chalkDust" cx=".5" cy=".55" r=".7"><stop offset="0" stop-color="#3a342e"/><stop offset="1" stop-color="#2a2420"/></radialGradient>
       <linearGradient id="counter" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6b3a22"/><stop offset="1" stop-color="#3f2013"/></linearGradient>
     </defs>
     <rect x="-100" y="-60" width="1800" height="1020" fill="url(#wall)"/>
@@ -258,10 +313,12 @@ function backLayer() {
     ${chilliString("chilli-1", 520, 122, 230)}${chilliString("chilli-2", 1080, 122, 230)}
     <!-- a folding screen, the chalk menu and the tea station -->
     ${[0, 1, 2].map((i) => `<rect x="${196 + i * 142}" y="330" width="134" height="310" rx="4" fill="#4a2617"/><rect x="${206 + i * 142}" y="342" width="114" height="286" fill="#7a2a24"/><path d="M${232 + i * 142},560 q22,-90 12,-190 M${262 + i * 142},600 q18,-120 26,-230 M${292 + i * 142},580 q-14,-70 -2,-160" stroke="#9c4a3c" stroke-width="4" fill="none" stroke-linecap="round"/>${[0, 1, 2, 3].map((k) => `<path d="M${226 + i * 142 + k * 18},${420 + k * 40} l14,-8 l6,10 z" fill="#b25a4a" opacity=".8"/>`).join("")}`).join("")}
+    <defs><filter id="chalk" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.4"/></filter></defs>
     <rect x="96" y="446" width="176" height="212" rx="6" fill="#2a2420" stroke="#8a5a30" stroke-width="6"/>
-    <text x="184" y="484" text-anchor="middle" ${ZH} font-size="24" font-weight="700" fill="#f0c25a">今日 · 菜单</text>
-    <line x1="114" y1="494" x2="254" y2="494" stroke="#f0c25a" stroke-width="1.5" opacity=".6"/>
-    <text x="120" y="506" ${ZH} font-size="21" fill="#f3e9d2" opacity=".92">毛肚</text><text x="258" y="506" text-anchor="end" ${ZH} font-size="19" fill="#f0c25a" opacity=".92">¥38</text><text x="120" y="536" ${ZH} font-size="21" fill="#f3e9d2" opacity=".92">鸭血</text><text x="258" y="536" text-anchor="end" ${ZH} font-size="19" fill="#f0c25a" opacity=".92">¥18</text><text x="120" y="566" ${ZH} font-size="21" fill="#f3e9d2" opacity=".92">黄喉</text><text x="258" y="566" text-anchor="end" ${ZH} font-size="19" fill="#f0c25a" opacity=".92">¥32</text><text x="120" y="596" ${ZH} font-size="21" fill="#f3e9d2" opacity=".92">嫩牛肉</text><text x="258" y="596" text-anchor="end" ${ZH} font-size="19" fill="#f0c25a" opacity=".92">¥42</text><text x="120" y="626" ${ZH} font-size="21" fill="#f3e9d2" opacity=".92">藕片</text><text x="258" y="626" text-anchor="end" ${ZH} font-size="19" fill="#f0c25a" opacity=".92">¥12</text><text x="120" y="656" ${ZH} font-size="21" fill="#f3e9d2" opacity=".92">豆皮</text><text x="258" y="656" text-anchor="end" ${ZH} font-size="19" fill="#f0c25a" opacity=".92">¥14</text>
+    <rect x="102" y="452" width="164" height="200" rx="3" fill="url(#chalkDust)" opacity=".5"/>
+    <g filter="url(#chalk)"><text x="184" y="482" text-anchor="middle" font-family="'Kaiti SC','STKaiti','KaiTi','Xingkai SC','Noto Serif SC','Songti SC',serif" font-size="23" font-weight="700" fill="#f0c25a" opacity=".9" transform="rotate(-1 184 482)">今日菜单</text>
+    <path d="M116,494 q34,-3 68,0 t68,0" stroke="#f0c25a" stroke-width="1.6" fill="none" opacity=".55"/></g>
+    <g transform="rotate(-1.2 184 528)" filter="url(#chalk)"><text x="118" y="528" font-family="'Kaiti SC','STKaiti','KaiTi','Xingkai SC','Noto Serif SC','Songti SC',serif" font-size="19" fill="#efe6d2" opacity=".82">毛肚</text><text x="254" y="528" text-anchor="end" font-family="'Kaiti SC','STKaiti','KaiTi','Xingkai SC','Noto Serif SC','Songti SC',serif" font-size="17" fill="#e9c66a" opacity=".82">¥38</text><line x1="164" y1="523" x2="220" y2="523" stroke="#efe6d2" stroke-width="1" stroke-dasharray="1 4" opacity=".35"/></g><g transform="rotate(0.8 184 552)" filter="url(#chalk)"><text x="118" y="552" font-family="'Kaiti SC','STKaiti','KaiTi','Xingkai SC','Noto Serif SC','Songti SC',serif" font-size="19" fill="#efe6d2" opacity=".82">鸭血</text><text x="254" y="552" text-anchor="end" font-family="'Kaiti SC','STKaiti','KaiTi','Xingkai SC','Noto Serif SC','Songti SC',serif" font-size="17" fill="#e9c66a" opacity=".82">¥18</text><line x1="164" y1="547" x2="220" y2="547" stroke="#efe6d2" stroke-width="1" stroke-dasharray="1 4" opacity=".35"/></g><g transform="rotate(-0.6 184 576)" filter="url(#chalk)"><text x="118" y="576" font-family="'Kaiti SC','STKaiti','KaiTi','Xingkai SC','Noto Serif SC','Songti SC',serif" font-size="19" fill="#efe6d2" opacity=".82">黄喉</text><text x="254" y="576" text-anchor="end" font-family="'Kaiti SC','STKaiti','KaiTi','Xingkai SC','Noto Serif SC','Songti SC',serif" font-size="17" fill="#e9c66a" opacity=".82">¥32</text><line x1="164" y1="571" x2="220" y2="571" stroke="#efe6d2" stroke-width="1" stroke-dasharray="1 4" opacity=".35"/></g><g transform="rotate(1.1 184 600)" filter="url(#chalk)"><text x="118" y="600" font-family="'Kaiti SC','STKaiti','KaiTi','Xingkai SC','Noto Serif SC','Songti SC',serif" font-size="19" fill="#efe6d2" opacity=".82">嫩牛肉</text><text x="254" y="600" text-anchor="end" font-family="'Kaiti SC','STKaiti','KaiTi','Xingkai SC','Noto Serif SC','Songti SC',serif" font-size="17" fill="#e9c66a" opacity=".82">¥42</text><line x1="183" y1="595" x2="220" y2="595" stroke="#efe6d2" stroke-width="1" stroke-dasharray="1 4" opacity=".35"/></g><g transform="rotate(-0.9 184 624)" filter="url(#chalk)"><text x="118" y="624" font-family="'Kaiti SC','STKaiti','KaiTi','Xingkai SC','Noto Serif SC','Songti SC',serif" font-size="19" fill="#efe6d2" opacity=".82">藕片</text><text x="254" y="624" text-anchor="end" font-family="'Kaiti SC','STKaiti','KaiTi','Xingkai SC','Noto Serif SC','Songti SC',serif" font-size="17" fill="#e9c66a" opacity=".82">¥12</text><line x1="164" y1="619" x2="220" y2="619" stroke="#efe6d2" stroke-width="1" stroke-dasharray="1 4" opacity=".35"/></g><g transform="rotate(0.5 184 648)" filter="url(#chalk)"><text x="118" y="648" font-family="'Kaiti SC','STKaiti','KaiTi','Xingkai SC','Noto Serif SC','Songti SC',serif" font-size="19" fill="#efe6d2" opacity=".82">豆皮</text><text x="254" y="648" text-anchor="end" font-family="'Kaiti SC','STKaiti','KaiTi','Xingkai SC','Noto Serif SC','Songti SC',serif" font-size="17" fill="#e9c66a" opacity=".82">¥14</text><line x1="164" y1="643" x2="220" y2="643" stroke="#efe6d2" stroke-width="1" stroke-dasharray="1 4" opacity=".35"/></g>
     <path d="M84,658 l-14,36 M284,658 l14,36" stroke="#8a5a30" stroke-width="8" stroke-linecap="round"/>
     <rect x="452" y="500" width="176" height="140" fill="#5a3319"/><rect x="452" y="492" width="176" height="14" fill="#7a4a26"/><rect x="464" y="520" width="152" height="52" rx="4" fill="none" stroke="rgba(0,0,0,.28)" stroke-width="5"/>
     <ellipse cx="500" cy="490" rx="30" ry="9" fill="#3a3a40"/><path d="M472,490 q0,-40 28,-42 q28,2 28,42 z" fill="#4a4a52"/><path d="M528,470 q18,-6 22,10" stroke="#4a4a52" stroke-width="6" fill="none" stroke-linecap="round"/><rect x="494" y="440" width="12" height="10" rx="2" fill="#2b2b2e"/>
@@ -303,6 +360,7 @@ function midLayer() {
     <rect x="380" y="700" width="840" height="240" fill="url(#tableSide)"/>
     <ellipse cx="800" cy="700" rx="430" ry="120" fill="url(#tableTop)" stroke="#2f1a0c" stroke-width="8"/>
     ${grain}
+    ${backPlates()}
     <ellipse cx="800" cy="676" rx="176" ry="54" fill="#2b2b2e"/><ellipse cx="800" cy="668" rx="176" ry="54" fill="#3d3d44"/>
     <ellipse cx="800" cy="668" rx="150" ry="42" fill="#1c1c20"/><ellipse cx="800" cy="668" rx="120" ry="30" fill="url(#burnerGlow)"/>
     <path d="M652,612 l0,42 a148,46 0 0 0 296,0 l0,-42 z" fill="url(#pot)"/>
@@ -314,16 +372,7 @@ function midLayer() {
     <path d="M800,562 C 745,580 855,644 800,662" stroke="#a8773b" stroke-width="6" fill="none"/><path d="M800,562 C 745,580 855,644 800,662" stroke="#e7b26a" stroke-width="2" fill="none"/>
     ${redBits}${whiteBits}
     <ellipse cx="820" cy="590" rx="40" ry="8" fill="rgba(255,255,255,.35)"/>
-    ${plate(560, 742, 84, 32, beefRolls(560, 742))}
-    ${plate(1040, 748, 84, 32, greens(1040, 748))}
-    ${plate(612, 646, 66, 24, tofuLotus(612, 646))}
-    ${plate(990, 648, 66, 24, mushroomsEggs(990, 648))}
-    <ellipse cx="700" cy="794" rx="34" ry="14" fill="#f4ede0"/><ellipse cx="700" cy="790" rx="28" ry="10" fill="#c9a06a"/><circle cx="694" cy="788" r="3" fill="#6fa35a"/><circle cx="706" cy="792" r="2.5" fill="#e8dcbf"/><circle cx="700" cy="786" r="2" fill="#9c1f12"/>
-    <ellipse cx="900" cy="798" rx="34" ry="14" fill="#f4ede0"/><ellipse cx="900" cy="794" rx="28" ry="10" fill="#8a4a2a"/><ellipse cx="900" cy="792" rx="20" ry="6" fill="#d8382c"/><circle cx="892" cy="792" r="2" fill="#f4ede0"/><circle cx="908" cy="791" r="2" fill="#f4ede0"/>
-    <rect x="760" y="760" width="80" height="6" rx="3" fill="#6b3d1f" transform="rotate(-8 800 763)"/><rect x="760" y="768" width="80" height="6" rx="3" fill="#6b3d1f" transform="rotate(-8 800 771)"/>
-    ${bottle(470, 700)}${bottle(1140, 706)}${glass(520, 732)}${glass(1090, 738)}
-    <path d="M1160,640 q-30,0 -32,-22 q2,-24 32,-24 l40,0 q30,0 30,24 q0,22 -30,22 z" fill="#8a4a2a"/><path d="M1130,616 q-20,-8 -22,-24" stroke="#8a4a2a" stroke-width="8" fill="none" stroke-linecap="round"/><rect x="1166" y="580" width="28" height="12" rx="3" fill="#8a4a2a"/><path d="M1168,588 l0,-8 M1192,588 l0,-8" stroke="#8a4a2a" stroke-width="4"/>
-    ${[1084, 1112].map((x) => `<path d="M${x - 10},${640} l20,0 l-3,-22 l-14,0 z" fill="#e6dcc6"/><ellipse cx="${x}" cy="618" rx="7" ry="2.5" fill="#c99447"/>`).join("")}
+    ${frontPlates()}
     ${dinerC(400, 520)}
     ${dinerD(1200, 522)}
     ${cat(1340, 800)}

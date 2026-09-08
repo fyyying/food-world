@@ -101,7 +101,7 @@ export function mountUi(h: UiHandlers) {
         </div>
       </div>
       <p class="tagline">${esc(o.tagline)}</p>
-      <p class="blurb">${esc(o.blurb)}</p>
+      ${o.blurb.split(/\n\n+/).map((para) => `<p class="blurb">${esc(para)}</p>`).join("")}
       ${o.flavour ? `<h4>Flavour</h4><div class="chips">${o.flavour.map((f) => `<span class="chip fl">${esc(f)}</span>`).join("")}</div>` : ""}
       ${o.partners ? `<h4>Often paired with</h4><div class="chips">${partnerObjs.map(({ p, obj }) => obj ? `<button class="chip link" data-object="${obj.id}">${obj.emoji} ${esc(p)}</button>` : `<span class="chip">${esc(p)}</span>`).join("")}</div>` : ""}
       ${recipes.length ? `<h4>Appears in ${recipes.length} ${recipes.length === 1 ? "dish" : "dishes"} you cook</h4>${dishRows(recipes)}` : ""}

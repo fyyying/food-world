@@ -39,7 +39,7 @@ const teahouse = (): SceneDef => {
     front: [
       { name: "tea-chair", prop: true, x: -50, w: 290 },
     ],
-    walkers: [{ name: "bird", w: 90, y: 230, from: 590, to: 1140, dur: 9, every: 36, fly: true }],   // through the open side of the pavilion, over the hills
+    walkers: [{ name: "bird", w: 66, y: 282, from: 640, to: 1060, dur: 9, every: 36, fly: true }],   // over the hills, below the tips of the painted tassels, so it stays outside
     steam: [{ x: 100, y: 420, w: 30, rate: 4, a: 0.22 }, { x: 1330, y: 720, w: 40, rate: 4, a: 0.26 }],
     lamps: [{ x: 590, y: 130, r: 90 }, { x: 1500, y: 120, r: 100 }, { x: 200, y: 140, r: 50 }, { x: 455, y: 230, r: 45 }, { x: 1320, y: 330, r: 50 }],
     leaves: 3, motes: 50,

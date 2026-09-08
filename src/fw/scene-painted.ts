@@ -66,7 +66,7 @@ function size(folder: string, name: string, w: number) { const [pw, ph] = SIZES[
 
 function sprite(folder: string, s: Sprite, id: string, group: "hang" | "front") {
   const { w, h } = size(folder, s.name, s.w);
-  const y = s.y ?? STAGE_H - h + 6;
+  const y = s.y ?? STAGE_H - h + 4;   // standing pieces sit on the bottom edge; their cut edges are dissolved by the cutter
   const cx = s.x + w / 2;
   const flip = s.mirror ? `transform="translate(${(2 * cx).toFixed(1)} 0) scale(-1 1)"` : "";
   const halo = s.halo ? `<ellipse class="halo" cx="${cx.toFixed(1)}" cy="${(y + h * 0.4).toFixed(1)}" rx="${(w * s.halo).toFixed(1)}" ry="${(h * s.halo * 0.6).toFixed(1)}" fill="url(#haloQ)" opacity=".8"/>` : "";
@@ -81,26 +81,30 @@ const HALO = `<defs><radialGradient id="haloQ"><stop offset="0" stop-color="#ffc
 
 export function paintedScene(cfg: PaintedCfg): SceneDef {
   const f = cfg.folder;
-  const [bw, bh] = SIZES[f].back;
-  const bs = Math.max(STAGE_W / bw, STAGE_H / bh) * 1.04;
-  const BW = bw * bs, BH = bh * bs;
   const cb = coverBox(f);
-  const dim = cfg.night ? 0.48 : 0.36;
+  const dim = cfg.night ? 0.5 : 0.42;
 
+  // the sides of the stage continue the painting itself: mirrored, out of focus and dimmed, in the same layer,
+  // so nothing in the surroundings contradicts the room or slides against it
   const backLayer = `
-    <rect x="-100" y="-60" width="1800" height="1020" fill="${cfg.night ? "#0d0a14" : "#1c110c"}"/>
-    <image href="${url(f, "back")}" x="${((STAGE_W - BW) / 2).toFixed(1)}" y="${((STAGE_H - BH) / 2).toFixed(1)}" width="${BW.toFixed(1)}" height="${BH.toFixed(1)}" preserveAspectRatio="none"/>
-    <rect x="-100" y="-60" width="1800" height="1020" fill="rgba(10,4,2,${dim})"/>`;
+    <rect x="-100" y="-60" width="1800" height="1020" fill="${cfg.night ? "#0d0a14" : "#1c110c"}"/>`;
 
   const hangLayer = `${HALO}${(cfg.hang ?? []).map((s, i) => sprite(f, s, `hang-${i}`, "hang")).join("")}`;
 
+  const cover = url(f, "cover");
+  const paint = (x: number, mirrorAt?: number) => `<image href="${cover}" x="${x.toFixed(1)}" y="-8" width="${cb.w.toFixed(1)}" height="${STAGE_H + 16}" preserveAspectRatio="none" ${mirrorAt !== undefined ? `transform="translate(${(2 * mirrorAt).toFixed(1)} 0) scale(-1 1)"` : ""}/>`;
+  // one continuous strip (mirror · painting · mirror) blurred as a whole, so the blur runs across the seams
+  const wings = `<g filter="url(#wingBlur)">${paint(cb.x, cb.x)}${paint(cb.x)}${paint(cb.x, cb.x + cb.w)}</g>`;
   const coverLayer = `
     <defs>
-      <linearGradient id="featherQ" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000"/><stop offset=".16" stop-color="#fff"/><stop offset=".84" stop-color="#fff"/><stop offset="1" stop-color="#000"/></linearGradient>
+      <filter id="wingBlur" x="-2%" y="-2%" width="104%" height="104%"><feGaussianBlur stdDeviation="8"/></filter>
+      <linearGradient id="featherQ" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000"/><stop offset=".1" stop-color="#fff"/><stop offset=".9" stop-color="#fff"/><stop offset="1" stop-color="#000"/></linearGradient>
       <mask id="coverMask"><rect x="${cb.x}" y="0" width="${cb.w}" height="${STAGE_H}" fill="url(#featherQ)"/></mask>
     </defs>
     ${HALO}
-    <image href="${url(f, "cover")}" x="${cb.x.toFixed(1)}" y="0" width="${cb.w.toFixed(1)}" height="${STAGE_H}" preserveAspectRatio="none" mask="url(#coverMask)"/>
+    ${wings}
+    <rect x="-100" y="-60" width="${(cb.x + 140).toFixed(1)}" height="1020" fill="rgba(8,4,2,${dim})"/><rect x="${(cb.x + cb.w - 40).toFixed(1)}" y="-60" width="900" height="1020" fill="rgba(8,4,2,${dim})"/>
+    <image href="${cover}" x="${cb.x.toFixed(1)}" y="0" width="${cb.w.toFixed(1)}" height="${STAGE_H}" preserveAspectRatio="none" mask="url(#coverMask)"/>
     ${(cfg.fire ?? []).map((o, i) => `<ellipse id="fire-${i}" cx="${o.x}" cy="${o.y}" rx="${o.rx}" ry="${o.ry}" fill="url(#fireQ)"/>`).join("")}
     ${(cfg.lamps ?? []).map((o, i) => `<ellipse id="lamp-${i}" cx="${o.x}" cy="${o.y}" rx="${o.r}" ry="${o.r * 0.85}" fill="url(#haloQ)" opacity=".7"/>`).join("")}`;
 
@@ -109,7 +113,7 @@ export function paintedScene(cfg: PaintedCfg): SceneDef {
   return {
     id: cfg.id, title: cfg.title, zh: cfg.zh, caption: cfg.caption,
     layers: [
-      { svg: backLayer, depth: 0.15, blur: 1.4 },
+      { svg: backLayer, depth: 0.15 },
       { svg: hangLayer, depth: 0.42 },
       { svg: coverLayer, depth: 0.5 },
       { svg: frontLayer, depth: 1, blur: 0.5 },
@@ -152,10 +156,11 @@ function makeFx(cfg: PaintedCfg) {
     if (cfg.mist) {
       const m = cfg.mist;
       for (let i = 0; i < 4; i++) {
-        const x = m.x + ((t * 12 + i * m.w * 0.3) % (m.w * 1.2)) - m.w * 0.1, y = m.y + Math.sin(t * 0.4 + i) * m.h * 0.2;
-        const g = ctx.createRadialGradient(x, y, 0, x, y, m.w * 0.22);
-        g.addColorStop(0, "rgba(235,225,240,.16)"); g.addColorStop(1, "rgba(235,225,240,0)");
-        ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(x, y, m.w * 0.22, m.h, 0, 0, Math.PI * 2); ctx.fill();
+        const x = m.x + ((t * 12 + i * m.w * 0.3) % (m.w * 1.2)) - m.w * 0.1, y = m.y + Math.sin(t * 0.4 + i) * m.h * 0.2, r = m.w * 0.22;
+        ctx.save(); ctx.translate(x, y); ctx.scale(1, m.h / r);
+        const g = ctx.createRadialGradient(0, 0, 0, 0, 0, r);
+        g.addColorStop(0, "rgba(235,225,240,.09)"); g.addColorStop(1, "rgba(235,225,240,0)");
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill(); ctx.restore();
       }
     }
     for (const s of stars) {

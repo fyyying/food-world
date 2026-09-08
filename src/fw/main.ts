@@ -285,8 +285,13 @@ function enterLivingScene(p: Placed, obj: WorldObject, recipes: EnrichedRecipe[]
       controls.enabled = false;
       // the dishes on the table, or, if no recipe sits here yet, what this kitchen cooks
       const dishes = recipes.length ? recipes : china.filter((r) => r.area === obj.area).slice(0, 5);
+      // a place with stands inside (the market): each stand is a button in the scene that opens its own card
+      const stalls = OBJECTS_NOW().filter((o) => o.parent === obj.id).map((st) => {
+        const target = st.alias ? objectById(st.alias) : st;
+        return { label: `${st.emoji} ${st.name}`, onClick: () => ui.showObject(target, china.filter((r) => target.match(r)), OBJECTS_NOW()) };
+      });
       livingScene = openLivingScene(SCENES[obj.scene!](), {
-        dishes, label: recipes.length ? "On the table" : "From this kitchen",
+        dishes, label: recipes.length ? "On the table" : "From this kitchen", stalls,
         onDish: (r) => ui.showRecipePreview(r),
         onStory: () => ui.showObject(obj, recipes, OBJECTS_NOW()),
         onClose: leaveLivingScene,

@@ -27,13 +27,22 @@ def key_white(a, lo=26, hi=120):
     res = np.concatenate([out_rgb, (alpha * 255)[..., None]], axis=2)
     return res
 
+def bleed(a):
+    """transparent pixels keep the paint colour of their nearest opaque neighbour, so scaling never blends towards white"""
+    al = a[..., 3] > 8
+    if al.all() or not al.any(): return a
+    _, idx = ndimage.distance_transform_edt(~al, return_indices=True)
+    out = a.copy()
+    out[..., :3] = a[..., :3][idx[0], idx[1]]
+    return out
+
 def trim(a, thr=4):
     m = a[..., 3] > thr
     ys, xs = np.where(m)
     return a[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
 
 def save(a, name):
-    Image.fromarray(a.astype(np.uint8), "RGBA").save(os.path.join(out, name), optimize=True)
+    Image.fromarray(np.clip(bleed(a), 0, 255).astype(np.uint8), "RGBA").save(os.path.join(out, name), optimize=True)
     print(name, a.shape[1], "x", a.shape[0])
 
 def sprites(a, min_area=400, pad=2, dil=6):

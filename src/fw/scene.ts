@@ -45,6 +45,8 @@ export type SceneOpts = {
   onDish: (r: EnrichedRecipe) => void;
   /** opens the place's story card (history, flavours, dishes) */
   onStory: () => void;
+  /** the stands inside a place (a market's stalls): each opens its own card */
+  stalls?: { label: string; onClick: () => void }[];
   onClose: () => void;
 };
 
@@ -80,6 +82,7 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
         ${def.zh ? `<span class="zh">${esc(def.zh)}</span>` : ""}
         <h2>${esc(def.title)}</h2>
         <p>${esc(def.caption)}</p>
+        ${opts.stalls?.length ? `<div class="scene-stalls"><span class="lbl">The stands</span>${opts.stalls.map((st, i) => `<button class="stall" type="button" data-i="${i}">${esc(st.label)}</button>`).join("")}</div>` : ""}
         <div class="scene-actions">
           <button class="story" type="button">📖 The story</button>
           ${opts.dishes.length ? `<span class="lbl">${esc(opts.label ?? "On the table")}</span><span class="plates">${opts.dishes.map((r) => `<button class="dish" type="button" data-recipe="${r.id}" title="${esc(r.title)}" aria-label="${esc(r.title)}"><span class="th" ${r.imageUrl ? `style="background-image:url(${imageUrl(r.id)})"` : ""}></span></button>`).join("")}</span>` : ""}
@@ -118,6 +121,7 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
 
   el.querySelector(".scene-back")!.addEventListener("click", close);   // Escape is handled by the app, after cards
   el.querySelector(".story")!.addEventListener("click", () => opts.onStory());
+  el.querySelectorAll<HTMLButtonElement>(".stall").forEach((b) => b.addEventListener("click", () => opts.stalls?.[Number(b.dataset.i)]?.onClick()));
   el.querySelectorAll<HTMLButtonElement>(".dish").forEach((b) => b.addEventListener("click", () => { const r = opts.dishes.find((x) => x.id === b.dataset.recipe); if (r) opts.onDish(r); }));
 
   const animate = def.animate(el);

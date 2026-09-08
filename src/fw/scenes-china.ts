@@ -13,16 +13,13 @@ const noodleShop = (): SceneDef => {
     hang: [
       { name: "front-1", x: 110, y: -10, w: 112, sway: 4.5, halo: 1.4 },
       { name: "front-2", x: 300, y: -6, w: 62, sway: 3.5, halo: 1.6 },
-      { name: "front-3", x: 1230, y: -8, w: 210, sway: 2 },
       { name: "front-4", x: 1400, y: -8, w: 230, sway: 3.5, halo: 0.9 },
     ],
     front: [
       { name: "front-0", x: -40, w: 560 },
-      { name: "prop-1", x: 1120, w: 96 },
-      { name: "prop-0", x: 1180, w: 190 },
-      { name: "prop-2", x: 1330, w: 300 },
+      { name: "prop-2", x: 1300, w: 320 },
     ],
-    steam: [{ x: pots[0].x, y: pots[0].y, w: 70, rate: 12 }, { x: pots[1].x, y: pots[1].y, w: 60, rate: 10 }, { x: pots[2].x, y: pots[2].y, w: 40, rate: 5, a: 0.22 }, { x: 1480, y: 760, w: 70, rate: 8 }],
+    steam: [{ x: pots[0].x, y: pots[0].y, w: 70, rate: 12 }, { x: pots[1].x, y: pots[1].y, w: 60, rate: 10 }, { x: pots[2].x, y: pots[2].y, w: 40, rate: 5, a: 0.22 }, { x: 1460, y: 760, w: 70, rate: 8 }],
     lamps: [{ ...at(f, 0.1, 0.12), r: 70 }, { ...at(f, 0.45, 0.06), r: 70 }, { ...at(f, 0.88, 0.2), r: 60 }],
     motes: 50,
     light: { x: 800, y: 260, color: "rgba(255,190,110,0.34)" },
@@ -36,11 +33,10 @@ const teahouse = (): SceneDef => {
     id: "teahouse", folder: f, title: "Tea house", zh: "茶馆", caption: "Bamboo chairs, lid-cups of jasmine refilled all afternoon, and the kettle on the brazier never quite off the boil.",
     front: [
       { name: "front-0", x: -50, w: 640 },
-      { name: "prop-0", x: 1120, w: 500 },
     ],
-    steam: [{ x: pot.x, y: pot.y, w: 34, rate: 5, a: 0.22 }, { x: 1300, y: 780, w: 50, rate: 5, a: 0.22 }],
+    steam: [{ x: pot.x, y: pot.y, w: 34, rate: 5, a: 0.22 }],
     lamps: [{ ...at(f, 0.86, 0.3), r: 60 }],
-    mist: { x: 300, y: 430, w: 1000, h: 40 },
+    mist: { x: 600, y: 470, w: 440, h: 26 },
     leaves: 2.4, motes: 60,
     light: { x: 800, y: 300, color: "rgba(255,220,160,0.26)" },
   });
@@ -51,8 +47,7 @@ const market = (): SceneDef => {
   return paintedScene({
     id: "market", folder: f, title: "Village market", zh: "菜市场", caption: "Chillies by the sack, garlic in braids, greens still wet from the field, and everyone shouting prices.",
     front: [
-      { name: "prop-0", x: -30, w: 660 },
-      { name: "front-0", x: 960, w: 680 },
+      { name: "prop-0", x: -30, w: 620 },
     ],
     lamps: [{ ...at(f, 0.12, 0.1), r: 60 }, { ...at(f, 0.5, 0.06), r: 50 }],
     leaves: 1.8, motes: 40,
@@ -72,8 +67,7 @@ const homeKitchen = (): SceneDef => {
       { name: "front-2", x: 1370, y: -6, w: 78, sway: 3.5 },
     ],
     front: [
-      { name: "front-0", x: -40, w: 660 },
-      { name: "prop-0", x: 1010, w: 640 },
+      { name: "front-0", x: -40, w: 620 },
     ],
     steam: [{ x: wok.x, y: wok.y, w: 90, rate: 16, a: 0.4 }],
     fire: [{ x: stove.x, y: stove.y, rx: 120, ry: 70 }],
@@ -98,7 +92,6 @@ const tower = (): SceneDef => {
       { name: "prop-0", x: 1000, w: 600 },
     ],
     lamps: [{ ...at(f, 0.55, 0.28), r: 110 }, { ...at(f, 0.12, 0.1), r: 60 }],
-    mist: { x: 250, y: 560, w: 1100, h: 50 },
     sky: true, motes: 20,
     light: { x: 800, y: 320, color: "rgba(255,190,120,0.26)" },
   });

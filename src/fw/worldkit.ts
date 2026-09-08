@@ -151,13 +151,14 @@ export function buildWorld(spec: WorldSpec): Diorama {
       const spread = Math.min(1.0, 0.55 + list.length * 0.12);
       const angle = Math.PI / 2 + (i - (list.length - 1) / 2) * spread; // fan toward the viewer (+z)
       const dist = 2.6 + list.length * 0.25;
-      const base = new THREE.Vector3(host.anchor.x + Math.cos(angle) * dist, host.top + 1.2, host.anchor.z + Math.sin(angle) * dist);
+      const base = new THREE.Vector3(host.anchor.x + Math.cos(angle) * dist, TOP + 0.16, host.anchor.z + Math.sin(angle) * dist);   // plates are set out on the ground in front of the place, never floating
       g.position.copy(base);
+      const stand = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.8, 0.14, 12), mat("#8a6a4a")); stand.position.y = -0.08; g.add(stand);   // a low wooden stand
       const rim = new THREE.Mesh(rimGeo, mat("#fbf6ec", { roughness: 0.4 })); rim.castShadow = true; g.add(rim);
       const dishMat = new THREE.MeshStandardMaterial({ color: "#e9d6a8", roughness: 0.6 });
       const dish = new THREE.Mesh(plateGeo, dishMat); dish.rotation.x = -Math.PI / 2; dish.position.y = 0.055; g.add(dish);
       plateTexture(recipe).then((tex) => { if (tex) { dishMat.map = tex; dishMat.color.set("#ffffff"); dishMat.needsUpdate = true; } });
-      g.rotation.x = 0.55; // tilt toward the camera
+      g.rotation.x = 0.12; // almost flat, a hair towards the viewer
       const hit = new THREE.Mesh(new THREE.CylinderGeometry(1.0, 1.0, 0.8, 10), new THREE.MeshBasicMaterial({ visible: false })); g.add(hit);
       const ring = ringMesh(0.95); ring.position.set(base.x, TOP + 0.07, base.z); group.add(ring);
       const labelEl = document.createElement("div");
@@ -208,7 +209,7 @@ export function buildWorld(spec: WorldSpec): Diorama {
   const sparkMats = ["#f2c14e", "#ffffff", "#f4a6b8", "#e0483a", "#8fc4c9"].map((c) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.6, emissive: new THREE.Color(c), emissiveIntensity: 0.35 }));
   function burst(p: Placed) {
     bounce.set(p.group, 1);
-    const n = 16;
+    const n = 0;   // no confetti: the object's own reaction and a small bounce are the whole answer
     for (let i = 0; i < n; i++) {
       const m = new THREE.Mesh(sparkGeo, sparkMats[i % sparkMats.length]);
       m.position.set(p.anchor.x + (Math.random() - 0.5) * 0.6, Math.min(p.top, 6) + 0.4, p.anchor.z + (Math.random() - 0.5) * 0.6);
@@ -269,7 +270,7 @@ export function buildWorld(spec: WorldSpec): Diorama {
       const sc = d.group.scale.x + (targetScale - d.group.scale.x) * Math.min(1, dt * (d.shown ? 7 : 10));
       d.group.scale.setScalar(sc);
       d.group.visible = sc > 0.02;
-      d.group.position.y = d.base.y + (d.shown ? Math.sin(t * 2.2 + d.base.x) * 0.12 : -0.6);
+      d.group.position.y = d.base.y + (d.shown ? 0 : -0.4);
       // a warm ring pulses under a plate that an ingredient or technique just called up
       const glowing = d.shown && hiGlow && sc > 0.5;
       d.ring.visible = glowing;

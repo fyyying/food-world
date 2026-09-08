@@ -8,12 +8,16 @@ from PIL import Image
 from scipy import ndimage
 
 src, out, manifest_path = sys.argv[1], sys.argv[2], sys.argv[3]
-ROOMS = {"home kitchen": "home_kitchen", "market detail": "market", "poet tower": "historical_tower"}
+ROOMS = {"home kitchen": "home_kitchen", "market detail": "market", "poet tower": "historical_tower", "tea house": "teahouse", "noodle shop": "noodle_shop"}
 MAX_SPRITE = 960   # px on the long side; plenty for a 1600-wide stage
 
 def key_white(a, lo=18, hi=110):
     rgb = a[..., :3]
-    dist = 255 - rgb.min(axis=2)
+    # most props sit on white; a glowing lantern comes on black — key whichever colour the border has
+    border = np.concatenate([rgb[0], rgb[-1], rgb[:, 0], rgb[:, -1]])
+    dark = np.median(border) < 60
+    dist = rgb.max(axis=2) if dark else 255 - rgb.min(axis=2)
+    if dark: lo, hi = 70, 190   # on black only the lit body counts; the dim painted glow would smudge the room
     alpha = np.clip((dist - lo) / (hi - lo), 0, 1)
     # the backdrop is the white connected to the border, plus any sizeable patch of pure white (holes in a fence,
     # the gap under a sign); small off-white paint inside an object (tofu, garlic, a highlight) stays
@@ -26,7 +30,8 @@ def key_white(a, lo=18, hi=110):
     sizes = ndimage.sum(pure, plab, index=np.arange(1, pn + 1))
     big = np.isin(plab, np.arange(1, pn + 1)[sizes > 250])
     outside |= ndimage.binary_dilation(big, iterations=1) & (dist < 60)
-    alpha = np.where(outside | ndimage.binary_dilation(outside, iterations=2) & (dist < 110), alpha, np.maximum(alpha, (~outside).astype(np.float32)))
+    if not dark:   # inside an object, off-white paint stays opaque; on black there is no such rule: the ramp alone decides
+        alpha = np.where(outside | ndimage.binary_dilation(outside, iterations=2) & (dist < 110), alpha, np.maximum(alpha, (~outside).astype(np.float32)))
     alpha = ndimage.minimum_filter(alpha, size=2)
     alpha = ndimage.uniform_filter(alpha, size=2)
     res = a.copy()
@@ -48,14 +53,14 @@ def trim(a, thr=8):
     ys, xs = np.where(m)
     return a[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
 
-manifest = {"rooms": {}, "props": {}}
+manifest = json.load(open(manifest_path)) if os.path.exists(manifest_path) else {"rooms": {}, "props": {}}   # the library grows batch by batch
 for f in sorted(os.listdir(src)):
     if not f.lower().endswith(".png"): continue
     name = f[:-4]
     im = Image.open(os.path.join(src, f)).convert("RGBA")
     room = next((v for k, v in ROOMS.items() if name.startswith(k)), None)
     if room:
-        kind = "wide" if "horizontal" in name else "portrait"
+        kind = "wide" if im.width > im.height else "portrait"   # (file names vary: "horizontal", "honrizontal"…)
         od = os.path.join(out, room); os.makedirs(od, exist_ok=True)
         rgb = im.convert("RGB")
         rgb.save(os.path.join(od, f"{kind}.jpg"), quality=88, optimize=True, progressive=True)

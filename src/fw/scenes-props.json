@@ -29,6 +29,26 @@
     941,
     1672
    ]
+  },
+  "noodle_shop": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "teahouse": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
   }
  },
  "props": {
@@ -138,6 +158,54 @@
   ],
   "woman-cooking": [
    563,
+   960
+  ],
+  "bird": [
+   960,
+   794
+  ],
+  "flag": [
+   471,
+   960
+  ],
+  "garlic-closeup": [
+   504,
+   960
+  ],
+  "light": [
+   415,
+   960
+  ],
+  "mountain": [
+   960,
+   634
+  ],
+  "old-man-drinking-tea": [
+   611,
+   960
+  ],
+  "tea-chair": [
+   803,
+   960
+  ],
+  "tea-pot-black": [
+   886,
+   960
+  ],
+  "tea-pots": [
+   960,
+   654
+  ],
+  "tea-table": [
+   960,
+   797
+  ],
+  "tree": [
+   960,
+   590
+  ],
+  "woman-pouring-tea": [
+   419,
    960
   ]
  }

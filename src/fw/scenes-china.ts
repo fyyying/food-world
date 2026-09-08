@@ -7,38 +7,43 @@ import { paintedScene, at } from "./scene-painted";
 
 const noodleShop = (): SceneDef => {
   const f = "noodle_shop";
-  const pots = [at(f, 0.36, 0.7), at(f, 0.58, 0.64), at(f, 0.47, 0.5)];
   return paintedScene({
     id: "noodle_shop", folder: f, title: "Noodle shop", zh: "面馆", caption: "Hand-pulled noodles slapped on the board, broth that has been going since dawn, and a bowl in under a minute.",
+    painting: true,
     hang: [
-      { name: "front-1", x: 110, y: -10, w: 112, sway: 4.5, halo: 1.4 },
-      { name: "front-2", x: 300, y: -6, w: 62, sway: 3.5, halo: 1.6 },
-      { name: "front-4", x: 1400, y: -8, w: 230, sway: 3.5, halo: 0.9 },
+      { name: "flag", prop: true, x: 690, y: -8, w: 110, sway: 2.5 },
+      { name: "light", prop: true, x: 1225, y: -10, w: 120, sway: 3, halo: 1.3 },
+      { name: "garlic-closeup", prop: true, x: 1400, y: -8, w: 96, sway: 3.5 },
     ],
     front: [
-      { name: "front-0", x: -40, w: 560 },
-      { name: "prop-2", x: 1300, w: 320 },
+      { name: "doubanjiang-jar", prop: true, x: -40, w: 300 },
+      { name: "bowls", prop: true, x: 1250, w: 370 },
     ],
-    steam: [{ x: pots[0].x, y: pots[0].y, w: 70, rate: 12 }, { x: pots[1].x, y: pots[1].y, w: 60, rate: 10 }, { x: pots[2].x, y: pots[2].y, w: 40, rate: 5, a: 0.22 }, { x: 1460, y: 760, w: 70, rate: 8 }],
-    lamps: [{ ...at(f, 0.1, 0.12), r: 70 }, { ...at(f, 0.45, 0.06), r: 70 }, { ...at(f, 0.88, 0.2), r: 60 }],
+    walkers: [{ name: "bird", w: 250, y: 300, from: 1800, to: -420, dur: 26, every: 44 }],
+    steam: [{ x: 167, y: 520, w: 120, rate: 16, a: 0.4 }, { x: 300, y: 760, w: 80, rate: 6, a: 0.3 }, { x: 760, y: 790, w: 60, rate: 5, a: 0.28 }],
+    lamps: [{ x: 490, y: 80, r: 100 }, { x: 1580, y: 120, r: 90 }, { x: 720, y: 290, r: 40 }, { x: 1090, y: 280, r: 40 }, { x: 1230, y: 330, r: 35 }, { x: 1420, y: 330, r: 35 }],
     motes: 50,
-    light: { x: 800, y: 260, color: "rgba(255,190,110,0.34)" },
+    light: { x: 500, y: 260, color: "rgba(255,200,130,0.3)" },
   });
 };
 
 const teahouse = (): SceneDef => {
   const f = "teahouse";
-  const pot = at(f, 0.47, 0.6);
   return paintedScene({
     id: "teahouse", folder: f, title: "Tea house", zh: "茶馆", caption: "Bamboo chairs, lid-cups of jasmine refilled all afternoon, and the kettle on the brazier never quite off the boil.",
-    front: [
-      { name: "front-0", x: -50, w: 640 },
+    painting: true,
+    hang: [
+      { name: "flag", prop: true, x: 40, y: -8, w: 116, sway: 2.5 },
+      { name: "light", prop: true, x: 1170, y: -10, w: 128, sway: 3, halo: 1.3 },
     ],
-    steam: [{ x: pot.x, y: pot.y, w: 34, rate: 5, a: 0.22 }],
-    lamps: [{ ...at(f, 0.86, 0.3), r: 60 }],
-    mist: { x: 600, y: 470, w: 440, h: 26 },
-    leaves: 2.4, motes: 60,
-    light: { x: 800, y: 300, color: "rgba(255,220,160,0.26)" },
+    front: [
+      { name: "tea-chair", prop: true, x: -50, w: 290 },
+    ],
+    walkers: [{ name: "bird", w: 260, y: 270, from: 1800, to: -420, dur: 28, every: 40 }],
+    steam: [{ x: 100, y: 420, w: 30, rate: 4, a: 0.22 }, { x: 1330, y: 720, w: 40, rate: 4, a: 0.26 }],
+    lamps: [{ x: 590, y: 130, r: 90 }, { x: 1500, y: 120, r: 100 }, { x: 200, y: 140, r: 50 }, { x: 455, y: 230, r: 45 }, { x: 1320, y: 330, r: 50 }],
+    leaves: 3, motes: 50,
+    light: { x: 800, y: 200, color: "rgba(255,225,170,0.22)" },
   });
 };
 

@@ -48,6 +48,8 @@ export type WorldObject = {
   parent?: string;
   /** clicking this spot opens another object's card (the produce stall opens Vegetables) */
   alias?: string;
+  /** clicking walks into a Living Scene (an illustrated, animated interior) instead of opening the card */
+  scene?: "hotpot";
   match: (r: EnrichedRecipe) => boolean;
 };
 
@@ -345,7 +347,7 @@ export const OBJECTS: WorldObject[] = [
   { id: "dumpling", world: "china", kind: "dish", name: "Dumplings", placeName: "Dumpling stall", zh: "饺子", emoji: "🥟", area: "northern", pos: [9, -12], prop: "dumplingStall", rot: -0.2, place: true,
     tagline: "Pleated by hand, dozens at a time.", blurb: "Dumplings are a family production line: one person rolls, one fills, one pleats. In the north they are the New Year's Eve meal, shaped like the silver ingots of old money. Boiled for dinner, pan-fried the next morning.",
     match: (r) => has(r.core, /dumpling|wrapper/) },
-  { id: "hotpot", world: "china", kind: "dish", name: "Hotpot", placeName: "Hotpot house", zh: "火锅", emoji: "🫕", area: "sichuan", pos: [-2, -11.5], prop: "hotpot", rot: 0.6, place: true,
+  { id: "hotpot", world: "china", kind: "dish", name: "Hotpot", placeName: "Hotpot house", zh: "火锅", emoji: "🫕", area: "sichuan", pos: [-2, -11.5], prop: "hotpot", rot: 0.6, place: true, scene: "hotpot",
     tagline: "A shared pot: fiery in Sichuan, clear and mutton-based in the north.", blurb: "Sichuan hotpot began with Chongqing dock workers in the late Qing dynasty (1800s), who boiled cheap offal in a fiercely spiced broth of chilli, Sichuan pepper and beef tallow to get through damp winters on the river. The north has its own, older version: Beijing-style instant-boiled mutton, thin slices swished for seconds in a plain broth kept boiling by a charcoal chimney in the middle of a copper pot, then dipped in sesame paste. Same idea, opposite temperament: the south flavours the broth, the north flavours the dip. Everyone cooks their own ingredients at the table.",
     match: (r) => has(r.core, /hotpot|hot pot/) },
   { id: "teahouse", world: "china", kind: "ingredient", name: "Tea", placeName: "Tea house", zh: "茶", emoji: "🍵", area: "sichuan", pos: [-25.5, -11.5], prop: "teahouse", rot: -0.15, place: true,

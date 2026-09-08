@@ -34,6 +34,10 @@ builds a static bundle; `.github/workflows/pages.yml` publishes it on every push
 - `src/fw/world-*.ts` — one layout per world; `src/fw/props*.ts` — the procedural clay-and-wood miniatures for each.
 - `src/fw/map.ts` — the atlas; `src/fw/ui.ts` — the cards; `src/fw/audit.ts` — a dev-only movement audit
   (`__fw.audit()` in the console) that reports anything walking into water, walls or each other.
+- `src/fw/scene.ts` — Living Scenes: 3D world → walk up to a place → paper fade → a living illustrated interior
+  (layered SVG with parallax, a particle canvas, lantern flicker, a slow camera push) → back to exactly where you
+  were. `src/fw/scene-hotpot.ts` is the first one (the Sichuan hotpot house, `scene: "hotpot"` on its object);
+  `src/fw/scene-figures.ts` draws the people. `__fw.sceneShot(name)` screenshots an open scene.
 
 ## The worlds
 

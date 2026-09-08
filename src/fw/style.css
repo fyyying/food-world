@@ -179,3 +179,36 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .bubble { transform: translate(-50%, -100%); background: #fff; color: var(--ink); font-family: var(--zh), var(--sans); font-weight: 700; font-size: 14px; padding: 5px 10px; border-radius: 14px 14px 14px 3px; box-shadow: 0 6px 14px rgba(60,35,10,.2); white-space: nowrap; animation: bubble-in .25s cubic-bezier(.2,1.2,.3,1); pointer-events: none; }
 .bubble.out { opacity: 0; transition: opacity .3s; }
 @keyframes bubble-in { from { opacity: 0; transform: translate(-50%, -80%) scale(.6) } to { opacity: 1; transform: translate(-50%, -100%) scale(1) } }
+
+/* ---------- Living Scenes (scene.ts) ---------- */
+#scene { position: absolute; inset: 0; z-index: 5; overflow: hidden; background: #2a1410; opacity: 0; transition: opacity .7s ease; }
+#scene.in { opacity: 1; }
+#scene .scene-stage { position: absolute; inset: 0; transform-origin: 50% 58%; will-change: transform; }
+#scene .layer { position: absolute; inset: 0; will-change: transform; }
+#scene .layer svg { width: 100%; height: 100%; display: block; }
+#scene canvas.fx { pointer-events: none; }
+#scene .scene-light { position: absolute; inset: 0; mix-blend-mode: screen; pointer-events: none; }
+#scene .scene-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 55%, transparent 50%, rgba(12,4,2,.62) 100%); pointer-events: none; }
+#scene .scene-ui { position: absolute; inset: 0; pointer-events: none; }
+#scene .scene-ui > * { pointer-events: auto; }
+#scene .scene-back { position: absolute; top: 16px; left: 18px; border: 0; background: rgba(247,239,226,.92); border-radius: 999px; padding: 9px 16px; font-family: var(--sans); font-weight: 800; font-size: 13px; color: var(--ink-2); box-shadow: 0 4px 14px rgba(0,0,0,.3); cursor: pointer; }
+#scene .scene-back:hover { background: #fff; color: var(--ink); }
+#scene .scene-title { position: absolute; left: 28px; bottom: 26px; max-width: 430px; color: #fff3e0; text-shadow: 0 2px 14px rgba(0,0,0,.7), 0 0 2px rgba(0,0,0,.6); }
+#scene .scene-title .zh { display: block; font-family: var(--zh); font-weight: 700; font-size: 46px; line-height: 1; color: #f0c25a; }
+#scene .scene-title h2 { font-family: var(--display); font-weight: 600; font-size: 34px; line-height: 1.05; margin: 6px 0 8px; letter-spacing: -.01em; }
+#scene .scene-title p { margin: 0; font-size: 14px; line-height: 1.45; color: rgba(255,243,224,.88); }
+#scene .scene-dishes { position: absolute; right: 22px; bottom: 26px; display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+#scene .scene-dishes .lbl { font-size: 10.5px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: #f0c25a; text-shadow: 0 1px 8px rgba(0,0,0,.7); margin-bottom: 2px; }
+#scene .chip { display: flex; align-items: center; gap: 10px; border: 0; background: rgba(247,239,226,.95); border-radius: 999px; padding: 6px 18px 6px 6px; cursor: pointer; box-shadow: 0 8px 22px rgba(0,0,0,.4); font-family: var(--sans); color: var(--ink); transition: transform .15s ease, background .15s ease; }
+#scene .chip:hover { transform: translateY(-2px) scale(1.03); background: #fff; }
+#scene .chip .th { width: 42px; height: 42px; border-radius: 50%; background: var(--paper-2) center/cover; border: 2px solid #fff; flex: none; box-shadow: 0 1px 4px rgba(0,0,0,.2); }
+#scene .chip .tx { display: flex; flex-direction: column; align-items: flex-start; font-weight: 800; font-size: 13.5px; line-height: 1.15; }
+#scene .chip .tx small { font-family: var(--zh); font-weight: 500; font-size: 12px; color: var(--ink-2); }
+@media (max-width: 720px) {
+  #scene .scene-title { left: 16px; bottom: 96px; max-width: calc(100% - 32px); }
+  #scene .scene-title .zh { font-size: 34px; }
+  #scene .scene-title h2 { font-size: 26px; }
+  #scene .scene-title p { font-size: 13px; }
+  #scene .scene-dishes { left: 16px; right: 16px; bottom: 18px; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: flex-start; }
+  #scene .scene-dishes .lbl { width: 100%; }
+}

@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer.js";
 import { fetchRecipes } from "../data";
-import { MAP_REGIONS, AREAS, WORLDS, areasOf, objectsOf, worldRecipes, enrich, isChinaRecipe, isItalyRecipe, isKoreaRecipe, isMexicoRecipe, isMideastRecipe, isMedRecipe, isIndiaRecipe, isSeasiaRecipe, isNamericaRecipe, isJapanRecipe, isCeuropeRecipe, objectById, type Area, type EnrichedRecipe, type MapRegion, type WorldId } from "./graph";
+import { MAP_REGIONS, AREAS, WORLDS, areasOf, objectsOf, worldRecipes, enrich, isChinaRecipe, isItalyRecipe, isKoreaRecipe, isMexicoRecipe, isMideastRecipe, isMedRecipe, isIndiaRecipe, isSeasiaRecipe, isNamericaRecipe, isJapanRecipe, isCeuropeRecipe, objectById, type Area, type EnrichedRecipe, type MapRegion, type WorldId, type WorldObject } from "./graph";
 import { buildMap, type MapWorld, type PlacedRegion } from "./map";
 import { buildChina } from "./world-china";
 import { buildItaly } from "./world-italy";
@@ -17,6 +17,8 @@ import { buildNamerica } from "./world-namerica";
 import { buildJapan } from "./world-japan";
 import { buildCeurope } from "./world-ceurope";
 import { auditDiorama } from "./audit";
+import { openLivingScene, type LivingScene } from "./scene";
+import { hotpotScene } from "./scene-hotpot";
 import { type Diorama, type DishMarker, type Placed } from "./worldkit";
 const areaCenter = (a: Area) => new THREE.Vector3(AREAS[a].center[0], 0, AREAS[a].center[1]);
 import { mountUi, showRecipePage, setCrumbs, hint, toast } from "./ui";
@@ -107,6 +109,8 @@ let world: WorldId = "china";
 const worlds: Partial<Record<WorldId, Diorama>> = {};
 let allRecipes: EnrichedRecipe[] = [];
 let china: EnrichedRecipe[] = [];   // recipes of the current world
+let livingScene: LivingScene | null = null;   // the illustrated interior we stepped into, if any
+let sceneReturn: { pos: THREE.Vector3; target: THREE.Vector3 } | null = null;   // exactly where the camera was before
 const OBJECTS_NOW = () => objectsOf(world);
 let hoveredRegion: PlacedRegion | null = null;
 let hoveredThing: Placed | DishMarker | null = null;
@@ -261,7 +265,51 @@ function setCrumbsWorld() {
 function leaveWorld() {
   const fade = document.getElementById("fade")!;
   fade.classList.add("on");
-  setTimeout(() => { showMap(false); fade.classList.remove("on"); }, 500);
+  setTimeout(() => { dropScene(); showMap(false); fade.classList.remove("on"); }, 500);
+}
+
+// ---------- living scenes ----------
+// 3D world → approach the place → paper fade → living illustrated scene → back to exactly where you were.
+function enterLivingScene(p: Placed, obj: WorldObject, recipes: EnrichedRecipe[]) {
+  if (livingScene) return;
+  clearTimeout(cardTimer); clearTimeout(revealTimer);
+  ui.hide();
+  diorama!.highlight(new Set([obj.id]), new Set(recipes.map((r) => r.id)), true);
+  diorama!.poke(p);
+  sceneReturn = { pos: camera.position.clone(), target: controls.target.clone() };
+  const fade = document.getElementById("fade")!;
+  // walk up to the door, then the paper closes over the world and the room opens behind it
+  glideTo(p.anchor.clone().add(new THREE.Vector3(0, 1.2, 0)), 9, 1.6, () => {
+    fade.classList.add("on");
+    window.setTimeout(() => {
+      controls.enabled = false;
+      // the dishes on the table, or, if no recipe sits here yet, what this kitchen cooks
+      const dishes = recipes.length ? recipes : china.filter((r) => r.area === obj.area).slice(0, 5);
+      livingScene = openLivingScene(hotpotScene(), { dishes, label: recipes.length ? "On the table" : "From this kitchen", onDish: (r) => ui.showRecipePreview(r), onClose: leaveLivingScene });
+      livingScene.tick(clock.elapsedTime, 0);
+      window.setTimeout(() => fade.classList.remove("on"), 80);   // (timers, not rAF: a background tab must still settle)
+    }, 620);
+  });
+}
+
+function dropScene() {
+  if (!livingScene) return;
+  livingScene.destroy(); livingScene = null;
+  controls.enabled = true; flight = null;   // nothing pending may carry the camera away from where it was
+  if (sceneReturn) { camera.position.copy(sceneReturn.pos); controls.target.copy(sceneReturn.target); sceneReturn = null; }
+  diorama?.highlight(null, null);
+}
+
+function leaveLivingScene() {
+  if (!livingScene) return;
+  ui.hide();
+  const fade = document.getElementById("fade")!;
+  fade.classList.add("on");
+  window.setTimeout(() => {
+    dropScene();
+    frame();   // draw the restored view under the paper before it lifts
+    window.setTimeout(() => fade.classList.remove("on"), 60);
+  }, 620);
 }
 
 // ---------- world interactions ----------
@@ -271,6 +319,7 @@ function openObject(p: Placed) {
   if (p.obj.open === "reveal") { revealPlace(p); return; }
   const obj = p.obj.alias ? objectById(p.obj.alias) : p.obj;   // a market stall opens its ingredient's card
   const recipes = china.filter((r) => obj.match(r));
+  if (obj.scene) { enterLivingScene(p, obj, recipes); return; }
   // the world answers first: the object reacts, its dishes rise and glow, and only then does the card come
   clearTimeout(cardTimer); clearTimeout(revealTimer);
   ui.hide();
@@ -385,7 +434,8 @@ window.addEventListener("pointerup", (e) => {
 window.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
     if (!document.getElementById("recipe")!.hidden) { document.getElementById("recipe")!.hidden = true; return; }
-    if (ui.open) { clearTimeout(cardTimer); clearTimeout(revealTimer); ui.hide(); diorama?.highlight(null, null); diorama?.pin(null); return; }
+    if (ui.open) { clearTimeout(cardTimer); clearTimeout(revealTimer); ui.hide(); if (!livingScene) { diorama?.highlight(null, null); diorama?.pin(null); } return; }
+    if (livingScene) { leaveLivingScene(); return; }
     if (level === "world") leaveWorld();
   }
 });
@@ -394,6 +444,7 @@ window.addEventListener("keydown", (e) => {
 const clock = new THREE.Clock();
 function frame(forcedDt?: number) {
   const dt = forcedDt ?? Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime + (forcedDt ? (stepT += forcedDt) : 0);
+  if (livingScene) { livingScene.tick(t, dt); return; }   // inside a scene the 3D world rests
   if (flight) {
     flight.t = Math.min(1, flight.t + dt / flight.dur);
     const k = easeInOut(flight.t);
@@ -454,5 +505,13 @@ const dbg = () => ({ level, flying: Boolean(flight), diorama: Boolean(diorama), 
   const r = await fetch(`/api/debug/shot?name=${encodeURIComponent(name)}`, { method: "POST", body: url });
   return (await r.json()).file;
 };
+// debug: composite the open Living Scene's layers and post them like a shot
+(dbg as unknown as { sceneShot: (name: string) => Promise<string> }).sceneShot = async (name: string) => {
+  if (!livingScene) throw new Error("no scene open");
+  const c = await livingScene.snapshot();
+  const r = await fetch(`/api/debug/shot?name=${encodeURIComponent(name)}`, { method: "POST", body: c.toDataURL("image/jpeg", 0.85) });
+  return (await r.json()).file;
+};
+(dbg as unknown as { cam: () => number[] }).cam = () => [...camera.position.toArray(), ...controls.target.toArray()];
 (window as unknown as { __fw: typeof dbg }).__fw = dbg;
 boot();

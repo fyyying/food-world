@@ -218,3 +218,29 @@ button { font: inherit; color: inherit; cursor: pointer; }
   #scene .scene-title h2 { font-size: 26px; }
   #scene .scene-title p { font-size: 13px; }
 }
+
+/* ---------- food-history stories ---------- */
+#stories { position: absolute; left: 18px; bottom: 22px; z-index: 5; border: 0; background: rgba(247,239,226,.94); border-radius: 999px; padding: 10px 16px; font-family: var(--sans); font-weight: 800; font-size: 13.5px; color: var(--ink); box-shadow: 0 6px 18px rgba(0,0,0,.18); cursor: pointer; }
+#stories:hover { background: #fff; }
+#story { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%); width: min(560px, calc(100% - 28px)); z-index: 7; background: rgba(247,239,226,.97); border-radius: 18px; padding: 16px 20px 14px; box-shadow: 0 12px 34px rgba(0,0,0,.28); font-family: var(--sans); color: var(--ink); }
+#story .era { font-size: 10.5px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: #a48b6a; display: flex; align-items: center; gap: 10px; }
+#story .era .story-name { margin-left: auto; letter-spacing: .04em; text-transform: none; font-weight: 700; color: var(--ink-2); }
+#story h3 { font-family: var(--display); font-weight: 700; font-size: 22px; line-height: 1.1; margin: 6px 0 6px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+#story h3 .zh { font-family: var(--zh); font-weight: 500; font-size: 16px; color: var(--red-ink); }
+#story p { margin: 0; font-size: 13.5px; line-height: 1.55; color: var(--ink-2); }
+#story footer { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+#story footer .dots { display: flex; gap: 5px; margin: 0 auto; }
+#story footer .dots i { width: 7px; height: 7px; border-radius: 50%; background: #d9b98a; }
+#story footer .dots i.on { background: var(--red); }
+#story footer button { border: 0; border-radius: 999px; padding: 8px 14px; font-family: var(--sans); font-weight: 800; font-size: 12.5px; cursor: pointer; background: #fff; color: var(--ink-2); box-shadow: 0 2px 8px rgba(0,0,0,.12); }
+#story footer button.next { background: var(--red); color: #fff; }
+#story footer button:disabled { opacity: .4; cursor: default; }
+#story .close { position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; border-radius: 50%; border: 0; background: rgba(0,0,0,.06); cursor: pointer; font-size: 16px; color: var(--ink-2); }
+#story-menu { position: absolute; left: 18px; bottom: 70px; z-index: 6; background: rgba(247,239,226,.97); border-radius: 16px; padding: 10px; box-shadow: 0 12px 34px rgba(0,0,0,.25); width: 300px; }
+#story-menu h4 { margin: 4px 8px 8px; font-size: 10.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #a48b6a; }
+#story-menu button { display: flex; gap: 10px; align-items: flex-start; width: 100%; text-align: left; border: 0; background: #fff; border-radius: 12px; padding: 10px 12px; cursor: pointer; font-family: var(--sans); color: var(--ink); }
+#story-menu button:hover { background: #fff8ec; }
+#story-menu button .em { font-size: 22px; }
+#story-menu button b { display: block; font-size: 14px; }
+#story-menu button small { color: var(--ink-2); font-size: 12px; line-height: 1.35; display: block; }
+@media (max-width: 720px) { #story { bottom: 12px; padding: 14px 16px 12px; } #story h3 { font-size: 19px; } #stories { bottom: 14px; } }

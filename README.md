@@ -54,6 +54,14 @@ Southeast Asia (Bangkok, the Andaman coast, Hanoi, the Mekong delta), North Amer
 Midwest, Texas & the South, California), Japan (Tokyo, Kyoto, Fuji & the lake, Hokkaido) and Central Europe
 (London, Budapest & the puszta, the Alps, Georgia).
 
+## Food histories
+
+`src/fw/stories.ts` holds guided journeys across the atlas: a story is a list of chapters, each with an era, a
+short text and a stop, either a region on the atlas or an object inside a world. The engine in `main.ts` glides
+the camera from stop to stop, grows a beaded route across the atlas, walks into a world when a chapter asks for
+it and pokes the object it arrives at. The first story, 🌶️ The Journey of Chilli, runs Mexico → Spain → India →
+the Chinese coast → the Sichuan chilli field. Start one from the 📜 Stories button on the atlas.
+
 ## Controls
 
 | Action | How |

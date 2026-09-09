@@ -19,6 +19,8 @@ import { buildCeurope } from "./world-ceurope";
 import { auditDiorama } from "./audit";
 import { openLivingScene, type LivingScene } from "./scene";
 import { SCENES } from "./scenes-china";
+import { STORIES, type Story } from "./stories";
+import { escapeHtml } from "./plates";
 import { type Diorama, type DishMarker, type Placed } from "./worldkit";
 const areaCenter = (a: Area) => new THREE.Vector3(AREAS[a].center[0], 0, AREAS[a].center[1]);
 import { mountUi, showRecipePage, setCrumbs, hint, toast } from "./ui";
@@ -209,6 +211,124 @@ function showMap(first = false) {
     camera.position.set(22, 40, 30); controls.target.set(22, 0, -6);
     fly(pos, target, 1.6);
   }
+  storiesBtn.hidden = Boolean(story);
+}
+
+// ---------- food-history stories ----------
+// A story is a guided journey: each chapter glides the atlas to a region, or walks into a world and up to an
+// object, while a panel tells that leg of the history. A dotted route grows across the atlas as you go.
+const storyEl = document.getElementById("story")!;
+const storiesBtn = document.getElementById("stories") as HTMLButtonElement;
+let story: { def: Story; i: number } | null = null;
+let routeLine: THREE.Group | null = null;
+let storyTimer: number | undefined;
+
+function regionOf(id: WorldId) { return mapWorld?.regions.find((r) => r.region.id === id) ?? null; }
+
+function openStoryMenu() {
+  document.getElementById("story-menu")?.remove();
+  const menu = document.createElement("div");
+  menu.id = "story-menu";
+  menu.innerHTML = `<h4>Food histories</h4>${STORIES.map((st) => `<button data-story="${st.id}"><span class="em">${st.emoji}</span><span><b>${escapeHtml(st.title)} <span class="zh">${escapeHtml(st.zh)}</span></b><small>${escapeHtml(st.tagline)}</small></span></button>`).join("")}`;
+  document.getElementById("app")!.appendChild(menu);
+  menu.querySelectorAll<HTMLButtonElement>("button[data-story]").forEach((b) => b.addEventListener("click", () => { menu.remove(); startStory(b.dataset.story!); }));
+  const away = (e: PointerEvent) => { if (!menu.contains(e.target as Node) && e.target !== storiesBtn) { menu.remove(); window.removeEventListener("pointerdown", away, true); } };
+  window.setTimeout(() => window.addEventListener("pointerdown", away, true), 0);
+}
+storiesBtn.addEventListener("click", () => { if (document.getElementById("story-menu")) document.getElementById("story-menu")!.remove(); else openStoryMenu(); });
+
+function startStory(id: string) {
+  const def = STORIES.find((st) => st.id === id); if (!def) return;
+  story = { def, i: 0 };
+  storiesBtn.hidden = true;
+  ui.hide();
+  showChapter();
+}
+
+function endStory() {
+  clearTimeout(storyTimer);
+  story = null;
+  storyEl.hidden = true;
+  if (routeLine) { mapScene.remove(routeLine); routeLine = null; }
+  storiesBtn.hidden = level !== "map";
+}
+
+/** the dotted route across the atlas through every stop reached so far */
+function drawRoute(upTo: number) {
+  if (routeLine) { mapScene.remove(routeLine); routeLine = null; }
+  const def = story!.def;
+  const pts: THREE.Vector3[] = [];
+  for (const ch of def.chapters.slice(0, upTo + 1)) {
+    const id = "region" in ch.stop ? ch.stop.region : ch.stop.world;
+    const r = regionOf(id); if (!r) continue;
+    const p = r.group.position.clone().setY(2.2);
+    if (!pts.length || pts[pts.length - 1].distanceTo(p) > 0.5) pts.push(p);
+  }
+  if (pts.length < 2) return;
+  // hops: a gentle arc between stops so the route reads as a journey, not a fence
+  const curvePts: THREE.Vector3[] = [];
+  for (let i = 0; i < pts.length - 1; i++) {
+    const a = pts[i], b = pts[i + 1], n = 24;
+    for (let k = 0; k <= n; k++) { const t = k / n; curvePts.push(new THREE.Vector3().lerpVectors(a, b, t).add(new THREE.Vector3(0, Math.sin(t * Math.PI) * Math.min(9, a.distanceTo(b) * 0.18), 0))); }
+  }
+  // beads along the curve read as a dotted route from above (a GL line is one pixel wide whatever you ask for)
+  const route = new THREE.Group();
+  const beadGeo = new THREE.SphereGeometry(0.42, 10, 8), beadMat = new THREE.MeshBasicMaterial({ color: 0xc9413f });
+  let acc = 0;
+  for (let i = 1; i < curvePts.length; i++) {
+    acc += curvePts[i].distanceTo(curvePts[i - 1]);
+    if (acc >= 1.9) { acc = 0; const b = new THREE.Mesh(beadGeo, beadMat); b.position.copy(curvePts[i]); route.add(b); }
+  }
+  for (const p of pts) { const m = new THREE.Mesh(new THREE.SphereGeometry(0.9, 12, 10), new THREE.MeshBasicMaterial({ color: 0xc9413f })); m.position.copy(p); route.add(m); const ring = new THREE.Mesh(new THREE.RingGeometry(1.3, 1.7, 32), new THREE.MeshBasicMaterial({ color: 0xc9413f, transparent: true, opacity: 0.7, side: THREE.DoubleSide })); ring.rotation.x = -Math.PI / 2; ring.position.copy(p).setY(p.y - 1.9); route.add(ring); }
+  routeLine = route; mapScene.add(route);
+}
+
+function renderStoryPanel() {
+  const { def, i } = story!; const ch = def.chapters[i];
+  const last = i === def.chapters.length - 1;
+  storyEl.innerHTML = `
+    <button class="close" aria-label="Leave the story">×</button>
+    <div class="era">${escapeHtml(ch.era)}<span class="story-name">${def.emoji} ${escapeHtml(def.title)}</span></div>
+    <h3>${escapeHtml(ch.title)}${ch.zh ? ` <span class="zh">${escapeHtml(ch.zh)}</span>` : ""}</h3>
+    <p>${escapeHtml(ch.text)}</p>
+    <footer>
+      <button class="back" ${i === 0 ? "disabled" : ""}>← Back</button>
+      <span class="dots">${def.chapters.map((_, k) => `<i class="${k === i ? "on" : ""}"></i>`).join("")}</span>
+      <button class="next">${last ? "Finish" : "Next →"}</button>
+    </footer>`;
+  storyEl.hidden = false;
+  storyEl.querySelector(".close")!.addEventListener("click", endStory);
+  storyEl.querySelector(".back")!.addEventListener("click", () => { if (story && story.i > 0) { story.i--; showChapter(); } });
+  storyEl.querySelector(".next")!.addEventListener("click", () => { if (!story) return; if (last) { endStory(); return; } story.i++; showChapter(); });
+}
+
+function showChapter() {
+  if (!story) return;
+  clearTimeout(storyTimer);
+  const { def, i } = story; const ch = def.chapters[i];
+  renderStoryPanel();
+  const go = () => {
+    if (!story) return;
+    if ("region" in ch.stop) {
+      const r = regionOf(ch.stop.region); if (!r) return;
+      drawRoute(i);
+      mapWorld?.wake(r);
+      glideTo(r.group.position.clone(), ch.stop.dist ?? 46, 1.8);
+    } else {
+      const stop = ch.stop;
+      const arrive = () => {
+        if (!story || !diorama) return;
+        const p = diorama.placed.find((x) => x.obj.id === stop.object); if (!p) return;
+        diorama.highlight(new Set([p.obj.id]), null);
+        diorama.poke(p);
+        glideTo(p.anchor.clone().add(new THREE.Vector3(0, 0.8, 0)), 18, 1.4, undefined, 3);
+      };
+      if (level === "world" && world === stop.world) arrive();
+      else { const region = MAP_REGIONS.find((m) => m.id === stop.world); if (region) { enterRegion(region); storyTimer = window.setTimeout(arrive, 2900); } }
+    }
+  };
+  if ("region" in ch.stop && level === "world") { leaveWorld(); storyTimer = window.setTimeout(go, 700); }
+  else go();
 }
 
 /** Build a world the first time it is entered; keep it after that. */
@@ -225,7 +345,7 @@ function getWorld(id: WorldId): Diorama {
 
 function enterRegion(region: MapRegion) {
   if (!region.built) return;
-  ui.hide();
+  ui.hide(); storiesBtn.hidden = true;
   const id = region.id as WorldId;
   if (diorama) worldScene.remove(diorama.group);
   world = id; currentArea = null;
@@ -452,6 +572,7 @@ window.addEventListener("keydown", (e) => {
     if (!document.getElementById("recipe")!.hidden) { document.getElementById("recipe")!.hidden = true; return; }
     if (ui.open) { clearTimeout(cardTimer); clearTimeout(revealTimer); ui.hide(); if (!livingScene) { diorama?.highlight(null, null); diorama?.pin(null); } return; }
     if (livingScene) { leaveLivingScene(); return; }
+    if (story) { endStory(); return; }
     if (level === "world") leaveWorld();
   }
 });

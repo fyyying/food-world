@@ -23,18 +23,20 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   tint(20, 8, 16, 12, "#9cc484", -0.3);
   tint(2, -16, 18, 8, "#c2bd7a");
   tint(-27, 16, 6, 5, "#7aab5c");
-  tint(12, -28, 64, 12, "#c9bd7e", 0.35);      // the wheat belt: dry gold along the north
-  tint(-47, -8, 18, 48, "#dcc890", 0.5);       // the oasis strip: sand beyond the western mountains
-  tint(-48, 0, 8, 6, "#8fb86a", 0.2);
+  // the wheat belt: dry gold along the north, in overlapping pools so it fades into the green
+  for (const [x, z, rx, rz] of [[-10, -28, 14, 8], [8, -28, 14, 8], [26, -27, 14, 8], [42, -24, 12, 8]] as [number, number, number, number][]) tint(x, z, rx, rz, "#cfc286");
+  // the oasis strip: sand beyond the western mountains, green only where the water reaches
+  for (const [x, z, rx, rz] of [[-48, -24, 9, 9], [-48, -10, 9, 9], [-48, 4, 9, 9], [-49, 18, 9, 9], [-50, 30, 8, 7]] as [number, number, number, number][]) tint(x, z, rx, rz, "#dccb9a");
+  tint(-48, -2, 7, 5, "#8fb86a");
 
   // ---------- river & paths ----------
   const curve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-38, TOP + 0.03, 4), new THREE.Vector3(-28, TOP + 0.03, 8), new THREE.Vector3(-14, TOP + 0.03, 9),
-    new THREE.Vector3(-2, TOP + 0.03, 6), new THREE.Vector3(10, TOP + 0.03, 8), new THREE.Vector3(20, TOP + 0.03, 3), new THREE.Vector3(30, TOP + 0.03, 6), new THREE.Vector3(38, TOP + 0.03, 4),
+    new THREE.Vector3(-60, TOP + 0.03, 2), new THREE.Vector3(-48, TOP + 0.03, 3), new THREE.Vector3(-38, TOP + 0.03, 4), new THREE.Vector3(-28, TOP + 0.03, 8), new THREE.Vector3(-14, TOP + 0.03, 9),
+    new THREE.Vector3(-2, TOP + 0.03, 6), new THREE.Vector3(10, TOP + 0.03, 8), new THREE.Vector3(20, TOP + 0.03, 3), new THREE.Vector3(30, TOP + 0.03, 6), new THREE.Vector3(38, TOP + 0.03, 4), new THREE.Vector3(48, TOP + 0.03, 6), new THREE.Vector3(60, TOP + 0.03, 4),
   ]);
   addWater({ group, tickers, place, tint, TOP }, curve, 3.4);
   // reeds and stones along the bank
-  for (let i = 0; i < 40; i++) { const u = i / 40; const p = curve.getPointAt(u), tg = curve.getTangentAt(u); const side = new THREE.Vector3(-tg.z, 0, tg.x).normalize().multiplyScalar(2.3 * (i % 2 ? 1 : -1)); const x = p.x + side.x, z = p.z + side.z; if (Math.abs(x) > 35) continue; if (i % 3 === 0) add(group, new THREE.Mesh(new THREE.DodecahedronGeometry(0.25 + (i % 4) * 0.08, 0), mat(C.stone)), x, 0.1, z); else for (let k = 0; k < 3; k++) add(group, new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.03, 0.8, 4), mat("#6fae4f")), x + (k - 1) * 0.15, 0.4, z + (k % 2) * 0.15); }
+  for (let i = 0; i < 40; i++) { const u = i / 40; const p = curve.getPointAt(u), tg = curve.getTangentAt(u); const side = new THREE.Vector3(-tg.z, 0, tg.x).normalize().multiplyScalar(2.3 * (i % 2 ? 1 : -1)); const x = p.x + side.x, z = p.z + side.z; if (x < -36 || x > 40) continue; if (i % 3 === 0) add(group, new THREE.Mesh(new THREE.DodecahedronGeometry(0.25 + (i % 4) * 0.08, 0), mat(C.stone)), x, 0.1, z); else for (let k = 0; k < 3; k++) add(group, new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.03, 0.8, 4), mat("#6fae4f")), x + (k - 1) * 0.15, 0.4, z + (k % 2) * 0.15); }
   // village street + lanes
   group.add(path([[-22, -6], [-14, -6.5], [-6, -5.5], [2, -5], [10, -6], [18, -8]], 2.6));
   group.add(path([[2, -5], [3, -9], [4, -12.5]], 1.6));
@@ -59,9 +61,9 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   for (const [x, z, r, h] of [[-52, 15, 4, 1.0], [-45, 17, 3, 0.7], [-54, 26, 4.5, 1.1], [-47, 24, 3.4, 0.8], [-40, 30, 3, 0.6]] as [number, number, number, number][]) place(dune(r, h), x, z, x);
   // the oasis road and its channel: snowmelt running south from the mountains, poplars along it
   group.add(path([[-47, -30], [-47.5, -18], [-47, -4], [-47.5, 8], [-46, 14]], 1.6, "#d3bd8a"));
-  const channel = new THREE.CatmullRomCurve3([new THREE.Vector3(-55, TOP + 0.03, -26), new THREE.Vector3(-55.2, TOP + 0.03, -12), new THREE.Vector3(-54.6, TOP + 0.03, 0), new THREE.Vector3(-55, TOP + 0.03, 12)]);
-  addWater({ group, tickers, place, tint, TOP }, channel, 1.1);
-  for (let i = 0; i < 9; i++) place(poplar(0.9 + (i % 3) * 0.15), -53.6 + (i % 2) * 0.4, -25 + i * 4.4, i);
+  const channel = new THREE.CatmullRomCurve3([new THREE.Vector3(-55, TOP + 0.03, -40), new THREE.Vector3(-55, TOP + 0.03, -26), new THREE.Vector3(-55.2, TOP + 0.03, -12), new THREE.Vector3(-54.6, TOP + 0.03, -2), new THREE.Vector3(-53, TOP + 0.03, 2)]);
+  addWater({ group, tickers, place, tint, TOP }, channel, 1.1);   // snowmelt off the top edge, down the west, into the river
+  for (let i = 0; i < 6; i++) place(poplar(0.9 + (i % 3) * 0.15), -53.6 + (i % 2) * 0.4, -25 + i * 4.4, i);
   for (let i = 0; i < 4; i++) place(poplar(0.8), -40.6, -26 + i * 6, i);
   // pagoda on a hill in the north-west, temple with plaza north-centre, gate at the head of the street
   const hill = add(group, new THREE.Mesh(new THREE.CylinderGeometry(4.5, 6, 2.2, 12), mat("#7aab5c")), -24, 1.1, -19);

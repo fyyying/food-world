@@ -77,6 +77,19 @@ function softDot(): THREE.Texture {
   return new THREE.CanvasTexture(c);
 }
 
+let fadeTex: THREE.CanvasTexture | null = null;
+/** a radial alpha ramp: opaque to 45% of the radius, then a smooth fall-off to the rim */
+function tintFade() {
+  if (fadeTex) return fadeTex;
+  const c = document.createElement("canvas"); c.width = c.height = 256;
+  const g = c.getContext("2d")!;
+  const grad = g.createRadialGradient(128, 128, 0, 128, 128, 128);
+  grad.addColorStop(0, "rgba(255,255,255,1)"); grad.addColorStop(0.45, "rgba(255,255,255,1)"); grad.addColorStop(0.75, "rgba(255,255,255,0.55)"); grad.addColorStop(1, "rgba(255,255,255,0)");
+  g.fillStyle = grad; g.fillRect(0, 0, 256, 256);
+  fadeTex = new THREE.CanvasTexture(c); fadeTex.colorSpace = THREE.SRGBColorSpace;
+  return fadeTex;
+}
+
 export function buildWorld(spec: WorldSpec): Diorama {
   const { W, D, recipes, objects: OBJECTS, props: PROPS } = spec;
   const group = new THREE.Group();
@@ -89,9 +102,10 @@ export function buildWorld(spec: WorldSpec): Diorama {
   add(group, new THREE.Mesh(new THREE.BoxGeometry(W + 4.6, 0.25, D + 4.6), mat("#8a5f3a")), 0, -0.55, 0);
   const ground = new THREE.Mesh(new THREE.BoxGeometry(W, 1.0, D), mat(spec.ground));
   ground.position.y = -0.5; ground.receiveShadow = true; group.add(ground);
+  // a tint is a soft-edged pool of colour on the ground: solid in the middle, fading to nothing at the rim, so regions blend instead of ending in a line
   const tint = (x: number, z: number, rx: number, rz: number, color: string, rot = 0) => {
-    const m = new THREE.Mesh(new THREE.CircleGeometry(1, 20), mat(color));
-    m.scale.set(rx, rz, 1); m.rotation.x = -Math.PI / 2; m.rotation.z = rot; m.position.set(x, TOP + 0.006, z); m.receiveShadow = true; group.add(m);
+    const m = new THREE.Mesh(new THREE.CircleGeometry(1, 40), mat(color, { transparent: true, map: tintFade(), depthWrite: false }));
+    m.scale.set(rx, rz, 1); m.rotation.x = -Math.PI / 2; m.rotation.z = rot; m.position.set(x, TOP + 0.006, z); m.receiveShadow = true; m.renderOrder = 1; group.add(m);
   };
 
   // ---------- the world's own scenery ----------

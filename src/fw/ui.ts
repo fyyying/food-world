@@ -16,7 +16,7 @@ export type UiHandlers = {
 const card = () => document.getElementById("card")!;
 /** painted props from public/scenes/props that stand in for an object's card badge (Yingying, 2026-09-08: "replace the SVG with these objects") */
 const CARD_ART: Record<string, string> = {
-  noodle: "bowls", wok: "wok", chilli: "chilli-basket", garlic: "garlic-closeup", jars: "doubanjiang-jar", tofu: "tofu", mushroom: "mushroom-basket",
+  hotpot: "hotpot-pot", noodle: "noodle-bowl", wok: "wok", chilli: "chilli-basket", garlic: "garlic-closeup", jars: "doubanjiang-jar", tofu: "tofu", mushroom: "mushroom-basket",
   veg: "veggie-basket", aromatics: "veggie-cart", teahouse: "tea-pots", spices: "pantry", prep: "cutting-board", tower: "light-standing",
   "stall-produce": "veggie-basket-2", "stall-tofu": "tofu",
 };

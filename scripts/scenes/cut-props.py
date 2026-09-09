@@ -8,7 +8,9 @@ from PIL import Image
 from scipy import ndimage
 
 src, out, manifest_path = sys.argv[1], sys.argv[2], sys.argv[3]
-ROOMS = {"home kitchen": "home_kitchen", "market detail": "market", "poet tower": "historical_tower", "tea house": "teahouse", "noodle shop": "noodle_shop"}
+ROOMS = {"home kitchen": "home_kitchen", "market detail": "market", "poet tower": "historical_tower", "tea house": "teahouse", "noodle shop": "noodle_shop", "hotpot": "hotpot"}
+# nicer library names for a few delivered files
+RENAME = {"biard": "swallow", "cat-2": "cat-sleeping", "curtain": "bamboo-blind", "curtain-2": "noren", "eat-noodle": "noodle-eater", "jasmin-flower": "jasmine", "noodle-spoon": "noodle-strainer", "cooking-noodle": "noodle-pot", "hotpot-smoke": "smoke-1"}
 MAX_SPRITE = 960   # px on the long side; plenty for a 1600-wide stage
 
 def key_white(a, lo=18, hi=110):
@@ -58,7 +60,7 @@ for f in sorted(os.listdir(src)):
     if not f.lower().endswith(".png"): continue
     name = f[:-4]
     im = Image.open(os.path.join(src, f)).convert("RGBA")
-    room = next((v for k, v in ROOMS.items() if name.startswith(k)), None)
+    room = next((v for k, v in ROOMS.items() if re.match(rf"^{k}( h\w+)?$", name.lower())), None)   # "x", "x horizontal", "x honrizontal"
     if room:
         kind = "wide" if im.width > im.height else "portrait"   # (file names vary: "horizontal", "honrizontal"…)
         od = os.path.join(out, room); os.makedirs(od, exist_ok=True)
@@ -68,8 +70,11 @@ for f in sorted(os.listdir(src)):
         print(room, kind, rgb.size)
         continue
     slug = re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
+    slug = RENAME.get(slug, slug)
     a = np.asarray(im).astype(np.float32)
-    a = trim(bleed(key_white(a)))
+    al = a[..., 3]
+    delivered_alpha = np.median(np.concatenate([al[0], al[-1], al[:, 0], al[:, -1]])) < 8   # already cut out: keep its own alpha
+    a = trim(bleed(a if delivered_alpha else key_white(a)))
     sp = Image.fromarray(np.clip(a, 0, 255).astype(np.uint8), "RGBA")
     if max(sp.size) > MAX_SPRITE:
         s = MAX_SPRITE / max(sp.size); sp = sp.resize((round(sp.width * s), round(sp.height * s)), Image.LANCZOS)

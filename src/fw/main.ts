@@ -249,13 +249,56 @@ function endStory() {
   clearTimeout(storyTimer);
   story = null;
   storyEl.hidden = true;
-  if (routeLine) { mapScene.remove(routeLine); routeLine = null; }
+  if (routeLine) { mapScene.remove(routeLine); routeLine = null; route = null; }
   storiesBtn.hidden = level !== "map";
 }
 
-/** the dotted route across the atlas through every stop reached so far */
+/** the story is over: back to the atlas, where the next one can start */
+function finishStory() {
+  const inWorld = level === "world";
+  endStory();
+  if (inWorld) leaveWorld();
+  else { const { pos, target } = mapPlacement(); fly(pos, target, 1.8); }
+}
+
+/** a little emoji on a sprite: the story's traveller and the pins it leaves behind */
+function emojiSprite(emoji: string, size: number) {
+  const c = document.createElement("canvas"); c.width = c.height = 128;
+  const g = c.getContext("2d")!;
+  g.font = "96px system-ui, 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif"; g.textAlign = "center"; g.textBaseline = "middle";
+  g.shadowColor = "rgba(0,0,0,.25)"; g.shadowBlur = 6; g.shadowOffsetY = 3;
+  g.fillText(emoji, 64, 70);
+  const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false }));
+  sp.scale.set(size, size, 1); sp.renderOrder = 20;
+  return sp;
+}
+const BEAD_RED = new THREE.MeshLambertMaterial({ color: 0xd8382e }), BEAD_ORANGE = new THREE.MeshLambertMaterial({ color: 0xe8642a }), BEAD_STEM = new THREE.MeshLambertMaterial({ color: 0x4f8a3a });
+const POD_GEO = new THREE.CapsuleGeometry(0.24, 0.62, 3, 8), STEM_GEO = new THREE.CylinderGeometry(0.07, 0.1, 0.26, 6), RING_GEO = new THREE.RingGeometry(1.2, 1.55, 32);
+/** a bead of the route: a small chilli lying along the way, tilted a little, its stem toward where it came from */
+function chilliBead(dir: THREE.Vector3, i: number) {
+  const g = new THREE.Group();
+  const pod = new THREE.Mesh(POD_GEO, i % 3 === 1 ? BEAD_ORANGE : BEAD_RED); pod.rotation.z = Math.PI / 2; g.add(pod);
+  const stem = new THREE.Mesh(STEM_GEO, BEAD_STEM); stem.rotation.z = Math.PI / 2 + 0.5; stem.position.set(-0.6, 0.06, 0); g.add(stem);
+  g.rotation.y = Math.atan2(-dir.z, dir.x) + (Math.sin(i * 12.9) * 0.5);   // along the route, with a little scatter
+  g.rotation.x = Math.sin(i * 7.1) * 0.35;
+  return g;
+}
+type RouteAnim = {
+  group: THREE.Group;
+  beads: { m: THREE.Object3D; base: THREE.Vector3; born: number }[];
+  rings: THREE.Mesh[];
+  traveller: THREE.Sprite;
+  /** the traveller's path for this chapter (the last hop), and when it set off */
+  path: THREE.Vector3[]; t0: number; dur: number;
+};
+let route: RouteAnim | null = null;
+let nowT = 0;   // the frame clock, for things born between frames
+
+/** the route across the atlas through every stop reached so far: chilli beads that pop in along the newest hop while the
+ *  story's emoji hops from the last stop to the new one, then hovers there */
 function drawRoute(upTo: number) {
-  if (routeLine) { mapScene.remove(routeLine); routeLine = null; }
+  if (routeLine) { mapScene.remove(routeLine); routeLine = null; route = null; }
   const def = story!.def;
   const pts: THREE.Vector3[] = [];
   for (const ch of def.chapters.slice(0, upTo + 1)) {
@@ -264,23 +307,65 @@ function drawRoute(upTo: number) {
     const p = r.group.position.clone().setY(2.2);
     if (!pts.length || pts[pts.length - 1].distanceTo(p) > 0.5) pts.push(p);
   }
-  if (pts.length < 2) return;
-  // hops: a gentle arc between stops so the route reads as a journey, not a fence
-  const curvePts: THREE.Vector3[] = [];
-  for (let i = 0; i < pts.length - 1; i++) {
-    const a = pts[i], b = pts[i + 1], n = 24;
-    for (let k = 0; k <= n; k++) { const t = k / n; curvePts.push(new THREE.Vector3().lerpVectors(a, b, t).add(new THREE.Vector3(0, Math.sin(t * Math.PI) * Math.min(9, a.distanceTo(b) * 0.18), 0))); }
+  if (!pts.length) return;
+  const group = new THREE.Group();
+  const beads: RouteAnim["beads"] = [], rings: THREE.Mesh[] = [];
+  const hop = (a: THREE.Vector3, b: THREE.Vector3) => {
+    const out: THREE.Vector3[] = [], n = 28;
+    for (let k = 0; k <= n; k++) { const t = k / n; out.push(new THREE.Vector3().lerpVectors(a, b, t).add(new THREE.Vector3(0, Math.sin(t * Math.PI) * Math.min(9, a.distanceTo(b) * 0.18), 0))); }
+    return out;
+  };
+  const dur = 1.8;
+  let lastPath: THREE.Vector3[] = [pts[pts.length - 1]];
+  for (let h = 0; h < pts.length - 1; h++) {
+    const curve = hop(pts[h], pts[h + 1]), newest = h === pts.length - 2;
+    const total = pts[h].distanceTo(pts[h + 1]);
+    let acc = 0, walked = 0, i = 0;
+    for (let k = 1; k < curve.length; k++) {
+      const seg = curve[k].distanceTo(curve[k - 1]); acc += seg; walked += seg;
+      if (acc < 1.9) continue;
+      acc = 0;
+      const dir = curve[k].clone().sub(curve[k - 1]).setY(0).normalize();
+      const m = chilliBead(dir, i++); m.position.copy(curve[k]); group.add(m);
+      // on the newest hop the beads pop in one after another as the traveller passes; older hops are already there
+      beads.push({ m, base: curve[k].clone(), born: newest ? nowT + (walked / Math.max(1, total)) * dur * 0.9 : -10 });
+    }
+    if (newest) lastPath = curve;
   }
-  // beads along the curve read as a dotted route from above (a GL line is one pixel wide whatever you ask for)
-  const route = new THREE.Group();
-  const beadGeo = new THREE.SphereGeometry(0.42, 10, 8), beadMat = new THREE.MeshBasicMaterial({ color: 0xc9413f });
-  let acc = 0;
-  for (let i = 1; i < curvePts.length; i++) {
-    acc += curvePts[i].distanceTo(curvePts[i - 1]);
-    if (acc >= 1.9) { acc = 0; const b = new THREE.Mesh(beadGeo, beadMat); b.position.copy(curvePts[i]); route.add(b); }
+  // every stop gets a pulsing ring on the ground; the ones behind keep a small pin of the story's emoji
+  pts.forEach((p, i) => {
+    const ring = new THREE.Mesh(RING_GEO, new THREE.MeshBasicMaterial({ color: 0xd8382e, transparent: true, opacity: 0.7, side: THREE.DoubleSide }));
+    ring.rotation.x = -Math.PI / 2; ring.position.copy(p).setY(p.y + 0.08); group.add(ring); rings.push(ring);   // on the island, where the beads are
+    if (i < pts.length - 1) { const pin = emojiSprite(def.emoji, 2.6); pin.position.copy(p).setY(3.2); group.add(pin); }
+  });
+  const traveller = emojiSprite(def.emoji, 4.6); traveller.position.copy(lastPath[0]).setY(lastPath[0].y + 2); group.add(traveller);
+  routeLine = group; mapScene.add(group);
+  route = { group, beads, rings, traveller, path: lastPath, t0: nowT, dur };
+}
+
+/** the route lives: beads pop and bob, rings breathe, the traveller hops along the newest leg and hovers at the stop */
+function routeTick(t: number) {
+  nowT = t;
+  if (!route) return;
+  for (let i = 0; i < route.beads.length; i++) {
+    const b = route.beads[i], age = t - b.born;
+    if (age < 0) { b.m.visible = false; continue; }
+    b.m.visible = true;
+    const pop = age < 0.5 ? 1.25 * Math.sin((age / 0.5) * Math.PI * 0.5) : 1 + 0.25 * Math.exp(-(age - 0.5) * 6);   // spring in, settle
+    b.m.scale.setScalar(pop);
+    b.m.position.copy(b.base).add(new THREE.Vector3(0, Math.sin(t * 2.1 + i * 0.7) * 0.12, 0));
+    b.m.rotation.z = Math.sin(t * 1.4 + i) * 0.12;
   }
-  for (const p of pts) { const m = new THREE.Mesh(new THREE.SphereGeometry(0.9, 12, 10), new THREE.MeshBasicMaterial({ color: 0xc9413f })); m.position.copy(p); route.add(m); const ring = new THREE.Mesh(new THREE.RingGeometry(1.3, 1.7, 32), new THREE.MeshBasicMaterial({ color: 0xc9413f, transparent: true, opacity: 0.7, side: THREE.DoubleSide })); ring.rotation.x = -Math.PI / 2; ring.position.copy(p).setY(p.y - 1.9); route.add(ring); }
-  routeLine = route; mapScene.add(route);
+  route.rings.forEach((r, i) => {
+    const k = ((t * 0.7 + i * 0.37) % 1);
+    r.scale.setScalar(0.7 + k * 0.9); (r.material as THREE.MeshBasicMaterial).opacity = 0.75 * (1 - k);
+  });
+  const k = Math.min(1, (t - route.t0) / route.dur), path = route.path;
+  const e = easeInOut(k), f = e * (path.length - 1), i0 = Math.floor(f), p = path[Math.min(path.length - 1, i0)].clone().lerp(path[Math.min(path.length - 1, i0 + 1)], f - i0);
+  // a hop while travelling, a gentle hover once arrived
+  const lift = k < 1 ? 2 + Math.sin(k * Math.PI) * 3 : 2 + Math.sin(t * 1.7) * 0.5;
+  route.traveller.position.copy(p).setY(p.y + lift);
+  route.traveller.material.rotation = k < 1 ? Math.sin(k * Math.PI * 2) * 0.35 : Math.sin(t * 1.3) * 0.12;
 }
 
 function renderStoryPanel() {
@@ -294,12 +379,14 @@ function renderStoryPanel() {
     <footer>
       <button class="back" ${i === 0 ? "disabled" : ""}>← Back</button>
       <span class="dots">${def.chapters.map((_, k) => `<i class="${k === i ? "on" : ""}"></i>`).join("")}</span>
+      ${last ? `<button class="again" title="Back to the start of the story">↺ From the start</button>` : ""}
       <button class="next">${last ? "Finish" : "Next →"}</button>
     </footer>`;
   storyEl.hidden = false;
   storyEl.querySelector(".close")!.addEventListener("click", endStory);
   storyEl.querySelector(".back")!.addEventListener("click", () => { if (story && story.i > 0) { story.i--; showChapter(); } });
-  storyEl.querySelector(".next")!.addEventListener("click", () => { if (!story) return; if (last) { endStory(); return; } story.i++; showChapter(); });
+  storyEl.querySelector(".next")!.addEventListener("click", () => { if (!story) return; if (last) { finishStory(); return; } story.i++; showChapter(); });
+  storyEl.querySelector(".again")?.addEventListener("click", () => { if (!story) return; story.i = 0; showChapter(); });
 }
 
 function showChapter() {
@@ -599,7 +686,7 @@ function frame(forcedDt?: number) {
     camera.position.add(controls.target.clone().sub(before));
   }
   controls.update();
-  if (level === "map" || level === "home") mapWorld?.tick(t, dt);
+  if (level === "map" || level === "home") { mapWorld?.tick(t, dt); routeTick(t); }
   if (level === "world") diorama?.tick(t, dt);
   renderer.render(active, camera);
   labelRenderer.render(active, camera);

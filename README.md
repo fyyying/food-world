@@ -40,10 +40,11 @@ builds a static bundle; `.github/workflows/pages.yml` publishes it on every push
   market, home kitchen, the old tower) and which object opens each (`scene:` on the object); `scene-painted.ts`
   lays a room out on the stage: a full painting (`public/scenes/<room>/wide.jpg`, with `portrait.jpg` for phones)
   or a cut sheet, plus sprites from the shared prop library `public/scenes/props/` (WebP with alpha, cut from
-  white-background paintings by `scripts/scenes/cut-props.py`); `scene-hotpot-painted.ts` is the hand-laid hotpot
-  room. Older sheet-based rooms are cut by `scripts/scenes/cut-hotpot-layers.py` and `scripts/scenes/cut-sheets.py`
-  (all run with `uv run --with pillow --with numpy --with scipy`); `scene-hotpot.ts` +
-  `scene-figures.ts` keep the earlier hand-drawn SVG room. `__fw.sceneShot(name)` screenshots an open scene.
+  white-background paintings by `scripts/scenes/cut-props.py`, which also keeps sprites that arrive already cut out).
+  All six China rooms, the hotpot house included, are full paintings; a room's `pot` puts a boiling broth (swelling
+  domes, ripples) on a painted pot. Older sheet-based rooms are cut by `scripts/scenes/cut-hotpot-layers.py` and
+  `scripts/scenes/cut-sheets.py` (all run with `uv run --with pillow --with numpy --with scipy`).
+  `__fw.sceneShot(name)` screenshots an open scene.
 
 ## The worlds
 
@@ -58,9 +59,9 @@ Midwest, Texas & the South, California), Japan (Tokyo, Kyoto, Fuji & the lake, H
 
 `src/fw/stories.ts` holds guided journeys across the atlas: a story is a list of chapters, each with an era, a
 short text and a stop, either a region on the atlas or an object inside a world. The engine in `main.ts` glides
-the camera from stop to stop, grows a beaded route across the atlas, walks into a world when a chapter asks for
+the camera from stop to stop, grows a route of little chillies across the atlas while the story's emoji hops to the new stop, walks into a world when a chapter asks for
 it and pokes the object it arrives at. The first story, 🌶️ The Journey of Chilli, runs Mexico → Spain → India →
-the Chinese coast → the Sichuan chilli field. Start one from the 📜 Stories button on the atlas.
+the Chinese coast → the Sichuan chilli field. Start one from the 📜 Stories button on the atlas; Finish brings you back to the atlas, and the last chapter offers ↺ From the start.
 
 ## Controls
 

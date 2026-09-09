@@ -49,6 +49,16 @@
     941,
     1672
    ]
+  },
+  "hotpot": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    1024,
+    1536
+   ]
   }
  },
  "props": {
@@ -202,6 +212,78 @@
   ],
   "woman-pouring-tea": [
    419,
+   960
+  ],
+  "swallow": [
+   868,
+   960
+  ],
+  "cat-sleeping": [
+   960,
+   419
+  ],
+  "chopsticks": [
+   609,
+   960
+  ],
+  "noodle-pot": [
+   960,
+   846
+  ],
+  "bamboo-blind": [
+   960,
+   637
+  ],
+  "noren": [
+   960,
+   509
+  ],
+  "noodle-eater": [
+   496,
+   960
+  ],
+  "hotpot-pot": [
+   960,
+   525
+  ],
+  "smoke-1": [
+   575,
+   960
+  ],
+  "jasmine": [
+   786,
+   960
+  ],
+  "lantern-2": [
+   295,
+   960
+  ],
+  "noodle-bowl": [
+   960,
+   688
+  ],
+  "noodle-man": [
+   424,
+   960
+  ],
+  "noodle-strainer": [
+   960,
+   629
+  ],
+  "sauces": [
+   960,
+   643
+  ],
+  "scallions": [
+   960,
+   609
+  ],
+  "smoke-2": [
+   737,
+   960
+  ],
+  "stool": [
+   805,
    960
   ]
  }

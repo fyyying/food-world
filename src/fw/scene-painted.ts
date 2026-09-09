@@ -49,6 +49,8 @@ export type PaintedCfg = {
   fire?: { x: number; y: number; rx: number; ry: number }[];
   /** lamps painted into the cover that should pulse */
   lamps?: { x: number; y: number; r: number }[];
+  /** a pot of broth on the boil: domes swell out of the painted surface, burst and ripple */
+  pot?: { x: number; y: number; rx: number; ry: number };
   /** seconds between falling leaves (0: none) */
   leaves?: number;
   /** motes drifting in the light */
@@ -62,7 +64,7 @@ export type PaintedCfg = {
   /** figures that walk across the front now and then */
   walkers?: Walker[];
   /** the portrait painting is a different composition: where its steam, fire, lamps and flyers are */
-  portrait?: { steam?: PaintedCfg["steam"]; fire?: PaintedCfg["fire"]; lamps?: PaintedCfg["lamps"]; walkers?: Walker[] };
+  portrait?: { steam?: PaintedCfg["steam"]; fire?: PaintedCfg["fire"]; lamps?: PaintedCfg["lamps"]; pot?: PaintedCfg["pot"]; walkers?: Walker[] };
   light: { x: number; y: number; color: string };
 };
 
@@ -186,16 +188,46 @@ export function paintedScene(cfg: PaintedCfg): SceneDef {
 type Steam = { x: number; y: number; vx: number; vy: number; r: number; a: number; life: number; age: number; drift: number };
 type Leaf = { img: HTMLImageElement; x: number; y: number; vy: number; rot: number; vr: number; sway: number; age: number; life: number; s: number };
 type Lantern = { x: number; y: number; vy: number; sway: number; age: number; life: number; r: number };
+type Bubble = { x: number; y: number; r: number; age: number; life: number };
 
 function makeFx(cfg: PaintedCfg) {
-  const steam: Steam[] = [], leaves: Leaf[] = [], lanterns: Lantern[] = [];
+  const steam: Steam[] = [], leaves: Leaf[] = [], lanterns: Lantern[] = [], bubbles: Bubble[] = [];
   const leafImgs = [2, 3, 5, 6, 7, 8].map((i) => { const im = new Image(); im.src = `${import.meta.env.BASE_URL}scenes/hotpot/leaf-${i}.png`; return im; });
   const motes = Array.from({ length: cfg.motes ?? 0 }, () => ({ x: rnd(0, STAGE_W), y: rnd(-20, 720), vy: rnd(4, 11), r: rnd(1, 2.4), a: rnd(0.25, 0.6), f: rnd(0.4, 1.1), ph: rnd(0, 6.28) }));
   const stars = cfg.sky ? Array.from({ length: 90 }, () => ({ x: rnd(0, STAGE_W), y: rnd(0, 300), r: rnd(0.6, 1.8), ph: rnd(0, 6.28), f: rnd(0.5, 2.2) })) : [];
   const accs = Array.from({ length: Math.max(cfg.steam?.length ?? 0, cfg.portrait?.steam?.length ?? 0) }, () => 0);
-  let leafAt = 1.5, lanternAt = 1;
+  let leafAt = 1.5, lanternAt = 1, bacc = 0;
   return (ctx: CanvasRenderingContext2D, t: number, dt: number, portrait: boolean) => {
     const emitters = (portrait && cfg.portrait?.steam) || cfg.steam || [];
+    const pot = (portrait && cfg.portrait?.pot) || cfg.pot;
+    if (pot) {
+      // broth on the boil: domes swell out of the surface, burst, and leave a ripple that spreads and fades
+      bacc += dt * 14;
+      while (bacc > 1) {
+        bacc -= 1;
+        const hot = Math.random() < 0.6 ? 0.55 : 1;   // most of the boil is around the middle
+        const a = rnd(0, Math.PI * 2), r = Math.sqrt(Math.random()) * 0.92 * hot, sz = pot.rx / 138;
+        bubbles.push({ x: pot.x + Math.cos(a) * pot.rx * r, y: pot.y + Math.sin(a) * pot.ry * r, r: rnd(3.5, 9) * sz, age: 0, life: rnd(0.55, 1.1) });
+      }
+      ctx.beginPath(); ctx.ellipse(pot.x, pot.y, pot.rx, pot.ry, 0, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,120,50,${(0.05 + (0.5 + Math.sin(t * 5.1) * 0.5) * 0.06).toFixed(3)})`; ctx.fill();
+      for (let i = bubbles.length - 1; i >= 0; i--) {
+        const b = bubbles[i]; b.age += dt;
+        const k = b.age / b.life;
+        if (k >= 1) { bubbles.splice(i, 1); continue; }
+        if (k < 0.62) {
+          const g = Math.sin((k / 0.62) * Math.PI * 0.5), rr = b.r * g;
+          const grad = ctx.createRadialGradient(b.x - rr * 0.35, b.y - rr * 0.45, rr * 0.1, b.x, b.y, rr);
+          grad.addColorStop(0, "rgba(255,225,190,.85)"); grad.addColorStop(0.55, "rgba(240,110,60,.7)"); grad.addColorStop(1, "rgba(150,35,15,.55)");
+          ctx.beginPath(); ctx.ellipse(b.x, b.y - rr * 0.25, rr, rr * 0.62, 0, 0, Math.PI * 2); ctx.fillStyle = grad; ctx.fill();
+        } else {
+          const q = (k - 0.62) / 0.38, rr = b.r * (1 + q * 2.4);
+          ctx.beginPath(); ctx.ellipse(b.x, b.y, rr, rr * 0.45, 0, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(255,215,170,${((1 - q) * 0.7).toFixed(2)})`; ctx.lineWidth = 1.6 - q; ctx.stroke();
+          if (q < 0.25) { ctx.beginPath(); ctx.ellipse(b.x, b.y - b.r * 0.2, b.r * 0.5 * (1 - q * 4), b.r * 0.3 * (1 - q * 4), 0, 0, Math.PI * 2); ctx.fillStyle = "rgba(255,235,205,.8)"; ctx.fill(); }
+        }
+      }
+    }
     if (cfg.mist) {
       const m = cfg.mist;
       for (let i = 0; i < 4; i++) {

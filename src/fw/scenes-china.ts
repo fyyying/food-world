@@ -2,8 +2,40 @@
 // Coordinates are stage units (1600×900); `at(folder, fx, fy)` is a point inside the centred cover painting.
 
 import { type SceneDef } from "./scene";
-import { hotpotPaintedScene } from "./scene-hotpot-painted";
 import { paintedScene, at, pAt } from "./scene-painted";
+
+// Painting coordinates → stage: the wide painting (1672×941) is stretched to 1616×910 at (−8,−5).
+const hotpot = (): SceneDef => {
+  const f = "hotpot";
+  return paintedScene({
+    id: "hotpot", folder: f, title: "Hotpot house", zh: "火锅", caption: "A divided pot rolling on the burner, thin beef in and out in seconds, and a table that never empties.",
+    painting: true, night: true,
+    hang: [
+      { name: "red-lantern", prop: true, x: 700, y: -8, w: 108, sway: 3, halo: 1.4 },
+      { name: "lantern-2", prop: true, x: 1040, y: -10, w: 96, sway: 3.2, halo: 1.3 },
+    ],
+    front: [
+      { name: "sauces", prop: true, x: -60, w: 380 },
+      { name: "scallions", prop: true, x: 1300, w: 330 },
+    ],
+    pot: { x: 782, y: 580, rx: 135, ry: 29 },
+    steam: [{ x: 782, y: 556, w: 200, rate: 18, a: 0.32 }],
+    lamps: [
+      { x: 84, y: 101, r: 70 }, { x: 219, y: 116, r: 60 }, { x: 403, y: 101, r: 60 }, { x: 495, y: 145, r: 55 }, { x: 1273, y: 77, r: 75 }, { x: 1442, y: 43, r: 80 },
+      { x: 1485, y: 759, r: 70 }, { x: 374, y: 338, r: 30 }, { x: 640, y: 387, r: 25 }, { x: 466, y: 406, r: 25 }, { x: 1432, y: 387, r: 30 }, { x: 1258, y: 464, r: 25 }, { x: 1311, y: 478, r: 25 },
+    ],
+    leaves: 2, motes: 70,
+    portrait: {
+      pot: { ...pAt(f, 0.474, 0.635), rx: 91, ry: 24 },
+      steam: [{ ...pAt(f, 0.474, 0.615), w: 130, rate: 15, a: 0.3 }],
+      lamps: [
+        { ...pAt(f, 0.17, 0.04), r: 60 }, { ...pAt(f, 0.23, 0.16), r: 45 }, { ...pAt(f, 0.3, 0.2), r: 40 }, { ...pAt(f, 0.7, 0.15), r: 50 }, { ...pAt(f, 0.82, 0.19), r: 45 },
+        { ...pAt(f, 0.04, 0.46), r: 22 }, { ...pAt(f, 0.32, 0.44), r: 20 }, { ...pAt(f, 0.76, 0.47), r: 22 }, { ...pAt(f, 0.95, 0.47), r: 22 }, { ...pAt(f, 0.92, 0.8), r: 55 },
+      ],
+    },
+    light: { x: 782, y: 300, color: "rgba(255,190,110,0.34)" },
+  });
+};
 
 const noodleShop = (): SceneDef => {
   const f = "noodle_shop";
@@ -130,7 +162,7 @@ const tower = (): SceneDef => {
 
 /** scene id (WorldObject.scene) → builder */
 export const SCENES: Record<string, () => SceneDef> = {
-  hotpot: hotpotPaintedScene,
+  hotpot,
   noodle_shop: noodleShop,
   teahouse,
   market,

@@ -63,9 +63,10 @@ west beyond the mountains. `src/fw/props-north.ts` builds the dumpling house, no
 vinegar workshop, roast-duck shop, skewer courtyard, bing stall, wheat harvest, hutong lane and northern market
 (plus `northDetail` for coal stacks, pickle crocks, persimmon strings, corn cribs and the stone mill);
 `src/fw/props-xinjiang.ts` builds the kebab grill, nan bakery, polo kitchen, laghman shop, oasis bazaar, grape
-courtyard, oasis field with its sluice, chaikhana and caravan stop, plus `oasisHouse`, `poplar` and `dune`. The
-Tianshan peaks carry snow cones, a channel of snowmelt runs down the west edge, and the objects live in `graph.ts`
-under the `northern` and new `xinjiang` areas. Painted rooms for these places arrive later; until then their cards
+courtyard, oasis field with its sluice, chaikhana and caravan stop, plus `oasisHouse` and `poplar`. The Tianshan
+peaks carry snow cones, a line of poplars marks the west edge, and the objects live in `graph.ts` under the
+`northern` and new `xinjiang` areas. The China table is 100 × 72 with its centre at x −6 (`cx` in the world spec),
+so the west holds Xinjiang without an empty east end; the river runs flush to both edges. Painted rooms for these places arrive later; until then their cards
 open directly.
 
 ## The worlds

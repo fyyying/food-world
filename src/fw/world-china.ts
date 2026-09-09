@@ -6,13 +6,13 @@ import { PROPS, mat, mountain, house, tree, terrace, bridge, woodenBridge, boat,
 import { buildWorld, addWater, type Diorama, type LayoutCtx } from "./worldkit";
 import { JN_PROPS, jnDetail } from "./props-jiangnan";
 import { NORTH_PROPS, northDetail } from "./props-north";
-import { XJ_PROPS, poplar, dune } from "./props-xinjiang";
+import { XJ_PROPS, poplar } from "./props-xinjiang";
 
 void CSS2DObject; void signpost;
 
 export function buildChina(recipes: EnrichedRecipe[]): Diorama {
   return buildWorld({
-    id: "china", W: 112, D: 72, ground: "#8cb86b", plinth: "#6e4a2c", recipes, objects: OBJECTS, props: { ...PROPS, ...JN_PROPS, ...NORTH_PROPS, ...XJ_PROPS },
+    id: "china", W: 100, cx: -6, D: 72, ground: "#8cb86b", plinth: "#6e4a2c", recipes, objects: OBJECTS, props: { ...PROPS, ...JN_PROPS, ...NORTH_PROPS, ...XJ_PROPS },
     small: /^(cow|pig|chicken|pepperTree|jars)$/, fallbackPlace: "wok",
     layout: layoutChina,
   });
@@ -24,15 +24,15 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   tint(2, -16, 18, 8, "#c2bd7a");
   tint(-27, 16, 6, 5, "#7aab5c");
   // the wheat belt: dry gold along the north, in overlapping pools so it fades into the green
-  for (const [x, z, rx, rz] of [[-10, -28, 14, 8], [8, -28, 14, 8], [26, -27, 14, 8], [42, -24, 12, 8]] as [number, number, number, number][]) tint(x, z, rx, rz, "#cfc286");
+  for (const [x, z, rx, rz] of [[-10, -28, 14, 8], [8, -28, 14, 8], [26, -27, 14, 8], [38, -24, 9, 8]] as [number, number, number, number][]) tint(x, z, rx, rz, "#cfc286");
   // the oasis strip: sand beyond the western mountains, green only where the water reaches
-  for (const [x, z, rx, rz] of [[-48, -24, 9, 9], [-48, -10, 9, 9], [-48, 4, 9, 9], [-49, 18, 9, 9], [-50, 30, 8, 7]] as [number, number, number, number][]) tint(x, z, rx, rz, "#dccb9a");
+  for (const [x, z, rx, rz] of [[-48, -24, 9, 9], [-48, -10, 9, 9], [-48, 4, 9, 9], [-49, 18, 7, 9], [-49, 29, 7, 7]] as [number, number, number, number][]) tint(x, z, rx, rz, "#dccb9a");
   tint(-48, -2, 7, 5, "#8fb86a");
 
   // ---------- river & paths ----------
   const curve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-60, TOP + 0.03, 2), new THREE.Vector3(-48, TOP + 0.03, 3), new THREE.Vector3(-38, TOP + 0.03, 4), new THREE.Vector3(-28, TOP + 0.03, 8), new THREE.Vector3(-14, TOP + 0.03, 9),
-    new THREE.Vector3(-2, TOP + 0.03, 6), new THREE.Vector3(10, TOP + 0.03, 8), new THREE.Vector3(20, TOP + 0.03, 3), new THREE.Vector3(30, TOP + 0.03, 6), new THREE.Vector3(38, TOP + 0.03, 4), new THREE.Vector3(48, TOP + 0.03, 6), new THREE.Vector3(60, TOP + 0.03, 4),
+    new THREE.Vector3(-56, TOP + 0.03, 2.4), new THREE.Vector3(-48, TOP + 0.03, 3), new THREE.Vector3(-38, TOP + 0.03, 4), new THREE.Vector3(-28, TOP + 0.03, 8), new THREE.Vector3(-14, TOP + 0.03, 9),
+    new THREE.Vector3(-2, TOP + 0.03, 6), new THREE.Vector3(10, TOP + 0.03, 8), new THREE.Vector3(20, TOP + 0.03, 3), new THREE.Vector3(30, TOP + 0.03, 6), new THREE.Vector3(38, TOP + 0.03, 4), new THREE.Vector3(44, TOP + 0.03, 5),
   ]);
   addWater({ group, tickers, place, tint, TOP }, curve, 3.4);
   // reeds and stones along the bank
@@ -49,20 +49,16 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   const peaks: [number, number, number, number, boolean][] = [
     [-35, -22, 5.5, 12, false], [-33, -9, 4.5, 9, true], [-37.5, 17, 3.6, 10, false], [-35, 26.5, 3.2, 6, true],
     [-27, -35, 4, 9, true], [-16, -35, 3.4, 7, false], [-6, -36, 4, 9, true], [4, -36, 3.2, 6, false], [14, -36, 3.8, 8, true], [24, -35, 3, 6, false],
-    [34, -35, 3.6, 7, true], [46, -34, 3.4, 7, false], [54, -24, 3.2, 6, true], [54, -8, 3.0, 6, false],
+    [34, -35, 3.6, 7, true], [43, -33, 3.2, 6, false], [42.5, -12, 2.8, 5, true],
   ];
   peaks.forEach(([x, z, r, h, dark], i) => { const m = place(mountain(r * (0.9 + (i % 3) * 0.1), h * (0.85 + ((i * 7) % 5) * 0.08), dark), x, z, i * 1.7); m.scale.x *= 1 + (i % 2) * 0.25; });
   // the Tianshan behind the oasis strip: higher, and white above the tree line
-  for (const [x, z, r, h] of [[-53, -33, 5, 13], [-44, -36, 4.6, 12], [-35, -34, 4, 10], [-55, -20, 3.6, 9]] as [number, number, number, number][]) {
+  for (const [x, z, r, h] of [[-51, -33, 5, 13], [-43, -36, 4.6, 12], [-35, -34, 4, 10], [-52.5, -20, 3.4, 9]] as [number, number, number, number][]) {
     place(mountain(r, h, false), x, z, x);
     add(group, new THREE.Mesh(new THREE.ConeGeometry(r * 0.34, h * 0.32, 10), mat("#f4f1ea")), x, h * 0.86, z);
   }
-  // the desert edge: dunes at the south end of the strip and along the west
-  for (const [x, z, r, h] of [[-52, 15, 4, 1.0], [-45, 17, 3, 0.7], [-54, 26, 4.5, 1.1], [-47, 24, 3.4, 0.8], [-40, 30, 3, 0.6]] as [number, number, number, number][]) place(dune(r, h), x, z, x);
-  // the oasis road and its channel: snowmelt running south from the mountains, poplars along it
+  // the oasis road south from the mountains, with a line of poplars at the western edge
   group.add(path([[-47, -30], [-47.5, -18], [-47, -4], [-47.5, 8], [-46, 14]], 1.6, "#d3bd8a"));
-  const channel = new THREE.CatmullRomCurve3([new THREE.Vector3(-55, TOP + 0.03, -40), new THREE.Vector3(-55, TOP + 0.03, -26), new THREE.Vector3(-55.2, TOP + 0.03, -12), new THREE.Vector3(-54.6, TOP + 0.03, -2), new THREE.Vector3(-53, TOP + 0.03, 2)]);
-  addWater({ group, tickers, place, tint, TOP }, channel, 1.1);   // snowmelt off the top edge, down the west, into the river
   for (let i = 0; i < 6; i++) place(poplar(0.9 + (i % 3) * 0.15), -53.6 + (i % 2) * 0.4, -25 + i * 4.4, i);
   for (let i = 0; i < 4; i++) place(poplar(0.8), -40.6, -26 + i * 6, i);
   // pagoda on a hill in the north-west, temple with plaza north-centre, gate at the head of the street

@@ -33,6 +33,8 @@ export type LayoutCtx = {
 export type WorldSpec = {
   id: WorldId;
   W: number; D: number;
+  /** table centre on x, for worlds whose scenery sits off-centre (default 0) */
+  cx?: number;
   ground: string; plinth: string;
   recipes: EnrichedRecipe[];
   objects: WorldObject[];
@@ -92,16 +94,17 @@ function tintFade() {
 
 export function buildWorld(spec: WorldSpec): Diorama {
   const { W, D, recipes, objects: OBJECTS, props: PROPS } = spec;
+  const CX = spec.cx ?? 0;
   const group = new THREE.Group();
   const tickers: ((t: number, dt: number) => void)[] = [];
   const place = <T extends THREE.Object3D>(o: T, x: number, z: number, rot = 0, s = 1): T => { o.position.set(x, TOP, z); o.rotation.y = rot; o.scale.setScalar(s); group.add(o); const tk = (o as unknown as P).userData?.tick; if (tk) tickers.push(tk); return o; };
 
   // ---------- base: a model on a wooden plinth ----------
   const plinth = new THREE.Mesh(new THREE.BoxGeometry(W + 4, 2.4, D + 4), mat(spec.plinth, { roughness: 0.6 }));
-  plinth.position.y = -1.7; plinth.receiveShadow = true; group.add(plinth);
-  add(group, new THREE.Mesh(new THREE.BoxGeometry(W + 4.6, 0.25, D + 4.6), mat("#8a5f3a")), 0, -0.55, 0);
+  plinth.position.set(CX, -1.7, 0); plinth.receiveShadow = true; group.add(plinth);
+  add(group, new THREE.Mesh(new THREE.BoxGeometry(W + 4.6, 0.25, D + 4.6), mat("#8a5f3a")), CX, -0.55, 0);
   const ground = new THREE.Mesh(new THREE.BoxGeometry(W, 1.0, D), mat(spec.ground));
-  ground.position.y = -0.5; ground.receiveShadow = true; group.add(ground);
+  ground.position.set(CX, -0.5, 0); ground.receiveShadow = true; group.add(ground);
   // a tint is a soft-edged pool of colour on the ground: solid in the middle, fading to nothing at the rim, so regions blend instead of ending in a line
   const tint = (x: number, z: number, rx: number, rz: number, color: string, rot = 0) => {
     const m = new THREE.Mesh(new THREE.CircleGeometry(1, 40), mat(color, { transparent: true, map: tintFade(), depthWrite: false }));
@@ -297,7 +300,7 @@ export function buildWorld(spec: WorldSpec): Diorama {
 
   return {
     group, placed, dishes,
-    bounds: new THREE.Box3(new THREE.Vector3(-W / 2, 0, -D / 2), new THREE.Vector3(W / 2, 0, D / 2)),
+    bounds: new THREE.Box3(new THREE.Vector3(CX - W / 2, 0, -D / 2), new THREE.Vector3(CX + W / 2, 0, D / 2)),
     tick: (t, dt) => { for (const f of tickers) f(t, dt); },
     highlight,
     hover: (thing) => { hovered = thing && "obj" in thing ? thing : null; if (thing && "recipe" in thing) thing.group.scale.setScalar(1.15); },

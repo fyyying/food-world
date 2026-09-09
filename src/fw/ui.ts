@@ -209,7 +209,14 @@ export async function showRecipePage(r: EnrichedRecipe, onBack: () => void) {
       <div><h3>Method</h3><div id="steps"><p class="note">Loading…</p></div>
         <div class="extras">
           <div><a href="${esc(r.notionUrl)}" target="_blank" rel="noopener">Open in Notion ↗</a>${r.sourceUrl ? `<a href="${esc(r.sourceUrl)}" target="_blank" rel="noopener">Original source ↗</a>` : ""}</div>
-          <p class="note">Nutrition, substitutions and make-ahead notes will appear here once they live on the Notion page.</p>
+          ${r.nutrition ? `<h3>Estimated nutrition per serving</h3>
+          <table class="nutrition"><tbody>
+            <tr><td>Energy</td><td>${r.nutrition.kcal} kcal</td></tr>
+            ${([["Protein", r.nutrition.protein, "g"], ["Carbohydrate", r.nutrition.carbs, "g"], ["Fat", r.nutrition.fat, "g"], ["of which saturated", r.nutrition.satFat, "g"], ["Fibre", r.nutrition.fibre, "g"], ["Sugars", r.nutrition.sugar, "g"], ["Sodium", r.nutrition.sodium, "mg"]] as [string, number | null, string][]).filter(([, v]) => v != null).map(([k, v, u]) => `<tr><td>${k}</td><td>${v} ${u}</td></tr>`).join("")}
+          </tbody></table>
+          ${r.nutritionLabels.length ? `<div class="chips">${r.nutritionLabels.map((l) => `<span class="chip fl">${esc(l)}</span>`).join("")}</div>` : ""}
+          <p class="note">Estimated from ingredient weights; brands, oil quantities and portions change the numbers.</p>` : ""}
+          <div id="notes"><p class="note">Nutrition, substitutions and make-ahead notes will appear here once they live on the Notion page.</p></div>
         </div>
       </div>
     </div>`;
@@ -225,6 +232,9 @@ export async function showRecipePage(r: EnrichedRecipe, onBack: () => void) {
   page.querySelector("#steps")!.innerHTML = body.steps.length
     ? `<ol class="steps">${body.steps.map((s) => `<li>${esc(s)}</li>`).join("")}</ol>`
     : `<p class="note">No steps on the Notion page yet.</p>`;
+  // the story, the home version and the practical notes (time, substitutions, spice, storage) live in the page's notes
+  const notes = body.notes.filter((n) => n.trim() && !/^source/i.test(n));
+  if (notes.length) page.querySelector("#notes")!.innerHTML = `<h3>Notes</h3>${notes.map((n) => `<p class="${/^(cooking time|servings|substitutions|spice level|storage|labels)/i.test(n) ? "fact" : "story"}">${esc(n)}</p>`).join("")}`;
 }
 
 // ---------- crumbs, hint, toast ----------

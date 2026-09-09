@@ -67,6 +67,18 @@ Around the World (ending in the Chengdu teahouse), ☕ Coffee Wakes the World (e
 one from the 📜 Stories button on the atlas or from the "Where it came from" button on the card of any object a
 story passes through; Finish brings you back to the atlas, and the last chapter offers ↺ From the start.
 
+## Recipes and nutrition
+
+`scripts/recipes/sichuan.mjs` holds the Sichuan canon (13 dishes) as data and writes it to the Notion Recipes
+database over the REST API: identity, cultural context, a home version, grouped ingredients, steps, notes (time,
+servings, substitutions, spice, storage) and an estimated-nutrition table, plus one row per ingredient in Recipe
+Ingredients. Nutrition is a per-100 g table times the grams in the recipe, divided by servings, with an `eat` share
+for things that stay in the pan (whole dried chillies, strained peppercorns, oil left in the bowl); it fills the
+`… (est.)` number columns and the `Nutrition labels` multi-select (High protein ≥ 20 g, High fibre ≥ 6 g, Lower
+saturated fat ≤ 4 g per serving). `--dry` prints the numbers without writing; pages listed with an `id` are rewritten
+in place, the rest are created once and should then be given their id. The recipe page shows the notes and the
+nutrition table; the section parser in `server/index.mjs` treats lists under a Notes heading as notes.
+
 ## Controls
 
 | Action | How |

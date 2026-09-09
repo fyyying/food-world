@@ -22,6 +22,9 @@ export type Recipe = {
   imageUrl: string | null;
   sourceUrl: string | null;
   notionUrl: string;
+  /** estimated per serving, from the Notion columns; null when a recipe has none yet */
+  nutrition: { kcal: number; protein: number | null; carbs: number | null; fat: number | null; satFat: number | null; fibre: number | null; sugar: number | null; sodium: number | null } | null;
+  nutritionLabels: string[];
 };
 
 export type RecipeBody = { ingredients: string[]; groups?: { title: string; items: string[] }[]; steps: string[]; notes: string[] };

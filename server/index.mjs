@@ -86,6 +86,9 @@ function toRecipe(page) {
     proteinScore: P("Protein Score") ?? null,
     method: P("Cooking Method") ?? null,
     imageUrl: P("Image URL") ?? null,
+    // estimated nutrition per serving (scripts/recipes/sichuan.mjs writes these; brands and portions change them)
+    nutrition: P("Kcal per serving (est.)") != null ? { kcal: P("Kcal per serving (est.)"), protein: P("Protein g (est.)") ?? null, carbs: P("Carbs g (est.)") ?? null, fat: P("Fat g (est.)") ?? null, satFat: P("Saturated fat g (est.)") ?? null, fibre: P("Fibre g (est.)") ?? null, sugar: P("Sugar g (est.)") ?? null, sodium: P("Sodium mg (est.)") ?? null } : null,
+    nutritionLabels: P("Nutrition labels") ?? [],
     sourceUrl: P("URL") ?? null,
     notionUrl: page.url,
   };
@@ -181,9 +184,11 @@ function sectionize(blocks) {
   const out = { ingredients: [], groups: [], steps: [], notes: [] };
   let bucket = "notes";
   let loose = null; // ungrouped ingredients collected as their own group
+  let labelled = false; // once a page has headings, lists under "Notes" are notes, not ingredients
   const isList = (t) => t === "bulleted_list_item" || t === "to_do" || t === "numbered_list_item";
   for (const b of blocks) {
     if (/^heading/.test(b.type)) {
+      labelled = true;
       const h = b.text.toLowerCase();
       if (/ingredient/.test(h)) { bucket = "ingredients"; loose = null; }
       else if (/instruction|step|method|direction|preparation|procedure/.test(h)) bucket = "steps";
@@ -199,7 +204,7 @@ function sectionize(blocks) {
     }
     if (b.type === "callout" || (b.type === "paragraph" && /^source:/i.test(b.text))) continue;
     // an unlabelled page: bullets are ingredients, numbers are steps
-    const effective = bucket === "notes" && isList(b.type) ? (b.type === "numbered_list_item" ? "steps" : "ingredients") : bucket;
+    const effective = !labelled && bucket === "notes" && isList(b.type) ? (b.type === "numbered_list_item" ? "steps" : "ingredients") : bucket;
     if (effective === "ingredients") {
       if (b.children.length) {
         const items = b.children.map((c) => c.text).filter(Boolean);

@@ -267,9 +267,12 @@ function finishStory() {
 function emojiSprite(emoji: string, size: number) {
   const c = document.createElement("canvas"); c.width = c.height = 128;
   const g = c.getContext("2d")!;
-  g.font = "96px system-ui, 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif"; g.textAlign = "center"; g.textBaseline = "middle";
-  g.shadowColor = "rgba(0,0,0,.25)"; g.shadowBlur = 6; g.shadowOffsetY = 3;
-  g.fillText(emoji, 64, 70);
+  // centre the glyph by measuring it: Safari places emoji on a "middle" baseline differently from Chrome and would clip half of it
+  g.font = "84px 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', system-ui, sans-serif"; g.textAlign = "center"; g.textBaseline = "alphabetic";
+  const m = g.measureText(emoji);
+  const asc = m.actualBoundingBoxAscent || 64, desc = m.actualBoundingBoxDescent || 12;
+  g.shadowColor = "rgba(0,0,0,.25)"; g.shadowBlur = 5; g.shadowOffsetY = 2;
+  g.fillText(emoji, 64, 62 + (asc - desc) / 2);
   const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
   const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false }));
   sp.scale.set(size, size, 1); sp.renderOrder = 20;

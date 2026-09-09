@@ -244,7 +244,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 #story footer button:disabled { opacity: .4; cursor: default; }
 #story footer button.again { background: #fff3e6; color: var(--red); }
 #story .close { position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; border-radius: 50%; border: 0; background: rgba(0,0,0,.06); cursor: pointer; font-size: 16px; color: var(--ink-2); }
-#story-menu { position: absolute; left: 18px; bottom: 70px; z-index: 6; background: rgba(247,239,226,.97); border-radius: 16px; padding: 10px; box-shadow: 0 12px 34px rgba(0,0,0,.25); width: 300px; }
+#story-menu { position: absolute; left: 18px; bottom: 70px; z-index: 6; max-height: calc(100% - 90px); overflow-y: auto; background: rgba(247,239,226,.97); border-radius: 16px; padding: 10px; box-shadow: 0 12px 34px rgba(0,0,0,.25); width: 300px; }
 #story-menu h4 { margin: 4px 8px 8px; font-size: 10.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #a48b6a; }
 #story-menu button { display: flex; gap: 10px; align-items: flex-start; width: 100%; text-align: left; border: 0; background: #fff; border-radius: 12px; padding: 10px 12px; cursor: pointer; font-family: var(--sans); color: var(--ink); }
 #story-menu button:hover { background: #fff8ec; }

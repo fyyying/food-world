@@ -60,8 +60,12 @@ Midwest, Texas & the South, California), Japan (Tokyo, Kyoto, Fuji & the lake, H
 `src/fw/stories.ts` holds guided journeys across the atlas: a story is a list of chapters, each with an era, a
 short text and a stop, either a region on the atlas or an object inside a world. The engine in `main.ts` glides
 the camera from stop to stop, grows a route of little chillies across the atlas while the story's emoji hops to the new stop, walks into a world when a chapter asks for
-it and pokes the object it arrives at. The first story, 🌶️ The Journey of Chilli, runs Mexico → Spain → India →
-the Chinese coast → the Sichuan chilli field. Start one from the 📜 Stories button on the atlas or from the "Where it came from" button on the card of any object a story passes through (the chilli field); Finish brings you back to the atlas, and the last chapter offers ↺ From the start.
+it and pokes the object it arrives at. Seven stories so far: 🌶️ The Journey of Chilli (Mexico → Spain → India →
+the Chinese coast → the Sichuan chilli field), 🍅 The Tomato Comes to Italy, 🥔 The Potato Feeds Europe, 🍵 Tea Goes
+Around the World (ending in the Chengdu teahouse), ☕ Coffee Wakes the World (ending at the Italian espresso bar),
+🌽 Corn Crosses the World (ending in the Oaxaca milpa) and 🧂 The Spice Routes (ending in Istanbul's bazaar). Start
+one from the 📜 Stories button on the atlas or from the "Where it came from" button on the card of any object a
+story passes through; Finish brings you back to the atlas, and the last chapter offers ↺ From the start.
 
 ## Controls
 

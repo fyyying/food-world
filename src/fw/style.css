@@ -20,7 +20,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 #app { position: fixed; inset: 0; }
 #stage { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
 #stage.pointing { cursor: pointer; }
-#labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+#labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 1; }   /* one stacking context, so the sorted labels never rise above cards and the story panel */
 
 /* ---------- 3D-anchored labels ---------- */
 .region-label { transform: translate(-50%, -50%); text-align: center; pointer-events: auto; cursor: pointer; transition: opacity .3s; }
@@ -248,4 +248,11 @@ button { font: inherit; color: inherit; cursor: pointer; }
 #story-menu button .em { font-size: 22px; }
 #story-menu button b { display: block; font-size: 14px; }
 #story-menu button small { color: var(--ink-2); font-size: 12px; line-height: 1.35; display: block; }
-@media (max-width: 720px) { #story { bottom: 12px; padding: 14px 16px 12px; } #story h3 { font-size: 19px; } #stories { bottom: 14px; } }
+@media (max-width: 720px) {
+  #story { bottom: 10px; padding: 12px 14px 10px; max-height: 46vh; overflow: auto; }
+  #story h3 { font-size: 18px; margin: 4px 0 4px; }
+  #story p { font-size: 12.5px; line-height: 1.5; }
+  #story .era .story-name { display: none; }
+  #story footer { margin-top: 9px; position: sticky; bottom: 0; background: rgba(247,239,226,.97); padding-top: 4px; }
+  #stories { bottom: 14px; }
+}

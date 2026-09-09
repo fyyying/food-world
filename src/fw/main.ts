@@ -294,7 +294,15 @@ type RouteAnim = {
   path: THREE.Vector3[]; t0: number; dur: number;
 };
 let route: RouteAnim | null = null;
-let nowT = 0;   // the frame clock, for things born between frames
+let nowT = 0;
+/** a narrow screen: the story panel covers the lower half, so stops are framed higher and further away */
+const PHONE = () => window.innerWidth < window.innerHeight || window.innerWidth < 720;
+/** where to look so that `p` sits in the upper part of a phone screen, above the story panel: the target moves toward the camera */
+function framedAbovePanel(p: THREE.Vector3, dist: number) {
+  const target = p.clone();
+  if (PHONE()) { const toCam = camera.position.clone().sub(controls.target).setY(0).normalize(); target.add(toCam.multiplyScalar(dist * 0.12)); }
+  return target;
+}   // the frame clock, for things born between frames
 
 /** the route across the atlas through every stop reached so far: chilli beads that pop in along the newest hop while the
  *  story's emoji hops from the last stop to the new one, then hovers there */
@@ -337,9 +345,11 @@ function drawRoute(upTo: number) {
   pts.forEach((p, i) => {
     const ring = new THREE.Mesh(RING_GEO, new THREE.MeshBasicMaterial({ color: 0xd8382e, transparent: true, opacity: 0.7, side: THREE.DoubleSide }));
     ring.rotation.x = -Math.PI / 2; ring.position.copy(p).setY(p.y + 0.08); group.add(ring); rings.push(ring);   // on the island, where the beads are
-    if (i < pts.length - 1) { const pin = emojiSprite(def.emoji, 2.6); pin.position.copy(p).setY(3.2); group.add(pin); }
+    if (i < pts.length - 1) { const pin = emojiSprite(def.emoji, PHONE() ? 1.7 : 2.6); pin.position.copy(p).setY(3.2); group.add(pin); }
   });
-  const traveller = emojiSprite(def.emoji, 4.6); traveller.position.copy(lastPath[0]).setY(lastPath[0].y + 2); group.add(traveller);
+  // a phone sits much closer to the atlas, so the emoji stays modest
+  const traveller = emojiSprite(def.emoji, PHONE() ? 2.6 : 4.6);
+  traveller.position.copy(lastPath[0]).setY(lastPath[0].y + 2); group.add(traveller);
   routeLine = group; mapScene.add(group);
   route = { group, beads, rings, traveller, path: lastPath, t0: nowT, dur };
 }
@@ -401,7 +411,8 @@ function showChapter() {
       const r = regionOf(ch.stop.region); if (!r) return;
       drawRoute(i);
       mapWorld?.wake(r);
-      glideTo(r.group.position.clone(), ch.stop.dist ?? 46, 1.8);
+      const dist = (ch.stop.dist ?? 46) * (PHONE() ? 1.5 : 1);
+      glideTo(framedAbovePanel(r.group.position, dist), dist, 1.8);
     } else {
       const stop = ch.stop;
       const arrive = () => {
@@ -409,7 +420,8 @@ function showChapter() {
         const p = diorama.placed.find((x) => x.obj.id === stop.object); if (!p) return;
         diorama.highlight(new Set([p.obj.id]), null);
         diorama.poke(p);
-        glideTo(p.anchor.clone().add(new THREE.Vector3(0, 0.8, 0)), 18, 1.4, undefined, 3);
+        const dist = PHONE() ? 26 : 18;
+        glideTo(framedAbovePanel(p.anchor.clone().add(new THREE.Vector3(0, 0.8, 0)), dist), dist, 1.4, undefined, 3);
       };
       if (level === "world" && world === stop.world) arrive();
       else { const region = MAP_REGIONS.find((m) => m.id === stop.world); if (region) { enterRegion(region); storyTimer = window.setTimeout(arrive, 2900); } }
@@ -719,6 +731,8 @@ const dbg = () => ({ level, flying: Boolean(flight), diorama: Boolean(diorama), 
   document.body.appendChild(wrap);
 };
 (dbg as unknown as { diorama: () => unknown }).diorama = () => diorama;
+// debug: where the story's traveller is, in the world and on screen
+(dbg as unknown as { route: () => unknown }).route = () => { if (!route) return null; const p = route.traveller.position.clone(); const v = p.clone().project(camera); return { pos: p.toArray(), screen: [(v.x + 1) / 2 * window.innerWidth, (1 - v.y) / 2 * window.innerHeight], scale: route.traveller.scale.x, visible: route.traveller.visible, beads: route.beads.length, cam: camera.position.toArray(), target: controls.target.toArray(), anim: route }; };
 (dbg as unknown as { audit: (seconds?: number) => unknown }).audit = (seconds = 30) => (diorama ? auditDiorama(diorama, seconds) : null);
 (dbg as unknown as { open: (id: string) => void }).open = (id: string) => { const p = diorama?.placed.find((x) => x.obj.id === id); if (p) openObject(p); };
 (dbg as unknown as { enter: (id: string) => void }).enter = (id: string) => { const r = MAP_REGIONS.find((x) => x.id === id); if (r) enterRegion(r); };

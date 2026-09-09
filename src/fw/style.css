@@ -57,6 +57,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 #hint { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%); background: rgba(247,239,226,.85); color: var(--ink-2); font-size: 12.5px; font-weight: 700; padding: 7px 14px; border-radius: 999px; pointer-events: none; z-index: 5; transition: opacity .6s; white-space: nowrap; }
 #hint.fade { opacity: 0; }
+#app:has(#story:not([hidden])) #hint { opacity: 0; }
 
 /* ---------- object & recipe cards: a paper panel in a wooden frame ---------- */
 #card { position: absolute; right: 22px; top: 22px; width: 372px; max-height: calc(100% - 44px); overflow-y: auto; overflow-x: visible; z-index: 6;

@@ -243,6 +243,7 @@ function startStory(id: string) {
   story = { def, i: 0 };
   storiesBtn.hidden = true;
   ui.hide();
+  document.getElementById("hint")!.classList.add("fade");   // the panel takes the hint's place at the bottom
   showChapter();
 }
 

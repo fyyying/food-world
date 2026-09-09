@@ -241,6 +241,7 @@ export function setCrumbs(parts: { label: string; onClick?: () => void }[], area
 let hintTimer: number | undefined;
 export function hint(text: string, ms = 7000) {
   const el = document.getElementById("hint")!;
+  if (!document.getElementById("story")!.hidden) return;   // a story panel stands where the hint would go: the story speaks for itself
   el.hidden = false; el.textContent = text; el.classList.remove("fade");
   clearTimeout(hintTimer);
   hintTimer = window.setTimeout(() => el.classList.add("fade"), ms);

@@ -1,7 +1,7 @@
 import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer.js";
+import { CSS2DObject, CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer.js";
 import { fetchRecipes } from "../data";
 import { MAP_REGIONS, AREAS, WORLDS, areasOf, objectsOf, worldRecipes, enrich, isChinaRecipe, isItalyRecipe, isKoreaRecipe, isMexicoRecipe, isMideastRecipe, isMedRecipe, isIndiaRecipe, isSeasiaRecipe, isNamericaRecipe, isJapanRecipe, isCeuropeRecipe, objectById, type Area, type EnrichedRecipe, type MapRegion, type WorldId, type WorldObject } from "./graph";
 import { buildMap, type MapWorld, type PlacedRegion } from "./map";
@@ -251,7 +251,7 @@ function endStory() {
   clearTimeout(storyTimer);
   story = null;
   storyEl.hidden = true;
-  if (routeLine) { mapScene.remove(routeLine); routeLine = null; route = null; }
+  dropRoute();
   storiesBtn.hidden = level !== "map";
 }
 
@@ -263,20 +263,13 @@ function finishStory() {
   else { const { pos, target } = mapPlacement(); fly(pos, target, 1.8); }
 }
 
-/** a little emoji on a sprite: the story's traveller and the pins it leaves behind */
-function emojiSprite(emoji: string, size: number) {
-  const c = document.createElement("canvas"); c.width = c.height = 128;
-  const g = c.getContext("2d")!;
-  // centre the glyph by measuring it: Safari places emoji on a "middle" baseline differently from Chrome and would clip half of it
-  g.font = "84px 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', system-ui, sans-serif"; g.textAlign = "center"; g.textBaseline = "alphabetic";
-  const m = g.measureText(emoji);
-  const asc = m.actualBoundingBoxAscent || 64, desc = m.actualBoundingBoxDescent || 12;
-  g.shadowColor = "rgba(0,0,0,.25)"; g.shadowBlur = 5; g.shadowOffsetY = 2;
-  g.fillText(emoji, 64, 62 + (asc - desc) / 2);
-  const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
-  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false }));
-  sp.scale.set(size, size, 1); sp.renderOrder = 20;
-  return sp;
+/** the story's emoji as a DOM label pinned to a point in the atlas: the same mechanism as the region labels, so it
+ *  renders the same on every phone (a canvas-drawn emoji came out half clipped on iOS Safari) */
+function emojiLabel(emoji: string, px: number) {
+  const el = document.createElement("div");
+  el.className = "story-emoji"; el.style.fontSize = `${px}px`;
+  el.innerHTML = `<span>${emoji}</span>`;
+  return new CSS2DObject(el);
 }
 const BEAD_RED = new THREE.MeshLambertMaterial({ color: 0xd8382e }), BEAD_ORANGE = new THREE.MeshLambertMaterial({ color: 0xe8642a }), BEAD_STEM = new THREE.MeshLambertMaterial({ color: 0x4f8a3a });
 const POD_GEO = new THREE.CapsuleGeometry(0.24, 0.62, 3, 8), STEM_GEO = new THREE.CylinderGeometry(0.07, 0.1, 0.26, 6), RING_GEO = new THREE.RingGeometry(1.2, 1.55, 32);
@@ -293,7 +286,7 @@ type RouteAnim = {
   group: THREE.Group;
   beads: { m: THREE.Object3D; base: THREE.Vector3; born: number }[];
   rings: THREE.Mesh[];
-  traveller: THREE.Sprite;
+  traveller: CSS2DObject;
   /** the traveller's path for this chapter (the last hop), and when it set off */
   path: THREE.Vector3[]; t0: number; dur: number;
 };
@@ -310,8 +303,13 @@ function framedAbovePanel(p: THREE.Vector3, dist: number) {
 
 /** the route across the atlas through every stop reached so far: chilli beads that pop in along the newest hop while the
  *  story's emoji hops from the last stop to the new one, then hovers there */
+function dropRoute() {
+  if (!routeLine) return;
+  routeLine.traverse((o) => (o as { element?: HTMLElement }).element?.remove());
+  mapScene.remove(routeLine); routeLine = null; route = null;
+}
 function drawRoute(upTo: number) {
-  if (routeLine) { mapScene.remove(routeLine); routeLine = null; route = null; }
+  dropRoute();
   const def = story!.def;
   const pts: THREE.Vector3[] = [];
   for (const ch of def.chapters.slice(0, upTo + 1)) {
@@ -349,10 +347,10 @@ function drawRoute(upTo: number) {
   pts.forEach((p, i) => {
     const ring = new THREE.Mesh(RING_GEO, new THREE.MeshBasicMaterial({ color: 0xd8382e, transparent: true, opacity: 0.7, side: THREE.DoubleSide }));
     ring.rotation.x = -Math.PI / 2; ring.position.copy(p).setY(p.y + 0.08); group.add(ring); rings.push(ring);   // on the island, where the beads are
-    if (i < pts.length - 1) { const pin = emojiSprite(def.emoji, PHONE() ? 1.7 : 2.6); pin.position.copy(p).setY(3.2); group.add(pin); }
+    if (i < pts.length - 1) { const pin = emojiLabel(def.emoji, PHONE() ? 18 : 26); pin.position.copy(p).setY(3.2); group.add(pin); }
   });
   // a phone sits much closer to the atlas, so the emoji stays modest
-  const traveller = emojiSprite(def.emoji, PHONE() ? 2.6 : 4.6);
+  const traveller = emojiLabel(def.emoji, PHONE() ? 30 : 44);
   traveller.position.copy(lastPath[0]).setY(lastPath[0].y + 2); group.add(traveller);
   routeLine = group; mapScene.add(group);
   route = { group, beads, rings, traveller, path: lastPath, t0: nowT, dur };
@@ -380,7 +378,8 @@ function routeTick(t: number) {
   // a hop while travelling, a gentle hover once arrived
   const lift = k < 1 ? 2 + Math.sin(k * Math.PI) * 3 : 2 + Math.sin(t * 1.7) * 0.5;
   route.traveller.position.copy(p).setY(p.y + lift);
-  route.traveller.material.rotation = k < 1 ? Math.sin(k * Math.PI * 2) * 0.35 : Math.sin(t * 1.3) * 0.12;
+  const tilt = k < 1 ? Math.sin(k * Math.PI * 2) * 20 : Math.sin(t * 1.3) * 7;
+  (route.traveller.element.firstElementChild as HTMLElement).style.transform = `rotate(${(-tilt).toFixed(1)}deg)`;
 }
 
 function renderStoryPanel() {
@@ -736,7 +735,7 @@ const dbg = () => ({ level, flying: Boolean(flight), diorama: Boolean(diorama), 
 };
 (dbg as unknown as { diorama: () => unknown }).diorama = () => diorama;
 // debug: where the story's traveller is, in the world and on screen
-(dbg as unknown as { route: () => unknown }).route = () => { if (!route) return null; const p = route.traveller.position.clone(); const v = p.clone().project(camera); return { pos: p.toArray(), screen: [(v.x + 1) / 2 * window.innerWidth, (1 - v.y) / 2 * window.innerHeight], scale: route.traveller.scale.x, visible: route.traveller.visible, beads: route.beads.length, cam: camera.position.toArray(), target: controls.target.toArray(), anim: route }; };
+(dbg as unknown as { route: () => unknown }).route = () => { if (!route) return null; const p = route.traveller.position.clone(); const v = p.clone().project(camera); return { pos: p.toArray(), screen: [(v.x + 1) / 2 * window.innerWidth, (1 - v.y) / 2 * window.innerHeight], px: route.traveller.element.style.fontSize, inDom: document.contains(route.traveller.element), beads: route.beads.length, cam: camera.position.toArray(), target: controls.target.toArray(), anim: route }; };
 (dbg as unknown as { audit: (seconds?: number) => unknown }).audit = (seconds = 30) => (diorama ? auditDiorama(diorama, seconds) : null);
 (dbg as unknown as { open: (id: string) => void }).open = (id: string) => { const p = diorama?.placed.find((x) => x.obj.id === id); if (p) openObject(p); };
 (dbg as unknown as { enter: (id: string) => void }).enter = (id: string) => { const r = MAP_REGIONS.find((x) => x.id === id); if (r) enterRegion(r); };

@@ -737,6 +737,8 @@ const dbg = () => ({ level, flying: Boolean(flight), diorama: Boolean(diorama), 
   document.body.appendChild(wrap);
 };
 (dbg as unknown as { diorama: () => unknown }).diorama = () => diorama;
+// debug: which recipes each object of the current world claims (title → area/place per recipe)
+(dbg as unknown as { matches: () => unknown }).matches = () => ({ objects: Object.fromEntries(OBJECTS_NOW().map((o) => [o.id, china.filter(o.match).map((r) => r.title)])), recipes: china.map((r) => ({ title: r.title, area: r.area, place: r.place, core: r.core, techniques: r.techniques })) });
 // debug: where the story's traveller is, in the world and on screen
 (dbg as unknown as { route: () => unknown }).route = () => { if (!route) return null; const p = route.traveller.position.clone(); const v = p.clone().project(camera); return { pos: p.toArray(), screen: [(v.x + 1) / 2 * window.innerWidth, (1 - v.y) / 2 * window.innerHeight], px: route.traveller.element.style.fontSize, inDom: document.contains(route.traveller.element), beads: route.beads.length, cam: camera.position.toArray(), target: controls.target.toArray(), anim: route }; };
 (dbg as unknown as { audit: (seconds?: number) => unknown }).audit = (seconds = 30) => (diorama ? auditDiorama(diorama, seconds) : null);

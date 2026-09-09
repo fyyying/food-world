@@ -116,6 +116,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .meta span { font-size: 12.5px; font-weight: 800; color: #5a4636; background: #fff; border: 2px solid #eadcc2; border-radius: 999px; padding: 4px 10px; box-shadow: 0 2px 0 #e3cfae; }
 .actions { display: grid; grid-template-columns: 1.2fr 1fr; gap: 10px; margin-top: 18px; }
 .actions .explore { margin: 0; }
+.explore.origin { display: flex; align-items: center; gap: 12px; text-align: left; margin-top: 14px; padding: 11px 14px; background: linear-gradient(#f7e2c8, #efd0a8); color: var(--ink); box-shadow: 0 4px 0 #c9a26f, 0 8px 16px rgba(120,80,20,.18); text-shadow: none; }
+.explore.origin .em { font-size: 24px; line-height: 1; }
+.explore.origin b { display: block; font-size: 14px; }
+.explore.origin small { display: block; font-weight: 600; font-size: 12px; color: var(--ink-2); margin-top: 2px; }
 
 /* ---------- full recipe ---------- */
 #recipe { position: absolute; inset: 0; z-index: 20; overflow-y: auto; -webkit-overflow-scrolling: touch; touch-action: pan-y; overscroll-behavior: contain; background: var(--paper); animation: rise .35s ease-out; }

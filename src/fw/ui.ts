@@ -3,6 +3,7 @@ import { fetchBody, minutesLabel, type RecipeBody } from "../data";
 import { imageUrl } from "../data";
 import { AREAS, SPICE, objectById, type Area, type EnrichedRecipe, type MapRegion, type WorldObject } from "./graph";
 import { snapshot } from "./snapshot";
+import { STORIES } from "./stories";
 
 export type UiHandlers = {
   onClose: () => void;
@@ -11,7 +12,11 @@ export type UiHandlers = {
   onCook: (r: EnrichedRecipe) => void;
   onExploreIngredients: (r: EnrichedRecipe) => void;
   onEnterRegion: (region: MapRegion) => void;
+  /** start a food-history story from its first chapter (the origin button on an object's card) */
+  onStartStory: (id: string) => void;
 };
+/** the stories that pass through this object: their origin button goes on its card */
+const storiesThrough = (o: WorldObject) => STORIES.filter((st) => st.chapters.some((ch) => "object" in ch.stop && ch.stop.object === o.id && ch.stop.world === o.world));
 
 const card = () => document.getElementById("card")!;
 /** painted props from public/scenes/props that stand in for an object's card badge (Yingying, 2026-09-08: "replace the SVG with these objects") */
@@ -102,10 +107,12 @@ export function mountUi(h: UiHandlers) {
       </div>
       <p class="tagline">${esc(o.tagline)}</p>
       ${o.blurb.split(/\n\n+/).map((para) => `<p class="blurb">${esc(para)}</p>`).join("")}
+      ${storiesThrough(o).map((st) => `<button class="explore origin" data-story="${st.id}"><span class="em">${st.emoji}</span><span><b>Where it came from</b><small>${esc(st.title)} · ${esc(st.chapters[0].era)}</small></span></button>`).join("")}
       ${o.flavour ? `<h4>Flavour</h4><div class="chips">${o.flavour.map((f) => `<span class="chip fl">${esc(f)}</span>`).join("")}</div>` : ""}
       ${o.partners ? `<h4>Often paired with</h4><div class="chips">${partnerObjs.map(({ p, obj }) => obj ? `<button class="chip link" data-object="${obj.id}">${obj.emoji} ${esc(p)}</button>` : `<span class="chip">${esc(p)}</span>`).join("")}</div>` : ""}
       ${recipes.length ? `<h4>Appears in ${recipes.length} ${recipes.length === 1 ? "dish" : "dishes"} you cook</h4>${dishRows(recipes)}` : ""}
 `;
+    el.querySelectorAll<HTMLButtonElement>("button[data-story]").forEach((b) => b.addEventListener("click", () => h.onStartStory(b.dataset.story!)));
     el.hidden = false;
     el.scrollTop = 0;
   }

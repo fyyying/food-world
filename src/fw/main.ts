@@ -123,6 +123,7 @@ const ui = mountUi({
   onOpenRecipe: (r) => openDish(r),
   onGoObject: (o) => afterScene(() => openObject(diorama!.placed.find((p) => p.obj.id === o.id)!)),
   onCook: (r) => { showRecipePage(r, () => {}); },
+  onStartStory: (id) => afterScene(() => startStory(id)),   // the origin button: back to where the chilli began, story and all
   onExploreIngredients: (r) => afterScene(() => {
     const ids = new Set(OBJECTS_NOW().filter((o) => (o.kind === "ingredient" || o.kind === "flavour") && !o.alias && o.match(r)).map((o) => o.id));
     diorama!.highlight(null, null);

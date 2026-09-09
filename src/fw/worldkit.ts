@@ -106,9 +106,12 @@ export function buildWorld(spec: WorldSpec): Diorama {
   const ground = new THREE.Mesh(new THREE.BoxGeometry(W, 1.0, D), mat(spec.ground));
   ground.position.set(CX, -0.5, 0); ground.receiveShadow = true; group.add(ground);
   // a tint is a soft-edged pool of colour on the ground: solid in the middle, fading to nothing at the rim, so regions blend instead of ending in a line
+  // overlapping tints are transparent planes at (almost) the same height, so they get a fixed draw order in the order
+  // they were laid down, plus a hair of height each; otherwise their order swaps with the camera angle and they flicker
+  let tints = 0;
   const tint = (x: number, z: number, rx: number, rz: number, color: string, rot = 0) => {
     const m = new THREE.Mesh(new THREE.CircleGeometry(1, 40), mat(color, { transparent: true, map: tintFade(), depthWrite: false }));
-    m.scale.set(rx, rz, 1); m.rotation.x = -Math.PI / 2; m.rotation.z = rot; m.position.set(x, TOP + 0.006, z); m.receiveShadow = true; m.renderOrder = 1; group.add(m);
+    m.scale.set(rx, rz, 1); m.rotation.x = -Math.PI / 2; m.rotation.z = rot; m.position.set(x, TOP + 0.006 + tints * 0.0005, z); m.receiveShadow = true; m.renderOrder = 1 + tints * 0.001; tints++; group.add(m);
   };
 
   // ---------- the world's own scenery ----------

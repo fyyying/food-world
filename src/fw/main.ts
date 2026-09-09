@@ -487,6 +487,9 @@ function leaveWorld() {
 
 // ---------- living scenes ----------
 // 3D world → approach the place → paper fade → living illustrated scene → back to exactly where you were.
+/** debug: with window.__fwInstant the scene fades skip their timers, so a hidden pane (throttled timers) can still step through them */
+const later = (fn: () => void, ms: number) => ((window as unknown as { __fwInstant?: boolean }).__fwInstant ? (fn(), 0) : window.setTimeout(fn, ms));
+
 function enterLivingScene(p: Placed, obj: WorldObject, recipes: EnrichedRecipe[]) {
   if (livingScene) return;
   clearTimeout(cardTimer); clearTimeout(revealTimer);
@@ -498,7 +501,7 @@ function enterLivingScene(p: Placed, obj: WorldObject, recipes: EnrichedRecipe[]
   // walk up to the door, then the paper closes over the world and the room opens behind it
   glideTo(p.anchor.clone().add(new THREE.Vector3(0, 1.2, 0)), 9, 1.6, () => {
     fade.classList.add("on");
-    window.setTimeout(() => {
+    later(() => {
       controls.enabled = false;
       // the dishes on the table, or, if no recipe sits here yet, what this kitchen cooks
       const dishes = recipes.length ? recipes : china.filter((r) => r.area === obj.area).slice(0, 5);
@@ -514,7 +517,7 @@ function enterLivingScene(p: Placed, obj: WorldObject, recipes: EnrichedRecipe[]
         onClose: leaveLivingScene,
       });
       livingScene.tick(clock.elapsedTime, 0);
-      window.setTimeout(() => fade.classList.remove("on"), 80);   // (timers, not rAF: a background tab must still settle)
+      later(() => fade.classList.remove("on"), 80);   // (timers, not rAF: a background tab must still settle)
     }, 620);
   });
 }
@@ -531,7 +534,7 @@ function dropScene() {
 function afterScene(fn: () => void) {
   if (!livingScene) { fn(); return; }
   leaveLivingScene();
-  window.setTimeout(fn, 720);
+  later(fn, 720);
 }
 
 function leaveLivingScene() {
@@ -539,10 +542,10 @@ function leaveLivingScene() {
   ui.hide();
   const fade = document.getElementById("fade")!;
   fade.classList.add("on");
-  window.setTimeout(() => {
+  later(() => {
     dropScene();
     frame();   // draw the restored view under the paper before it lifts
-    window.setTimeout(() => fade.classList.remove("on"), 60);
+    later(() => fade.classList.remove("on"), 60);
   }, 620);
 }
 

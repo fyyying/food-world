@@ -55,6 +55,8 @@ export type PaintedCfg = {
   leaves?: number;
   /** motes drifting in the light */
   motes?: number;
+  /** small petals or leaf flakes drifting down (osmanthus, lotus, willow, tea flowers): colour and petals per second */
+  petals?: { color: string; rate: number; size?: number };
   /** night sky: twinkling stars and sky lanterns rising */
   sky?: boolean;
   /** a slow river mist */
@@ -189,14 +191,15 @@ type Steam = { x: number; y: number; vx: number; vy: number; r: number; a: numbe
 type Leaf = { img: HTMLImageElement; x: number; y: number; vy: number; rot: number; vr: number; sway: number; age: number; life: number; s: number };
 type Lantern = { x: number; y: number; vy: number; sway: number; age: number; life: number; r: number };
 type Bubble = { x: number; y: number; r: number; age: number; life: number };
+type Petal = { x: number; y: number; vy: number; sway: number; rot: number; vr: number; s: number; age: number; life: number };
 
 function makeFx(cfg: PaintedCfg) {
-  const steam: Steam[] = [], leaves: Leaf[] = [], lanterns: Lantern[] = [], bubbles: Bubble[] = [];
+  const steam: Steam[] = [], leaves: Leaf[] = [], lanterns: Lantern[] = [], bubbles: Bubble[] = [], petals: Petal[] = [];
   const leafImgs = [2, 3, 5, 6, 7, 8].map((i) => { const im = new Image(); im.src = `${import.meta.env.BASE_URL}scenes/hotpot/leaf-${i}.png`; return im; });
   const motes = Array.from({ length: cfg.motes ?? 0 }, () => ({ x: rnd(0, STAGE_W), y: rnd(-20, 720), vy: rnd(4, 11), r: rnd(1, 2.4), a: rnd(0.25, 0.6), f: rnd(0.4, 1.1), ph: rnd(0, 6.28) }));
   const stars = cfg.sky ? Array.from({ length: 90 }, () => ({ x: rnd(0, STAGE_W), y: rnd(0, 300), r: rnd(0.6, 1.8), ph: rnd(0, 6.28), f: rnd(0.5, 2.2) })) : [];
   const accs = Array.from({ length: Math.max(cfg.steam?.length ?? 0, cfg.portrait?.steam?.length ?? 0) }, () => 0);
-  let leafAt = 1.5, lanternAt = 1, bacc = 0;
+  let leafAt = 1.5, lanternAt = 1, bacc = 0, pacc = 0;
   return (ctx: CanvasRenderingContext2D, t: number, dt: number, portrait: boolean) => {
     const emitters = (portrait && cfg.portrait?.steam) || cfg.steam || [];
     const pot = (portrait && cfg.portrait?.pot) || cfg.pot;
@@ -269,6 +272,19 @@ function makeFx(cfg: PaintedCfg) {
       const g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, r);
       g.addColorStop(0, `rgba(255,246,236,${a})`); g.addColorStop(0.5, `rgba(255,240,226,${a * 0.45})`); g.addColorStop(1, "rgba(255,244,232,0)");
       ctx.fillStyle = g; ctx.beginPath(); ctx.arc(s.x, s.y, r, 0, Math.PI * 2); ctx.fill();
+    }
+    if (cfg.petals) {
+      pacc += dt * cfg.petals.rate;
+      while (pacc > 1) { pacc -= 1; petals.push({ x: rnd(-40, STAGE_W + 40), y: rnd(-30, 20), vy: rnd(16, 30), sway: rnd(0, 6.28), rot: rnd(0, 6.28), vr: rnd(-2, 2), s: (cfg.petals.size ?? 6) * rnd(0.7, 1.3), age: 0, life: rnd(20, 30) }); }
+      for (let i = petals.length - 1; i >= 0; i--) {
+        const p = petals[i]; p.age += dt;
+        if (p.age > p.life || p.y > STAGE_H + 20) { petals.splice(i, 1); continue; }
+        const flutter = Math.sin(t * 1.4 + p.sway);
+        p.y += (p.vy + flutter * 6) * dt; p.x += (flutter * 28 + 6) * dt; p.rot += (p.vr + flutter) * dt;
+        const a = Math.min(1, p.age / 1.5) * Math.min(1, (p.life - p.age) / 3) * 0.85;
+        ctx.save(); ctx.globalAlpha = a; ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillStyle = cfg.petals.color;
+        ctx.beginPath(); ctx.ellipse(0, 0, p.s, p.s * 0.45 * (0.6 + 0.4 * Math.abs(Math.cos(t * 2 + p.sway))), 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+      }
     }
     for (const m of motes) {
       m.y -= m.vy * dt; m.x += Math.sin(t * m.f + m.ph) * 9 * dt;

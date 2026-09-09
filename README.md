@@ -46,6 +46,16 @@ builds a static bundle; `.github/workflows/pages.yml` publishes it on every push
   `scripts/scenes/cut-sheets.py` (all run with `uv run --with pillow --with numpy --with scipy`).
   `__fw.sceneShot(name)` screenshots an open scene.
 
+## Jiangnan
+
+The water-town corner of China got the Sichuan treatment on 2026-09-09: nine clickable places with their own
+reactions (`src/fw/props-jiangnan.ts`: bao shop, crab pen, lotus pond, wine cellar, tea hill, canal market,
+riverside restaurant, home kitchen, and the stone bridge as a click-only landmark), quiet food details
+(`jnDetail`), long cards in `graph.ts`, painted props for the cards, and nine painted rooms cut from
+`~/Downloads/additional game asset/jiangnan/` (`public/scenes/<room>/wide.jpg` + `portrait.jpg`) laid out in
+`scenes-china.ts`; `scene-painted.ts` gained `petals` (osmanthus, lotus, willow, tea flowers drifting down).
+`window.__fwInstant = true` makes scene fades skip their timers so a hidden browser pane can still step through them.
+
 ## The worlds
 
 China (Sichuan, Jiangnan, the north, the everyday table), Italy (Rome, Venice, Sicily), Korea (Seoul, Jeonju,

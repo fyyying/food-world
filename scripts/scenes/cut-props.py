@@ -8,9 +8,10 @@ from PIL import Image
 from scipy import ndimage
 
 src, out, manifest_path = sys.argv[1], sys.argv[2], sys.argv[3]
-ROOMS = {"home kitchen": "home_kitchen", "market detail": "market", "poet tower": "historical_tower", "tea house": "teahouse", "noodle shop": "noodle_shop", "hotpot": "hotpot"}
+ROOMS = {"home kitchen": "home_kitchen", "market detail": "market", "poet tower": "historical_tower", "tea house": "teahouse", "noodle shop": "noodle_shop", "hotpot": "hotpot",
+         "bao": "bao_shop", "bridge": "stone_bridge", "crab": "crab_pond", "jiangnan home": "jiangnan_home", "lotus garden": "lotus_garden", "rice wine": "rice_wine", "river market": "river_market", "riverside restaurant": "riverside_restaurant", "tea hill": "tea_hill"}
 # nicer library names for a few delivered files
-RENAME = {"biard": "swallow", "cat-2": "cat-sleeping", "curtain": "bamboo-blind", "curtain-2": "noren", "eat-noodle": "noodle-eater", "jasmin-flower": "jasmine", "noodle-spoon": "noodle-strainer", "cooking-noodle": "noodle-pot", "hotpot-smoke": "smoke-1"}
+RENAME = {"driver-shrimp": "river-shrimp", "gui-hua": "osmanthus", "tea-2": "tea-cup", "crab-prop": "hairy-crab", "lotus-fruit": "lotus-pod", "cooked-rice": "rice-bowl", "rice": "rice-sheaf", "biard": "swallow", "cat-2": "cat-sleeping", "curtain": "bamboo-blind", "curtain-2": "noren", "eat-noodle": "noodle-eater", "jasmin-flower": "jasmine", "noodle-spoon": "noodle-strainer", "cooking-noodle": "noodle-pot", "hotpot-smoke": "smoke-1"}
 MAX_SPRITE = 960   # px on the long side; plenty for a 1600-wide stage
 
 def key_white(a, lo=18, hi=110):

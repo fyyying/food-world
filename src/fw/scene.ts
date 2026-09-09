@@ -100,7 +100,7 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
   // stage → viewport mapping (xMidYMid slice)
   let W = 1, H = 1, S = 1, OX = 0, OY = 0, dpr = 1, isPortrait = false;
   function resize() {
-    W = el.clientWidth || window.innerWidth; H = el.clientHeight || window.innerHeight;
+    W = el.clientWidth || window.innerWidth || 1200; H = el.clientHeight || window.innerHeight || 675;   // a hidden pane reports 0×0: keep a sane stage for snapshots
     const portrait = W / H < 0.85;   // phones get the portrait painting where a room has one
     el.classList.toggle("portrait", portrait);
     el.querySelectorAll(".portrait-only").forEach((e) => e.setAttribute("visibility", portrait ? "visible" : "hidden"));

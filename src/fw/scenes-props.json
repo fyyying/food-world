@@ -59,6 +59,96 @@
     1024,
     1536
    ]
+  },
+  "bao_shop": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "stone_bridge": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "crab_pond": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    940,
+    1672
+   ]
+  },
+  "jiangnan_home": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "lotus_garden": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "rice_wine": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "river_market": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    940,
+    1672
+   ]
+  },
+  "riverside_restaurant": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "tea_hill": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
   }
  },
  "props": {
@@ -148,7 +238,7 @@
   ],
   "tofu": [
    960,
-   667
+   762
   ],
   "veggie-basket-2": [
    960,
@@ -285,6 +375,58 @@
   "stool": [
    805,
    960
+  ],
+  "bamboo": [
+   960,
+   951
+  ],
+  "rice-bowl": [
+   960,
+   780
+  ],
+  "hairy-crab": [
+   960,
+   853
+  ],
+  "river-shrimp": [
+   960,
+   927
+  ],
+  "greens": [
+   960,
+   875
+  ],
+  "osmanthus": [
+   960,
+   958
+  ],
+  "lotus-pod": [
+   830,
+   960
+  ],
+  "lotus-root": [
+   960,
+   837
+  ],
+  "mushrooms": [
+   960,
+   885
+  ],
+  "rice-sheaf": [
+   947,
+   960
+  ],
+  "river-fish": [
+   960,
+   839
+  ],
+  "tea-cup": [
+   960,
+   858
+  ],
+  "tea": [
+   960,
+   873
   ]
  }
 }

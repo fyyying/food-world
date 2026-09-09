@@ -160,6 +160,110 @@ const tower = (): SceneDef => {
   });
 };
 
+// ---------- Jiangnan: the water towns (stage x ≈ −8 + fx·1616, y ≈ −5 + fy·910 from the wide painting) ----------
+const wx = (fx: number) => Math.round(-8 + fx * 1616), wy = (fy: number) => Math.round(-5 + fy * 910);
+
+const baoShop = (): SceneDef => { const f = "bao_shop"; return paintedScene({
+  id: "bao_shop", folder: f, title: "Bao shop", zh: "包子铺", caption: "Steamers breathing on the corner since before dawn; the skins rolled, the pleats pinched, the soup inside.",
+  painting: true,
+  hang: [{ name: "lantern-2", prop: true, x: 1180, y: -10, w: 84, sway: 3, halo: 1.2 }],
+  steam: [{ x: wx(0.62), y: wy(0.6), w: 220, rate: 22, a: 0.42 }, { x: wx(0.86), y: wy(0.68), w: 130, rate: 10, a: 0.36 }, { x: wx(0.41), y: wy(0.22), w: 90, rate: 8, a: 0.3 }, { x: wx(0.3), y: wy(0.58), w: 60, rate: 4, a: 0.25 }],
+  lamps: [{ x: wx(0.47), y: wy(0.06), r: 55 }],
+  motes: 40,
+  portrait: { steam: [{ ...pAt(f, 0.72, 0.5), w: 150, rate: 16, a: 0.4 }, { ...pAt(f, 0.45, 0.62), w: 70, rate: 6, a: 0.3 }, { ...pAt(f, 0.15, 0.7), w: 60, rate: 5, a: 0.26 }], lamps: [] },
+  light: { x: wx(0.5), y: 260, color: "rgba(255,225,180,0.26)" },
+}); };
+
+const stoneBridge = (): SceneDef => { const f = "stone_bridge"; return paintedScene({
+  id: "stone_bridge", folder: f, title: "The stone bridge", zh: "石拱桥", caption: "Willows over the canal, boats under the arch, the whole water town visible at once.",
+  painting: true,
+  mist: { x: wx(0.3), y: wy(0.62), w: 1000, h: 130 },
+  walkers: [{ name: "swallow", w: 54, y: 150, from: 560, to: 1150, dur: 9, every: 30, fly: true }],
+  petals: { color: "rgba(180,215,120,0.9)", rate: 0.5, size: 5 },
+  motes: 25,
+  portrait: { walkers: [{ name: "swallow", w: 38, y: 200, from: pAt(f, 0.35, 0).x, to: pAt(f, 0.9, 0).x, dur: 8, every: 30, fly: true }], lamps: [] },
+  light: { x: wx(0.55), y: 200, color: "rgba(255,240,210,0.18)" },
+}); };
+
+const crabPond = (): SceneDef => { const f = "crab_pond"; return paintedScene({
+  id: "crab_pond", folder: f, title: "Crab feast under the osmanthus", zh: "蟹宴", caption: "Ninth month for the females, tenth for the males; warm wine, black vinegar and ginger, and all afternoon.",
+  painting: true,
+  steam: [{ x: wx(0.5), y: wy(0.6), w: 170, rate: 14, a: 0.36 }, { x: wx(0.34), y: wy(0.75), w: 60, rate: 4, a: 0.25 }],
+  lamps: [{ x: wx(0.53), y: wy(0.05), r: 40 }],
+  petals: { color: "rgba(244,197,66,0.95)", rate: 2.2, size: 4 },
+  motes: 50,
+  portrait: { steam: [{ ...pAt(f, 0.5, 0.63), w: 120, rate: 12, a: 0.36 }], lamps: [{ ...pAt(f, 0.85, 0.1), r: 45 }] },
+  light: { x: wx(0.5), y: 300, color: "rgba(255,215,150,0.26)" },
+}); };
+
+const jiangnanHome = (): SceneDef => { const f = "jiangnan_home"; return paintedScene({
+  id: "jiangnan_home", folder: f, title: "Jiangnan home kitchen", zh: "江南人家", caption: "A fish in the steamer, pork in the pot, greens on the board, and everyone in the kitchen at once.",
+  painting: true,
+  hang: [{ name: "bamboo-blind", prop: true, x: 560, y: -14, w: 300, sway: 1 }],
+  steam: [{ x: wx(0.36), y: wy(0.6), w: 150, rate: 14, a: 0.38 }, { x: wx(0.86), y: wy(0.5), w: 110, rate: 12, a: 0.36 }, { x: wx(0.84), y: wy(0.72), w: 90, rate: 8, a: 0.3 }, { x: wx(0.55), y: wy(0.63), w: 70, rate: 5, a: 0.26 }],
+  fire: [{ x: wx(0.9), y: wy(0.9), rx: 80, ry: 50 }],
+  motes: 45,
+  portrait: { steam: [{ ...pAt(f, 0.35, 0.5), w: 110, rate: 12, a: 0.36 }, { ...pAt(f, 0.55, 0.55), w: 80, rate: 8, a: 0.3 }, { ...pAt(f, 0.6, 0.72), w: 70, rate: 6, a: 0.28 }], fire: [{ ...pAt(f, 0.5, 0.9), rx: 60, ry: 40 }], lamps: [] },
+  light: { x: wx(0.5), y: 300, color: "rgba(255,225,180,0.24)" },
+}); };
+
+const lotusGarden = (): SceneDef => { const f = "lotus_garden"; return paintedScene({
+  id: "lotus_garden", folder: f, title: "Lotus garden", zh: "荷塘", caption: "Roots in the mud, seeds in the pod, tea in the pavilion, and the pond breathing mist in the morning.",
+  painting: true,
+  mist: { x: wx(0.35), y: wy(0.5), w: 900, h: 110 },
+  lamps: [{ x: wx(0.65), y: wy(0.24), r: 50 }],
+  petals: { color: "rgba(244,166,184,0.9)", rate: 1.2, size: 6 },
+  walkers: [{ name: "swallow", w: 50, y: 120, from: 300, to: 780, dur: 9, every: 34, fly: true }],
+  motes: 35,
+  portrait: { lamps: [{ ...pAt(f, 0.92, 0.17), r: 40 }], walkers: [{ name: "swallow", w: 36, y: 140, from: pAt(f, 0.2, 0).x, to: pAt(f, 0.75, 0).x, dur: 8, every: 34, fly: true }] },
+  light: { x: wx(0.5), y: 250, color: "rgba(255,240,215,0.2)" },
+}); };
+
+const riceWine = (): SceneDef => { const f = "rice_wine"; return paintedScene({
+  id: "rice_wine", folder: f, title: "Rice wine cellar", zh: "酒坊", caption: "Steamed rice cooling in the baskets, urns under red cloth, and the master pouring the amber out.",
+  painting: true,
+  hang: [{ name: "lantern", prop: true, x: 1110, y: -10, w: 100, sway: 3, halo: 1.2 }],
+  steam: [{ x: wx(0.13), y: wy(0.36), w: 170, rate: 18, a: 0.4 }, { x: wx(0.3), y: wy(0.47), w: 80, rate: 6, a: 0.28 }],
+  lamps: [{ x: wx(0.28), y: wy(0.06), r: 60 }],
+  motes: 45,
+  portrait: { steam: [{ ...pAt(f, 0.1, 0.42), w: 120, rate: 14, a: 0.38 }, { ...pAt(f, 0.22, 0.62), w: 70, rate: 6, a: 0.28 }], lamps: [] },
+  light: { x: wx(0.45), y: 300, color: "rgba(255,215,160,0.26)" },
+}); };
+
+const riverMarket = (): SceneDef => { const f = "river_market"; return paintedScene({
+  id: "river_market", folder: f, title: "Canal market", zh: "水乡集市", caption: "Fish still flapping, shrimp still jumping, greens and lotus root off the boat and onto the steps.",
+  painting: true,
+  mist: { x: wx(0.55), y: wy(0.42), w: 700, h: 80 },
+  walkers: [{ name: "swallow", w: 46, y: 110, from: 800, to: 1180, dur: 8, every: 32, fly: true }],
+  petals: { color: "rgba(190,220,130,0.8)", rate: 0.4, size: 5 },
+  motes: 35,
+  portrait: { walkers: [{ name: "swallow", w: 34, y: 120, from: pAt(f, 0.3, 0).x, to: pAt(f, 0.85, 0).x, dur: 8, every: 32, fly: true }], lamps: [] },
+  light: { x: wx(0.4), y: 220, color: "rgba(255,240,210,0.2)" },
+}); };
+
+const riversideRestaurant = (): SceneDef => { const f = "riverside_restaurant"; return paintedScene({
+  id: "riverside_restaurant", folder: f, title: "Riverside restaurant", zh: "河边饭馆", caption: "Vinegar fish, Dongpo pork, a soup and the greens, on a terrace over the boats.",
+  painting: true,
+  hang: [{ name: "lantern", prop: true, x: 1240, y: -10, w: 96, sway: 3, halo: 1.2 }],
+  steam: [{ x: wx(0.62), y: wy(0.7), w: 130, rate: 12, a: 0.36 }, { x: wx(0.42), y: wy(0.78), w: 90, rate: 6, a: 0.28 }, { x: wx(0.32), y: wy(0.62), w: 60, rate: 4, a: 0.24 }],
+  mist: { x: wx(0.55), y: wy(0.47), w: 650, h: 70 },
+  lamps: [{ x: wx(0.1), y: wy(0.03), r: 60 }],
+  motes: 40,
+  portrait: { steam: [{ ...pAt(f, 0.42, 0.66), w: 110, rate: 12, a: 0.36 }, { ...pAt(f, 0.6, 0.75), w: 70, rate: 6, a: 0.28 }], lamps: [{ ...pAt(f, 0.28, 0.06), r: 50 }] },
+  light: { x: wx(0.45), y: 300, color: "rgba(255,225,180,0.24)" },
+}); };
+
+const teaHill = (): SceneDef => { const f = "tea_hill"; return paintedScene({
+  id: "tea_hill", folder: f, title: "Tea hill", zh: "茶山", caption: "Dragon Well before Qingming: a bud and a leaf, fired by hand the same afternoon, poured in a glass.",
+  painting: true,
+  mist: { x: wx(0.3), y: wy(0.3), w: 900, h: 110 },
+  steam: [{ x: wx(0.42), y: wy(0.84), w: 40, rate: 3, a: 0.22 }, { x: wx(0.5), y: wy(0.8), w: 30, rate: 3, a: 0.22 }],
+  petals: { color: "rgba(255,250,235,0.95)", rate: 0.9, size: 5 },
+  motes: 30,
+  portrait: { steam: [{ ...pAt(f, 0.35, 0.82), w: 30, rate: 3, a: 0.22 }], lamps: [] },
+  light: { x: wx(0.5), y: 220, color: "rgba(255,245,220,0.18)" },
+}); };
+
 /** scene id (WorldObject.scene) → builder */
 export const SCENES: Record<string, () => SceneDef> = {
   hotpot,
@@ -168,4 +272,5 @@ export const SCENES: Record<string, () => SceneDef> = {
   market,
   home_kitchen: homeKitchen,
   tower,
+  bao_shop: baoShop, stone_bridge: stoneBridge, crab_pond: crabPond, jiangnan_home: jiangnanHome, lotus_garden: lotusGarden, rice_wine: riceWine, river_market: riverMarket, riverside_restaurant: riversideRestaurant, tea_hill: teaHill,
 };

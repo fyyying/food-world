@@ -16,14 +16,14 @@ export function bubble(g: THREE.Object3D, text: string, y: number, ms = 1500) {
   setTimeout(() => { el.classList.add("out"); setTimeout(() => g.remove(o), 300); }, ms);
 }
 /** Reaction clock: poke() sets it to 1, tick() decays it; animations read it as intensity. */
-function reaction(rate = 1.1) {
+export function reaction(rate = 1.1) {
   let k = 0;
   return { poke: () => { k = 1; }, step: (dt: number) => { k = Math.max(0, k - dt * rate); return k; }, get k() { return k; } };
 }
 
 export const mat = (color: string, extra: Partial<THREE.MeshStandardMaterialParameters> = {}) =>
   new THREE.MeshStandardMaterial({ color, flatShading: true, roughness: 0.9, metalness: 0, ...extra });
-const smooth = (color: string, extra: Partial<THREE.MeshStandardMaterialParameters> = {}) =>
+export const smooth = (color: string, extra: Partial<THREE.MeshStandardMaterialParameters> = {}) =>
   new THREE.MeshStandardMaterial({ color, roughness: 0.85, metalness: 0, ...extra });
 
 export const C = {
@@ -35,21 +35,21 @@ export const C = {
 };
 
 export type P = THREE.Group & { userData: { tick?: (t: number, dt: number) => void; poke?: () => void; steam?: THREE.Vector3; smoke?: THREE.Vector3 } };
-const group = (): P => new THREE.Group() as P;
+export const group = (): P => new THREE.Group() as P;
 export function add<T extends THREE.Object3D>(g: THREE.Object3D, o: T, x = 0, y = 0, z = 0): T {
   o.position.set(x, y, z);
   o.traverse((m) => { if ((m as THREE.Mesh).isMesh) { m.castShadow = true; m.receiveShadow = true; } });
   g.add(o);
   return o;
 }
-const box = (w: number, h: number, d: number, color: string) => new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat(color));
-const cyl = (rt: number, rb: number, h: number, color: string, seg = 10) => new THREE.Mesh(new THREE.CylinderGeometry(rt, rb, h, seg), mat(color));
-const cone = (r: number, h: number, color: string, seg = 8) => new THREE.Mesh(new THREE.ConeGeometry(r, h, seg), mat(color));
-const ball = (r: number, color: string, seg = 8) => new THREE.Mesh(new THREE.SphereGeometry(r, seg, Math.max(4, seg - 2)), mat(color));
+export const box = (w: number, h: number, d: number, color: string) => new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat(color));
+export const cyl = (rt: number, rb: number, h: number, color: string, seg = 10) => new THREE.Mesh(new THREE.CylinderGeometry(rt, rb, h, seg), mat(color));
+export const cone = (r: number, h: number, color: string, seg = 8) => new THREE.Mesh(new THREE.ConeGeometry(r, h, seg), mat(color));
+export const ball = (r: number, color: string, seg = 8) => new THREE.Mesh(new THREE.SphereGeometry(r, seg, Math.max(4, seg - 2)), mat(color));
 
 let seed = 7;
 export const rnd = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
-const pick = <T,>(arr: T[]) => arr[Math.floor(rnd() * arr.length)];
+export const pick = <T,>(arr: T[]) => arr[Math.floor(rnd() * arr.length)];
 
 // ---------- textures (tiny canvases, repeated) ----------
 
@@ -205,7 +205,7 @@ export function house(style: "sichuan" | "jiangnan" | "northern", w = 3, d = 2.4
   return g;
 }
 
-const tickChildren = (g: THREE.Object3D) => (t: number, dt: number) => g.traverse((c) => { if (c !== g && (c as P).userData.tick && !(c as P).userData.__ticked) (c as P).userData.tick!(t, dt); });
+export const tickChildren = (g: THREE.Object3D) => (t: number, dt: number) => g.traverse((c) => { if (c !== g && (c as P).userData.tick && !(c as P).userData.__ticked) (c as P).userData.tick!(t, dt); });
 
 /** A temple: stone platform, red columns, double-eave glazed roof, incense burner and stone lions. */
 export function temple(): P {

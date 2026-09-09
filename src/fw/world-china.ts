@@ -4,12 +4,13 @@ import { CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
 import { OBJECTS, type EnrichedRecipe } from "./graph";
 import { PROPS, mat, mountain, house, tree, terrace, bridge, woodenBridge, boat, signpost, chicken, butterfly, temple, pagoda, gate, lanternString, dragon, person, fence, pond, cow, goat, path, add, birds, crane, coop, panda, fish, C, type P, foodDetail } from "./props";
 import { buildWorld, addWater, type Diorama, type LayoutCtx } from "./worldkit";
+import { JN_PROPS, jnDetail } from "./props-jiangnan";
 
 void CSS2DObject; void signpost;
 
 export function buildChina(recipes: EnrichedRecipe[]): Diorama {
   return buildWorld({
-    id: "china", W: 76, D: 56, ground: "#8cb86b", plinth: "#6e4a2c", recipes, objects: OBJECTS, props: PROPS,
+    id: "china", W: 76, D: 56, ground: "#8cb86b", plinth: "#6e4a2c", recipes, objects: OBJECTS, props: { ...PROPS, ...JN_PROPS },
     small: /^(cow|pig|chicken|pepperTree|jars)$/, fallbackPlace: "wok",
     layout: layoutChina,
   });
@@ -65,7 +66,7 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
     // style, x, z, rot, w, d, h, storeys
     ["sichuan", -20, -12, 0.25, 3.2, 2.6, 1.9, 2], ["sichuan", -24, -11, -0.2, 2.8, 2.4, 1.7, 1], ["sichuan", -12, -10.5, 0.15, 3.6, 2.6, 1.9, 1],
     ["sichuan", -16, -1.5, 0.5, 2.6, 2.2, 1.6, 1], ["sichuan", -12, 3.8, -0.3, 3.2, 2.6, 1.9, 2],
-    ["jiangnan", 15, 11, -0.4, 3.2, 2.6, 2.1, 2], ["jiangnan", 20, 12.5, 0.2, 2.8, 2.4, 1.9, 1], ["jiangnan", 27, 11, -0.3, 3.4, 2.6, 2.2, 2],
+    ["jiangnan", 15, 11, -0.4, 3.2, 2.6, 2.1, 2], ["jiangnan", 20, 12.5, 0.2, 2.8, 2.4, 1.9, 1],
     ["jiangnan", 30, -3, 0.5, 3.0, 2.4, 2.0, 1], ["jiangnan", 19, -5, -0.2, 3.2, 2.6, 2.0, 2], ["jiangnan", 33, 1.2, 0.9, 2.6, 2.2, 1.8, 1],
     ["northern", 22, -19, 0.05, 3.8, 2.8, 1.7, 1], ["northern", 27, -16, -0.1, 2.8, 2.4, 1.6, 1], ["northern", 18, -15, 0.2, 3.0, 2.4, 1.6, 1],
   ];
@@ -95,8 +96,8 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   const southEnd = new THREE.Vector3(bx, 0, bz).addScaledVector(across, across.z < 0 ? -5.2 : 5.2);
   const theBoat = boat(); place(theBoat, 12, 7, 0.4);
   const boat2 = boat(); place(boat2, -30, 8, 0.2);
-  for (let i = 0; i < 6; i++) place(tree("willow", 1.0), 13 + i * 4, 10.5 - (i % 2) * 1.2, i);
-  for (let i = 0; i < 4; i++) place(tree("blossom", 0.9), 26 + i * 2.5, -8 + (i % 2) * 2, i);
+  for (const [x, z] of [[13, 10.5], [17, 9.3], [21, 10.5], [25, 9.3], [34, 8.2], [37, 6.8]] as [number, number][]) place(tree("willow", 1.0), x, z, x);
+  for (const [x, z] of [[25, -9], [27.5, -6.5], [29.5, -9.5], [30.5, -5.5]] as [number, number][]) place(tree("blossom", 0.9), x, z, x);
   for (let i = 0; i < 6; i++) place(tree("bamboo", 0.85), -31.5 + i * 1.4, 4.8 + (i % 2) * 0.7, i);
   // panda grove: a bamboo thicket on the south bank below the farms, where the camera can actually see it
   for (let i = 0; i < 18; i++) { const a = (i / 18) * Math.PI * 2, d = 2.4 + (i % 3) * 1.0; place(tree("bamboo", 1.1 + (i % 2) * 0.35), -13 + Math.cos(a) * d, 22.5 + Math.sin(a) * d * 0.75, i); }
@@ -104,8 +105,10 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   place(panda(), -15.2, 23.8, 2.2).scale.setScalar(0.7);
   for (let i = 0; i < 4; i++) place(tree("pine", 1.1), -30 + i * 1.5, -17 - (i % 2) * 1.5, i);
   for (let i = 0; i < 5; i++) place(tree("persimmon", 1.0), 5 + i * 2.6, 17 + (i % 2) * 2, i);
-  for (let i = 0; i < 4; i++) place(tree("round", 1.0), 29 + i * 1.8, 18 - (i % 2) * 2, i);
-  for (let i = 0; i < 3; i++) place(tree("ginkgo", 0.9), 14 + i * 3, 19, i);
+  place(tree("round", 1.0), 30.5, 15.5, 1); place(tree("round", 0.9), 37, 14.5, 2);
+  for (let i = 0; i < 3; i++) place(tree("ginkgo", 0.9), 14 + i * 3, 22 + (i % 2) * 0.6, i);
+  // Jiangnan's quiet details: lotus roots and pods, crab pots, wine jars, tea drying, fish on the rack, spring bamboo shoots
+  for (const [kind, x, z, rot] of [["lotusBasket", 27.5, 25, 0.3], ["crabPots", 32.8, 14.2, 0.2], ["wineJars", 12.4, -1.0, 0.1], ["teaBaskets", 31.8, -4.2, 0], ["fishRack", 9.5, 4.2, 0.3], ["bambooShoots", 22.5, 20.5, 0.2], ["wineJars", 26.6, 1.6, -0.4], ["lotusBasket", 24.6, 20.6, 0.5]] as [Parameters<typeof jnDetail>[0], number, number, number][]) place(jnDetail(kind), x, z, rot);
 
   // ---------- farms ----------
   place(terrace(4, 4.2, true), -30, 23.5, 0.3);

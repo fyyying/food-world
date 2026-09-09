@@ -56,6 +56,18 @@ riverside restaurant, home kitchen, and the stone bridge as a click-only landmar
 `scenes-china.ts`; `scene-painted.ts` gained `petals` (osmanthus, lotus, willow, tea flowers drifting down).
 `window.__fwInstant = true` makes scene fades skip their timers so a hidden browser pane can still step through them.
 
+## Northern China and Xinjiang
+
+The China table grew to 112×72 on 2026-09-09 to hold a wheat belt along the north and an oasis strip in the far
+west beyond the mountains. `src/fw/props-north.ts` builds the dumpling house, noodle workshop, mantou kitchen,
+vinegar workshop, roast-duck shop, skewer courtyard, bing stall, wheat harvest, hutong lane and northern market
+(plus `northDetail` for coal stacks, pickle crocks, persimmon strings, corn cribs and the stone mill);
+`src/fw/props-xinjiang.ts` builds the kebab grill, nan bakery, polo kitchen, laghman shop, oasis bazaar, grape
+courtyard, oasis field with its sluice, chaikhana and caravan stop, plus `oasisHouse`, `poplar` and `dune`. The
+Tianshan peaks carry snow cones, a channel of snowmelt runs down the west edge, and the objects live in `graph.ts`
+under the `northern` and new `xinjiang` areas. Painted rooms for these places arrive later; until then their cards
+open directly.
+
 ## The worlds
 
 China (Sichuan, Jiangnan, the north, the everyday table), Italy (Rome, Venice, Sicily), Korea (Seoul, Jeonju,

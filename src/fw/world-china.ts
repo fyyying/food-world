@@ -5,12 +5,14 @@ import { OBJECTS, type EnrichedRecipe } from "./graph";
 import { PROPS, mat, mountain, house, tree, terrace, bridge, woodenBridge, boat, signpost, chicken, butterfly, temple, pagoda, gate, lanternString, dragon, person, fence, pond, cow, goat, path, add, birds, crane, coop, panda, fish, C, type P, foodDetail } from "./props";
 import { buildWorld, addWater, type Diorama, type LayoutCtx } from "./worldkit";
 import { JN_PROPS, jnDetail } from "./props-jiangnan";
+import { NORTH_PROPS, northDetail } from "./props-north";
+import { XJ_PROPS, poplar, dune } from "./props-xinjiang";
 
 void CSS2DObject; void signpost;
 
 export function buildChina(recipes: EnrichedRecipe[]): Diorama {
   return buildWorld({
-    id: "china", W: 76, D: 56, ground: "#8cb86b", plinth: "#6e4a2c", recipes, objects: OBJECTS, props: { ...PROPS, ...JN_PROPS },
+    id: "china", W: 112, D: 72, ground: "#8cb86b", plinth: "#6e4a2c", recipes, objects: OBJECTS, props: { ...PROPS, ...JN_PROPS, ...NORTH_PROPS, ...XJ_PROPS },
     small: /^(cow|pig|chicken|pepperTree|jars)$/, fallbackPlace: "wok",
     layout: layoutChina,
   });
@@ -21,6 +23,9 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   tint(20, 8, 16, 12, "#9cc484", -0.3);
   tint(2, -16, 18, 8, "#c2bd7a");
   tint(-27, 16, 6, 5, "#7aab5c");
+  tint(12, -28, 64, 12, "#c9bd7e", 0.35);      // the wheat belt: dry gold along the north
+  tint(-47, -8, 18, 48, "#dcc890", 0.5);       // the oasis strip: sand beyond the western mountains
+  tint(-48, 0, 8, 6, "#8fb86a", 0.2);
 
   // ---------- river & paths ----------
   const curve = new THREE.CatmullRomCurve3([
@@ -41,10 +46,23 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   // ---------- mountains: a western wall and a northern backdrop ----------
   const peaks: [number, number, number, number, boolean][] = [
     [-35, -22, 5.5, 12, false], [-33, -9, 4.5, 9, true], [-37.5, 17, 3.6, 10, false], [-35, 26.5, 3.2, 6, true],
-    [-27, -25, 4, 9, true], [-18, -26, 3.4, 7, false], [-8, -27, 4, 9, true], [2, -27, 3.2, 6, false], [12, -27, 3.8, 8, true], [22, -26, 3, 6, false],
-    [31, -23, 3.6, 7, true], [36, -14, 3.2, 6, false],
+    [-27, -35, 4, 9, true], [-16, -35, 3.4, 7, false], [-6, -36, 4, 9, true], [4, -36, 3.2, 6, false], [14, -36, 3.8, 8, true], [24, -35, 3, 6, false],
+    [34, -35, 3.6, 7, true], [46, -34, 3.4, 7, false], [54, -24, 3.2, 6, true], [54, -8, 3.0, 6, false],
   ];
   peaks.forEach(([x, z, r, h, dark], i) => { const m = place(mountain(r * (0.9 + (i % 3) * 0.1), h * (0.85 + ((i * 7) % 5) * 0.08), dark), x, z, i * 1.7); m.scale.x *= 1 + (i % 2) * 0.25; });
+  // the Tianshan behind the oasis strip: higher, and white above the tree line
+  for (const [x, z, r, h] of [[-53, -33, 5, 13], [-44, -36, 4.6, 12], [-35, -34, 4, 10], [-55, -20, 3.6, 9]] as [number, number, number, number][]) {
+    place(mountain(r, h, false), x, z, x);
+    add(group, new THREE.Mesh(new THREE.ConeGeometry(r * 0.34, h * 0.32, 10), mat("#f4f1ea")), x, h * 0.86, z);
+  }
+  // the desert edge: dunes at the south end of the strip and along the west
+  for (const [x, z, r, h] of [[-52, 15, 4, 1.0], [-45, 17, 3, 0.7], [-54, 26, 4.5, 1.1], [-47, 24, 3.4, 0.8], [-40, 30, 3, 0.6]] as [number, number, number, number][]) place(dune(r, h), x, z, x);
+  // the oasis road and its channel: snowmelt running south from the mountains, poplars along it
+  group.add(path([[-47, -30], [-47.5, -18], [-47, -4], [-47.5, 8], [-46, 14]], 1.6, "#d3bd8a"));
+  const channel = new THREE.CatmullRomCurve3([new THREE.Vector3(-55, TOP + 0.03, -26), new THREE.Vector3(-55.2, TOP + 0.03, -12), new THREE.Vector3(-54.6, TOP + 0.03, 0), new THREE.Vector3(-55, TOP + 0.03, 12)]);
+  addWater({ group, tickers, place, tint, TOP }, channel, 1.1);
+  for (let i = 0; i < 9; i++) place(poplar(0.9 + (i % 3) * 0.15), -53.6 + (i % 2) * 0.4, -25 + i * 4.4, i);
+  for (let i = 0; i < 4; i++) place(poplar(0.8), -40.6, -26 + i * 6, i);
   // pagoda on a hill in the north-west, temple with plaza north-centre, gate at the head of the street
   const hill = add(group, new THREE.Mesh(new THREE.CylinderGeometry(4.5, 6, 2.2, 12), mat("#7aab5c")), -24, 1.1, -19);
   void hill;
@@ -53,7 +71,7 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   add(group, new THREE.Mesh(new THREE.CircleGeometry(7, 20), mat("#c9c0a8")), 3, TOP + 0.02, -17).rotation.x = -Math.PI / 2;
   place(temple(), 3, -20);
   place(gate(), 3, -12.5);
-  for (const x of [-4, 10]) place(tree("blossom", 1.2), x, -21, x);
+  for (const x of [-4, 16]) place(tree("blossom", 1.2), x, -21.5, x);
   for (const x of [-6, 12]) place(tree("ginkgo", 1.1), x, -15, x);
   // birds over the mountains, cranes in the paddies, and a dragon dance in the square
   place(birds(7, 14, 15), -22, -14);
@@ -107,6 +125,9 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   for (let i = 0; i < 5; i++) place(tree("persimmon", 1.0), 5 + i * 2.6, 17 + (i % 2) * 2, i);
   place(tree("round", 1.0), 30.5, 15.5, 1); place(tree("round", 0.9), 37, 14.5, 2);
   for (let i = 0; i < 3; i++) place(tree("ginkgo", 0.9), 14 + i * 3, 22 + (i % 2) * 0.6, i);
+  // the north's quiet details: coal for the winter, pickle crocks, persimmons drying, a corn crib, the stone mill, flour sacks
+  for (const [kind, x, z, rot] of [["coalStack", 16.2, -11.6, 0.2], ["pickleCrocks", 29.4, -12.4, 0.1], ["persimmonString", 20.4, -12.2, 0], ["cornCrib", 17.2, -19.4, 0.3], ["stoneMill", 24.5, -24.5, 0], ["flourSacks", 33.5, -30.5, 0.4], ["pickleCrocks", 13.2, -30.6, -0.3], ["coalStack", 1.5, -30.5, 0.5]] as [Parameters<typeof northDetail>[0], number, number, number][]) place(northDetail(kind), x, z, rot);
+  for (let i = 0; i < 5; i++) place(tree("round", 0.8 + (i % 2) * 0.2), -3 + i * 5.5, -32.5 + (i % 2) * 1.2, i);
   // Jiangnan's quiet details: lotus roots and pods, crab pots, wine jars, tea drying, fish on the rack, spring bamboo shoots
   for (const [kind, x, z, rot] of [["lotusBasket", 27.5, 25, 0.3], ["crabPots", 32.8, 14.2, 0.2], ["wineJars", 12.4, -1.0, 0.1], ["teaBaskets", 31.8, -4.2, 0], ["fishRack", 9.5, 4.2, 0.3], ["bambooShoots", 22.5, 20.5, 0.2], ["wineJars", 26.6, 1.6, -0.4], ["lotusBasket", 24.6, 20.6, 0.5]] as [Parameters<typeof jnDetail>[0], number, number, number][]) place(jnDetail(kind), x, z, rot);
 

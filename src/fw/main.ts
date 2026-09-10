@@ -759,6 +759,7 @@ const dbg = () => ({ level, flying: Boolean(flight), diorama: Boolean(diorama), 
   const r = await fetch(`/api/debug/shot?name=${encodeURIComponent(name)}`, { method: "POST", body: c.toDataURL("image/jpeg", 0.85) });
   return (await r.json()).file;
 };
+(dbg as unknown as { closeScene: () => void }).closeScene = () => dropScene();
 (dbg as unknown as { cam: () => number[] }).cam = () => [...camera.position.toArray(), ...controls.target.toArray()];
 (window as unknown as { __fw: typeof dbg }).__fw = dbg;
 boot();

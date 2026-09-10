@@ -311,4 +311,60 @@ export function dune(r = 3, h = 0.8): P {
   return g;
 }
 
-export const XJ_PROPS: Record<string, () => P> = { kebabGrill, naanBakery, poloKitchen, laghmanShop, oasisBazaar, grapeCourtyard, oasisField, chaikhana, caravanStop };
+/** 家常厨房: a Uyghur home kitchen: a woman rolling dough on a board on the porch, a kazan on a clay hearth, onions, tomatoes and a teapot. */
+export function xjHomeKitchen(): P {
+  const g = group();
+  add(g, oasisHouse(4.2, 3.0, 2.2, true), 0, 0, -1.2);
+  add(g, box(2.0, 0.7, 1.0, WOOD), -1.0, 0.35, 1.2); add(g, box(1.9, 0.04, 0.9, CREAM), -1.0, 0.72, 1.2);   // the board table
+  for (let i = 0; i < 3; i++) add(g, ball(0.11, "#f0e2c4", 7), -1.6 + i * 0.3, 0.82, 1.0).scale.y = 0.75;   // dough balls
+  add(g, cyl(0.03, 0.03, 0.5, "#c9a86a", 6), -0.7, 0.76, 1.35).rotation.z = Math.PI / 2;                    // the rolling pin
+  add(g, cyl(0.22, 0.22, 0.02, "#f0e2c4", 14), -0.4, 0.75, 1.1);                                              // a rolled round
+  add(g, box(1.1, 0.9, 1.1, TERRA), 1.4, 0.45, 1.0); const kazan = add(g, ball(0.5, "#3a3a3f", 12), 1.4, 0.95, 1.0); kazan.scale.y = 0.55;
+  const fire = add(g, cone(0.14, 0.3, "#ff7a3c", 6), 1.4, 0.2, 1.62);
+  for (let i = 0; i < 4; i++) add(g, ball(0.09, i % 2 ? "#d94f3a" : "#e6d2f0", 6), 0.3 + (i % 2) * 0.22, 0.09, 1.9 + Math.floor(i / 2) * 0.22);   // tomatoes and onions in a heap
+  add(g, cyl(0.12, 0.09, 0.2, TURQ, 10), -1.7, 0.82, 1.5); add(g, cyl(0.02, 0.02, 0.2, TURQ, 5), -1.55, 0.95, 1.5).rotation.z = -0.8;   // teapot
+  const cook = add(g, person("#c0392b", { apron: true }), -1.0, 0, 2.0) as Fig; cook.rotation.y = Math.PI;
+  const child = add(g, person("#e0a52c"), 0.4, 0, 2.3) as Fig; child.scale.setScalar(0.7); child.rotation.y = 2.6;
+  g.userData.steam = new THREE.Vector3(1.4, 1.25, 1.0);
+  const re = reaction(0.5);
+  g.userData.poke = () => { re.poke(); bubble(cook, "Dough first, then everything else 先揉面", 1.9, 1700); };
+  g.userData.tick = (t, dt) => {
+    const k = re.step(dt);
+    fire.scale.setScalar(0.85 + Math.sin(t * 9) * 0.15 + k * 0.4);
+    const a = arms(cook); if (a) { a.left.rotation.x = -1.0 + Math.sin(t * 2.2) * 0.25 * (1 + k); a.right.rotation.x = -1.0 - Math.sin(t * 2.2) * 0.25 * (1 + k); }
+    const u = upper(cook); if (u) u.rotation.x = 0.25 + Math.sin(t * 2.2) * 0.05;
+    const uc = upper(child); if (uc) uc.rotation.z = Math.sin(t * 1.5) * 0.08 + k * Math.sin(t * 6) * 0.2;
+    tickChildren(g)(t, dt);
+  };
+  return g;
+}
+
+/** 晚宴: the evening feast, a dastikhan: a long low table on carpets under a vine trellis, nan, polo, skewers and fruit, the whole family, two lanterns. */
+export function eveningFeast(): P {
+  const g = group();
+  add(g, box(7.0, 0.06, 4.6, "#b8462a"), 0, 0.03, 0); add(g, box(6.2, 0.02, 3.8, "#2f5f9a"), 0, 0.07, 0); add(g, box(5.4, 0.02, 3.0, CREAM), 0, 0.09, 0);   // the carpets
+  trellis(g, 0, 0, 6.6, 4.4, 2.5);
+  add(g, box(4.4, 0.4, 1.2, WOOD), 0, 0.3, 0); add(g, box(4.3, 0.03, 1.1, "#e9dcb8"), 0, 0.52, 0);   // the low table and its cloth
+  for (let i = 0; i < 4; i++) add(g, cyl(0.2, 0.2, 0.04, BREAD, 14), -1.6 + i * 1.05, 0.56, -0.3);     // nan
+  add(g, cyl(0.34, 0.28, 0.1, TURQ, 12), 0.2, 0.58, 0.25); for (let i = 0; i < 5; i++) add(g, ball(0.07, i % 2 ? "#e8a53f" : "#d9a05a", 5), 0.2 + (rnd() - 0.5) * 0.4, 0.66, 0.25 + (rnd() - 0.5) * 0.3);   // the polo dish
+  for (let i = 0; i < 5; i++) { const sk = add(g, cyl(0.012, 0.012, 0.7, "#6a5a4a", 3), -1.4 + i * 0.12, 0.6, 0.3); sk.rotation.z = Math.PI / 2; sk.rotation.y = 0.3; for (let k = 0; k < 3; k++) add(g, box(0.08, 0.07, 0.09, "#8a4a30"), -1.6 + i * 0.12 + k * 0.18, 0.6, 0.3 - k * 0.06); }   // skewers
+  for (let i = 0; i < 3; i++) add(g, ball(0.16, i % 2 ? "#a9c87a" : "#e6d27a", 8), 1.4 + i * 0.3, 0.62, -0.25).scale.set(1.3, 0.9, 1);   // melon
+  const guests: Fig[] = [];
+  for (const [x, z, col] of [[-1.6, -1.3, "#c0392b"], [-0.4, -1.3, "#2f5f9a"], [0.8, -1.3, "#e0a52c"], [-1.2, 1.3, "#3f9aa3"], [0.2, 1.3, "#8a4a8a"], [1.5, 1.3, "#e9d7b8"]] as [number, number, string][]) {
+    const p = person(col); (p.userData as { sit?: () => void }).sit?.(); const q = add(g, p, x, 0.12, z); q.rotation.y = z < 0 ? 0 : Math.PI; guests.push(q as Fig);
+  }
+  guests[2].scale.setScalar(0.75); guests[4].scale.setScalar(0.75);   // two children
+  const lamps = [-2.4, 2.4].map((x) => { const l = new THREE.Group(); l.position.set(x, 2.4, 0); g.add(l); add(l, cyl(0.02, 0.02, 0.3, WOOD, 4), 0, -0.15, 0); const b = add(l, ball(0.16, "#ffb35a", 8), 0, -0.42, 0); b.scale.y = 1.3; return l; });
+  add(g, poplar(0.8), 3.9, 0, -2.2);
+  const re = reaction(0.5);
+  g.userData.poke = () => { re.poke(); bubble(guests[1], "Everyone sits before anyone eats 一起开饭", 1.7, 1800); };
+  g.userData.tick = (t, dt) => {
+    const k = re.step(dt);
+    guests.forEach((p, i) => { const u = upper(p); if (u) { u.rotation.z = Math.sin(t * 0.8 + i * 1.7) * 0.06; u.rotation.y = Math.sin(t * 0.5 + i) * 0.12 + k * 0.25; u.rotation.x = 0.05 - k * 0.18; } const a = arms(p); if (a && i % 2 === 0) a.right.rotation.x = -0.7 - k * Math.sin(Math.min(1, k * 2) * Math.PI) * 1.0; });
+    lamps.forEach((l, i) => { l.rotation.z = Math.sin(t * 1.1 + i) * 0.06 * (1 + k * 2); });
+    tickChildren(g)(t, dt);
+  };
+  return g;
+}
+
+export const XJ_PROPS: Record<string, () => P> = { kebabGrill, naanBakery, poloKitchen, laghmanShop, oasisBazaar, grapeCourtyard, oasisField, chaikhana, caravanStop, xjHomeKitchen, eveningFeast };

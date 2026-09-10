@@ -149,6 +149,126 @@
     941,
     1672
    ]
+  },
+  "kebab_grill": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "xj_home": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "grape_courtyard": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "caravan_stop": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "oasis_field": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "evening_feast": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "naan_bakery": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "laghman_shop": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "oasis_bazaar": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "polo_kitchen": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "tianshan": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "chaikhana": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
   }
  },
  "props": {
@@ -427,6 +547,190 @@
   "tea": [
    960,
    873
+  ],
+  "kebab-grill": [
+   960,
+   937
+  ],
+  "samsa": [
+   960,
+   841
+  ],
+  "carrot": [
+   960,
+   944
+  ],
+  "chilli-xj": [
+   960,
+   952
+  ],
+  "kazan": [
+   960,
+   855
+  ],
+  "cumin": [
+   960,
+   822
+  ],
+  "door": [
+   905,
+   960
+  ],
+  "rolling-pin": [
+   960,
+   929
+  ],
+  "dough": [
+   960,
+   725
+  ],
+  "dried-fruits": [
+   960,
+   862
+  ],
+  "mud-wall": [
+   960,
+   853
+  ],
+  "kebab-grill-empty": [
+   960,
+   831
+  ],
+  "empty-basket": [
+   960,
+   951
+  ],
+  "fresh-fruits": [
+   960,
+   756
+  ],
+  "laghman-pull": [
+   956,
+   960
+  ],
+  "grape-arbour": [
+   960,
+   945
+  ],
+  "grapes": [
+   960,
+   951
+  ],
+  "polo-kazan": [
+   960,
+   834
+  ],
+  "polo": [
+   960,
+   670
+  ],
+  "lamb": [
+   960,
+   804
+  ],
+  "melon": [
+   960,
+   941
+  ],
+  "naan-bread": [
+   960,
+   784
+  ],
+  "naan-breads": [
+   960,
+   747
+  ],
+  "laghman-bowl": [
+   960,
+   699
+  ],
+  "onion": [
+   960,
+   950
+  ],
+  "tonur": [
+   960,
+   930
+  ],
+  "peach": [
+   960,
+   909
+  ],
+  "kebab-griller": [
+   957,
+   960
+  ],
+  "purple-grapes": [
+   960,
+   935
+  ],
+  "raisin": [
+   960,
+   767
+  ],
+  "kebab-raw": [
+   960,
+   952
+  ],
+  "rice-bowl-xj": [
+   960,
+   742
+  ],
+  "awning": [
+   960,
+   944
+  ],
+  "rug": [
+   960,
+   936
+  ],
+  "kebab-plate": [
+   960,
+   837
+  ],
+  "spices": [
+   960,
+   848
+  ],
+  "stool-xj": [
+   783,
+   960
+  ],
+  "fruit-stand": [
+   931,
+   960
+  ],
+  "dastikhan": [
+   960,
+   870
+  ],
+  "tea-kettle": [
+   960,
+   955
+  ],
+  "teapot": [
+   960,
+   956
+  ],
+  "tomato": [
+   960,
+   906
+  ],
+  "poplar-tree": [
+   468,
+   960
+  ],
+  "walnut": [
+   960,
+   891
+  ],
+  "karez": [
+   960,
+   950
+  ],
+  "wheat": [
+   955,
+   960
   ]
  }
 }

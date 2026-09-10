@@ -67,9 +67,12 @@ with a ridge and always a chimney, so they read differently from Jiangnan's whit
 `src/fw/props-xinjiang.ts` builds the kebab grill, nan bakery, polo kitchen, laghman shop, oasis bazaar, grape
 courtyard, oasis field with its sluice, chaikhana and caravan stop, plus `oasisHouse` and `poplar`. The Tianshan
 peaks carry snow cones, a line of poplars marks the west edge, and the objects live in `graph.ts` under the
-`northern` and new `xinjiang` areas. The China table is 100 × 72 with its centre at x −6 (`cx` in the world spec),
-so the west holds Xinjiang without an empty east end; the river runs flush to both edges. Painted rooms for these places arrive later; until then their cards
-open directly.
+`northern` and new `xinjiang` areas. Xinjiang has twelve painted rooms (2026-09-10 batch, cut by `cut-props.py` with its
+Xinjiang name map): kebab grill, nan bakery, polo kitchen, laghman shop, oasis bazaar, grape courtyard, melon oasis,
+chaikhana, home kitchen (`xjhome`), caravan stop, the Tianshan (a hit box on the snow peaks, `tianshan`) and the evening
+feast (`feast`, a dastikhan under the vines), plus 46 keyed props (kebab-plate, polo, laghman-bowl, samsa, tonur, karez,
+dastikhan…) that serve as card badges. The China table is 100 × 72 with its centre at x −6 (`cx` in the world spec),
+so the west holds Xinjiang without an empty east end; the river runs flush to both edges. Northern China's painted rooms are still to come; until then those cards open directly.
 
 ## The worlds
 

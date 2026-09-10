@@ -269,6 +269,126 @@
     941,
     1672
    ]
+  },
+  "skewer_courtyard": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    940,
+    1672
+   ]
+  },
+  "mantou_kitchen": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "dumpling_house": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "winter_table": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "courtyard_kitchen": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "hutong": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "bing_stall": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "north_market": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "noodle_workshop": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "roast_duck": {
+   "portrait": [
+    941,
+    1672
+   ],
+   "wide": [
+    1672,
+    941
+   ]
+  },
+  "vinegar_workshop": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "wheat_harvest": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
   }
  },
  "props": {
@@ -731,6 +851,226 @@
   "wheat": [
    955,
    960
+  ],
+  "bench": [
+   960,
+   629
+  ],
+  "chinese-cabbage": [
+   960,
+   950
+  ],
+  "cooked-dumpling": [
+   960,
+   556
+  ],
+  "cooking-noodles": [
+   960,
+   756
+  ],
+  "duck-carver": [
+   503,
+   960
+  ],
+  "dough-board": [
+   960,
+   567
+  ],
+  "rolling-pin-north": [
+   960,
+   448
+  ],
+  "noodle-eater-north": [
+   573,
+   960
+  ],
+  "firm-tofu": [
+   960,
+   633
+  ],
+  "fish-seller": [
+   482,
+   960
+  ],
+  "flat-bread": [
+   960,
+   657
+  ],
+  "flat-pan": [
+   960,
+   390
+  ],
+  "flour": [
+   806,
+   960
+  ],
+  "garlic": [
+   960,
+   947
+  ],
+  "gate": [
+   960,
+   769
+  ],
+  "grain": [
+   960,
+   629
+  ],
+  "grill-north": [
+   960,
+   869
+  ],
+  "jar-with-bamboo-lid": [
+   909,
+   960
+  ],
+  "vinegar-jars": [
+   960,
+   928
+  ],
+  "lamb-north": [
+   960,
+   630
+  ],
+  "make-bbq": [
+   605,
+   960
+  ],
+  "make-dumpling-woman": [
+   587,
+   960
+  ],
+  "make-dumpling": [
+   637,
+   960
+  ],
+  "make-noodle-man": [
+   603,
+   960
+  ],
+  "coal-oven": [
+   960,
+   846
+  ],
+  "pickle-jar": [
+   836,
+   960
+  ],
+  "pickle": [
+   960,
+   778
+  ],
+  "pork": [
+   960,
+   601
+  ],
+  "potato": [
+   960,
+   805
+  ],
+  "raw-dumpling": [
+   960,
+   622
+  ],
+  "raw-noodles-loose": [
+   960,
+   744
+  ],
+  "raw-noodles": [
+   960,
+   618
+  ],
+  "roasted-duck": [
+   489,
+   960
+  ],
+  "roof": [
+   960,
+   600
+  ],
+  "scallion-bread": [
+   960,
+   713
+  ],
+  "scallion": [
+   960,
+   692
+  ],
+  "smoke-north": [
+   960,
+   638
+  ],
+  "cart-stand": [
+   960,
+   666
+  ],
+  "steamed-bao": [
+   960,
+   859
+  ],
+  "steamed-bread": [
+   960,
+   703
+  ],
+  "steamed-hua-juan": [
+   960,
+   805
+  ],
+  "steamer": [
+   960,
+   886
+  ],
+  "stool-north": [
+   871,
+   960
+  ],
+  "bare-tree": [
+   651,
+   960
+  ],
+  "turnip-single": [
+   960,
+   628
+  ],
+  "turnip": [
+   960,
+   948
+  ],
+  "vinegar-jar": [
+   627,
+   960
+  ],
+  "wall": [
+   960,
+   627
+  ],
+  "wheat-flour": [
+   960,
+   774
+  ],
+  "wheat-man": [
+   613,
+   960
+  ],
+  "wheat-north": [
+   960,
+   952
+  ],
+  "wide-noodles": [
+   960,
+   620
+  ],
+  "wine-jar": [
+   790,
+   960
+  ],
+  "wok-fry": [
+   765,
+   960
+  ],
+  "wok-north": [
+   960,
+   514
   ]
  }
 }

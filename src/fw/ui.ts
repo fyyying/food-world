@@ -25,6 +25,7 @@ const CARD_ART: Record<string, string> = {
   veg: "veggie-basket", aromatics: "veggie-cart", teahouse: "tea-pots", spices: "pantry", prep: "cutting-board", tower: "light-standing",
   "stall-produce": "veggie-basket-2", "stall-tofu": "tofu",
   crab: "hairy-crab", lotus: "lotus-root", teahill: "tea", rivermarket: "river-fish", fish: "river-fish", rice: "rice-sheaf", jnhome: "greens", riverside: "river-shrimp",
+  dumpling: "cooked-dumpling", knifenoodle: "wide-noodles", mantou: "steamed-bread", vinegar: "vinegar-jar", roastduck: "roasted-duck", bing: "scallion-bread", hutong: "gate", northmarket: "chinese-cabbage", wintertable: "steamed-bao", wheat: "wheat-north", griddle: "flat-pan", skewers: "grill-north",
   kebab: "kebab-plate", naan: "naan-breads", polo: "polo", laghman: "laghman-bowl", bazaar: "fruit-stand", grapes: "grapes", oasis: "melon", chaikhana: "teapot", caravan: "rug", xjhome: "dough", feast: "dastikhan", tianshan: "karez",
 };
 const cardArt = (id: string) => (CARD_ART[id] ? `${import.meta.env.BASE_URL}scenes/props/${CARD_ART[id]}.webp` : null);

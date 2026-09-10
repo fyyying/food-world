@@ -189,8 +189,11 @@ export function roastDuckShop(): P {
   add(g, ball(0.08, "#3b2a1e", 6), 0.35, 0.94, 1.15).scale.y = 0.5; for (let i = 0; i < 4; i++) add(g, cyl(0.015, 0.015, 0.25, "#6fae4f", 4), 0.4 + i * 0.05, 0.95, 1.5).rotation.z = 0.3;   // sauce, scallions
   const carver = add(g, person("#f4f1ea", { apron: true, hat: false }), -1.2, 0, 0.35) as Fig;
   const knife = add(arms(carver)!.right, box(0.03, 0.02, 0.28, C.steel), 0.02, -0.32, 0.12);
-  const diners = [-2.6, 2.9].map((x, i) => { const p = person(i ? "#6a7fb0" : "#d97a8a"); (p.userData as { sit?: () => void }).sit?.(); const q = add(g, p, x, 0.32, 2.6); q.rotation.y = i ? -Math.PI / 2 : Math.PI / 2; return q as Fig; });
-  add(g, box(1.2, 0.08, 0.8, C.wood), -2.6, 0.72, 2.6); add(g, box(1.2, 0.08, 0.8, C.wood), 2.9, 0.72, 2.6);
+  const diners = [-2.6, 2.9].map((x, i) => { const p = person(i ? "#6a7fb0" : "#d97a8a"); (p.userData as { sit?: () => void }).sit?.(); const q = add(g, p, x + (i ? 0.9 : -0.9), 0.32, 2.6); q.rotation.y = i ? -Math.PI / 2 : Math.PI / 2; return q as Fig; });
+  for (const x of [-2.6, 2.9]) {   // two small tables on legs, a stool under each diner
+    add(g, box(1.2, 0.08, 0.8, C.wood), x, 0.72, 2.6); for (const [dx, dz] of [[-0.5, -0.3], [0.5, -0.3], [-0.5, 0.3], [0.5, 0.3]]) add(g, box(0.07, 0.7, 0.07, C.woodDark), x + dx, 0.35, 2.6 + dz);
+    add(g, box(0.5, 0.06, 0.4, C.woodDark), x + (x < 0 ? -0.9 : 0.9), 0.3, 2.6); for (const [dx, dz] of [[-0.18, -0.14], [0.18, -0.14], [-0.18, 0.14], [0.18, 0.14]]) add(g, box(0.05, 0.3, 0.05, C.woodDark), x + (x < 0 ? -0.9 : 0.9) + dx, 0.15, 2.6 + dz);
+  }
   add(g, box(0.7, 0.8, 0.05, "#f3e6c8"), 2.3, 1.95, 0.55);                      // 烤鸭 sign
   add(g, lantern(0.8), -2.2, 2.05, 0.7);
   g.userData.smoke = new THREE.Vector3(1.6, 2.0, 0.4);
@@ -386,9 +389,18 @@ export function northMarket(): P {
 }
 
 /** quiet northern details: a coal stack, a pickle crock row, a persimmon string, a corn crib, a stone mill */
-export function northDetail(kind: "coalStack" | "pickleCrocks" | "persimmonString" | "cornCrib" | "stoneMill" | "flourSacks"): P {
+export function northDetail(kind: "coalStack" | "pickleCrocks" | "persimmonString" | "cornCrib" | "stoneMill" | "flourSacks" | "cabbageStack" | "garlicBraids" | "chilliStrings" | "noodleRack" | "wheatSheaves"): P {
   const g = group();
   switch (kind) {
+    case "cabbageStack": {   // winter cabbages stacked against a wall under a quilt
+      for (let r = 0; r < 3; r++) for (let i = 0; i < 5 - r; i++) { const c = add(g, cyl(0.11, 0.15, 0.5, i % 2 ? "#b9d28a" : "#a9c87a", 7), -0.6 + i * 0.3 + r * 0.15, 0.14 + r * 0.24, (r % 2) * 0.1); c.rotation.z = Math.PI / 2; add(g, ball(0.12, "#e6ecc8", 6), -0.6 + i * 0.3 + r * 0.15 + 0.26, 0.14 + r * 0.24, (r % 2) * 0.1).scale.set(0.5, 1, 1); }
+      add(g, box(1.7, 0.06, 0.8, "#8a3a3a"), 0.1, 0.78, 0.05); break; }
+    case "garlicBraids": { add(g, box(0.07, 1.9, 0.07, C.woodDark), 0, 0.95, 0); add(g, box(1.0, 0.05, 0.05, C.woodDark), 0, 1.85, 0); for (let i = 0; i < 3; i++) for (let k = 0; k < 7; k++) add(g, ball(0.07, k % 2 ? "#f3ece0" : "#e9dfd0", 6), -0.35 + i * 0.35, 1.75 - k * 0.14, (k % 2) * 0.05); break; }
+    case "chilliStrings": { add(g, box(0.07, 1.9, 0.07, C.woodDark), 0, 0.95, 0); add(g, box(1.1, 0.05, 0.05, C.woodDark), 0, 1.85, 0); for (let i = 0; i < 4; i++) for (let k = 0; k < 8; k++) add(g, cone(0.035, 0.16, k % 3 ? C.red : "#8e2a22", 4), -0.42 + i * 0.28 + (k % 2) * 0.04, 1.75 - k * 0.15, (k % 2) * 0.05).rotation.z = Math.PI + (k % 2 ? 0.3 : -0.3); break; }
+    case "noodleRack": {   // fresh noodles hung to dry on a bamboo frame
+      for (const x of [-0.8, 0.8]) add(g, box(0.06, 1.8, 0.06, C.woodDark), x, 0.9, 0); add(g, cyl(0.03, 0.03, 1.7, "#c9a86a", 6), 0, 1.75, 0).rotation.z = Math.PI / 2;
+      for (let i = 0; i < 14; i++) add(g, box(0.06, 1.2 + (i % 3) * 0.1, 0.012, "#f1e6c8"), -0.65 + i * 0.1, 1.12, (i % 2) * 0.02); break; }
+    case "wheatSheaves": for (let i = 0; i < 5; i++) { const sh = add(g, cyl(0.16, 0.06, 0.9, C.gold, 7), (i - 2) * 0.32, 0.45, (i % 2) * 0.25); sh.rotation.z = (i - 2) * 0.12; add(g, cyl(0.2, 0.16, 0.1, "#d9b85a", 7), (i - 2) * 0.32 - (i - 2) * 0.05, 0.9, (i % 2) * 0.25); } break;
     case "coalStack": for (let i = 0; i < 10; i++) add(g, cyl(0.12, 0.12, 0.2, "#2a2a2e", 8), (i % 4) * 0.27 - 0.4, 0.1 + Math.floor(i / 4) * 0.21, (Math.floor(i / 4) % 2) * 0.1); break;
     case "pickleCrocks": for (let i = 0; i < 4; i++) { add(g, cyl(0.22, 0.2, 0.5, i % 2 ? "#5c3a28" : "#3c2a22", 10), (i - 1.5) * 0.5, 0.25, (i % 2) * 0.2); add(g, cyl(0.15, 0.17, 0.04, "#8a6a3a", 10), (i - 1.5) * 0.5, 0.52, (i % 2) * 0.2); } break;
     case "persimmonString": { add(g, box(0.07, 2.0, 0.07, C.woodDark), 0, 1.0, 0); add(g, box(1.2, 0.05, 0.05, C.woodDark), 0, 1.95, 0); for (let i = 0; i < 4; i++) for (let k = 0; k < 5; k++) add(g, ball(0.06, "#e8823f", 6), -0.45 + i * 0.3, 1.85 - k * 0.14, (k % 2) * 0.04).scale.y = 0.8; break; }

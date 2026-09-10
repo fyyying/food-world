@@ -6,7 +6,7 @@ import { PROPS, mat, mountain, house, tree, terrace, bridge, woodenBridge, boat,
 import { buildWorld, addWater, type Diorama, type LayoutCtx } from "./worldkit";
 import { JN_PROPS, jnDetail } from "./props-jiangnan";
 import { NORTH_PROPS, northDetail } from "./props-north";
-import { XJ_PROPS, poplar } from "./props-xinjiang";
+import { XJ_PROPS, poplar, xjDetail } from "./props-xinjiang";
 
 void CSS2DObject; void signpost;
 
@@ -24,7 +24,7 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   tint(2, -16, 18, 8, "#c2bd7a");
   tint(-27, 16, 6, 5, "#7aab5c");
   // the wheat belt: dry gold along the north, in overlapping pools so it fades into the green
-  for (const [x, z, rx, rz] of [[-12, -27, 14, 11], [6, -26, 14, 11], [24, -25, 14, 11], [38, -22, 10, 10]] as [number, number, number, number][]) tint(x, z, rx, rz, "#d1bd74");
+  for (const [x, z, rx, rz] of [[-9, -27, 12, 11], [6, -26, 14, 11], [24, -25, 14, 11], [38, -22, 10, 10]] as [number, number, number, number][]) tint(x, z, rx, rz, "#d1bd74");
   // the oasis strip: sand beyond the western mountains, green only where the water reaches
   for (const [x, z, rx, rz] of [[-48, -24, 9, 9], [-48, -10, 9, 9], [-48, 4, 9, 9], [-49, 18, 7, 9], [-49, 29, 7, 7]] as [number, number, number, number][]) tint(x, z, rx, rz, "#dccb9a");
   tint(-48, -2, 7, 5, "#8fb86a");
@@ -53,7 +53,7 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   ];
   peaks.forEach(([x, z, r, h, dark], i) => { const m = place(mountain(r * (0.9 + (i % 3) * 0.1), h * (0.85 + ((i * 7) % 5) * 0.08), dark), x, z, i * 1.7); m.scale.x *= 1 + (i % 2) * 0.25; });
   // the Tianshan behind the oasis strip: higher, and white above the tree line
-  for (const [x, z, r, h] of [[-51, -33, 5, 13], [-43, -36, 4.6, 12], [-35, -34, 4, 10], [-52.5, -20, 3.4, 9]] as [number, number, number, number][]) {
+  for (const [x, z, r, h] of [[-52, -37.5, 5, 13], [-43, -38, 4.6, 12], [-35, -35, 4, 10]] as [number, number, number, number][]) {
     place(mountain(r, h, false), x, z, x);
     add(group, new THREE.Mesh(new THREE.ConeGeometry(r * 0.34, h * 0.32, 10), mat("#f4f1ea")), x, h * 0.86, z);
   }
@@ -106,7 +106,7 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   const stoneBridge = bridge(6.4);
   bridgeAt(stoneBridge, 20);
   bridgeAt(woodenBridge(5.6), -14);
-  bridgeAt(woodenBridge(5.6), -47.2);   // the oasis road crosses here
+  const xjBridge = woodenBridge(5.6); bridgeAt(xjBridge, -47.2);   // the oasis road crosses here
   // the crossing: from bank to bank along the bridge's own axis
   const bx = stoneBridge.position.x, bz = stoneBridge.position.z, bAngle = stoneBridge.rotation.y;
   const across = new THREE.Vector3(Math.cos(bAngle), 0, -Math.sin(bAngle)).normalize();   // the bridge's length axis in world space
@@ -126,7 +126,7 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   place(tree("round", 1.0), 30.5, 15.5, 1); place(tree("round", 0.9), 37, 14.5, 2);
   for (let i = 0; i < 3; i++) place(tree("ginkgo", 0.9), 14 + i * 3, 22 + (i % 2) * 0.6, i);
   // the north's quiet details: coal for the winter, pickle crocks, persimmons drying, a corn crib, the stone mill, flour sacks
-  for (const [kind, x, z, rot] of [["coalStack", 16.2, -11.6, 0.2], ["pickleCrocks", 29.4, -12.4, 0.1], ["persimmonString", 20.4, -12.2, 0], ["cornCrib", 17.2, -19.4, 0.3], ["stoneMill", 24.5, -24.5, 0], ["flourSacks", 33.5, -30.5, 0.4], ["pickleCrocks", 13.2, -30.6, -0.3], ["coalStack", 1.5, -30.5, 0.5]] as [Parameters<typeof northDetail>[0], number, number, number][]) place(northDetail(kind), x, z, rot);
+  for (const [kind, x, z, rot] of [["cabbageStack", -5.2, -33.0, 0.1], ["cabbageStack", 26.2, -12.4, -0.4], ["garlicBraids", 12.6, -27.2, 0.2], ["chilliStrings", 2.4, -25.6, 0], ["chilliStrings", 41.2, -22.6, 0.3], ["noodleRack", 31.2, -16.9, 0.1], ["wheatSheaves", -4.4, -25.4, 0.3], ["wheatSheaves", -16.4, -24.6, -0.2], ["coalStack", 16.2, -11.6, 0.2], ["pickleCrocks", 29.4, -12.4, 0.1], ["persimmonString", 20.4, -12.2, 0], ["cornCrib", 17.2, -19.4, 0.3], ["stoneMill", 24.5, -24.5, 0], ["flourSacks", 33.5, -30.5, 0.4], ["pickleCrocks", 13.2, -30.6, -0.3], ["coalStack", 3.0, -32.6, 0.5]] as [Parameters<typeof northDetail>[0], number, number, number][]) place(northDetail(kind), x, z, rot);
   for (let i = 0; i < 5; i++) place(tree("round", 0.8 + (i % 2) * 0.2), -3 + i * 5.5, -32.5 + (i % 2) * 1.2, i);
   // Jiangnan's quiet details: lotus roots and pods, crab pots, wine jars, tea drying, fish on the rack, spring bamboo shoots
   for (const [kind, x, z, rot] of [["lotusBasket", 27.5, 25, 0.3], ["crabPots", 32.8, 14.2, 0.2], ["wineJars", 12.4, -1.0, 0.1], ["teaBaskets", 31.8, -4.2, 0], ["fishRack", 9.5, 4.2, 0.3], ["bambooShoots", 22.5, 20.5, 0.2], ["wineJars", 26.6, 1.6, -0.4], ["lotusBasket", 24.6, 20.6, 0.5]] as [Parameters<typeof jnDetail>[0], number, number, number][]) place(jnDetail(kind), x, z, rot);
@@ -152,6 +152,19 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   // the loop follows the street: east along its north edge, back along the south edge
   const walkPath = new THREE.CatmullRomCurve3([new THREE.Vector3(-18.5, 0, -5.5), new THREE.Vector3(-12, 0, -5.6), new THREE.Vector3(-4, 0, -5.6), new THREE.Vector3(4, 0, -5.4), new THREE.Vector3(12, 0, -6.4), new THREE.Vector3(16, 0, -8.6), new THREE.Vector3(10, 0, -7.4), new THREE.Vector3(2, 0, -6.6), new THREE.Vector3(-6, 0, -7.4), new THREE.Vector3(-17, 0, -7.6), new THREE.Vector3(-18.8, 0, -6.6)], true);
   tickers.push((t) => walkers.forEach((w, i) => { const u = ((t * 0.012 + i * 0.25) % 1); const p = walkPath.getPointAt(u), n = walkPath.getPointAt((u + 0.005) % 1); w.position.set(p.x, 0, p.z); w.rotation.y = Math.atan2(n.x - p.x, n.z - p.z); (w.userData as { walk?: (t: number) => void }).walk?.(t + i); }));
+
+  // ---------- northern life: neighbours along the lane between the workshops ----------
+  const nWalkers = [person("#4a5a7a"), person("#8a3a3a", { hat: true }), person("#e0a52c", { pole: true }), person("#3f6b8f"), person("#c9a86a")];
+  nWalkers.forEach((w) => group.add(w));
+  const nPath = new THREE.CatmullRomCurve3([new THREE.Vector3(0, 0, -24.5), new THREE.Vector3(8, 0, -24.5), new THREE.Vector3(16, 0, -24.2), new THREE.Vector3(24, 0, -22.4), new THREE.Vector3(30, 0, -24.2), new THREE.Vector3(35.5, 0, -23), new THREE.Vector3(36, 0, -16.5), new THREE.Vector3(26.5, 0, -18.5), new THREE.Vector3(20, 0, -18.7), new THREE.Vector3(14, 0, -16.5), new THREE.Vector3(3, 0, -16.5), new THREE.Vector3(-2, 0, -21)], true);
+  tickers.push((t) => nWalkers.forEach((w, i) => { const u = (t * 0.01 + i * 0.2) % 1; const p = nPath.getPointAt(u), n = nPath.getPointAt((u + 0.004) % 1); w.position.set(p.x, 0, p.z); w.rotation.y = Math.atan2(n.x - p.x, n.z - p.z); (w.userData as { walk?: (t: number) => void }).walk?.(t + i); }));
+  // ---------- oasis life: people up and down the road and over the wooden bridge; melons, raisins, nan, spices, carpets, chillies ----------
+  for (const [kind, x, z, rot] of [["melonPile", -43, -3.6, 0.2], ["raisinRack", -53.6, -10.6, 0], ["nanStack", -40.6, -23, 0.3], ["spiceSacks", -43.2, 10.6, 0.1], ["carpetLine", -52.6, 13.2, 0.05], ["chilliStrings", -41.2, -11.2, 0.2], ["melonPile", -49.4, 14.6, -0.3]] as [Parameters<typeof xjDetail>[0], number, number, number][]) place(xjDetail(kind), x, z, rot);
+  const xjWalkers = [person("#c0392b", { hat: true }), person("#2f5f9a"), person("#e0a52c", { pole: true }), person("#3f9aa3"), person("#e9d7b8", { hat: true })];
+  xjWalkers.forEach((w) => group.add(w));
+  const xb = xjBridge.position;
+  const xjPath = new THREE.CatmullRomCurve3([new THREE.Vector3(-47.7, 0, -24), new THREE.Vector3(-47.8, 0, -16), new THREE.Vector3(-47.6, 0, -8), new THREE.Vector3(-47.5, 0, -2), new THREE.Vector3(xb.x - 0.2, 0, xb.z), new THREE.Vector3(-47.6, 0, 7), new THREE.Vector3(-46.8, 0, 12), new THREE.Vector3(-45.6, 0, 14.6), new THREE.Vector3(-46.6, 0, 11), new THREE.Vector3(-47.0, 0, 7), new THREE.Vector3(xb.x + 0.2, 0, xb.z), new THREE.Vector3(-47.0, 0, -2), new THREE.Vector3(-47.1, 0, -8), new THREE.Vector3(-47.2, 0, -16), new THREE.Vector3(-47.1, 0, -23)], true);
+  tickers.push((t) => xjWalkers.forEach((w, i) => { const u = (t * 0.008 + i * 0.2) % 1; const p = xjPath.getPointAt(u), n = xjPath.getPointAt((u + 0.004) % 1); const d = Math.hypot(p.x - xb.x, p.z - xb.z); const y = d < 2.9 ? 0.61 : d < 3.6 ? 0.61 * (1 - (d - 2.9) / 0.7) : 0; w.position.set(p.x, y, p.z); w.rotation.y = Math.atan2(n.x - p.x, n.z - p.z); (w.userData as { walk?: (t: number) => void }).walk?.(t + i); }));
 
   // ---------- Jiangnan life: canal-side strollers over the bridge, a fisherman, washing, kids, laundry ----------
   const jnWalkers = [person("#6a7fb0"), person("#e9d7b8", { hat: true }), person("#c0392b", { pole: true }), person("#2f5d3f"), person("#3f6b8f")];

@@ -72,7 +72,13 @@ Xinjiang name map): kebab grill, nan bakery, polo kitchen, laghman shop, oasis b
 chaikhana, home kitchen (`xjhome`), caravan stop, the Tianshan (a hit box on the snow peaks, `tianshan`) and the evening
 feast (`feast`, a dastikhan under the vines), plus 46 keyed props (kebab-plate, polo, laghman-bowl, samsa, tonur, karez,
 dastikhan…) that serve as card badges. The China table is 100 × 72 with its centre at x −6 (`cx` in the world spec),
-so the west holds Xinjiang without an empty east end; the river runs flush to both edges. Northern China's painted rooms are still to come; until then those cards open directly.
+so the west holds Xinjiang without an empty east end; the river runs flush to both edges. Northern China's twelve rooms arrived the same day (`~/Downloads/additional game asset/northern`, cut with the
+cutter's northern name map): dumpling house, noodle workshop, steamed-bread workshop, vinegar workshop, roast duck,
+bing stall, hutong, northern market, winter table, courtyard kitchen (`griddle`), wheat harvest and the restored skewer
+courtyard (`skewers`), plus 54 keyed props for the card badges. Both new areas have strolling people (a loop through the
+northern lane, a loop up and down the oasis road over its wooden bridge) and small details (`northDetail`: cabbage stacks,
+garlic braids, chilli strings, a noodle-drying rack, wheat sheaves; `xjDetail`: melon piles, a raisin drying house, nan
+stacks, spice sacks, carpets airing, chilli strings).
 
 ## The worlds
 

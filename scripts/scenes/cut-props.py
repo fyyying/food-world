@@ -14,12 +14,18 @@ ROOMS = {"home kitchen": "home_kitchen", "market detail": "market", "poet tower"
 if "xinjiang" in src.lower():
     ROOMS = {"kebab": "evening_feast", "xijiang": "kebab_grill", r"codex image sep 10, 2026, 02_14_30 pm": "kebab_grill", "naan": "naan_bakery", "naan2": "naan_bakery", "rice": "polo_kitchen", "noodles": "laghman_shop",
              "oasis market": "oasis_bazaar", "family": "grape_courtyard", "fruits": "oasis_field", "tea": "chaikhana", "cooking": "xj_home", "river": "tianshan", "food": "caravan_stop"}
+# Northern batch (2026-09-10, ~/Downloads/additional game asset/northern)
+if "northern" in src.lower():
+    ROOMS = {"bbq": "skewer_courtyard", "dough": "mantou_kitchen", "dumpling making": "dumpling_house", "eat bao": "winter_table", "home cooking": "courtyard_kitchen", "hu tong": "hutong", "make flat bread": "bing_stall",
+             "market": "north_market", "noodle making": "noodle_workshop", "roast duck": "roast_duck", "roast ducj": "roast_duck", "vinegar": "vinegar_workshop", "wheat harvesting": "wheat_harvest"}
 # nicer library names for a few delivered files
-RENAME = {"driver-shrimp": "river-shrimp", "gui-hua": "osmanthus", "tea-2": "tea-cup", "crab-prop": "hairy-crab", "lotus-fruit": "lotus-pod", "cooked-rice": "rice-bowl", "rice": "rice-sheaf", "biard": "swallow", "cat-2": "cat-sleeping", "curtain": "bamboo-blind", "curtain-2": "noren", "eat-noodle": "noodle-eater", "jasmin-flower": "jasmine", "noodle-spoon": "noodle-strainer", "cooking-noodle": "noodle-pot", "hotpot-smoke": "smoke-1",
-          # Xinjiang: avoid clashes with the Sichuan/Jiangnan library and name things by what they are
-          "noodle-bowl": "laghman-bowl", "rice-bowl": "rice-bowl-xj", "stool": "stool-xj", "tree": "poplar-tree", "oven": "tonur", "street-friuit-stand": "fruit-stand", "chilli": "chilli-xj",
+RENAME = {"driver-shrimp": "river-shrimp", "gui-hua": "osmanthus", "tea-2": "tea-cup", "crab-prop": "hairy-crab", "lotus-fruit": "lotus-pod", "cooked-rice": "rice-bowl", "rice": "rice-sheaf", "biard": "swallow", "cat-2": "cat-sleeping", "curtain": "bamboo-blind", "curtain-2": "noren", "eat-noodle": "noodle-eater", "jasmin-flower": "jasmine", "noodle-spoon": "noodle-strainer", "cooking-noodle": "noodle-pot", "hotpot-smoke": "smoke-1"}
+# per-batch renames: avoid clashes with the library and name things by what they are
+if "xinjiang" in src.lower(): RENAME = {**RENAME, "noodle-bowl": "laghman-bowl", "rice-bowl": "rice-bowl-xj", "stool": "stool-xj", "tree": "poplar-tree", "oven": "tonur", "street-friuit-stand": "fruit-stand", "chilli": "chilli-xj",
           "bbq": "kebab-grill", "empty-bbq": "kebab-grill-empty", "people-bbq": "kebab-griller", "skewer": "kebab-plate", "raw-skewer": "kebab-raw", "lamb-rice": "polo", "lamb-rice-cooking": "polo-kazan", "cooking-rice": "kazan",
           "baked-bao": "samsa", "roof-stand": "awning", "dry-wall": "mud-wall", "water-stream": "karez", "grape-tree": "grape-arbour", "table-of-food": "dastikhan", "fresh-noodles": "laghman-pull", "dough-roller": "rolling-pin"}
+if "northern" in src.lower(): RENAME = {**RENAME, "dough-roller": "rolling-pin-north", "dough-and-roller": "dough-board", "oven": "coal-oven", "stool": "stool-north", "tree": "bare-tree", "wheat": "wheat-north", "lamb": "lamb-north",
+                                      "smoke": "smoke-north", "stand": "cart-stand", "wok": "wok-north", "grill": "grill-north", "picke-jar": "pickle-jar", "fish": "fish-seller", "jars": "vinegar-jars", "eat-noodle-bowl": "noodle-eater-north", "cut-duck": "duck-carver"}
 MAX_SPRITE = 960   # px on the long side; plenty for a 1600-wide stage
 
 def key_white(a, lo=18, hi=110):

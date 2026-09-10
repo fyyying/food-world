@@ -367,4 +367,20 @@ export function eveningFeast(): P {
   return g;
 }
 
+/** the oasis's quiet details: melons in a heap, grapes drying into raisins on a rack, nan stacked, spice sacks, carpets airing, chilli strings */
+export function xjDetail(kind: "melonPile" | "raisinRack" | "nanStack" | "spiceSacks" | "carpetLine" | "chilliStrings"): P {
+  const g = group();
+  switch (kind) {
+    case "melonPile": for (let r = 0; r < 3; r++) for (let i = 0; i < 4 - r; i++) add(g, ball(0.24, (i + r) % 2 ? "#a9c87a" : "#c9d99a", 8), -0.45 + i * 0.36 + r * 0.18, 0.2 + r * 0.32, (r % 2) * 0.12).scale.set(1.3, 0.9, 1); break;
+    case "raisinRack": {   // a mud-brick drying house wall of latticed openings, grapes hung inside
+      add(g, box(1.8, 1.4, 0.3, OCHRE), 0, 0.7, 0); for (let i = 0; i < 6; i++) for (let k = 0; k < 3; k++) add(g, box(0.18, 0.2, 0.32, "#8a6a4a"), -0.7 + i * 0.28, 0.35 + k * 0.4, 0);
+      for (let i = 0; i < 5; i++) for (let k = 0; k < 6; k++) add(g, ball(0.035, k % 3 ? "#5a3a6a" : "#7a4a8a", 5), -0.6 + i * 0.3 + (k % 2) * 0.05, 1.25 - k * 0.09, 0.2); break; }
+    case "nanStack": { add(g, box(1.0, 0.5, 0.7, WOOD), 0, 0.25, 0); for (let i = 0; i < 6; i++) add(g, cyl(0.22, 0.22, 0.04, BREAD, 14), -0.2 + (i % 2) * 0.4, 0.53 + Math.floor(i / 2) * 0.045, (i % 2) * 0.15); add(g, cyl(0.16, 0.16, 0.02, "#e9c98a", 14), 0.2, 0.7, 0.15); break; }
+    case "spiceSacks": for (let i = 0; i < 4; i++) { add(g, cyl(0.22, 0.26, 0.4, "#e6dcc4", 9), (i % 2) * 0.5 - 0.25, 0.2, Math.floor(i / 2) * 0.45 - 0.2); add(g, cyl(0.18, 0.02, 0.1, ["#d94f3a", "#e8a53f", "#b8462a", "#6f9b57"][i], 9), (i % 2) * 0.5 - 0.25, 0.45, Math.floor(i / 2) * 0.45 - 0.2); } break;
+    case "carpetLine": { for (const x of [-1.2, 1.2]) add(g, cyl(0.05, 0.06, 2.2, WOOD, 6), x, 1.1, 0); add(g, cyl(0.02, 0.02, 2.4, "#7a5a3a", 5), 0, 2.15, 0).rotation.z = Math.PI / 2; for (let i = 0; i < 3; i++) { const c = add(g, box(0.6, 1.2, 0.03, ["#b8462a", "#2f5f9a", "#8a4a8a"][i]), -0.7 + i * 0.7, 1.55, 0); add(c, box(0.5, 0.35, 0.04, i % 2 ? "#e9dcb8" : "#3f9aa3"), 0, 0.1, 0); } break; }
+    case "chilliStrings": { add(g, box(0.07, 1.9, 0.07, WOOD), 0, 0.95, 0); add(g, box(1.1, 0.05, 0.05, WOOD), 0, 1.85, 0); for (let i = 0; i < 4; i++) for (let k = 0; k < 8; k++) add(g, cone(0.035, 0.16, k % 3 ? "#d94f3a" : "#8e2a22", 4), -0.42 + i * 0.28 + (k % 2) * 0.04, 1.75 - k * 0.15, (k % 2) * 0.05).rotation.z = Math.PI + (k % 2 ? 0.3 : -0.3); break; }
+  }
+  return g;
+}
+
 export const XJ_PROPS: Record<string, () => P> = { kebabGrill, naanBakery, poloKitchen, laghmanShop, oasisBazaar, grapeCourtyard, oasisField, chaikhana, caravanStop, xjHomeKitchen, eveningFeast };

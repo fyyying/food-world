@@ -61,7 +61,9 @@ riverside restaurant, home kitchen, and the stone bridge as a click-only landmar
 The China table grew to 112×72 on 2026-09-09 to hold a wheat belt along the north and an oasis strip in the far
 west beyond the mountains. `src/fw/props-north.ts` builds the dumpling house, noodle workshop, mantou kitchen,
 vinegar workshop, roast-duck shop, skewer courtyard, bing stall, wheat harvest, hutong lane and northern market
-(plus `northDetail` for coal stacks, pickle crocks, persimmon strings, corn cribs and the stone mill);
+(plus `northDetail` for coal stacks, pickle crocks, persimmon strings, corn cribs and the stone mill); northern houses
+from `house("northern")` are grey brick with a stone course, red door and window frames, a low straight-eaved grey roof
+with a ridge and always a chimney, so they read differently from Jiangnan's whitewash and lifted black tile;
 `src/fw/props-xinjiang.ts` builds the kebab grill, nan bakery, polo kitchen, laghman shop, oasis bazaar, grape
 courtyard, oasis field with its sluice, chaikhana and caravan stop, plus `oasisHouse` and `poplar`. The Tianshan
 peaks carry snow cones, a line of poplars marks the west edge, and the objects live in `graph.ts` under the

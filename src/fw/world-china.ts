@@ -24,15 +24,15 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   tint(2, -16, 18, 8, "#c2bd7a");
   tint(-27, 16, 6, 5, "#7aab5c");
   // the wheat belt: dry gold along the north, in overlapping pools so it fades into the green
-  for (const [x, z, rx, rz] of [[-10, -28, 14, 8], [8, -28, 14, 8], [26, -27, 14, 8], [38, -24, 9, 8]] as [number, number, number, number][]) tint(x, z, rx, rz, "#cfc286");
+  for (const [x, z, rx, rz] of [[-12, -27, 14, 11], [6, -26, 14, 11], [24, -25, 14, 11], [38, -22, 10, 10]] as [number, number, number, number][]) tint(x, z, rx, rz, "#d1bd74");
   // the oasis strip: sand beyond the western mountains, green only where the water reaches
   for (const [x, z, rx, rz] of [[-48, -24, 9, 9], [-48, -10, 9, 9], [-48, 4, 9, 9], [-49, 18, 7, 9], [-49, 29, 7, 7]] as [number, number, number, number][]) tint(x, z, rx, rz, "#dccb9a");
   tint(-48, -2, 7, 5, "#8fb86a");
 
   // ---------- river & paths ----------
   const curve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-56, TOP + 0.03, 2.4), new THREE.Vector3(-48, TOP + 0.03, 3), new THREE.Vector3(-38, TOP + 0.03, 4), new THREE.Vector3(-28, TOP + 0.03, 8), new THREE.Vector3(-14, TOP + 0.03, 9),
-    new THREE.Vector3(-2, TOP + 0.03, 6), new THREE.Vector3(10, TOP + 0.03, 8), new THREE.Vector3(20, TOP + 0.03, 3), new THREE.Vector3(30, TOP + 0.03, 6), new THREE.Vector3(38, TOP + 0.03, 4), new THREE.Vector3(44, TOP + 0.03, 5),
+    new THREE.Vector3(-56, TOP + 0.03, 2.6), new THREE.Vector3(-52, TOP + 0.03, 2.6), new THREE.Vector3(-48, TOP + 0.03, 3), new THREE.Vector3(-38, TOP + 0.03, 4), new THREE.Vector3(-28, TOP + 0.03, 8), new THREE.Vector3(-14, TOP + 0.03, 9),
+    new THREE.Vector3(-2, TOP + 0.03, 6), new THREE.Vector3(10, TOP + 0.03, 8), new THREE.Vector3(20, TOP + 0.03, 3), new THREE.Vector3(30, TOP + 0.03, 6), new THREE.Vector3(38, TOP + 0.03, 4.4), new THREE.Vector3(41, TOP + 0.03, 4.8), new THREE.Vector3(44, TOP + 0.03, 4.8),
   ]);
   addWater({ group, tickers, place, tint, TOP }, curve, 3.4);
   // reeds and stones along the bank
@@ -58,7 +58,8 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
     add(group, new THREE.Mesh(new THREE.ConeGeometry(r * 0.34, h * 0.32, 10), mat("#f4f1ea")), x, h * 0.86, z);
   }
   // the oasis road south from the mountains, with a line of poplars at the western edge
-  group.add(path([[-47, -30], [-47.5, -18], [-47, -4], [-47.5, 8], [-46, 14]], 1.6, "#d3bd8a"));
+  group.add(path([[-47, -30], [-47.5, -18], [-47, -4], [-47.2, 0.2]], 1.6, "#d3bd8a"));
+  group.add(path([[-47.3, 6.0], [-47.5, 8], [-46, 14]], 1.6, "#d3bd8a"));
   for (let i = 0; i < 6; i++) place(poplar(0.9 + (i % 3) * 0.15), -53.6 + (i % 2) * 0.4, -25 + i * 4.4, i);
   for (let i = 0; i < 4; i++) place(poplar(0.8), -40.6, -26 + i * 6, i);
   // pagoda on a hill in the north-west, temple with plaza north-centre, gate at the head of the street
@@ -105,6 +106,7 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   const stoneBridge = bridge(6.4);
   bridgeAt(stoneBridge, 20);
   bridgeAt(woodenBridge(5.6), -14);
+  bridgeAt(woodenBridge(5.6), -47.2);   // the oasis road crosses here
   // the crossing: from bank to bank along the bridge's own axis
   const bx = stoneBridge.position.x, bz = stoneBridge.position.z, bAngle = stoneBridge.rotation.y;
   const across = new THREE.Vector3(Math.cos(bAngle), 0, -Math.sin(bAngle)).normalize();   // the bridge's length axis in world space
@@ -236,8 +238,9 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   // butterflies and boats
   const flies = [[-7, 15], [25, 15], [-19, 1], [3, -15]].map(([x, z], i) => { const b = butterfly(["#f2b64d", "#f4a6b8", "#ffffff", "#f2b64d"][i]); group.add(b); tickers.push(b.userData.tick!); return { b, x, z, ph: i * 2 }; });
   tickers.push((t) => flies.forEach(({ b, x, z, ph }) => { b.position.set(x + Math.sin(t * 0.6 + ph) * 2.4, TOP + 1.8 + Math.sin(t * 1.7 + ph) * 0.4, z + Math.cos(t * 0.45 + ph) * 2); b.rotation.y = t * 0.6 + ph; }));
+  const uAtX = (x: number) => { let best = 0, bestD = Infinity; for (let i = 0; i <= 400; i++) { const d = Math.abs(curve.getPointAt(i / 400).x - x); if (d < bestD) { bestD = d; best = i / 400; } } return best; };
   tickers.push((t) => {
     const drift = (b: THREE.Object3D, u0: number, span: number, ph: number) => { const u = u0 + span * (0.5 + 0.5 * Math.sin(t * 0.05 + ph)); const p = curve.getPointAt(u), n = curve.getPointAt(Math.min(1, u + 0.01)); b.position.set(p.x, TOP + 0.05, p.z); b.rotation.y = Math.atan2(n.x - p.x, n.z - p.z) + Math.PI / 2; };
-    drift(theBoat, 0.5, 0.3, 0); drift(boat2, 0.05, 0.2, 2);
+    drift(theBoat, uAtX(-10), uAtX(8) - uAtX(-10), 0); drift(boat2, uAtX(-34), uAtX(-18) - uAtX(-34), 2);   // between the bridges, clear of the river market
   });
 }

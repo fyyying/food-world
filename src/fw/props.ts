@@ -173,8 +173,10 @@ export function lantern(scale = 1): P {
 /** A house in the Chinese vernacular: timber frame or whitewashed walls, curved tiled roof, red door, lanterns. */
 export function house(style: "sichuan" | "jiangnan" | "northern", w = 3, d = 2.4, h = 1.8, storeys = 1): P {
   const g = group();
-  const WALLS = { sichuan: [C.wallWarm, "#b98a5a", "#8f6540", "#e3cfae", "#a87a4e"], jiangnan: [C.wall, "#faf5ea", "#ece3cf"], northern: [C.brick, "#a89c8a", "#c4b6a1"] };
-  const ROOFS = { sichuan: [C.tile, "#4a4038", "#35383f", "#5a4a40"], jiangnan: [C.tile, "#2f3238", "#454a54"], northern: ["#4a4d55", "#5c5a5a", "#6b6560"] };
+  // Sichuan: warm timber. Jiangnan: whitewash under black tile with lifted eaves. Northern: grey brick, a low straight-eaved
+  // grey roof, red door and window frames, a stone course at the foot and always a chimney (the kang is lit)
+  const WALLS = { sichuan: [C.wallWarm, "#b98a5a", "#8f6540", "#e3cfae", "#a87a4e"], jiangnan: [C.wall, "#faf5ea", "#ece3cf"], northern: ["#9a948a", "#a59c90", "#8d867d"] };
+  const ROOFS = { sichuan: [C.tile, "#4a4038", "#35383f", "#5a4a40"], jiangnan: [C.tile, "#2f3238", "#454a54"], northern: ["#5c5f66", "#666462", "#585a60"] };
   const wallColor = pick(WALLS[style]);
   const roofColor = pick(ROOFS[style]);
   let baseY = 0;
@@ -182,7 +184,8 @@ export function house(style: "sichuan" | "jiangnan" | "northern", w = 3, d = 2.4
     const ww = w - s * 0.5, dd = d - s * 0.4, hh = s === 0 ? h : h * 0.8;
     add(g, box(ww, hh, dd, wallColor), 0, baseY + hh / 2, 0);
     // timber posts and beams (Sichuan) or dark trim (Jiangnan)
-    const trim = style === "sichuan" ? (wallColor === C.wallWarm || wallColor === "#e3cfae" ? C.woodDark : "#4a3222") : style === "jiangnan" ? "#3b3f45" : "#6a5c4a";
+    const trim = style === "sichuan" ? (wallColor === C.wallWarm || wallColor === "#e3cfae" ? C.woodDark : "#4a3222") : style === "jiangnan" ? "#3b3f45" : "#7d7a72";
+    if (style === "northern") { add(g, box(ww + 0.06, 0.28, dd + 0.06, "#7d7a72"), 0, baseY + 0.14, 0); for (const x of [ww / 4, -ww / 4]) add(g, box(0.68, 0.62, 0.03, C.red), x, baseY + hh * 0.58, dd / 2 + 0.005); }
     for (const x of [-ww / 2 + 0.08, ww / 2 - 0.08]) for (const z of [-dd / 2 + 0.03, dd / 2 - 0.03]) add(g, box(0.14, hh, 0.14, trim), x, baseY + hh / 2, z);
     add(g, box(ww + 0.02, 0.12, dd + 0.02, trim), 0, baseY + hh - 0.06, 0);
     // windows
@@ -193,7 +196,11 @@ export function house(style: "sichuan" | "jiangnan" | "northern", w = 3, d = 2.4
     baseY += hh;
     if (s < storeys - 1) add(g, chineseRoof(ww + 0.9, dd + 0.9, 0.5, roofColor, 0.22), 0, baseY - 0.05, 0);
   }
-  add(g, chineseRoof(w + 1.1 - (storeys - 1) * 0.5, d + 1.0 - (storeys - 1) * 0.4, style === "northern" ? 1.0 : 1.25, roofColor), 0, baseY - 0.02, 0);
+  if (style === "northern") {
+    const rw = w + 0.7 - (storeys - 1) * 0.5, rd = d + 0.7 - (storeys - 1) * 0.4;
+    add(g, chineseRoof(rw, rd, 0.7, roofColor, 0), 0, baseY - 0.02, 0);
+    add(g, box(Math.max(0.6, rw - rd) + 0.3, 0.16, 0.22, "#3f4148"), 0, baseY + 0.7, 0);   // the ridge
+  } else add(g, chineseRoof(w + 1.1 - (storeys - 1) * 0.5, d + 1.0 - (storeys - 1) * 0.4, 1.25, roofColor), 0, baseY - 0.02, 0);
   // door with couplets and a pair of lanterns
   add(g, box(0.62, h * 0.6, 0.06, style === "jiangnan" ? C.woodDark : C.woodRed), 0, h * 0.3, d / 2 + 0.03);
   for (const x of [-0.42, 0.42]) add(g, box(0.1, h * 0.55, 0.02, C.red), x, h * 0.33, d / 2 + 0.05);
@@ -201,7 +208,7 @@ export function house(style: "sichuan" | "jiangnan" | "northern", w = 3, d = 2.4
   // steps
   add(g, box(1.0, 0.12, 0.5, C.stone), 0, 0.06, d / 2 + 0.3);
   // a third of the houses have a chimney with a thread of smoke
-  if (rnd() < 0.35) { const cx = w / 2 - 0.5, cz = -d / 4; add(g, box(0.34, 0.9, 0.34, "#5a5550"), cx, baseY + 0.9, cz); g.userData.smoke = new THREE.Vector3(cx, baseY + 1.4, cz); }
+  if (style === "northern" || rnd() < 0.35) { const cx = w / 2 - 0.5, cz = -d / 4; add(g, box(0.34, 0.9, 0.34, "#5a5550"), cx, baseY + 0.9, cz); g.userData.smoke = new THREE.Vector3(cx, baseY + 1.4, cz); }
   return g;
 }
 
@@ -648,8 +655,8 @@ export function boat(): P {
 
 export function bridge(len = 5): P {
   const g = group();
-  const arc = new THREE.Mesh(new THREE.TorusGeometry(len / 2, 0.38, 6, 16, Math.PI), mat(C.stone));
-  add(g, arc, 0, 0, 0); arc.scale.y = 0.55;
+  // a flat stone deck on two piers (no arch: it read as a stray curve from above)
+  for (const x of [-len / 4, len / 4]) add(g, box(0.7, 1.0, 1.2, C.stoneDark), x, 0.5, 0);
   add(g, box(len + 0.8, 0.2, 1.4, C.stone), 0, 1.05, 0);
   for (let i = 0; i <= 6; i++) for (const z of [-0.65, 0.65]) add(g, box(0.12, 0.45, 0.12, C.stoneDark), -len / 2 + (i / 6) * len, 1.35, z);
   for (const z of [-0.65, 0.65]) add(g, box(len + 0.8, 0.08, 0.08, C.stoneDark), 0, 1.58, z);
@@ -1426,7 +1433,7 @@ export function familyTable(): P {
   add(g, cyl(0.12, 0.1, 0.24, "#3f6b8f", 8), 0.35, 0.95, -0.3);
   const colors = ["#c9413f", "#3f6b8f", "#6f9b57", "#d9a441", "#8a5a3c"];
   for (let i = 0; i < 5; i++) { const a = (i / 5) * Math.PI * 2 + 0.3; const p = add(g, person(colors[i]), Math.cos(a) * 1.6, 0, Math.sin(a) * 1.6); p.rotation.y = -a - Math.PI / 2; if (i === 4) p.scale.setScalar(0.7); }
-  add(g, chineseRoof(4.6, 4.6, 0.7, C.tile, 0.3), 0, 2.4, 0);
+  add(g, chineseRoof(4.6, 4.6, 0.6, "#5c5f66", 0), 0, 2.4, 0);   // northern courtyard: straight eaves
   for (const [x, z] of [[-1.8, -1.8], [1.8, -1.8], [-1.8, 1.8], [1.8, 1.8]]) add(g, cyl(0.09, 0.1, 2.4, C.red, 8), x, 1.2, z);
   for (const [x, z] of [[-1.8, 1.8], [1.8, 1.8]]) add(g, lantern(0.9), x, 2.1, z + 0.3);
   g.userData.tick = tickChildren(g);

@@ -142,7 +142,7 @@ export function vinegarWorkshop(): P {
   const g = group();
   add(g, box(6.0, 0.25, 4.4, C.stone), 0, 0.12, 0);
   for (const [x, z] of [[-2.7, -1.9], [2.7, -1.9], [-2.7, 1.9], [2.7, 1.9]] as [number, number][]) add(g, cyl(0.1, 0.11, 2.4, C.woodDark, 6), x, 1.35, z);
-  add(g, chineseRoof(6.8, 5.2, 0.8, C.tile, 0.25), 0, 2.6, 0);
+  add(g, chineseRoof(6.8, 5.2, 0.6, "#5c5f66", 0), 0, 2.6, 0); add(g, box(2.0, 0.16, 0.22, "#3f4148"), 0, 3.2, 0);   // low straight northern roof with a ridge
   add(g, box(5.8, 2.0, 0.12, GREY), 0, 1.25, -2.1);
   const jars: THREE.Mesh[] = [];
   for (let r = 0; r < 3; r++) for (let i = 0; i < 5; i++) {

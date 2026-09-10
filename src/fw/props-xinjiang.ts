@@ -383,4 +383,61 @@ export function xjDetail(kind: "melonPile" | "raisinRack" | "nanStack" | "spiceS
   return g;
 }
 
-export const XJ_PROPS: Record<string, () => P> = { kebabGrill, naanBakery, poloKitchen, laghmanShop, oasisBazaar, grapeCourtyard, oasisField, chaikhana, caravanStop, xjHomeKitchen, eveningFeast };
+/** 羊: fat-tailed sheep of the oases in a mud-walled fold, the shepherd with his staff */
+export function fatTailSheep(): P {
+  const g = group();
+  add(g, box(4.0, 0.7, 0.2, OCHRE), 0, 0.35, -1.4); add(g, box(0.2, 0.7, 2.8, OCHRE), -2.0, 0.35, 0); add(g, box(0.2, 0.7, 1.6, OCHRE), 2.0, 0.35, -0.6);
+  const sheep = [[-1.1, -0.5, 0.6], [0.2, 0.3, -0.9], [1.1, -0.7, 2.4], [-0.3, 0.9, 1.6]].map(([x, z, rot]) => { const sh = new THREE.Group(); sh.position.set(x, 0, z); sh.rotation.y = rot; g.add(sh); add(sh, ball(0.34, "#e8dfcf", 9), 0, 0.48, 0).scale.set(1.3, 1, 1); add(sh, ball(0.2, "#e8dfcf", 8), -0.45, 0.42, 0).scale.set(0.9, 0.7, 1.2);   // the fat tail
+    add(sh, ball(0.15, "#5a4a3a", 7), 0.5, 0.6, 0); for (const dz of [-0.13, 0.13]) add(sh, ball(0.06, "#5a4a3a", 5), 0.55, 0.7, dz).scale.set(0.6, 1, 1.5); for (const [dx, dz] of [[-0.22, -0.14], [0.22, -0.14], [-0.22, 0.14], [0.22, 0.14]]) add(sh, cyl(0.04, 0.04, 0.3, "#5a4a3a", 5), dx, 0.15, dz); return sh; });
+  const shepherd = add(g, person("#8a4a30", { hat: true }), 2.5, 0, 0.9) as Fig; shepherd.rotation.y = -Math.PI / 2;
+  add(g, cyl(0.02, 0.025, 1.6, "#c9a86a", 4), 2.7, 0.8, 0.7);
+  const re = reaction(0.5);
+  g.userData.poke = () => { re.poke(); bubble(shepherd, "Qoy! Fat-tailed sheep, the fat goes on the skewer", 1.7, 1600); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); sheep.forEach((sh, i) => { sh.position.y = k * Math.abs(Math.sin(t * 6 + i)) * 0.25; sh.children[2].rotation.z = Math.sin(t * 1.2 + i) * 0.15 - 0.2; }); tickChildren(g)(t, dt); };
+  return g;
+}
+
+/** 孜然: the spice seller's sacks: cumin, chilli flakes, salt and black pepper, a brass scoop, a scale */
+export function cuminStall(): P {
+  const g = group();
+  add(g, box(3.2, 0.1, 2.2, SAND), 0, 0.05, 0);
+  add(g, xjDetail("spiceSacks"), -0.6, 0.1, 0.1); add(g, xjDetail("spiceSacks"), 0.9, 0.1, -0.3).rotation.y = 0.7;
+  add(g, cyl(0.3, 0.34, 0.5, "#e6dcc4", 9), -1.2, 0.35, -0.6); add(g, cyl(0.26, 0.02, 0.12, "#8a7a4a", 9), -1.2, 0.62, -0.6);   // the big cumin sack
+  add(g, cyl(0.02, 0.02, 0.6, "#b87333", 4), -1.1, 0.75, -0.55).rotation.z = 0.5; add(g, cyl(0.06, 0.04, 0.05, "#b87333", 8), -0.9, 0.66, -0.4);   // brass scoop
+  const seller = add(g, person("#3f9aa3", { hat: true }), 0.2, 0, -1.4) as Fig;
+  const re = reaction(0.5);
+  g.userData.poke = () => { re.poke(); bubble(seller, "Zira! Cumin by the handful, the smell of every grill", 1.7, 1600); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); const a = arms(seller); if (a) a.right.rotation.x = -0.6 - k * Math.sin(Math.min(1, k * 2) * Math.PI) * 1.2; tickChildren(g)(t, dt); };
+  return g;
+}
+
+/** 胡萝卜: yellow and orange carrots in rows by the channel, a basket pulled for the polo */
+export function carrotPatch(): P {
+  const g = group();
+  add(g, box(3.2, 0.1, 2.2, "#8a6a4a"), 0, 0.05, 0);
+  const tops: THREE.Object3D[] = [];
+  for (let r = 0; r < 4; r++) for (let i = 0; i < 8; i++) { const x = -1.4 + i * 0.4, z = -0.8 + r * 0.5; add(g, cyl(0.05, 0.02, 0.14, r % 2 ? "#e8a53f" : "#e6d27a", 6), x, 0.14, z); for (let k = 0; k < 3; k++) { const l = add(g, cyl(0.012, 0.02, 0.3, "#5f9a3c", 4), x, 0.34, z); l.rotation.set((k - 1) * 0.3, k * 2.1, 0); tops.push(l); } }
+  add(g, cyl(0.3, 0.24, 0.3, C.straw, 9), 2.0, 0.15, 0.4); for (let i = 0; i < 6; i++) add(g, cyl(0.04, 0.02, 0.5, i % 2 ? "#e8a53f" : "#e6d27a", 6), 2.0 + (rnd() - 0.5) * 0.3, 0.4, 0.4 + (rnd() - 0.5) * 0.3).rotation.z = 0.5 + rnd();
+  const re = reaction(0.5);
+  g.userData.poke = () => { re.poke(); bubble(g, "Sewze: yellow carrots first, then the rice", 1.6, 1600); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); tops.forEach((l, i) => { l.rotation.z = Math.sin(t * 1.5 + i) * 0.1 * (1 + k * 3); }); };
+  return g;
+}
+
+/** 杏和核桃: an apricot tree and a walnut tree, fruit drying on the roof mat, a girl shaking the branch */
+export function apricotWalnut(): P {
+  const g = group();
+  add(g, cyl(0.1, 0.14, 1.3, "#7a5a3a", 7), -1.0, 0.65, 0); const ac = add(g, ball(0.9, "#6f9b57", 9), -1.0, 1.8, 0); ac.scale.y = 0.85;
+  const fruit: THREE.Object3D[] = []; for (let i = 0; i < 18; i++) { const a = (i / 18) * Math.PI * 2, r = 0.6 + (i % 3) * 0.12; fruit.push(add(g, ball(0.07, "#e8a53f", 6), -1.0 + Math.cos(a) * r, 1.65 + Math.sin(i * 1.9) * 0.4, Math.sin(a) * r * 0.9)); }
+  add(g, cyl(0.14, 0.18, 1.8, "#5a4a3a", 7), 1.2, 0.9, -0.3); const wc = add(g, ball(1.15, "#4f7d4a", 9), 1.2, 2.4, -0.3); wc.scale.y = 0.9;
+  for (let i = 0; i < 12; i++) { const a = (i / 12) * Math.PI * 2, r = 0.8; add(g, ball(0.07, "#8fa85a", 6), 1.2 + Math.cos(a) * r, 2.2 + Math.sin(i * 2.3) * 0.5, -0.3 + Math.sin(a) * r * 0.9); }
+  add(g, cyl(0.7, 0.7, 0.04, "#d9c28a", 14), 0.2, 0.02, 1.4); for (let i = 0; i < 20; i++) { const a = rnd() * Math.PI * 2, r = rnd() * 0.55; add(g, ball(0.05, i % 2 ? "#e8823f" : "#c9a86a", 5), 0.2 + Math.cos(a) * r, 0.07, 1.4 + Math.sin(a) * r).scale.y = 0.7; }   // apricots and walnuts drying
+  const girl = add(g, person("#c0392b"), -0.2, 0, 0.9) as Fig; girl.scale.setScalar(0.8); girl.rotation.y = Math.PI * 0.9;
+  const falling: { m: THREE.Object3D; t: number }[] = [];
+  const re = reaction(0.5);
+  g.userData.poke = () => { re.poke(); for (let i = 0; i < 6; i++) falling.push({ m: add(g, ball(0.07, "#e8a53f", 6), -1.0 + (rnd() - 0.5) * 1.2, 1.7, (rnd() - 0.5) * 1.0), t: 0 }); bubble(girl, "Örük! Apricots in June, walnuts in October", 1.5, 1600); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); ac.rotation.z = Math.sin(t * 0.9) * 0.02 + k * Math.sin(t * 9) * 0.06; fruit.forEach((f, i) => { f.position.y += Math.sin(t * 2 + i) * 0.0008; }); for (let i = falling.length - 1; i >= 0; i--) { const f = falling[i]; f.t += dt; f.m.position.y = Math.max(0.07, 1.7 - f.t * f.t * 4); if (f.t > 3) { g.remove(f.m); falling.splice(i, 1); } } const a = arms(girl); if (a) a.right.rotation.x = -2.2 + k * Math.sin(t * 8) * 0.3; tickChildren(g)(t, dt); };
+  return g;
+}
+
+export const XJ_PROPS: Record<string, () => P> = { kebabGrill, naanBakery, poloKitchen, laghmanShop, oasisBazaar, grapeCourtyard, oasisField, chaikhana, caravanStop, xjHomeKitchen, eveningFeast, fatTailSheep, cuminStall, carrotPatch, apricotWalnut };

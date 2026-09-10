@@ -392,9 +392,9 @@ export function northMarket(): P {
 export function northDetail(kind: "coalStack" | "pickleCrocks" | "persimmonString" | "cornCrib" | "stoneMill" | "flourSacks" | "cabbageStack" | "garlicBraids" | "chilliStrings" | "noodleRack" | "wheatSheaves"): P {
   const g = group();
   switch (kind) {
-    case "cabbageStack": {   // winter cabbages stacked against a wall under a quilt
+    case "cabbageStack": {   // winter cabbages stacked against a wall
       for (let r = 0; r < 3; r++) for (let i = 0; i < 5 - r; i++) { const c = add(g, cyl(0.11, 0.15, 0.5, i % 2 ? "#b9d28a" : "#a9c87a", 7), -0.6 + i * 0.3 + r * 0.15, 0.14 + r * 0.24, (r % 2) * 0.1); c.rotation.z = Math.PI / 2; add(g, ball(0.12, "#e6ecc8", 6), -0.6 + i * 0.3 + r * 0.15 + 0.26, 0.14 + r * 0.24, (r % 2) * 0.1).scale.set(0.5, 1, 1); }
-      add(g, box(1.7, 0.06, 0.8, "#8a3a3a"), 0.1, 0.78, 0.05); break; }
+      break; }
     case "garlicBraids": { add(g, box(0.07, 1.9, 0.07, C.woodDark), 0, 0.95, 0); add(g, box(1.0, 0.05, 0.05, C.woodDark), 0, 1.85, 0); for (let i = 0; i < 3; i++) for (let k = 0; k < 7; k++) add(g, ball(0.07, k % 2 ? "#f3ece0" : "#e9dfd0", 6), -0.35 + i * 0.35, 1.75 - k * 0.14, (k % 2) * 0.05); break; }
     case "chilliStrings": { add(g, box(0.07, 1.9, 0.07, C.woodDark), 0, 0.95, 0); add(g, box(1.1, 0.05, 0.05, C.woodDark), 0, 1.85, 0); for (let i = 0; i < 4; i++) for (let k = 0; k < 8; k++) add(g, cone(0.035, 0.16, k % 3 ? C.red : "#8e2a22", 4), -0.42 + i * 0.28 + (k % 2) * 0.04, 1.75 - k * 0.15, (k % 2) * 0.05).rotation.z = Math.PI + (k % 2 ? 0.3 : -0.3); break; }
     case "noodleRack": {   // fresh noodles hung to dry on a bamboo frame
@@ -411,4 +411,73 @@ export function northDetail(kind: "coalStack" | "pickleCrocks" | "persimmonStrin
   return g;
 }
 
-export const NORTH_PROPS: Record<string, () => P> = { dumplingHouse, noodleWorkshop, mantouKitchen, vinegarWorkshop, roastDuckShop, skewerCourtyard, bingStall, harvestField, hutongLane, northMarket };
+/** 大白菜: the winter cabbage store, a pyramid of cabbages under a quilt by the wall, a child counting them */
+export function cabbagePile(): P {
+  const g = group();
+  add(g, northDetail("cabbageStack"), -0.3, 0, 0); add(g, northDetail("cabbageStack"), 0.9, 0, 0.5).rotation.y = 0.3;
+  add(g, box(0.9, 0.5, 0.9, "#c9c2a8"), -1.4, 0.25, 0.3); for (let i = 0; i < 3; i++) add(g, cyl(0.11, 0.15, 0.5, "#b9d28a", 7), -1.5 + i * 0.16, 0.6, 0.2 + (i % 2) * 0.18).rotation.z = Math.PI / 2;   // a crate more
+  const child = add(g, person("#e0a52c"), 0.4, 0, 1.4) as Fig; child.scale.setScalar(0.7); child.rotation.y = Math.PI;
+  const re = reaction(0.5);
+  g.userData.poke = () => { re.poke(); bubble(child, "冬储大白菜 A hundred cabbages for the winter!", 1.3, 1600); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); const u = upper(child); if (u) { u.rotation.z = Math.sin(t * 1.5) * 0.06 + k * Math.sin(t * 8) * 0.25; } const a = arms(child); if (a) a.right.rotation.x = -0.4 - k * 1.6; tickChildren(g)(t, dt); };
+  return g;
+}
+
+/** 羊: a sheep pen at the edge of the wheat, fat woolly sheep and a boy with a switch */
+export function sheepPen(): P {
+  const g = group();
+  const w = 3.6, d = 2.6;
+  for (const [x, z, len, rot] of [[0, -d / 2, w, 0], [0, d / 2, w, 0], [-w / 2, 0, d, Math.PI / 2], [w / 2, 0, d, Math.PI / 2]] as [number, number, number, number][]) { const r = add(g, box(len, 0.06, 0.06, C.woodDark), x, 0.55, z); r.rotation.y = rot; const r2 = add(g, box(len, 0.06, 0.06, C.woodDark), x, 0.3, z); r2.rotation.y = rot; for (let i = 0; i <= 3; i++) add(g, box(0.07, 0.7, 0.07, C.woodDark), x + (rot ? 0 : -len / 2 + (i / 3) * len), 0.35, z + (rot ? -len / 2 + (i / 3) * len : 0)); }
+  const sheep = [[-1.0, -0.4, 0.4], [0.3, 0.5, -0.8], [1.0, -0.6, 2.2], [-0.2, -0.9, 1.0]].map(([x, z, rot]) => { const sh = new THREE.Group(); sh.position.set(x, 0, z); sh.rotation.y = rot; g.add(sh); add(sh, ball(0.36, "#efe9dc", 9), 0, 0.5, 0).scale.set(1.3, 1, 1); add(sh, ball(0.16, "#3a3a3a", 7), 0.5, 0.62, 0); for (const dz of [-0.14, 0.14]) add(sh, ball(0.06, "#3a3a3a", 5), 0.55, 0.74, dz).scale.set(0.6, 1, 1.4); for (const [dx, dz] of [[-0.25, -0.15], [0.25, -0.15], [-0.25, 0.15], [0.25, 0.15]]) add(sh, cyl(0.04, 0.04, 0.3, "#3a3a3a", 5), dx, 0.15, dz); return sh; });
+  const boy = add(g, person("#4a5a7a", { hat: true }), 2.2, 0, 0.6) as Fig; boy.rotation.y = -Math.PI / 2;
+  add(g, cyl(0.02, 0.02, 1.0, "#c9a86a", 4), 2.35, 0.8, 0.4).rotation.z = 0.5;
+  const re = reaction(0.5);
+  g.userData.poke = () => { re.poke(); bubble(boy, "咩~ Baa! Mutton for the winter pot", 1.7, 1500); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); sheep.forEach((sh, i) => { sh.position.y = k * Math.abs(Math.sin(t * 6 + i)) * 0.25; sh.children[1].rotation.z = Math.sin(t * 1.2 + i) * 0.15 - 0.2; }); tickChildren(g)(t, dt); };
+  return g;
+}
+
+/** 小米高粱: a patch of millet and a row of sorghum, the north's older grains, heads heavy and nodding */
+export function milletPatch(): P {
+  const g = group();
+  add(g, box(3.6, 0.08, 2.4, "#b9a67a"), 0, 0.04, 0);
+  const heads: THREE.Object3D[] = [];
+  for (let r = 0; r < 4; r++) for (let i = 0; i < 9; i++) { const x = -1.5 + i * 0.37, z = -0.9 + r * 0.45; add(g, cyl(0.015, 0.02, 0.9, "#a9b86a", 4), x, 0.5, z); const h = add(g, cyl(0.05, 0.03, 0.32, "#d9b85a", 6), x + 0.06, 1.05, z); h.rotation.z = -0.5; heads.push(h); }
+  for (let i = 0; i < 6; i++) { const x = -1.4 + i * 0.56; add(g, cyl(0.025, 0.03, 1.8, "#8fa85a", 5), x, 0.9, 0.95); const h = add(g, ball(0.12, "#8e2a22", 7), x, 1.85, 0.95); h.scale.y = 1.5; heads.push(h); }   // sorghum
+  add(g, cyl(0.28, 0.3, 0.5, "#e6dcc4", 9), 2.1, 0.25, -0.6); add(g, cyl(0.24, 0.24, 0.04, "#e8c95a", 12), 2.1, 0.52, -0.6);   // a sack of hulled millet
+  const re = reaction(0.5);
+  g.userData.poke = () => { re.poke(); bubble(g, "小米粥 Millet porridge, the north's breakfast", 2.2, 1600); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); heads.forEach((h, i) => { h.rotation.x = Math.sin(t * 1.4 + i * 0.7) * 0.08 * (1 + k * 3); }); };
+  return g;
+}
+
+/** 枣树: a jujube tree heavy with red dates, a mat of them drying underneath */
+export function jujubeTree(): P {
+  const g = group();
+  add(g, cyl(0.12, 0.16, 1.6, "#5a4a3a", 7), 0, 0.8, 0);
+  const crown = add(g, ball(1.05, "#6f9b57", 9), 0, 2.1, 0); crown.scale.y = 0.85;
+  const dates: THREE.Object3D[] = [];
+  for (let i = 0; i < 26; i++) { const a = (i / 26) * Math.PI * 2, r = 0.7 + (i % 3) * 0.15; dates.push(add(g, ball(0.06, i % 4 ? "#a82a1e" : "#c9432e", 5), Math.cos(a) * r, 1.9 + Math.sin(i * 1.7) * 0.5, Math.sin(a) * r * 0.9)); }
+  add(g, cyl(0.8, 0.8, 0.04, "#d9c28a", 14), 1.7, 0.02, 0.6); for (let i = 0; i < 24; i++) { const a = rnd() * Math.PI * 2, r = rnd() * 0.65; add(g, ball(0.05, i % 3 ? "#a82a1e" : "#7e1e14", 5), 1.7 + Math.cos(a) * r, 0.07, 0.6 + Math.sin(a) * r).scale.y = 0.8; }
+  const falling: { m: THREE.Object3D; t: number }[] = [];
+  const re = reaction(0.5);
+  g.userData.poke = () => { re.poke(); for (let i = 0; i < 6; i++) { const m = add(g, ball(0.06, "#c9432e", 5), (rnd() - 0.5) * 1.4, 1.9, (rnd() - 0.5) * 1.2); falling.push({ m, t: 0 }); } bubble(g, "红枣 Red dates: sweet, and in every winter soup", 3.2, 1600); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); crown.rotation.z = Math.sin(t * 0.9) * 0.02 + k * Math.sin(t * 9) * 0.05; dates.forEach((d, i) => { d.position.y += Math.sin(t * 2 + i) * 0.0008; }); for (let i = falling.length - 1; i >= 0; i--) { const f = falling[i]; f.t += dt; f.m.position.y = Math.max(0.06, 1.9 - f.t * f.t * 4); if (f.t > 3) { g.remove(f.m); falling.splice(i, 1); } } };
+  return g;
+}
+
+/** 大葱: a bed of big northern scallions, a bundle pulled and tied, the man eating one raw with a bing */
+export function scallionBed(): P {
+  const g = group();
+  add(g, box(3.0, 0.1, 2.0, "#7a5a3a"), 0, 0.05, 0);
+  for (let r = 0; r < 3; r++) for (let i = 0; i < 8; i++) { const x = -1.3 + i * 0.37, z = -0.6 + r * 0.6; add(g, cyl(0.035, 0.045, 0.5, "#f1ecdc", 6), x, 0.35, z); for (let k = 0; k < 3; k++) { const l = add(g, cyl(0.02, 0.03, 0.6, "#5f9a3c", 5), x, 0.85, z); l.rotation.set((k - 1) * 0.25, k * 2.1, 0); } }
+  for (let i = 0; i < 5; i++) add(g, cyl(0.03, 0.04, 1.2, i % 2 ? "#f1ecdc" : "#6fae4f", 5), 1.9, 0.22, -0.5 + i * 0.12).rotation.z = Math.PI / 2 - 0.15;   // a bundle on the ground
+  const man = add(g, person("#3f6b8f"), 2.0, 0, 0.9) as Fig; man.rotation.y = Math.PI * 0.8;
+  add(g, cyl(0.02, 0.025, 0.5, "#6fae4f", 5), 2.1, 1.1, 1.1).rotation.x = -0.6;
+  const re = reaction(0.5);
+  g.userData.poke = () => { re.poke(); bubble(man, "大葱蘸酱 A raw scallion, bean paste, a bing. Lunch.", 1.7, 1600); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); const a = arms(man); if (a) a.right.rotation.x = -1.6 + k * Math.sin(t * 6) * 0.4; const u = upper(man); if (u) u.rotation.z = Math.sin(t * 0.8) * 0.04; tickChildren(g)(t, dt); };
+  return g;
+}
+
+export const NORTH_PROPS: Record<string, () => P> = { dumplingHouse, noodleWorkshop, mantouKitchen, vinegarWorkshop, roastDuckShop, skewerCourtyard, bingStall, harvestField, hutongLane, northMarket, cabbagePile, sheepPen, milletPatch, jujubeTree, scallionBed };

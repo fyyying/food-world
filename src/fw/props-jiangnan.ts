@@ -303,4 +303,63 @@ export function jnDetail(kind: "lotusBasket" | "crabPots" | "wineJars" | "teaBas
   return g;
 }
 
-export const JN_PROPS: Record<string, () => P> = { baoShop, crabPond, lotusPond, wineCellar, teaHill, riverMarket, riversideRestaurant, jiangnanHome };
+/** 笋: a bamboo clump with spring shoots breaking the soil, a digger with a hoe and a basket */
+export function bambooShootClump(): P {
+  const g = group();
+  add(g, cyl(1.5, 1.6, 0.1, "#7a5a3a", 14), 0, 0.05, 0);
+  for (let i = 0; i < 9; i++) { const a = (i / 9) * Math.PI * 2, r = 0.5 + (i % 2) * 0.5; const st = add(g, cyl(0.05, 0.06, 3.2 + (i % 3) * 0.5, i % 2 ? "#8fbf6e" : "#6fae4f", 6), Math.cos(a) * r, 1.7, Math.sin(a) * r); st.rotation.z = (rnd() - 0.5) * 0.12; for (let k = 0; k < 3; k++) add(g, cone(0.2, 0.4, "#6fae4f", 5), Math.cos(a) * r + (k - 1) * 0.2, 2.4 + k * 0.5, Math.sin(a) * r).rotation.z = (k - 1) * 0.9; }
+  const shoots = [[0.9, 1.4], [1.5, 0.7], [0.2, 1.7], [-1.4, 1.1]].map(([x, z]) => add(g, cone(0.14, 0.5, "#c9a86a", 6), x, 0.3, z));
+  add(g, cyl(0.28, 0.22, 0.3, C.straw, 9), 2.0, 0.15, -0.4); add(g, cone(0.12, 0.4, "#c9a86a", 6), 2.0, 0.45, -0.4).rotation.z = 0.9;
+  const digger = add(g, person("#2f5d3f", { hat: true }), 1.6, 0, 1.6) as Fig; digger.rotation.y = Math.PI * 1.2;
+  add(g, cyl(0.02, 0.025, 1.1, C.woodDark, 4), 1.8, 0.7, 1.9).rotation.z = 0.6;
+  const re = reaction(0.5);
+  g.userData.poke = () => { re.poke(); bubble(digger, "春笋 Spring shoots, dug before the sun finds them", 1.7, 1600); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); shoots.forEach((sh, i) => { sh.position.y = 0.3 + k * Math.abs(Math.sin(t * 5 + i)) * 0.2; }); const u = upper(digger); if (u) u.rotation.x = 0.3 + Math.sin(t * 2.2) * 0.15 * (1 + k); tickChildren(g)(t, dt); };
+  return g;
+}
+
+/** 火腿: Jinhua hams hanging under an eave to cure, salt in a crock, the master pressing one with his thumb */
+export function hamRack(): P {
+  const g = group();
+  add(g, house("jiangnan", 3.0, 2.2, 2.0), 0, 0, -0.8);
+  add(g, box(3.2, 0.06, 0.06, C.woodDark), 0, 2.05, 0.6);
+  const hams = Array.from({ length: 5 }, (_, i) => { const h = new THREE.Group(); h.position.set(-1.2 + i * 0.6, 2.05, 0.6); g.add(h); add(h, cyl(0.01, 0.01, 0.25, "#c9a86a", 3), 0, -0.12, 0); const body = add(h, ball(0.17, i % 2 ? "#8a3a2e" : "#a04a3a", 8), 0, -0.6, 0); body.scale.set(0.8, 1.5, 0.55); add(h, cyl(0.05, 0.07, 0.3, "#d9b88a", 6), 0, -0.3, 0); return h; });
+  add(g, cyl(0.24, 0.2, 0.4, "#5c3a28", 10), 1.6, 0.2, 0.9); add(g, cyl(0.2, 0.2, 0.05, "#f3ece0", 10), 1.6, 0.42, 0.9);   // the salt crock
+  const master = add(g, person("#6a7fb0", { apron: true }), -0.6, 0, 1.4) as Fig; master.rotation.y = Math.PI;
+  const re = reaction(0.5);
+  g.userData.poke = () => { re.poke(); bubble(master, "金华火腿 Salted in winter, hung till autumn", 1.9, 1600); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); hams.forEach((h, i) => { h.rotation.z = Math.sin(t * 1.1 + i) * 0.05 * (1 + k * 4); }); const a = arms(master); if (a) a.right.rotation.x = -1.4 - k * Math.sin(Math.min(1, k * 2) * Math.PI) * 0.6; tickChildren(g)(t, dt); };
+  return g;
+}
+
+/** 桂花: an osmanthus tree in flower, tiny gold blossoms, a cloth spread to catch them for the sugar */
+export function osmanthusTree(): P {
+  const g = group();
+  add(g, cyl(0.14, 0.18, 1.5, "#5a4a3a", 7), 0, 0.75, 0);
+  const crown = add(g, ball(1.2, "#4f7d4a", 9), 0, 2.2, 0); crown.scale.y = 0.85;
+  for (let i = 0; i < 60; i++) { const a = rnd() * Math.PI * 2, b = rnd() * Math.PI, r = 1.15; add(g, ball(0.04, i % 3 ? "#f4c542" : "#f9d86a", 4), Math.cos(a) * Math.sin(b) * r, 2.2 + Math.cos(b) * r * 0.85, Math.sin(a) * Math.sin(b) * r); }
+  add(g, box(2.6, 0.02, 2.2, "#f3ece0"), 0, 0.02, 0.3); for (let i = 0; i < 40; i++) add(g, ball(0.03, "#f4c542", 4), (rnd() - 0.5) * 2.4, 0.04, 0.3 + (rnd() - 0.5) * 2.0);
+  add(g, cyl(0.16, 0.14, 0.24, "#f3ece0", 10), 1.6, 0.14, -0.9); add(g, cyl(0.12, 0.12, 0.03, "#d9a05a", 10), 1.6, 0.27, -0.9);   // osmanthus sugar jar
+  const falling: { m: THREE.Object3D; t: number; x: number }[] = [];
+  const re = reaction(0.5);
+  g.userData.poke = () => { re.poke(); for (let i = 0; i < 14; i++) falling.push({ m: add(g, ball(0.035, "#f4c542", 4), (rnd() - 0.5) * 2.2, 2.0 + rnd() * 0.6, (rnd() - 0.5) * 2.0), t: rnd() * 0.5, x: rnd() * 6 }); bubble(g, "桂花糖 Osmanthus for the sugar, the wine and the cakes", 3.4, 1600); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); crown.rotation.z = Math.sin(t * 0.8) * 0.02 + k * Math.sin(t * 9) * 0.05; for (let i = falling.length - 1; i >= 0; i--) { const f = falling[i]; f.t += dt; f.m.position.y -= dt * 0.45; f.m.position.x += Math.sin(f.t * 3 + f.x) * dt * 0.3; if (f.m.position.y < 0.04) { g.remove(f.m); falling.splice(i, 1); } } };
+  return g;
+}
+
+/** 茭白荸荠: a wet plot of water bamboo and water chestnuts, a woman wading with a basket of the white stems */
+export function waterBamboo(): P {
+  const g = group();
+  add(g, box(3.6, 0.1, 2.6, "#5e8a86"), 0, 0.03, 0); add(g, box(3.8, 0.14, 0.2, "#7a5a3a"), 0, 0.07, -1.35); add(g, box(3.8, 0.14, 0.2, "#7a5a3a"), 0, 0.07, 1.35); add(g, box(0.2, 0.14, 2.8, "#7a5a3a"), -1.85, 0.07, 0); add(g, box(0.2, 0.14, 2.8, "#7a5a3a"), 1.85, 0.07, 0);
+  const stems: THREE.Object3D[] = [];
+  for (let r = 0; r < 3; r++) for (let i = 0; i < 7; i++) { const x = -1.4 + i * 0.47, z = -0.8 + r * 0.8; add(g, cyl(0.05, 0.06, 0.5, "#f3ece0", 6), x, 0.3, z); for (let k = 0; k < 4; k++) { const l = add(g, box(0.06, 1.4, 0.01, k % 2 ? "#6fae4f" : "#8fbf6e"), x, 1.1, z); l.rotation.set((k - 1.5) * 0.18, k * 1.6, 0); stems.push(l); } }
+  for (let i = 0; i < 10; i++) add(g, ball(0.06, "#4a2a1e", 6), -1.5 + i * 0.33, 0.1, 1.05).scale.y = 0.6;   // water chestnuts on the bank
+  const woman = add(g, person("#c0392b", { hat: true }), 1.4, 0.1, 0.3) as Fig; woman.rotation.y = -Math.PI / 2;
+  add(g, cyl(0.24, 0.2, 0.28, C.straw, 9), 1.6, 0.25, 0.9); for (let i = 0; i < 4; i++) add(g, cyl(0.04, 0.05, 0.5, "#f3ece0", 6), 1.6 + (rnd() - 0.5) * 0.2, 0.5, 0.9 + (rnd() - 0.5) * 0.2).rotation.z = 0.4 + rnd() * 0.6;
+  const re = reaction(0.5);
+  g.userData.poke = () => { re.poke(); bubble(woman, "茭白 Water bamboo: sweet, white, stir-fried tonight", 1.7, 1600); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); stems.forEach((l, i) => { l.rotation.z = Math.sin(t * 1.3 + i * 0.4) * 0.08 * (1 + k * 3); }); const u = upper(woman); if (u) u.rotation.x = 0.25 + Math.sin(t * 1.8) * 0.1 * (1 + k); tickChildren(g)(t, dt); };
+  return g;
+}
+
+export const JN_PROPS: Record<string, () => P> = { baoShop, crabPond, lotusPond, wineCellar, teaHill, riverMarket, riversideRestaurant, jiangnanHome, bambooShootClump, hamRack, osmanthusTree, waterBamboo };

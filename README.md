@@ -78,7 +78,10 @@ bing stall, hutong, northern market, winter table, courtyard kitchen (`griddle`)
 courtyard (`skewers`), plus 54 keyed props for the card badges. Both new areas have strolling people (a loop through the
 northern lane, a loop up and down the oasis road over its wooden bridge) and small details (`northDetail`: cabbage stacks,
 garlic braids, chilli strings, a noodle-drying rack, wheat sheaves; `xjDetail`: melon piles, a raisin drying house, nan
-stacks, spice sacks, carpets airing, chilli strings).
+stacks, spice sacks, carpets airing, chilli strings). Each area also has small ingredient stops with a story card
+and no room, like Sichuan's chilli field and pepper tree: winter cabbage, mutton, millet and sorghum, jujube and the
+big scallion in the north; fat-tailed sheep, cumin, yellow carrots, apricots and walnuts in Xinjiang; bamboo shoots,
+Jinhua ham, osmanthus and water bamboo in Jiangnan. The bao shop and tea hill moved to the south bank.
 
 ## The worlds
 

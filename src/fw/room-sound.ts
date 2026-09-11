@@ -55,6 +55,7 @@ export function playRoomSound(kind: RoomSound): () => void {
   activeStop?.();
   if (typeof AudioContext === 'undefined') return () => {};
   let context: AudioContext | undefined, source: AudioBufferSourceNode | undefined;
+  let restoreSession = () => {};
   let stopped = false;
   const stop = () => {
     if (stopped) return;
@@ -66,8 +67,21 @@ export function playRoomSound(kind: RoomSound): () => void {
       source.disconnect();
     }
     if (context && context.state !== 'closed') void context.close().catch(() => {});
+    restoreSession();
   };
   try {
+    // iOS defaults Web Audio to ambient, which the ringer switch can mute.
+    // Select media playback only for the requested sound, then release it.
+    try {
+      const session = (navigator as Navigator & { audioSession?: { type: string } }).audioSession;
+      if (session) {
+        const previous = session.type;
+        session.type = 'playback';
+        restoreSession = () => {
+          try { if (session.type === 'playback') session.type = previous; } catch { /* Optional API. */ }
+        };
+      }
+    } catch { /* Browsers without Audio Session still use normal Web Audio. */ }
     context = new AudioContext();
     activeStop = stop;
     const ctx = context;

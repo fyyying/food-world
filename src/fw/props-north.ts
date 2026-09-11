@@ -514,19 +514,32 @@ export function milletPatch(): P {
   return g;
 }
 
-/** 枣树: a jujube tree heavy with red dates, a mat of them drying underneath */
+/** 枣树: a jujube tree heavy with red dates; tap it and the crown shakes and the dates rain onto the mat (the way the Sichuan pepper tree drops its peppercorns) */
 export function jujubeTree(): P {
   const g = group();
   add(g, cyl(0.12, 0.16, 1.6, "#5a4a3a", 7), 0, 0.8, 0);
-  const crown = add(g, ball(1.05, "#6f9b57", 9), 0, 2.1, 0); crown.scale.y = 0.85;
-  const dates: THREE.Object3D[] = [];
-  for (let i = 0; i < 26; i++) { const a = (i / 26) * Math.PI * 2, r = 0.7 + (i % 3) * 0.15; dates.push(add(g, ball(0.06, i % 4 ? "#a82a1e" : "#c9432e", 5), Math.cos(a) * r, 1.9 + Math.sin(i * 1.7) * 0.5, Math.sin(a) * r * 0.9)); }
+  const crown = new THREE.Group(); g.add(crown);
+  add(crown, ball(1.05, "#6f9b57", 9), 0, 2.1, 0).scale.y = 0.85;
+  const dates: THREE.Mesh[] = [];
+  for (let i = 0; i < 30; i++) { const a = (i / 30) * Math.PI * 2, r = 0.7 + (i % 3) * 0.15; dates.push(add(crown, ball(0.06, i % 4 ? "#a82a1e" : "#c9432e", 5), Math.cos(a) * r, 1.9 + Math.sin(i * 1.7) * 0.5, Math.sin(a) * r * 0.9)); }
   add(g, cyl(0.8, 0.8, 0.04, "#d9c28a", 14), 1.7, 0.02, 0.6); for (let i = 0; i < 24; i++) { const a = rnd() * Math.PI * 2, r = rnd() * 0.65; add(g, ball(0.05, i % 3 ? "#a82a1e" : "#7e1e14", 5), 1.7 + Math.cos(a) * r, 0.07, 0.6 + Math.sin(a) * r).scale.y = 0.8; }
-  const falling: { m: THREE.Object3D; t: number }[] = [];
-  const re = reaction(0.5);
-  g.userData.poke = () => { re.poke(); for (let i = 0; i < 6; i++) { const m = add(g, ball(0.06, "#c9432e", 5), (rnd() - 0.5) * 1.4, 1.9, (rnd() - 0.5) * 1.2); falling.push({ m, t: 0 }); } bubble(g, "红枣 Red dates: sweet, and in every winter soup", 3.2, 1600); };
-  const chat = ambientChat(g, NORTH_LINES);
-  g.userData.tick = (t, dt) => { const k = re.step(dt); hopFood(g, k, t, dt); chat(dt); crown.rotation.z = Math.sin(t * 0.9) * 0.02 + k * Math.sin(t * 9) * 0.05; dates.forEach((d, i) => { d.position.y += Math.sin(t * 2 + i) * 0.0008; }); for (let i = falling.length - 1; i >= 0; i--) { const f = falling[i]; f.t += dt; f.m.position.y = Math.max(0.06, 1.9 - f.t * f.t * 4); if (f.t > 3) { g.remove(f.m); falling.splice(i, 1); } } };
+  const falling: { m: THREE.Mesh; v: number; life: number }[] = [];
+  let shake = 0;
+  g.userData.poke = () => {
+    shake = 1;
+    bubble(g, "红枣 Red dates: sweet, and in every winter soup", 3.4, 1600);
+    for (let i = 0; i < 16; i++) { const src = dates[Math.floor(rnd() * dates.length)]; const m = ball(0.06, "#c9432e", 5); m.position.copy(src.position); m.position.x += (rnd() - 0.5) * 0.3; m.position.z += (rnd() - 0.5) * 0.3; g.add(m); falling.push({ m, v: 0, life: 0 }); }
+  };
+  g.userData.tick = (t, dt) => {
+    if (shake > 0) { shake = Math.max(0, shake - dt * 1.3); crown.rotation.z = Math.sin(t * 28) * 0.09 * shake; crown.rotation.x = Math.cos(t * 23) * 0.06 * shake; crown.position.y = Math.abs(Math.sin(t * 20)) * 0.08 * shake; }
+    else { crown.rotation.z = Math.sin(t * 0.9) * 0.02; crown.rotation.x = 0; crown.position.y = 0; }
+    for (let i = falling.length - 1; i >= 0; i--) {
+      const f = falling[i]; f.v += dt * 9; f.life += dt;
+      f.m.position.y = Math.max(0.06, f.m.position.y - f.v * dt);
+      if (f.m.position.y <= 0.061) f.v = 0;
+      if (f.life > 4) { g.remove(f.m); falling.splice(i, 1); }
+    }
+  };
   return g;
 }
 
@@ -550,7 +563,10 @@ export function courtyardKitchen(): P {
   const g = group();
   add(g, box(7.0, 0.1, 5.2, "#b3a48c"), 0, 0.05, 0);                                            // the packed-earth yard
   add(g, house("northern", 3.6, 2.4, 1.8), -1.4, 0, -1.8);                                       // the main room at the back
-  brickWall(g, 2.4, -2.2, 2.2, 0, 1.2); brickWall(g, 3.5, 0, 4.4, Math.PI / 2, 0.9); brickWall(g, -3.5, 0.3, 3.8, Math.PI / 2, 0.9); brickWall(g, -1.3, 2.6, 4.4, 0, 0.8); brickWall(g, 3.1, 2.6, 0.8, 0, 0.8);   // low courtyard walls (the yard stays visible from above), closed up to the gate on both sides
+  // the yard is closed all round: the house makes the north-west corner (its west wall is at x -3.2, its back at z -3.0),
+  // the back wall runs from the house's east side to the east corner, the east wall from back corner to front corner,
+  // the west wall from the house's front corner to the front corner, and the front wall closes up to the gate on both sides
+  brickWall(g, 1.95, -2.2, 3.1, 0, 1.2); brickWall(g, 3.5, 0.2, 4.8, Math.PI / 2, 0.9); brickWall(g, -3.2, 1.0, 3.2, Math.PI / 2, 0.9); brickWall(g, -1.15, 2.6, 4.1, 0, 0.8); brickWall(g, 3.1, 2.6, 0.8, 0, 0.8);
   gate(g, 1.8, 2.6, 0);
   // the stove: brick, one big wok set in, the flue to the house, the steamer tier beside it
   add(g, box(1.6, 0.85, 1.1, BRICK), 1.9, 0.42, -1.4); hearth(g, 1.6, -0.85); add(g, box(0.28, 1.4, 0.28, "#6b6560"), 2.5, 1.5, -1.9);

@@ -251,7 +251,13 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   for (const [x, z, c] of [[12.5, 12.8, "#e0a52c"], [13.4, 13.4, "#3f6b8f"]] as [number, number, string][]) place(person(c), x, z, x).scale.setScalar(0.62);
   add(group, new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.1, 0.45), mat(C.wood)), 22.8, 0.45, 17.6);
   for (const x of [22.2, 23.4]) add(group, new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.4, 0.36), mat(C.woodDark)), x, 0.2, 17.6);
-  for (const x of [22.4, 23.2]) { const gp = person(x < 22.8 ? "#7a4a3a" : "#5a5a66"); (gp.userData as { sit?: () => void }).sit?.(); place(gp, x, 17.6, 0.05).position.y = 0.1; }
+  for (const x of [22.4, 23.2]) {
+    const gp = person(x < 22.8 ? "#7a4a3a" : "#5a5a66");
+    (gp.userData as { sit?: () => void }).sit?.();
+    const figureScale = (gp.userData as { hipY: number }).hipY / 0.44;
+    // The pelvis underside is at 0.36 * scale; knees must extend past the front edge.
+    place(gp, x, 17.73, 0.05).position.y = 0.5 - 0.36 * figureScale;
+  }
   // laundry line between the water-town houses
   const line = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 5.2, 4), mat(C.woodDark)); line.rotation.z = Math.PI / 2; line.position.set(17.5, 2.3, 13.6); group.add(line);
   const cloths = ["#c0392b", "#3f6b8f", "#f4f1ea", "#e0a52c", "#6a7fb0"].map((c, i) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 0.9, 1, 3), new THREE.MeshStandardMaterial({ color: c, side: THREE.DoubleSide, roughness: 1 })); m.geometry.translate(0, -0.45, 0); m.position.set(15.4 + i * 1.05, 2.3, 13.6); m.castShadow = true; group.add(m); return m; });

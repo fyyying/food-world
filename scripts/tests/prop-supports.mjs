@@ -33,6 +33,27 @@ try {
   const village = buildChina([]);
   const restaurant = village.placed.find(p => p.obj.id === 'riverside');
   const people = village.group.children.filter(o => o.userData.walk);
+  const bench = village.group.children.find(o => o.isMesh && o.position.x === 22.8 && o.position.z === 17.6);
+  bench.geometry.computeBoundingBox();
+  const seatTop = bench.position.y + bench.geometry.boundingBox.max.y;
+  const benchFront = bench.position.z + bench.geometry.boundingBox.max.z;
+  const benchGuests = people.filter(p => [22.4,23.2].includes(p.position.x) && p.position.z > 17 && p.position.z < 18);
+  assert.equal(benchGuests.length, 2);
+  village.group.updateMatrixWorld(true);
+  for (const guest of benchGuests) {
+    const pelvis = guest.children.find(o => o.isMesh);
+    pelvis.geometry.computeBoundingBox();
+    const bottom = pelvis.geometry.boundingBox.clone().applyMatrix4(pelvis.matrixWorld).min.y;
+    assert.ok(Math.abs(bottom-seatTop) < 0.002, 'bench guest must rest on the seat surface, not sink into it');
+    const legs = guest.children.filter(o => o.isGroup && o !== guest.userData.upper);
+    for (const leg of legs) {
+      const shin = leg.children.find(o => o.isGroup);
+      const calf = shin.children.find(o => o.isMesh);
+      calf.geometry.computeBoundingBox();
+      const bounds = calf.geometry.boundingBox.clone().applyMatrix4(calf.matrixWorld);
+      assert.ok(bounds.min.z > benchFront, 'bench edge must not pass through the seated calves');
+    }
+  }
   const before = people.map(p => p.position.clone());
   village.tick(0, 0);
   village.tick(1, 0);

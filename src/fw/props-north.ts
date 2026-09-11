@@ -42,11 +42,29 @@ function hearth(g: THREE.Object3D, x: number, z: number, faceZ = 1): THREE.Objec
   const fire = add(g, cone(0.1, 0.16, "#ff7a3c", 6), x, 0.24, z - 0.06 * faceZ); add(g, cone(0.05, 0.1, "#ffd070", 6), x, 0.26, z - 0.06 * faceZ);
   return fire;
 }
-/** a shop sign: red frame, cream panel, two dark brushed strokes standing for the characters */
-function signBoard(g: THREE.Object3D, w: number, h: number, x: number, y: number, z: number, rot = 0): void {
+/** a shop sign: red frame, cream panel, the shop's characters brushed on it (drawn once per text onto a canvas) */
+const SIGN_TEX: Record<string, THREE.CanvasTexture> = {};
+function signTexture(text: string, w: number, h: number): THREE.CanvasTexture {
+  const key = `${text}|${w}|${h}`;
+  if (SIGN_TEX[key]) return SIGN_TEX[key];
+  const W = 160, H = Math.round((160 * h) / w);
+  const c = document.createElement("canvas"); c.width = W; c.height = H;
+  const ctx = c.getContext("2d")!;
+  ctx.fillStyle = "#f3e6c8"; ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = "#c0392b"; ctx.lineWidth = 10; ctx.strokeRect(5, 5, W - 10, H - 10);
+  const chars = [...text];
+  const size = Math.min(W * 0.62, (H - 24) / chars.length * 0.82);
+  ctx.fillStyle = "#1e1a18"; ctx.font = `bold ${size}px "STKaiti", "KaiTi", "Songti SC", "Noto Serif SC", "PingFang SC", serif`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  const step = (H - 24) / chars.length;
+  chars.forEach((ch, i) => ctx.fillText(ch, W / 2, 12 + step * (i + 0.5)));
+  const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 4;
+  SIGN_TEX[key] = tex; return tex;
+}
+function signBoard(g: THREE.Object3D, w: number, h: number, x: number, y: number, z: number, text: string, rot = 0): void {
   const b = new THREE.Group(); b.position.set(x, y, z); b.rotation.y = rot; g.add(b);
-  add(b, box(w + 0.08, h + 0.08, 0.04, C.red), 0, 0, -0.01); add(b, box(w, h, 0.05, "#f3e6c8"), 0, 0, 0.01);
-  add(b, box(w * 0.5, 0.06, 0.02, "#2a2a2e"), 0, h * 0.22, 0.04); add(b, box(0.06, h * 0.45, 0.02, "#2a2a2e"), 0, -h * 0.05, 0.04); add(b, box(w * 0.4, 0.06, 0.02, "#2a2a2e"), 0, -h * 0.3, 0.04);
+  add(b, box(w + 0.08, h + 0.08, 0.04, C.red), 0, 0, -0.01);
+  const face = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshStandardMaterial({ map: signTexture(text, w, h), roughness: 0.8 }));
+  face.position.set(0, 0, 0.015); b.add(face);
 }
 
 /** 饺子馆: rolling, filling, pleating and boiling under one roof; a tray of pleated dumplings and a pot that boils over when you click. */
@@ -69,8 +87,8 @@ export function dumplingHouse(): P {
   add(g, box(1.4, 0.08, 0.9, C.wood), -1.6, 0.72, 3.0); for (const [dx, dz] of [[-0.6, -0.35], [0.6, -0.35], [-0.6, 0.35], [0.6, 0.35]]) add(g, box(0.08, 0.7, 0.08, C.woodDark), -1.6 + dx, 0.35, 3.0 + dz);
   add(g, cyl(0.16, 0.13, 0.05, "#f7f2e6", 9), -1.9, 0.79, 3.0); add(g, cyl(0.1, 0.08, 0.05, "#3b2a1e", 8), -1.3, 0.79, 2.85); add(g, ball(0.06, "#f4ecdc", 6), -1.35, 0.8, 3.2);
   const diners = [-2.4, -0.8].map((x, i) => { const p = person(i ? "#c0392b" : "#2f5d3f"); (p.userData as { sit?: () => void }).sit?.(); add(g, box(0.4, 0.3, 0.4, C.woodDark), x, 0.15, 3.0); const q = add(g, p, x, -0.14, 3.0); q.rotation.y = i ? -Math.PI / 2 : Math.PI / 2; return q as Fig; });
-  signBoard(g, 0.6, 0.8, 2.5, 1.9, 0.45);                      // 饺 sign
-  add(g, lantern(0.8), -2.2, 1.95, 0.6); add(g, lantern(0.8), 2.2, 1.95, 0.6);
+  signBoard(g, 0.6, 0.8, 1.7, 1.3, 0.53, "饺子");                      // 饺 sign
+  add(g, lantern(0.8), -2.0, 1.5, 0.62); add(g, lantern(0.8), 2.0, 1.5, 0.62);   // hanging under the eave, not beside it
   g.userData.steam = new THREE.Vector3(2.3, 1.45, 0.2);
   const re = reaction(0.6);
   g.userData.poke = () => { re.poke(); bubble(g, "饺子下锅喽! Dumplings in the pot!", 2.8, 1600); };
@@ -109,7 +127,7 @@ export function noodleWorkshop(): P {
   for (const x of [-1.8, -1.0]) { add(g, cyl(0.2, 0.15, 0.14, "#f7f2e6", 10), x, 0.83, 3.0); add(g, cyl(0.16, 0.16, 0.02, "#d9a441", 10), x, 0.9, 3.0); }
   add(g, cyl(0.1, 0.09, 0.2, "#3b2a1e", 8), -1.4, 0.86, 2.65);
   const diners = [-2.2, -0.6].map((x, i) => { const p = person(i ? "#e0a52c" : "#6a7fb0"); (p.userData as { sit?: () => void }).sit?.(); add(g, box(0.4, 0.3, 0.4, C.woodDark), x, 0.15, 3.0); const q = add(g, p, x, -0.14, 3.0); q.rotation.y = i ? -Math.PI / 2 : Math.PI / 2; return q as Fig; });
-  signBoard(g, 0.6, 0.8, 1.6, 1.28, -0.16);                     // 面 sign on the front wall
+  signBoard(g, 0.6, 0.8, 1.6, 1.28, -0.16, "面");                     // 面 sign on the front wall
   g.userData.steam = new THREE.Vector3(1.9, 1.45, 0.5);
   const re = reaction(0.5);
   g.userData.poke = () => { re.poke(); bubble(g, "刀削面, 一根一根飞进锅! Knife-cut, straight into the pot", 2.8, 1700); flakes.forEach((f, i) => { f.t = i * 0.12; }); };
@@ -148,7 +166,7 @@ export function mantouKitchen(): P {
   const kneader = add(g, person("#f4f1ea", { apron: true }), -1.3, 0, 0.2) as Fig;
   const shaper = add(g, person("#e9d7b8", { apron: true }), 0.2, 0, 0.2) as Fig;
   const buyer = add(g, person("#c0392b"), 2.2, 0, 2.0) as Fig; buyer.rotation.y = -0.7;
-  signBoard(g, 0.6, 0.8, 1.5, 1.28, -0.16);   // 馒头 sign on the front wall
+  signBoard(g, 0.6, 0.8, 1.5, 1.28, -0.16, "馒头");   // 馒头 sign on the front wall
   g.userData.steam = new THREE.Vector3(1.9, 2.0, 0.2);
   const re = reaction(0.6);
   g.userData.poke = () => { re.poke(); bubble(g, "热馒头! Hot mantou, just off the steam", 2.7, 1500); };
@@ -169,7 +187,7 @@ export function vinegarWorkshop(): P {
   const g = group();
   add(g, box(6.0, 0.25, 4.4, C.stone), 0, 0.12, 0);
   for (const [x, z] of [[-2.7, -1.9], [2.7, -1.9], [-2.7, 1.9], [2.7, 1.9]] as [number, number][]) add(g, cyl(0.1, 0.11, 2.4, C.woodDark, 6), x, 1.35, z);
-  add(g, chineseRoof(6.8, 5.2, 0.6, "#5c5f66", 0), 0, 2.6, 0); add(g, box(2.0, 0.16, 0.22, "#3f4148"), 0, 3.2, 0);   // low straight northern roof with a ridge
+  add(g, chineseRoof(6.8, 5.2, 0.6, "#5c5f66", 0), 0, 2.6, 0);   // low straight northern roof
   add(g, box(5.8, 2.0, 0.12, GREY), 0, 1.25, -2.1);
   const jars: THREE.Mesh[] = [];
   for (let r = 0; r < 3; r++) for (let i = 0; i < 5; i++) {
@@ -185,7 +203,7 @@ export function vinegarWorkshop(): P {
   const ladle = add(arms(master)!.right, cyl(0.02, 0.02, 0.45, C.wood, 4), 0.02, -0.28, 0.05); ladle.rotation.x = 1.2; add(ladle, cyl(0.06, 0.05, 0.06, "#3b2a1e", 8), 0, -0.22, 0);
   const helper = add(g, person("#7a4a3a", { apron: true }), -1.4, 0.25, 1.6) as Fig; helper.rotation.y = -0.4;
   add(g, cyl(0.16, 0.13, 0.32, "#3b2a1e", 10), 1.2, 0.41, 2.0); add(g, cyl(0.07, 0.06, 0.06, "#3b2a1e", 8), 1.5, 0.28, 2.0);   // a bottle and a tasting cup
-  signBoard(g, 0.55, 0.75, -2.9, 1.8, 2.1);                     // 醋 sign
+  signBoard(g, 0.55, 0.75, -2.9, 1.8, 2.1, "醋");                     // 醋 sign
   const re = reaction(0.7);
   g.userData.poke = () => { re.poke(); bubble(master, "山西老陈醋, 酸得香! Shanxi aged vinegar", 1.6, 1600); };
   g.userData.tick = (t, dt) => {
@@ -221,8 +239,8 @@ export function roastDuckShop(): P {
     add(g, box(1.2, 0.08, 0.8, C.wood), x, 0.72, 2.6); for (const [dx, dz] of [[-0.5, -0.3], [0.5, -0.3], [-0.5, 0.3], [0.5, 0.3]]) add(g, box(0.07, 0.7, 0.07, C.woodDark), x + dx, 0.35, 2.6 + dz);
     add(g, box(0.5, 0.06, 0.4, C.woodDark), x + (x < 0 ? -0.9 : 0.9), 0.3, 2.6); for (const [dx, dz] of [[-0.18, -0.14], [0.18, -0.14], [-0.18, 0.14], [0.18, 0.14]]) add(g, box(0.05, 0.3, 0.05, C.woodDark), x + (x < 0 ? -0.9 : 0.9) + dx, 0.15, 2.6 + dz);
   }
-  signBoard(g, 0.7, 0.8, 2.3, 1.95, 0.55);                      // 烤鸭 sign
-  add(g, lantern(0.8), -2.2, 2.05, 0.7);
+  signBoard(g, 0.7, 0.8, -1.85, 1.3, 0.53, "烤鸭");                      // 烤鸭 sign
+  add(g, lantern(0.8), 0.7, 1.6, 0.62);   // under the eave, beside the door
   g.userData.smoke = new THREE.Vector3(1.6, 2.0, 0.4);
   const re = reaction(0.6);
   g.userData.poke = () => { re.poke(); bubble(g, "枣木烤鸭, 皮脆肉嫩! Crisp skin, jujube wood", 2.9, 1600); };
@@ -288,7 +306,7 @@ export function bingStall(): P {
   add(g, box(3.0, 0.06, 1.7, "#c9a86a"), 0, 2.15, -0.1).rotation.x = 0.12;         // cloth awning
   const baker = add(g, person("#6a7fb0", { apron: true }), 0, 0, -1.0) as Fig;
   const buyers = [person("#c0392b"), person("#e9d7b8", { hat: true })].map((p, i) => { const q = add(g, p, -0.6 + i * 1.3, 0, 1.3); q.rotation.y = Math.PI; return q as Fig; });
-  signBoard(g, 0.5, 0.7, -1.45, 1.7, -0.3);                       // 饼 sign
+  signBoard(g, 0.5, 0.7, -1.45, 1.7, -0.3, "饼");                       // 饼 sign
   g.userData.steam = new THREE.Vector3(0.7, 1.2, -0.1);
   const re = reaction(0.7);
   g.userData.poke = () => { re.poke(); bubble(baker, "肉夹馍, 现烤现夹! Roujiamo, baked and filled to order", 1.6, 1600); };

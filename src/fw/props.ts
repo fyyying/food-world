@@ -198,8 +198,7 @@ export function house(style: "sichuan" | "jiangnan" | "northern", w = 3, d = 2.4
   }
   if (style === "northern") {
     const rw = w + 0.7 - (storeys - 1) * 0.5, rd = d + 0.7 - (storeys - 1) * 0.4;
-    add(g, chineseRoof(rw, rd, 0.7, roofColor, 0), 0, baseY - 0.02, 0);
-    add(g, box(Math.max(0.6, rw - rd) + 0.3, 0.16, 0.22, "#3f4148"), 0, baseY + 0.7, 0);   // the ridge
+    add(g, chineseRoof(rw, rd, 0.7, roofColor, 0), 0, baseY - 0.02, 0);   // (the roof brings its own ridge; a second beam on top of it z-fought)
   } else add(g, chineseRoof(w + 1.1 - (storeys - 1) * 0.5, d + 1.0 - (storeys - 1) * 0.4, 1.25, roofColor), 0, baseY - 0.02, 0);
   // door with couplets and a pair of lanterns
   add(g, box(0.62, h * 0.6, 0.06, style === "jiangnan" ? C.woodDark : C.woodRed), 0, h * 0.3, d / 2 + 0.03);

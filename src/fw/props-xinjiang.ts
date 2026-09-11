@@ -378,7 +378,8 @@ export function xjDetail(kind: "melonPile" | "raisinRack" | "nanStack" | "spiceS
     case "nanStack": { add(g, box(1.0, 0.5, 0.7, WOOD), 0, 0.25, 0); for (let i = 0; i < 6; i++) add(g, cyl(0.22, 0.22, 0.04, BREAD, 14), -0.2 + (i % 2) * 0.4, 0.53 + Math.floor(i / 2) * 0.045, (i % 2) * 0.15); add(g, cyl(0.16, 0.16, 0.02, "#e9c98a", 14), 0.2, 0.7, 0.15); break; }
     case "spiceSacks": for (let i = 0; i < 4; i++) { add(g, cyl(0.22, 0.26, 0.4, "#e6dcc4", 9), (i % 2) * 0.5 - 0.25, 0.2, Math.floor(i / 2) * 0.45 - 0.2); add(g, cyl(0.18, 0.02, 0.1, ["#d94f3a", "#e8a53f", "#b8462a", "#6f9b57"][i], 9), (i % 2) * 0.5 - 0.25, 0.45, Math.floor(i / 2) * 0.45 - 0.2); } break;
     case "carpetLine": { for (const x of [-1.2, 1.2]) add(g, cyl(0.05, 0.06, 2.2, WOOD, 6), x, 1.1, 0); add(g, cyl(0.02, 0.02, 2.4, "#7a5a3a", 5), 0, 2.15, 0).rotation.z = Math.PI / 2; for (let i = 0; i < 3; i++) { const c = add(g, box(0.6, 1.2, 0.03, ["#b8462a", "#2f5f9a", "#8a4a8a"][i]), -0.7 + i * 0.7, 1.55, 0); add(c, box(0.5, 0.35, 0.04, i % 2 ? "#e9dcb8" : "#3f9aa3"), 0, 0.1, 0); } break; }
-    case "chilliStrings": { add(g, box(0.07, 1.9, 0.07, WOOD), 0, 0.95, 0); add(g, box(1.1, 0.05, 0.05, WOOD), 0, 1.85, 0); for (let i = 0; i < 4; i++) for (let k = 0; k < 8; k++) add(g, cone(0.035, 0.16, k % 3 ? "#d94f3a" : "#8e2a22", 4), -0.42 + i * 0.28 + (k % 2) * 0.04, 1.75 - k * 0.15, (k % 2) * 0.05).rotation.z = Math.PI + (k % 2 ? 0.3 : -0.3); break; }
+    case "chilliStrings": { add(g, box(0.07, 1.9, 0.07, WOOD), 0, 0.95, 0); add(g, box(1.1, 0.05, 0.05, WOOD), 0, 1.85, 0); const strings: THREE.Group[] = []; for (let i = 0; i < 4; i++) { const st = new THREE.Group(); st.position.set(-0.42 + i * 0.28, 1.85, 0); g.add(st); strings.push(st); for (let k = 0; k < 8; k++) add(st, cone(0.035, 0.16, k % 3 ? "#d94f3a" : "#8e2a22", 4), (k % 2) * 0.04, -0.1 - k * 0.15, (k % 2) * 0.05).rotation.z = Math.PI + (k % 2 ? 0.3 : -0.3); }
+      g.userData.tick = (t) => { strings.forEach((st, i) => { st.rotation.x = Math.sin(t * 1.3 + i * 1.1) * 0.07; st.rotation.z = Math.sin(t * 0.9 + i * 0.7) * 0.04; }); }; break; }
   }
   return g;
 }
@@ -437,6 +438,26 @@ export function apricotWalnut(): P {
   const re = reaction(0.5);
   g.userData.poke = () => { re.poke(); for (let i = 0; i < 6; i++) falling.push({ m: add(g, ball(0.07, "#e8a53f", 6), -1.0 + (rnd() - 0.5) * 1.2, 1.7, (rnd() - 0.5) * 1.0), t: 0 }); bubble(girl, "Örük! Apricots in June, walnuts in October", 1.5, 1600); };
   g.userData.tick = (t, dt) => { const k = re.step(dt); ac.rotation.z = Math.sin(t * 0.9) * 0.02 + k * Math.sin(t * 9) * 0.06; fruit.forEach((f, i) => { f.position.y += Math.sin(t * 2 + i) * 0.0008; }); for (let i = falling.length - 1; i >= 0; i--) { const f = falling[i]; f.t += dt; f.m.position.y = Math.max(0.07, 1.7 - f.t * f.t * 4); if (f.t > 3) { g.remove(f.m); falling.splice(i, 1); } } const a = arms(girl); if (a) a.right.rotation.x = -2.2 + k * Math.sin(t * 8) * 0.3; tickChildren(g)(t, dt); };
+  return g;
+}
+
+/** a Bactrian camel that walks: two humps, a load of bales, legs that swing from the shoulder, the head nodding with each step */
+export function camelWalker(): P {
+  const g = group();
+  const body = add(g, ball(0.5, "#c9a068", 9), 0, 1.15, 0); body.scale.set(1.7, 0.85, 0.9);
+  for (const dx of [-0.32, 0.28]) add(g, ball(0.28, "#b8905a", 8), dx, 1.55, 0).scale.set(0.9, 0.8, 0.8);   // two humps
+  const neck = add(g, cyl(0.12, 0.16, 1.0, "#c9a068", 6), 0.85, 1.45, 0); neck.rotation.z = -0.7;
+  const head = new THREE.Group(); head.position.set(1.22, 1.85, 0); g.add(head);
+  add(head, ball(0.16, "#c9a068", 7), 0, 0, 0).scale.set(1.4, 0.8, 0.8); add(head, box(0.06, 0.12, 0.05, "#a8804a"), -0.05, 0.14, 0.06); add(head, box(0.06, 0.12, 0.05, "#a8804a"), -0.05, 0.14, -0.06);
+  for (const dz of [-0.35, 0.35]) { add(g, box(0.9, 0.3, 0.22, "#7a4a3a"), -0.1, 1.35, dz); add(g, box(0.5, 0.12, 0.24, "#b8462a"), -0.1, 1.56, dz); }   // bales and a rug
+  const legs = [[-0.5, -0.22], [-0.5, 0.22], [0.5, -0.22], [0.5, 0.22]].map(([x, z]) => { const l = new THREE.Group(); l.position.set(x, 0.95, z); g.add(l); add(l, cyl(0.08, 0.06, 0.95, "#b8905a", 6), 0, -0.47, 0); add(l, ball(0.08, "#8a6a4a", 6), 0, -0.95, 0.02).scale.y = 0.5; return l; });
+  add(g, cyl(0.03, 0.02, 0.5, "#a8804a", 4), -0.9, 1.1, 0).rotation.z = 0.5;   // the tail
+  (g.userData as { walk?: (t: number) => void }).walk = (t) => {
+    const sw = Math.sin(t * 3.2) * 0.35;
+    // the camel walks along its own x axis, so the legs swing about z (fore and aft); it paces: the two legs on a side move together
+    legs[0].rotation.z = sw; legs[1].rotation.z = sw; legs[2].rotation.z = -sw; legs[3].rotation.z = -sw;
+    body.position.y = 1.15 + Math.abs(Math.sin(t * 3.2)) * 0.03; head.rotation.z = Math.sin(t * 3.2) * 0.08 - 0.2;
+  };
   return g;
 }
 

@@ -6,7 +6,7 @@ import { PROPS, mat, mountain, house, tree, terrace, bridge, woodenBridge, boat,
 import { buildWorld, addWater, type Diorama, type LayoutCtx } from "./worldkit";
 import { JN_PROPS, jnDetail } from "./props-jiangnan";
 import { NORTH_PROPS, northDetail } from "./props-north";
-import { XJ_PROPS, poplar, xjDetail } from "./props-xinjiang";
+import { XJ_PROPS, poplar, xjDetail, camelWalker } from "./props-xinjiang";
 
 void CSS2DObject; void signpost;
 
@@ -165,6 +165,11 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   const xb = xjBridge.position;
   const xjPath = new THREE.CatmullRomCurve3([new THREE.Vector3(-47.7, 0, -24), new THREE.Vector3(-47.8, 0, -16), new THREE.Vector3(-47.6, 0, -8), new THREE.Vector3(-47.5, 0, -2), new THREE.Vector3(xb.x - 0.2, 0, xb.z), new THREE.Vector3(-47.6, 0, 7), new THREE.Vector3(-46.8, 0, 12), new THREE.Vector3(-45.6, 0, 14.6), new THREE.Vector3(-46.6, 0, 11), new THREE.Vector3(-47.0, 0, 7), new THREE.Vector3(xb.x + 0.2, 0, xb.z), new THREE.Vector3(-47.0, 0, -2), new THREE.Vector3(-47.1, 0, -8), new THREE.Vector3(-47.2, 0, -16), new THREE.Vector3(-47.1, 0, -23)], true);
   tickers.push((t) => xjWalkers.forEach((w, i) => { const u = (t * 0.008 + i * 0.2) % 1; const p = xjPath.getPointAt(u), n = xjPath.getPointAt((u + 0.004) % 1); const d = Math.hypot(p.x - xb.x, p.z - xb.z); const y = d < 2.9 ? 0.61 : d < 3.6 ? 0.61 * (1 - (d - 2.9) / 0.7) : 0; w.position.set(p.x, y, p.z); w.rotation.y = Math.atan2(n.x - p.x, n.z - p.z); (w.userData as { walk?: (t: number) => void }).walk?.(t + i); }));
+
+  // two camels pace an oval through the sand in the south-west corner
+  const camels = [camelWalker(), camelWalker()]; camels.forEach((c) => group.add(c));
+  const camelPath = new THREE.CatmullRomCurve3([new THREE.Vector3(-55.3, 0, 11), new THREE.Vector3(-55.4, 0, 20), new THREE.Vector3(-54, 0, 29), new THREE.Vector3(-48.5, 0, 33.5), new THREE.Vector3(-42, 0, 32.5), new THREE.Vector3(-40.5, 0, 29.5), new THREE.Vector3(-47.5, 0, 28.5), new THREE.Vector3(-50.5, 0, 23), new THREE.Vector3(-53.8, 0, 12.5)], true);   // the sandy south-west corner, clear of the peaks, the fold and the orchard
+  tickers.push((t) => camels.forEach((c, i) => { const u = (t * 0.005 + i * 0.5) % 1; const p = camelPath.getPointAt(u), n = camelPath.getPointAt((u + 0.003) % 1); c.position.set(p.x, 0, p.z); c.rotation.y = Math.atan2(n.x - p.x, n.z - p.z) - Math.PI / 2; (c.userData as { walk?: (t: number) => void }).walk?.(t + i * 2); }));
 
   // ---------- Jiangnan life: canal-side strollers over the bridge, a fisherman, washing, kids, laundry ----------
   const jnWalkers = [person("#6a7fb0"), person("#e9d7b8", { hat: true }), person("#c0392b", { pole: true }), person("#2f5d3f"), person("#3f6b8f")];

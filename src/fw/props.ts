@@ -204,7 +204,7 @@ export function house(style: "sichuan" | "jiangnan" | "northern", w = 3, d = 2.4
   // door with couplets and a pair of lanterns
   add(g, box(0.62, h * 0.6, 0.06, style === "jiangnan" ? C.woodDark : C.woodRed), 0, h * 0.3, d / 2 + 0.03);
   for (const x of [-0.42, 0.42]) add(g, box(0.1, h * 0.55, 0.02, C.red), x, h * 0.33, d / 2 + 0.05);
-  for (const x of [-0.75, 0.75]) { const l = lantern(0.7); add(g, l, x, h - 0.15, d / 2 + 0.3); g.userData.tick = tickChildren(g); }
+  for (const x of [-0.75, 0.75]) { const l = lantern(0.7); add(g, l, x, style === "northern" ? h - 0.32 : h - 0.15, d / 2 + (style === "northern" ? 0.16 : 0.3)); g.userData.tick = tickChildren(g); }
   // steps
   add(g, box(1.0, 0.12, 0.5, C.stone), 0, 0.06, d / 2 + 0.3);
   // a third of the houses have a chimney with a thread of smoke

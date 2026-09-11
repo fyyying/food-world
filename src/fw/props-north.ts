@@ -30,6 +30,25 @@ function dumplingTray(g: THREE.Object3D, x: number, y: number, z: number, n = 12
   for (let i = 0; i < n; i++) { const d = add(g, ball(0.07, FLOUR, 6), x - 0.42 + (i % 4) * 0.28, y + 0.08, z - 0.22 + Math.floor(i / 4) * 0.22); d.scale.set(1.3, 0.75, 0.8); d.rotation.y = 0.3; }
 }
 
+/** a flour sack: squat, tied at the neck, a band of string */
+function sack(): P {
+  const g = group();
+  add(g, cyl(0.28, 0.32, 0.46, "#d9cfb5", 9), 0, 0.23, 0); add(g, ball(0.13, "#d9cfb5", 7), 0, 0.5, 0).scale.y = 0.7; add(g, cyl(0.14, 0.14, 0.03, "#8a6a3a", 8), 0, 0.46, 0);
+  return g;
+}
+/** the mouth of a brick hearth on a stove front, with the fire inside it (not a flame floating in the air) */
+function hearth(g: THREE.Object3D, x: number, z: number, faceZ = 1): THREE.Object3D {
+  add(g, box(0.4, 0.32, 0.1, "#1a120e"), x, 0.28, z - 0.02 * faceZ);
+  const fire = add(g, cone(0.1, 0.16, "#ff7a3c", 6), x, 0.24, z - 0.06 * faceZ); add(g, cone(0.05, 0.1, "#ffd070", 6), x, 0.26, z - 0.06 * faceZ);
+  return fire;
+}
+/** a shop sign: red frame, cream panel, two dark brushed strokes standing for the characters */
+function signBoard(g: THREE.Object3D, w: number, h: number, x: number, y: number, z: number, rot = 0): void {
+  const b = new THREE.Group(); b.position.set(x, y, z); b.rotation.y = rot; g.add(b);
+  add(b, box(w + 0.08, h + 0.08, 0.04, C.red), 0, 0, -0.01); add(b, box(w, h, 0.05, "#f3e6c8"), 0, 0, 0.01);
+  add(b, box(w * 0.5, 0.06, 0.02, "#2a2a2e"), 0, h * 0.22, 0.04); add(b, box(0.06, h * 0.45, 0.02, "#2a2a2e"), 0, -h * 0.05, 0.04); add(b, box(w * 0.4, 0.06, 0.02, "#2a2a2e"), 0, -h * 0.3, 0.04);
+}
+
 /** 饺子馆: rolling, filling, pleating and boiling under one roof; a tray of pleated dumplings and a pot that boils over when you click. */
 export function dumplingHouse(): P {
   const g = group();
@@ -41,7 +60,7 @@ export function dumplingHouse(): P {
   add(g, ball(0.18, "#c98a6a", 8), 1.4, 0.98, 1.55).scale.y = 0.6;              // the filling bowl
   add(g, cyl(0.03, 0.03, 0.55, C.wood, 5), 0.7, 0.9, 1.05).rotation.z = Math.PI / 2;   // rolling pin
   // the pot on a coal stove at the side
-  add(g, box(1.0, 0.8, 1.0, BRICK), 2.3, 0.4, 0.2); add(g, cone(0.12, 0.16, "#ff7a3c", 6), 2.3, 0.35, 0.75);
+  add(g, box(1.0, 0.8, 1.0, BRICK), 2.3, 0.4, 0.2); hearth(g, 2.3, 0.75);
   const pot = add(g, cyl(0.42, 0.36, 0.42, C.iron, 12), 2.3, 1.0, 0.2);
   const lid = add(g, cyl(0.44, 0.44, 0.06, C.woodDark, 12), 2.3, 1.24, 0.2);
   const rollers = [add(g, person("#f4f1ea", { apron: true }), -1.2, 0, 0.3), add(g, person("#6a7fb0", { apron: true }), 0.2, 0, 0.3)] as Fig[];
@@ -50,7 +69,7 @@ export function dumplingHouse(): P {
   add(g, box(1.4, 0.08, 0.9, C.wood), -1.6, 0.72, 3.0); for (const [dx, dz] of [[-0.6, -0.35], [0.6, -0.35], [-0.6, 0.35], [0.6, 0.35]]) add(g, box(0.08, 0.7, 0.08, C.woodDark), -1.6 + dx, 0.35, 3.0 + dz);
   add(g, cyl(0.16, 0.13, 0.05, "#f7f2e6", 9), -1.9, 0.79, 3.0); add(g, cyl(0.1, 0.08, 0.05, "#3b2a1e", 8), -1.3, 0.79, 2.85); add(g, ball(0.06, "#f4ecdc", 6), -1.35, 0.8, 3.2);
   const diners = [-2.4, -0.8].map((x, i) => { const p = person(i ? "#c0392b" : "#2f5d3f"); (p.userData as { sit?: () => void }).sit?.(); add(g, box(0.4, 0.3, 0.4, C.woodDark), x, 0.15, 3.0); const q = add(g, p, x, -0.14, 3.0); q.rotation.y = i ? -Math.PI / 2 : Math.PI / 2; return q as Fig; });
-  add(g, box(0.6, 0.8, 0.05, "#f3e6c8"), 2.5, 1.9, 0.45);                      // 饺 sign
+  signBoard(g, 0.6, 0.8, 2.5, 1.9, 0.45);                      // 饺 sign
   add(g, lantern(0.8), -2.2, 1.95, 0.6); add(g, lantern(0.8), 2.2, 1.95, 0.6);
   g.userData.steam = new THREE.Vector3(2.3, 1.45, 0.2);
   const re = reaction(0.6);
@@ -78,7 +97,7 @@ export function noodleWorkshop(): P {
   const rope = new THREE.Group(); rope.position.set(0, 0.22, 0.35); upper(puller)!.add(rope);
   const strands = Array.from({ length: 5 }, (_, i) => add(rope, cyl(0.012, 0.012, 0.62, DOUGH, 4), 0, (i - 2) * 0.02, (i % 2) * 0.03)); strands.forEach((s) => { s.rotation.z = Math.PI / 2; });
   // the shaver over the pot, a slab of dough on his shoulder
-  add(g, box(1.0, 0.8, 1.0, BRICK), 1.9, 0.4, 0.5); add(g, cone(0.12, 0.16, "#ff7a3c", 6), 1.9, 0.35, 1.05);
+  add(g, box(1.0, 0.8, 1.0, BRICK), 1.9, 0.4, 0.5); hearth(g, 1.9, 1.05);
   add(g, cyl(0.42, 0.36, 0.42, C.iron, 12), 1.9, 1.0, 0.5); add(g, cyl(0.38, 0.38, 0.03, "#e9dcb8", 12), 1.9, 1.2, 0.5);
   const shaver = add(g, person("#7a4a3a", { apron: true }), 1.9, 0, 1.3) as Fig; shaver.rotation.y = Math.PI;
   // the dough for knife-cut noodles: a loaf on a small board held in the left hand, the right hand shaving off it
@@ -90,7 +109,7 @@ export function noodleWorkshop(): P {
   for (const x of [-1.8, -1.0]) { add(g, cyl(0.2, 0.15, 0.14, "#f7f2e6", 10), x, 0.83, 3.0); add(g, cyl(0.16, 0.16, 0.02, "#d9a441", 10), x, 0.9, 3.0); }
   add(g, cyl(0.1, 0.09, 0.2, "#3b2a1e", 8), -1.4, 0.86, 2.65);
   const diners = [-2.2, -0.6].map((x, i) => { const p = person(i ? "#e0a52c" : "#6a7fb0"); (p.userData as { sit?: () => void }).sit?.(); add(g, box(0.4, 0.3, 0.4, C.woodDark), x, 0.15, 3.0); const q = add(g, p, x, -0.14, 3.0); q.rotation.y = i ? -Math.PI / 2 : Math.PI / 2; return q as Fig; });
-  add(g, box(0.6, 0.8, 0.05, "#f3e6c8"), 1.6, 1.5, -0.16);                     // 面 sign on the front wall
+  signBoard(g, 0.6, 0.8, 1.6, 1.28, -0.16);                     // 面 sign on the front wall
   g.userData.steam = new THREE.Vector3(1.9, 1.45, 0.5);
   const re = reaction(0.5);
   g.userData.poke = () => { re.poke(); bubble(g, "刀削面, 一根一根飞进锅! Knife-cut, straight into the pot", 2.8, 1700); flakes.forEach((f, i) => { f.t = i * 0.12; }); };
@@ -117,19 +136,19 @@ export function noodleWorkshop(): P {
 /** 馒头坊: a steamed-bread workshop, sacks of flour, a kneader and tall towers of steamers breathing. */
 export function mantouKitchen(): P {
   const g = group();
-  add(g, house("northern", 4.0, 2.8, 1.8), 0, 0, -0.9);
+  add(g, house("northern", 4.0, 2.8, 1.8), 0, 0, -1.6);   // front wall at z -0.2, the bakers work in front of it
   add(g, box(3.0, 0.85, 1.0, C.wood), -0.5, 0.42, 1.1); add(g, box(2.8, 0.03, 0.8, FLOUR), -0.5, 0.86, 1.1);
   const dough = add(g, ball(0.28, DOUGH, 10), -1.3, 1.05, 1.1); dough.scale.y = 0.7;
   for (let i = 0; i < 8; i++) add(g, ball(0.1, FLOUR, 7), -0.6 + (i % 4) * 0.24, 0.97, 0.9 + Math.floor(i / 4) * 0.3).scale.y = 0.85;   // shaped buns proving
   for (let i = 0; i < 3; i++) { const r = add(g, cyl(0.1, 0.1, 0.12, FLOUR, 8), 0.7 + i * 0.25, 0.94, 1.3); r.rotation.x = 0.2; add(r, new THREE.Mesh(new THREE.TorusGeometry(0.07, 0.02, 4, 10), mat("#e9dcb8")), 0, 0.02, 0).rotation.x = Math.PI / 2; }   // flower rolls
   // two towers of steamers on the stove, lids that lift
-  add(g, box(1.6, 0.8, 1.0, BRICK), 1.9, 0.4, 0.2); add(g, cone(0.12, 0.16, "#ff7a3c", 6), 1.9, 0.35, 0.75);
+  add(g, box(1.6, 0.8, 1.0, BRICK), 1.9, 0.4, 0.4); hearth(g, 1.9, 0.95);
   const lids = [1.5, 2.3].map((x, i) => { const n = 5 - i; for (let k = 0; k < n; k++) { add(g, cyl(0.34, 0.34, 0.16, "#c9a86a", 12), x, 0.9 + k * 0.17, 0.2); add(g, new THREE.Mesh(new THREE.TorusGeometry(0.34, 0.02, 4, 14), mat("#a5813f")), x, 0.98 + k * 0.17, 0.2).rotation.x = Math.PI / 2; } const lid = new THREE.Group(); lid.position.set(x, 0.9 + n * 0.17 + 0.02, 0.2); g.add(lid); add(lid, cyl(0.36, 0.36, 0.06, "#b8944f", 12), 0, 0, 0); add(lid, ball(0.05, "#8a6a3a", 6), 0, 0.06, 0); return { lid, base: 0.9 + n * 0.17 + 0.02 }; });
-  for (let i = 0; i < 3; i++) { const s = add(g, cyl(0.28, 0.32, 0.6, "#e6dcc4", 9), -2.3 + (i % 2) * 0.55, 0.3 + Math.floor(i / 2) * 0.55, 1.6 + (i % 2) * 0.1); s.rotation.z = (i % 2) * 0.1; }   // flour sacks
+  for (let i = 0; i < 3; i++) add(g, sack(), -2.4 + (i % 2) * 0.62, Math.floor(i / 2) * 0.46, 1.5 + (i % 2) * 0.2).rotation.y = i * 0.7;   // flour sacks, one on top
   const kneader = add(g, person("#f4f1ea", { apron: true }), -1.3, 0, 0.2) as Fig;
   const shaper = add(g, person("#e9d7b8", { apron: true }), 0.2, 0, 0.2) as Fig;
   const buyer = add(g, person("#c0392b"), 2.2, 0, 2.0) as Fig; buyer.rotation.y = -0.7;
-  add(g, box(0.6, 0.8, 0.05, "#f3e6c8"), 2.2, 1.85, 0.5);
+  signBoard(g, 0.6, 0.8, 1.5, 1.28, -0.16);   // 馒头 sign on the front wall
   g.userData.steam = new THREE.Vector3(1.9, 2.0, 0.2);
   const re = reaction(0.6);
   g.userData.poke = () => { re.poke(); bubble(g, "热馒头! Hot mantou, just off the steam", 2.7, 1500); };
@@ -166,7 +185,7 @@ export function vinegarWorkshop(): P {
   const ladle = add(arms(master)!.right, cyl(0.02, 0.02, 0.45, C.wood, 4), 0.02, -0.28, 0.05); ladle.rotation.x = 1.2; add(ladle, cyl(0.06, 0.05, 0.06, "#3b2a1e", 8), 0, -0.22, 0);
   const helper = add(g, person("#7a4a3a", { apron: true }), -1.4, 0.25, 1.6) as Fig; helper.rotation.y = -0.4;
   add(g, cyl(0.16, 0.13, 0.32, "#3b2a1e", 10), 1.2, 0.41, 2.0); add(g, cyl(0.07, 0.06, 0.06, "#3b2a1e", 8), 1.5, 0.28, 2.0);   // a bottle and a tasting cup
-  add(g, box(0.55, 0.75, 0.05, "#f3e6c8"), -2.9, 1.8, 2.1);                     // 醋 sign
+  signBoard(g, 0.55, 0.75, -2.9, 1.8, 2.1);                     // 醋 sign
   const re = reaction(0.7);
   g.userData.poke = () => { re.poke(); bubble(master, "山西老陈醋, 酸得香! Shanxi aged vinegar", 1.6, 1600); };
   g.userData.tick = (t, dt) => {
@@ -202,7 +221,7 @@ export function roastDuckShop(): P {
     add(g, box(1.2, 0.08, 0.8, C.wood), x, 0.72, 2.6); for (const [dx, dz] of [[-0.5, -0.3], [0.5, -0.3], [-0.5, 0.3], [0.5, 0.3]]) add(g, box(0.07, 0.7, 0.07, C.woodDark), x + dx, 0.35, 2.6 + dz);
     add(g, box(0.5, 0.06, 0.4, C.woodDark), x + (x < 0 ? -0.9 : 0.9), 0.3, 2.6); for (const [dx, dz] of [[-0.18, -0.14], [0.18, -0.14], [-0.18, 0.14], [0.18, 0.14]]) add(g, box(0.05, 0.3, 0.05, C.woodDark), x + (x < 0 ? -0.9 : 0.9) + dx, 0.15, 2.6 + dz);
   }
-  add(g, box(0.7, 0.8, 0.05, "#f3e6c8"), 2.3, 1.95, 0.55);                      // 烤鸭 sign
+  signBoard(g, 0.7, 0.8, 2.3, 1.95, 0.55);                      // 烤鸭 sign
   add(g, lantern(0.8), -2.2, 2.05, 0.7);
   g.userData.smoke = new THREE.Vector3(1.6, 2.0, 0.4);
   const re = reaction(0.6);
@@ -269,7 +288,7 @@ export function bingStall(): P {
   add(g, box(3.0, 0.06, 1.7, "#c9a86a"), 0, 2.15, -0.1).rotation.x = 0.12;         // cloth awning
   const baker = add(g, person("#6a7fb0", { apron: true }), 0, 0, -1.0) as Fig;
   const buyers = [person("#c0392b"), person("#e9d7b8", { hat: true })].map((p, i) => { const q = add(g, p, -0.6 + i * 1.3, 0, 1.3); q.rotation.y = Math.PI; return q as Fig; });
-  add(g, box(0.5, 0.7, 0.05, "#f3e6c8"), -1.45, 1.7, -0.3);                       // 饼 sign
+  signBoard(g, 0.5, 0.7, -1.45, 1.7, -0.3);                       // 饼 sign
   g.userData.steam = new THREE.Vector3(0.7, 1.2, -0.1);
   const re = reaction(0.7);
   g.userData.poke = () => { re.poke(); bubble(baker, "肉夹馍, 现烤现夹! Roujiamo, baked and filled to order", 1.6, 1600); };
@@ -399,23 +418,27 @@ export function northMarket(): P {
 /** quiet northern details: a coal stack, a pickle crock row, a persimmon string, a corn crib, a stone mill */
 export function northDetail(kind: "coalStack" | "pickleCrocks" | "persimmonString" | "cornCrib" | "stoneMill" | "flourSacks" | "cabbageStack" | "garlicBraids" | "chilliStrings" | "noodleRack" | "wheatSheaves"): P {
   const g = group();
+  // strings hung from a crossbar pivot at the top and sway a little in the wind
+  const strings: THREE.Group[] = [];
+  const hang = (x: number, y: number) => { const st = new THREE.Group(); st.position.set(x, y, 0); g.add(st); strings.push(st); return st; };
   switch (kind) {
     case "cabbageStack": {   // winter cabbages stacked against a wall
       for (let r = 0; r < 3; r++) for (let i = 0; i < 5 - r; i++) { const c = add(g, cyl(0.11, 0.15, 0.5, i % 2 ? "#b9d28a" : "#a9c87a", 7), -0.6 + i * 0.3 + r * 0.15, 0.14 + r * 0.24, (r % 2) * 0.1); c.rotation.z = Math.PI / 2; add(g, ball(0.12, "#e6ecc8", 6), -0.6 + i * 0.3 + r * 0.15 + 0.26, 0.14 + r * 0.24, (r % 2) * 0.1).scale.set(0.5, 1, 1); }
       break; }
-    case "garlicBraids": { add(g, box(0.07, 1.9, 0.07, C.woodDark), 0, 0.95, 0); add(g, box(1.0, 0.05, 0.05, C.woodDark), 0, 1.85, 0); for (let i = 0; i < 3; i++) for (let k = 0; k < 7; k++) add(g, ball(0.07, k % 2 ? "#f3ece0" : "#e9dfd0", 6), -0.35 + i * 0.35, 1.75 - k * 0.14, (k % 2) * 0.05); break; }
-    case "chilliStrings": { add(g, box(0.07, 1.9, 0.07, C.woodDark), 0, 0.95, 0); add(g, box(1.1, 0.05, 0.05, C.woodDark), 0, 1.85, 0); for (let i = 0; i < 4; i++) for (let k = 0; k < 8; k++) add(g, cone(0.035, 0.16, k % 3 ? C.red : "#8e2a22", 4), -0.42 + i * 0.28 + (k % 2) * 0.04, 1.75 - k * 0.15, (k % 2) * 0.05).rotation.z = Math.PI + (k % 2 ? 0.3 : -0.3); break; }
+    case "garlicBraids": { add(g, box(0.07, 1.9, 0.07, C.woodDark), 0, 0.95, 0); add(g, box(1.0, 0.05, 0.05, C.woodDark), 0, 1.85, 0); for (let i = 0; i < 3; i++) { const st = hang(-0.35 + i * 0.35, 1.85); for (let k = 0; k < 7; k++) add(st, ball(0.07, k % 2 ? "#f3ece0" : "#e9dfd0", 6), 0, -0.1 - k * 0.14, (k % 2) * 0.05); } break; }
+    case "chilliStrings": { add(g, box(0.07, 1.9, 0.07, C.woodDark), 0, 0.95, 0); add(g, box(1.1, 0.05, 0.05, C.woodDark), 0, 1.85, 0); for (let i = 0; i < 4; i++) { const st = hang(-0.42 + i * 0.28, 1.85); for (let k = 0; k < 8; k++) add(st, cone(0.035, 0.16, k % 3 ? C.red : "#8e2a22", 4), (k % 2) * 0.04, -0.1 - k * 0.15, (k % 2) * 0.05).rotation.z = Math.PI + (k % 2 ? 0.3 : -0.3); } break; }
     case "noodleRack": {   // fresh noodles hung to dry on a bamboo frame
       for (const x of [-0.8, 0.8]) add(g, box(0.06, 1.8, 0.06, C.woodDark), x, 0.9, 0); add(g, cyl(0.03, 0.03, 1.7, "#c9a86a", 6), 0, 1.75, 0).rotation.z = Math.PI / 2;
       for (let i = 0; i < 14; i++) add(g, box(0.06, 1.2 + (i % 3) * 0.1, 0.012, "#f1e6c8"), -0.65 + i * 0.1, 1.12, (i % 2) * 0.02); break; }
     case "wheatSheaves": for (let i = 0; i < 5; i++) { const sh = add(g, cyl(0.16, 0.06, 0.9, C.gold, 7), (i - 2) * 0.32, 0.45, (i % 2) * 0.25); sh.rotation.z = (i - 2) * 0.12; add(g, cyl(0.2, 0.16, 0.1, "#d9b85a", 7), (i - 2) * 0.32 - (i - 2) * 0.05, 0.9, (i % 2) * 0.25); } break;
     case "coalStack": for (let i = 0; i < 10; i++) add(g, cyl(0.12, 0.12, 0.2, "#2a2a2e", 8), (i % 4) * 0.27 - 0.4, 0.1 + Math.floor(i / 4) * 0.21, (Math.floor(i / 4) % 2) * 0.1); break;
     case "pickleCrocks": for (let i = 0; i < 4; i++) { add(g, cyl(0.22, 0.2, 0.5, i % 2 ? "#5c3a28" : "#3c2a22", 10), (i - 1.5) * 0.5, 0.25, (i % 2) * 0.2); add(g, cyl(0.15, 0.17, 0.04, "#8a6a3a", 10), (i - 1.5) * 0.5, 0.52, (i % 2) * 0.2); } break;
-    case "persimmonString": { add(g, box(0.07, 2.0, 0.07, C.woodDark), 0, 1.0, 0); add(g, box(1.2, 0.05, 0.05, C.woodDark), 0, 1.95, 0); for (let i = 0; i < 4; i++) for (let k = 0; k < 5; k++) add(g, ball(0.06, "#e8823f", 6), -0.45 + i * 0.3, 1.85 - k * 0.14, (k % 2) * 0.04).scale.y = 0.8; break; }
+    case "persimmonString": { add(g, box(0.07, 2.0, 0.07, C.woodDark), 0, 1.0, 0); add(g, box(1.2, 0.05, 0.05, C.woodDark), 0, 1.95, 0); for (let i = 0; i < 4; i++) { const st = hang(-0.45 + i * 0.3, 1.95); for (let k = 0; k < 5; k++) add(st, ball(0.06, "#e8823f", 6), 0, -0.1 - k * 0.14, (k % 2) * 0.04).scale.y = 0.8; } break; }
     case "cornCrib": { for (const x of [-0.6, 0.6]) add(g, box(0.06, 1.2, 0.06, C.woodDark), x, 0.6, 0); add(g, box(1.3, 0.8, 0.5, "#c9a86a"), 0, 0.8, 0); for (let i = 0; i < 12; i++) add(g, cyl(0.05, 0.05, 0.22, C.gold, 6), -0.5 + (i % 6) * 0.2, 0.55 + Math.floor(i / 6) * 0.5, 0.28).rotation.x = Math.PI / 2; break; }
     case "stoneMill": { add(g, cyl(0.5, 0.5, 0.25, C.stone, 14), 0, 0.12, 0); add(g, cyl(0.42, 0.42, 0.2, C.stoneDark, 14), 0, 0.35, 0); add(g, cyl(0.02, 0.02, 0.8, C.woodDark, 4), 0.35, 0.5, 0).rotation.z = Math.PI / 2; add(g, cyl(0.45, 0.45, 0.03, FLOUR, 14), 0, 0.26, 0); break; }
-    case "flourSacks": for (let i = 0; i < 3; i++) add(g, cyl(0.26, 0.3, 0.55, "#e6dcc4", 9), (i % 2) * 0.5, 0.28 + Math.floor(i / 2) * 0.5, (i % 2) * 0.15); break;
+    case "flourSacks": for (let i = 0; i < 3; i++) add(g, sack(), (i % 2) * 0.62, Math.floor(i / 2) * 0.46, (i % 2) * 0.2).rotation.y = i * 0.7; break;
   }
+  if (strings.length) g.userData.tick = (t) => { strings.forEach((st, i) => { st.rotation.x = Math.sin(t * 1.3 + i * 1.1) * 0.07; st.rotation.z = Math.sin(t * 0.9 + i * 0.7) * 0.04; }); };
   return g;
 }
 

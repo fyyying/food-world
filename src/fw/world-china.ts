@@ -12,7 +12,7 @@ void CSS2DObject; void signpost;
 
 export function buildChina(recipes: EnrichedRecipe[]): Diorama {
   return buildWorld({
-    id: "china", W: 100, cx: -6, D: 72, ground: "#8cb86b", plinth: "#6e4a2c", recipes, objects: OBJECTS, props: { ...PROPS, ...JN_PROPS, ...NORTH_PROPS, ...XJ_PROPS },
+    id: "china", W: 112, cx: -6, D: 84, ground: "#8cb86b", plinth: "#6e4a2c", recipes, objects: OBJECTS, props: { ...PROPS, ...JN_PROPS, ...NORTH_PROPS, ...XJ_PROPS },
     small: /^(cow|pig|chicken|pepperTree|jars)$/, fallbackPlace: "wok",
     layout: layoutChina,
   });
@@ -21,25 +21,25 @@ export function buildChina(recipes: EnrichedRecipe[]): Diorama {
 function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   tint(-18, 6, 18, 15, "#82b263", 0.2);
   tint(20, 8, 16, 12, "#9cc484", -0.3);
-  tint(2, -16, 18, 8, "#c2bd7a");
+  tint(2, -22, 18, 8, "#c2bd7a");
   tint(-27, 16, 6, 5, "#7aab5c");
   // the wheat belt: dry gold along the north, in overlapping pools so it fades into the green
-  for (const [x, z, rx, rz] of [[-9, -27, 12, 11], [6, -26, 14, 11], [24, -25, 14, 11], [38, -22, 10, 10]] as [number, number, number, number][]) tint(x, z, rx, rz, "#d1bd74");
+  for (const [x, z, rx, rz] of [[-9, -33, 12, 11], [6, -32, 14, 11], [24, -31, 14, 11], [44, -28, 10, 10]] as [number, number, number, number][]) tint(x, z, rx, rz, "#d1bd74");
   // the oasis strip: sand beyond the western mountains, green only where the water reaches
-  for (const [x, z, rx, rz] of [[-48, -24, 9, 9], [-48, -10, 9, 9], [-48, 4, 9, 9], [-49, 18, 7, 9], [-49, 29, 7, 7]] as [number, number, number, number][]) tint(x, z, rx, rz, "#dccb9a");
-  tint(-48, -2, 7, 5, "#8fb86a");
+  for (const [x, z, rx, rz] of [[-54, -30, 9, 9], [-54, -10, 9, 9], [-54, 4, 9, 9], [-55, 18, 7, 9], [-55, 35, 7, 7]] as [number, number, number, number][]) tint(x, z, rx, rz, "#dccb9a");
+  tint(-54, -2, 7, 5, "#8fb86a");
 
   // ---------- river & paths ----------
   const curve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-56, TOP + 0.03, 2.6), new THREE.Vector3(-52, TOP + 0.03, 2.6), new THREE.Vector3(-48, TOP + 0.03, 3), new THREE.Vector3(-38, TOP + 0.03, 4), new THREE.Vector3(-28, TOP + 0.03, 8), new THREE.Vector3(-14, TOP + 0.03, 9),
-    new THREE.Vector3(-2, TOP + 0.03, 6), new THREE.Vector3(10, TOP + 0.03, 8), new THREE.Vector3(20, TOP + 0.03, 3), new THREE.Vector3(30, TOP + 0.03, 6), new THREE.Vector3(38, TOP + 0.03, 4.4), new THREE.Vector3(41, TOP + 0.03, 4.8), new THREE.Vector3(44, TOP + 0.03, 4.8),
+    new THREE.Vector3(-62, TOP + 0.03, 2.6), new THREE.Vector3(-58, TOP + 0.03, 2.6), new THREE.Vector3(-54, TOP + 0.03, 3), new THREE.Vector3(-38, TOP + 0.03, 4), new THREE.Vector3(-28, TOP + 0.03, 8), new THREE.Vector3(-14, TOP + 0.03, 9),
+    new THREE.Vector3(-2, TOP + 0.03, 6), new THREE.Vector3(10, TOP + 0.03, 8), new THREE.Vector3(20, TOP + 0.03, 3), new THREE.Vector3(36, TOP + 0.03, 6), new THREE.Vector3(44, TOP + 0.03, 4.4), new THREE.Vector3(47, TOP + 0.03, 4.8), new THREE.Vector3(50, TOP + 0.03, 4.8),
   ]);
   addWater({ group, tickers, place, tint, TOP }, curve, 3.4);
   // reeds and stones along the bank
-  for (let i = 0; i < 40; i++) { const u = i / 40; const p = curve.getPointAt(u), tg = curve.getTangentAt(u); const side = new THREE.Vector3(-tg.z, 0, tg.x).normalize().multiplyScalar(2.3 * (i % 2 ? 1 : -1)); const x = p.x + side.x, z = p.z + side.z; if (x < -36 || x > 40) continue; if (i % 3 === 0) add(group, new THREE.Mesh(new THREE.DodecahedronGeometry(0.25 + (i % 4) * 0.08, 0), mat(C.stone)), x, 0.1, z); else for (let k = 0; k < 3; k++) add(group, new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.03, 0.8, 4), mat("#6fae4f")), x + (k - 1) * 0.15, 0.4, z + (k % 2) * 0.15); }
+  for (let i = 0; i < 40; i++) { const u = i / 40; const p = curve.getPointAt(u), tg = curve.getTangentAt(u); const side = new THREE.Vector3(-tg.z, 0, tg.x).normalize().multiplyScalar(2.3 * (i % 2 ? 1 : -1)); const x = p.x + side.x, z = p.z + side.z; if (x < -42 || x > 46) continue; if (i % 3 === 0) add(group, new THREE.Mesh(new THREE.DodecahedronGeometry(0.25 + (i % 4) * 0.08, 0), mat(C.stone)), x, 0.1, z); else for (let k = 0; k < 3; k++) add(group, new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.03, 0.8, 4), mat("#6fae4f")), x + (k - 1) * 0.15, 0.4, z + (k % 2) * 0.15); }
   // village street + lanes
   group.add(path([[-22, -6], [-14, -6.5], [-6, -5.5], [2, -5], [10, -6], [18, -8]], 2.6));
-  group.add(path([[2, -5], [3, -9], [4, -12.5]], 1.6));
+  group.add(path([[2, -5], [3, -9], [4, -18.5]], 1.6));
   group.add(path([[2, -5], [3, 0], [3, 3]], 1.6));
   group.add(path([[-6, -5.5], [-7, 1], [-7.5, 3]], 1.2));
   group.add(path([[18, -8], [22, -4], [24, 0]], 1.4));
@@ -47,31 +47,31 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
 
   // ---------- mountains: a western wall and a northern backdrop ----------
   const peaks: [number, number, number, number, boolean][] = [
-    [-35, -22, 5.5, 12, false], [-33, -9, 4.5, 9, true], [-37.5, 17, 3.6, 10, false], [-35, 26.5, 3.2, 6, true],
-    [-27, -35, 4, 9, true], [-16, -35, 3.4, 7, false], [-6, -36, 4, 9, true], [4, -36, 3.2, 6, false], [14, -36, 3.8, 8, true], [24, -35, 3, 6, false],
-    [34, -35, 3.6, 7, true], [43, -33, 3.2, 6, false], [42.5, -12, 2.8, 5, true],
+    [-35, -28, 5.5, 12, false], [-33, -9, 4.5, 9, true], [-37.5, 17, 3.6, 10, false], [-35, 32.5, 3.2, 6, true],
+    [-27, -41, 4, 9, true], [-16, -41, 3.4, 7, false], [-6, -42, 4, 9, true], [4, -42, 3.2, 6, false], [14, -42, 3.8, 8, true], [24, -41, 3, 6, false],
+    [32, -42, 3.4, 7, false], [40, -41, 3.6, 7, true], [49, -39, 3.2, 6, false], [48.5, -18, 2.8, 5, true],
   ];
   peaks.forEach(([x, z, r, h, dark], i) => { const m = place(mountain(r * (0.9 + (i % 3) * 0.1), h * (0.85 + ((i * 7) % 5) * 0.08), dark), x, z, i * 1.7); m.scale.x *= 1 + (i % 2) * 0.25; });
   // the Tianshan behind the oasis strip: higher, and white above the tree line
-  for (const [x, z, r, h] of [[-52, -37.5, 5, 13], [-43, -38, 4.6, 12], [-35, -35, 4, 10]] as [number, number, number, number][]) {
+  for (const [x, z, r, h] of [[-58, -43.5, 5, 13], [-49, -44, 4.6, 12], [-42, -43.5, 4.2, 11], [-35, -41, 4, 10]] as [number, number, number, number][]) {
     place(mountain(r, h, false), x, z, x);
     add(group, new THREE.Mesh(new THREE.ConeGeometry(r * 0.34, h * 0.32, 10), mat("#f4f1ea")), x, h * 0.86, z);
   }
   // the oasis road south from the mountains, with a line of poplars at the western edge
-  group.add(path([[-47, -30], [-47.5, -18], [-47, -4], [-47.2, 0.2]], 1.6, "#d3bd8a"));
-  group.add(path([[-47.3, 6.0], [-47.5, 8], [-46, 14]], 1.6, "#d3bd8a"));
-  for (let i = 0; i < 6; i++) place(poplar(0.9 + (i % 3) * 0.15), -53.6 + (i % 2) * 0.4, -25 + i * 4.4, i);
-  for (let i = 0; i < 4; i++) place(poplar(0.8), -40.6, -26 + i * 6, i);
+  group.add(path([[-53, -36], [-53.5, -24], [-53, -4], [-53.2, 0.2]], 1.6, "#d3bd8a"));
+  group.add(path([[-53.3, 6], [-53.5, 8], [-52, 14]], 1.6, "#d3bd8a"));
+  for (let i = 0; i < 6; i++) place(poplar(0.9 + (i % 3) * 0.15), -59.6 + (i % 2) * 0.4, -25 + i * 4.4, i);
+  for (let i = 0; i < 4; i++) place(poplar(0.8), -46.6, -26 + i * 6, i);
   // pagoda on a hill in the north-west, temple with plaza north-centre, gate at the head of the street
-  const hill = add(group, new THREE.Mesh(new THREE.CylinderGeometry(4.5, 6, 2.2, 12), mat("#7aab5c")), -24, 1.1, -19);
+  const hill = add(group, new THREE.Mesh(new THREE.CylinderGeometry(4.5, 6, 2.2, 12), mat("#7aab5c")), -24, 1.1, -25);
   void hill;
-  place(pagoda(5), -24, -19).position.y = 2.2;
-  for (let i = 0; i < 6; i++) place(tree("pine", 1.0), -24 + Math.cos(i * 1.05) * 6.5, -19 + Math.sin(i * 1.05) * 5, i);
-  add(group, new THREE.Mesh(new THREE.CircleGeometry(7, 20), mat("#c9c0a8")), 3, TOP + 0.02, -17).rotation.x = -Math.PI / 2;
+  place(pagoda(5), -24, -25).position.y = 2.2;
+  for (let i = 0; i < 6; i++) place(tree("pine", 1.0), -24 + Math.cos(i * 1.05) * 6.5, -25 + Math.sin(i * 1.05) * 5, i);
+  add(group, new THREE.Mesh(new THREE.CircleGeometry(7, 20), mat("#c9c0a8")), 3, TOP + 0.02, -23).rotation.x = -Math.PI / 2;
   place(temple(), 3, -20);
   place(gate(), 3, -12.5);
-  for (const x of [-4, 16]) place(tree("blossom", 1.2), x, -21.5, x);
-  for (const x of [-6, 12]) place(tree("ginkgo", 1.1), x, -15, x);
+  for (const x of [-4, 16]) place(tree("blossom", 1.2), x, -27.5, x);
+  for (const x of [-6, 12]) place(tree("ginkgo", 1.1), x, -21, x);
   // birds over the mountains, cranes in the paddies, and a dragon dance in the square
   place(birds(7, 14, 15), -22, -14);
   place(birds(5, 9, 11), 26, 6);
@@ -81,17 +81,17 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   // ---------- villages ----------
   const houses: [("sichuan" | "jiangnan" | "northern"), number, number, number, number, number, number, number][] = [
     // style, x, z, rot, w, d, h, storeys
-    ["sichuan", -20, -12, 0.25, 3.2, 2.6, 1.9, 2], ["sichuan", -24, -11, -0.2, 2.8, 2.4, 1.7, 1], ["sichuan", -12, -10.5, 0.15, 3.6, 2.6, 1.9, 1],
+    ["sichuan", -20, -18, 0.25, 3.2, 2.6, 1.9, 2], ["sichuan", -24, -11, -0.2, 2.8, 2.4, 1.7, 1], ["sichuan", -12, -10.5, 0.15, 3.6, 2.6, 1.9, 1],
     ["sichuan", -16, -1.5, 0.5, 2.6, 2.2, 1.6, 1], ["sichuan", -12, 3.8, -0.3, 3.2, 2.6, 1.9, 2],
     ["jiangnan", 15, 11, -0.4, 3.2, 2.6, 2.1, 2], ["jiangnan", 20, 12.5, 0.2, 2.8, 2.4, 1.9, 1],
-    ["jiangnan", 30, -3, 0.5, 3.0, 2.4, 2.0, 1], ["jiangnan", 19, -5, -0.2, 3.2, 2.6, 2.0, 2], ["jiangnan", 33, 1.2, 0.9, 2.6, 2.2, 1.8, 1],
-    ["northern", 22, -19, 0.05, 3.8, 2.8, 1.7, 1], ["northern", 27, -16, -0.1, 2.8, 2.4, 1.6, 1], ["northern", 18, -15, 0.2, 3.0, 2.4, 1.6, 1],
+    ["jiangnan", 36, -3, 0.5, 3.0, 2.4, 2.0, 1], ["jiangnan", 21, -7.5, -0.2, 3.2, 2.6, 2.0, 2], ["jiangnan", 39, 1.2, 0.9, 2.6, 2.2, 1.8, 1],
+    ["northern", 22, -25, 0.05, 3.8, 2.8, 1.7, 1], ["northern", 33, -22, -0.1, 2.8, 2.4, 1.6, 1], ["northern", 18, -21, 0.2, 3.0, 2.4, 1.6, 1],
   ];
   for (const [style, x, z, rot, w, d, h, st] of houses) place(house(style, w, d, h, st), x, z, rot);
   // courtyard wall for the northern compound
-  for (const [x, z, rot, len] of [[22.5, -13, 0, 12], [16.5, -17, Math.PI / 2, 8], [28.5, -17, Math.PI / 2, 8]] as [number, number, number, number][]) { add(group, new THREE.Mesh(new THREE.BoxGeometry(len, 0.9, 0.3), mat(C.brick)), x, 0.45, z).rotation.y = rot; }
+  for (const [x, z, rot, len] of [[22.5, -19, 0, 12], [16.5, -23, Math.PI / 2, 8], [34.5, -23, Math.PI / 2, 8]] as [number, number, number, number][]) { add(group, new THREE.Mesh(new THREE.BoxGeometry(len, 0.9, 0.3), mat(C.brick)), x, 0.45, z).rotation.y = rot; }
   // Sichuan's quiet food details: nothing to click, everything tells the story
-  for (const [kind, x, z, rot] of [["chilliFrame", -11.6, 1.0, 0.3], ["jars", -17.5, -13.6, 0.2], ["garlicBasket", -13.9, -8.4, 0], ["vegBasket", -10.2, -8.6, 0.4], ["sausageRack", -10, -13.2, 0.1], ["chilliMat", -22.8, 5.2, 0], ["pepperMat", -17.2, 3.6, 0], ["teaMat", -24, -7.4, 0], ["choppingTable", -10.6, -1.2, 0.2], ["marketBaskets", -6.5, 11.8, 0], ["jars", -26.8, -7.6, -0.3], ["cornStrings", -20.2, 13.2, 0.4], ["cabbageRack", -9.6, 18.4, 0.1], ["sausageRack", -18.6, -3.4, 0.5], ["garlicBasket", -21.6, -1.6, 0]] as [Parameters<typeof foodDetail>[0], number, number, number][]) place(foodDetail(kind), x, z, rot);
+  for (const [kind, x, z, rot] of [["chilliFrame", -11.6, 1, 0.3], ["jars", -17.5, -19.6, 0.2], ["garlicBasket", -13.9, -8.4, 0], ["vegBasket", -10.2, -8.6, 0.4], ["sausageRack", -10, -19.2, 0.1], ["chilliMat", -22.8, 5.2, 0], ["pepperMat", -17.2, 3.6, 0], ["teaMat", -24, -7.4, 0], ["choppingTable", -10.6, -1.2, 0.2], ["marketBaskets", -6.5, 11.8, 0], ["jars", -26.8, -7.6, -0.3], ["cornStrings", -20.2, 13.2, 0.4], ["cabbageRack", -9.6, 18.4, 0.1], ["sausageRack", -18.6, -3.4, 0.5], ["garlicBasket", -21.6, -1.6, 0]] as [Parameters<typeof foodDetail>[0], number, number, number][]) place(foodDetail(kind), x, z, rot);
   // lantern strings across the street
   for (const x of [-18, -8, 4]) place(lanternString(6, 4), x, -6).position.y = 3.2;
   for (const x of [-18, -8, 4]) for (const s of [-1, 1]) add(group, new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.09, 3.3, 6), mat(C.woodRed)), x + s * 3, 1.65, -6);
@@ -106,7 +106,7 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   const stoneBridge = bridge(6.4);
   bridgeAt(stoneBridge, 20);
   bridgeAt(woodenBridge(5.6), -14);
-  const xjBridge = woodenBridge(5.6); bridgeAt(xjBridge, -47.2);   // the oasis road crosses here
+  const xjBridge = woodenBridge(5.6); bridgeAt(xjBridge, -53.2);   // the oasis road crosses here
   // the crossing: from bank to bank along the bridge's own axis
   const bx = stoneBridge.position.x, bz = stoneBridge.position.z, bAngle = stoneBridge.rotation.y;
   const across = new THREE.Vector3(Math.cos(bAngle), 0, -Math.sin(bAngle)).normalize();   // the bridge's length axis in world space
@@ -114,22 +114,22 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   const southEnd = new THREE.Vector3(bx, 0, bz).addScaledVector(across, across.z < 0 ? -5.2 : 5.2);
   const theBoat = boat(); place(theBoat, 12, 7, 0.4);
   const boat2 = boat(); place(boat2, -30, 8, 0.2);
-  for (const [x, z] of [[13, 10.5], [17, 9.3], [21, 10.5], [25, 9.3], [34, 8.2], [37, 6.8]] as [number, number][]) place(tree("willow", 1.0), x, z, x);
-  for (const [x, z] of [[25, -9], [27.5, -6.5], [29.5, -9.5], [30.5, -5.5]] as [number, number][]) place(tree("blossom", 0.9), x, z, x);
+  for (const [x, z] of [[13, 10.5], [17, 9.3], [21, 10.5], [25, 9.3], [40, 8.2], [43, 6.8]] as [number, number][]) place(tree("willow", 1.0), x, z, x);
+  for (const [x, z] of [[25, -9], [33.5, -6.5], [35.5, -9.5], [36.5, -5.5]] as [number, number][]) place(tree("blossom", 0.9), x, z, x);
   for (let i = 0; i < 6; i++) place(tree("bamboo", 0.85), -31.5 + i * 1.4, 4.8 + (i % 2) * 0.7, i);
   // panda grove: a bamboo thicket on the south bank below the farms, where the camera can actually see it
-  for (let i = 0; i < 18; i++) { const a = (i / 18) * Math.PI * 2, d = 2.4 + (i % 3) * 1.0; place(tree("bamboo", 1.1 + (i % 2) * 0.35), -13 + Math.cos(a) * d, 22.5 + Math.sin(a) * d * 0.75, i); }
+  for (let i = 0; i < 18; i++) { const a = (i / 18) * Math.PI * 2, d = 2.4 + (i % 3) * 1.0; place(tree("bamboo", 1.1 + (i % 2) * 0.35), -13 + Math.cos(a) * d, 28.5 + Math.sin(a) * d * 0.75, i); }
   place(panda(), -13.4, 22, 0.5); place(panda(), -11.4, 23.6, -1.1).scale.setScalar(0.8);
   place(panda(), -15.2, 23.8, 2.2).scale.setScalar(0.7);
-  for (let i = 0; i < 4; i++) place(tree("pine", 1.1), -30 + i * 1.5, -17 - (i % 2) * 1.5, i);
+  for (let i = 0; i < 4; i++) place(tree("pine", 1.1), -30 + i * 1.5, -23 - (i % 2) * 1.5, i);
   for (let i = 0; i < 5; i++) place(tree("persimmon", 1.0), 5 + i * 2.6, 17 + (i % 2) * 2, i);
   place(tree("round", 1.0), 30.5, 15.5, 1); place(tree("round", 0.9), 37, 14.5, 2);
-  for (let i = 0; i < 3; i++) place(tree("ginkgo", 0.9), 14 + i * 3, 22 + (i % 2) * 0.6, i);
+  for (let i = 0; i < 3; i++) place(tree("ginkgo", 0.9), 14 + i * 3, 28 + (i % 2) * 0.6, i);
   // the north's quiet details: coal for the winter, pickle crocks, persimmons drying, a corn crib, the stone mill, flour sacks
-  for (const [kind, x, z, rot] of [["cabbageStack", 26.2, -12.4, -0.4], ["garlicBraids", 12.6, -27.2, 0.2], ["chilliStrings", 2.4, -25.6, 0], ["chilliStrings", 33.5, -25.5, 0.3], ["noodleRack", 29.5, -13.4, 0.1], ["wheatSheaves", -4.4, -25.4, 0.3], ["wheatSheaves", -16.4, -24.6, -0.2], ["coalStack", 16.2, -11.6, 0.2], ["pickleCrocks", 29.4, -12.4, 0.1], ["persimmonString", 20.4, -12.2, 0], ["cornCrib", 17.2, -19.4, 0.3], ["stoneMill", 24.5, -24.5, 0], ["flourSacks", 33.5, -30.5, 0.4], ["pickleCrocks", 13.2, -30.6, -0.3], ["coalStack", 3.0, -32.6, 0.5]] as [Parameters<typeof northDetail>[0], number, number, number][]) place(northDetail(kind), x, z, rot);
-  for (let i = 0; i < 5; i++) place(tree("round", 0.8 + (i % 2) * 0.2), -3 + i * 5.5, -32.5 + (i % 2) * 1.2, i);
+  for (const [kind, x, z, rot] of [["cabbageStack", 32.2, -18.4, -0.4], ["garlicBraids", 12.6, -33.2, 0.2], ["chilliStrings", 2.4, -31.6, 0], ["chilliStrings", 39.5, -31.5, 0.3], ["noodleRack", 35.5, -19.4, 0.1], ["wheatSheaves", -4.4, -31.4, 0.3], ["wheatSheaves", -16.4, -30.6, -0.2], ["coalStack", 16.2, -11.6, 0.2], ["pickleCrocks", 35.4, -18.4, 0.1], ["persimmonString", 20.4, -18.2, 0], ["cornCrib", 17.2, -25.4, 0.3], ["stoneMill", 24.5, -30.5, 0], ["flourSacks", 39.5, -36.5, 0.4], ["pickleCrocks", 13.2, -36.6, -0.3], ["coalStack", 3, -38.6, 0.5]] as [Parameters<typeof northDetail>[0], number, number, number][]) place(northDetail(kind), x, z, rot);
+  for (let i = 0; i < 5; i++) place(tree("round", 0.8 + (i % 2) * 0.2), -3 + i * 5.5, -40.5 + (i % 2) * 1.2, i);
   // Jiangnan's quiet details: lotus roots and pods, crab pots, wine jars, tea drying, fish on the rack, spring bamboo shoots
-  for (const [kind, x, z, rot] of [["lotusBasket", 27.5, 25, 0.3], ["crabPots", 32.8, 14.2, 0.2], ["wineJars", 12.4, -1.0, 0.1], ["teaBaskets", 14.8, 23.6, 0], ["fishRack", 9.5, 4.2, 0.3], ["bambooShoots", 22.5, 20.5, 0.2], ["wineJars", 26.6, 1.6, -0.4], ["lotusBasket", 24.6, 20.6, 0.5]] as [Parameters<typeof jnDetail>[0], number, number, number][]) place(jnDetail(kind), x, z, rot);
+  for (const [kind, x, z, rot] of [["lotusBasket", 33.5, 31, 0.3], ["crabPots", 38.8, 14.2, 0.2], ["wineJars", 12.4, -1, 0.1], ["teaBaskets", 14.8, 29.6, 0], ["fishRack", 9.5, 4.2, 0.3], ["bambooShoots", 22.5, 26.5, 0.2], ["wineJars", 32.6, 1.6, -0.4], ["lotusBasket", 24.6, 26.6, 0.5]] as [Parameters<typeof jnDetail>[0], number, number, number][]) place(jnDetail(kind), x, z, rot);
 
   // ---------- farms ----------
   place(terrace(4, 4.2, true), -30, 23.5, 0.3);
@@ -145,7 +145,7 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   for (let i = 0; i < 4; i++) place(chicken(i % 2 ? "#c9822b" : C.white), -11 + Math.cos(i * 1.6) * 1.6, 16 + Math.sin(i * 1.6) * 1.4, i);
   place(pond(), -1, 15);
   // paddies with a water buffalo
-  place(cow(true), 29, 19, -0.7);
+  place(cow(true), 28.5, 19, -0.7);
   // ambient farmers carrying produce to market
   const walkers = [person("#3f6b8f", { pole: true }), person("#c0392b", { hat: true }), person("#e0a52c"), person("#2f5d3f", { pole: true })];
   walkers.forEach((w) => group.add(w));
@@ -156,19 +156,19 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   // ---------- northern life: neighbours along the lane between the workshops ----------
   const nWalkers = [person("#4a5a7a"), person("#8a3a3a", { hat: true }), person("#e0a52c", { pole: true }), person("#3f6b8f"), person("#c9a86a")];
   nWalkers.forEach((w) => group.add(w));
-  const nPath = new THREE.CatmullRomCurve3([new THREE.Vector3(0, 0, -24.5), new THREE.Vector3(8, 0, -24.5), new THREE.Vector3(16, 0, -24.2), new THREE.Vector3(24, 0, -22.4), new THREE.Vector3(30, 0, -24.2), new THREE.Vector3(35.5, 0, -23.4), new THREE.Vector3(41.2, 0, -22.2), new THREE.Vector3(42.2, 0, -18), new THREE.Vector3(39.5, 0, -15.2), new THREE.Vector3(33, 0, -15.6), new THREE.Vector3(27, 0, -16.4), new THREE.Vector3(20, 0, -18.7), new THREE.Vector3(14, 0, -16.5), new THREE.Vector3(3, 0, -16.5), new THREE.Vector3(-2, 0, -21)], true);
+  const nPath = new THREE.CatmullRomCurve3([new THREE.Vector3(0, 0, -30.5), new THREE.Vector3(8, 0, -30.5), new THREE.Vector3(16, 0, -30.2), new THREE.Vector3(24, 0, -28.4), new THREE.Vector3(36, 0, -30.2), new THREE.Vector3(41.5, 0, -29.4), new THREE.Vector3(47.2, 0, -28.2), new THREE.Vector3(48.2, 0, -24), new THREE.Vector3(45.5, 0, -21.2), new THREE.Vector3(39, 0, -21.6), new THREE.Vector3(33, 0, -22.4), new THREE.Vector3(20, 0, -24.7), new THREE.Vector3(14, 0, -22.5), new THREE.Vector3(3, 0, -22.5), new THREE.Vector3(-2, 0, -27)], true);
   tickers.push((t) => nWalkers.forEach((w, i) => { const u = (t * 0.01 + i * 0.2) % 1; const p = nPath.getPointAt(u), n = nPath.getPointAt((u + 0.004) % 1); w.position.set(p.x, 0, p.z); w.rotation.y = Math.atan2(n.x - p.x, n.z - p.z); (w.userData as { walk?: (t: number) => void }).walk?.(t + i); }));
   // ---------- oasis life: people up and down the road and over the wooden bridge; melons, raisins, nan, spices, carpets, chillies ----------
-  for (const [kind, x, z, rot] of [["melonPile", -43, -3.6, 0.2], ["raisinRack", -53.6, -10.6, 0], ["nanStack", -40.6, -23, 0.3], ["spiceSacks", -43.2, 10.6, 0.1], ["carpetLine", -52.6, 13.2, 0.05], ["chilliStrings", -41.2, -11.2, 0.2], ["melonPile", -49.4, 14.6, -0.3]] as [Parameters<typeof xjDetail>[0], number, number, number][]) place(xjDetail(kind), x, z, rot);
+  for (const [kind, x, z, rot] of [["melonPile", -49, -3.6, 0.2], ["raisinRack", -59.6, -10.6, 0], ["nanStack", -46.6, -29, 0.3], ["spiceSacks", -49.2, 10.6, 0.1], ["carpetLine", -58.6, 13.2, 0.05], ["chilliStrings", -47.2, -11.2, 0.2], ["melonPile", -55.4, 14.6, -0.3]] as [Parameters<typeof xjDetail>[0], number, number, number][]) place(xjDetail(kind), x, z, rot);
   const xjWalkers = [person("#c0392b", { hat: true }), person("#2f5f9a"), person("#e0a52c", { pole: true }), person("#3f9aa3"), person("#e9d7b8", { hat: true })];
   xjWalkers.forEach((w) => group.add(w));
   const xb = xjBridge.position;
-  const xjPath = new THREE.CatmullRomCurve3([new THREE.Vector3(-47.7, 0, -24), new THREE.Vector3(-47.8, 0, -16), new THREE.Vector3(-47.6, 0, -8), new THREE.Vector3(-47.5, 0, -2), new THREE.Vector3(xb.x - 0.2, 0, xb.z), new THREE.Vector3(-47.6, 0, 7), new THREE.Vector3(-46.8, 0, 12), new THREE.Vector3(-45.6, 0, 14.6), new THREE.Vector3(-46.6, 0, 11), new THREE.Vector3(-47.0, 0, 7), new THREE.Vector3(xb.x + 0.2, 0, xb.z), new THREE.Vector3(-47.0, 0, -2), new THREE.Vector3(-47.1, 0, -8), new THREE.Vector3(-47.2, 0, -16), new THREE.Vector3(-47.1, 0, -23)], true);
+  const xjPath = new THREE.CatmullRomCurve3([new THREE.Vector3(-53.7, 0, -30), new THREE.Vector3(-53.8, 0, -22), new THREE.Vector3(-53.6, 0, -8), new THREE.Vector3(-53.5, 0, -2), new THREE.Vector3(xb.x - 0.2, 0, xb.z), new THREE.Vector3(-53.6, 0, 7), new THREE.Vector3(-52.8, 0, 12), new THREE.Vector3(-51.6, 0, 14.6), new THREE.Vector3(-52.6, 0, 11), new THREE.Vector3(-53, 0, 7), new THREE.Vector3(xb.x + 0.2, 0, xb.z), new THREE.Vector3(-53, 0, -2), new THREE.Vector3(-53.1, 0, -8), new THREE.Vector3(-53.2, 0, -22), new THREE.Vector3(-53.1, 0, -29)], true);
   tickers.push((t) => xjWalkers.forEach((w, i) => { const u = (t * 0.008 + i * 0.2) % 1; const p = xjPath.getPointAt(u), n = xjPath.getPointAt((u + 0.004) % 1); const d = Math.hypot(p.x - xb.x, p.z - xb.z); const y = d < 2.9 ? 0.61 : d < 3.6 ? 0.61 * (1 - (d - 2.9) / 0.7) : 0; w.position.set(p.x, y, p.z); w.rotation.y = Math.atan2(n.x - p.x, n.z - p.z); (w.userData as { walk?: (t: number) => void }).walk?.(t + i); }));
 
   // two camels pace an oval through the sand in the south-west corner
   const camels = [camelWalker(), camelWalker()]; camels.forEach((c) => group.add(c));
-  const camelPath = new THREE.CatmullRomCurve3([new THREE.Vector3(-55.3, 0, 11), new THREE.Vector3(-55.4, 0, 20), new THREE.Vector3(-54, 0, 29), new THREE.Vector3(-48.5, 0, 33.5), new THREE.Vector3(-42, 0, 32.5), new THREE.Vector3(-40.5, 0, 29.5), new THREE.Vector3(-47.5, 0, 28.5), new THREE.Vector3(-50.5, 0, 23), new THREE.Vector3(-53.8, 0, 12.5)], true);   // the sandy south-west corner, clear of the peaks, the fold and the orchard
+  const camelPath = new THREE.CatmullRomCurve3([new THREE.Vector3(-61.3, 0, 11), new THREE.Vector3(-61.4, 0, 26), new THREE.Vector3(-60, 0, 35), new THREE.Vector3(-54.5, 0, 39.5), new THREE.Vector3(-48, 0, 38.5), new THREE.Vector3(-46.5, 0, 35.5), new THREE.Vector3(-53.5, 0, 34.5), new THREE.Vector3(-56.5, 0, 29), new THREE.Vector3(-59.8, 0, 12.5)], true);   // the sandy south-west corner, clear of the peaks, the fold and the orchard
   tickers.push((t) => camels.forEach((c, i) => { const u = (t * 0.005 + i * 0.5) % 1; const p = camelPath.getPointAt(u), n = camelPath.getPointAt((u + 0.003) % 1); c.position.set(p.x, 0, p.z); c.rotation.y = Math.atan2(n.x - p.x, n.z - p.z) - Math.PI / 2; (c.userData as { walk?: (t: number) => void }).walk?.(t + i * 2); }));
 
   // ---------- Jiangnan life: canal-side strollers over the bridge, a fisherman, washing, kids, laundry ----------
@@ -177,8 +177,8 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   const bridgeCenter = new THREE.Vector3(bx, 0, bz);
   const jnPath = new THREE.CatmullRomCurve3([
     // north bank: behind the red-braising kitchen and around the eastern houses, never through a wall
-    new THREE.Vector3(20.6, 0, -0.6), new THREE.Vector3(21.8, 0, -7.6), new THREE.Vector3(26, 0, -8.6), new THREE.Vector3(30.6, 0, -6.2), new THREE.Vector3(32.6, 0, -2),
-    new THREE.Vector3(30.2, 0, -0.5), new THREE.Vector3(27.5, 0, -0.3), new THREE.Vector3(24, 0, -0.5), northEnd.clone(),
+    new THREE.Vector3(20.6, 0, -0.6), new THREE.Vector3(21.8, 0, -7.6), new THREE.Vector3(32, 0, -8.6), new THREE.Vector3(36.6, 0, -6.2), new THREE.Vector3(38.6, 0, -2),
+    new THREE.Vector3(36.2, 0, -0.5), new THREE.Vector3(33.5, 0, -0.3), new THREE.Vector3(24, 0, -0.5), northEnd.clone(),
     // over the bridge and along the south-bank lane
     new THREE.Vector3(bx, 0, bz), southEnd.clone(), new THREE.Vector3(18.6, 0, 8.6), new THREE.Vector3(17.9, 0, 12.9), new THREE.Vector3(13, 0, 14.2), new THREE.Vector3(17.5, 0, 15.3), new THREE.Vector3(23.6, 0, 14.6),
     southEnd.clone().add(new THREE.Vector3(0.3, 0, 0.6)), new THREE.Vector3(bx + 0.3, 0, bz),
@@ -195,7 +195,7 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   // fisherman on the bank
   const fisher = place(person("#4a3a32", { hat: true }), 27.5, 4.2, 2.6);
   const rod = add(fisher, new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.02, 2.0, 4), mat("#5a3a22")), 0.2, 1.0, 0.5); rod.rotation.x = -1.1;
-  add(group, new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 1.2, 3), mat("#e8e8e8")), 27.9, 0.75, 6.2);
+  add(group, new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 1.2, 3), mat("#e8e8e8")), 33.9, 0.75, 6.2);
   // woman washing at the river steps
   add(group, new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.25, 0.9), mat(C.stone)), 16.5, 0.12, 8.6);
   const washer = person("#d97a8a"); (washer.userData as { sit?: () => void }).sit?.(); place(washer, 16.5, 8.2, Math.PI).position.y = 0.05;
@@ -254,7 +254,7 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   });
 
   // butterflies and boats
-  const flies = [[-7, 15], [25, 15], [-19, 1], [3, -15]].map(([x, z], i) => { const b = butterfly(["#f2b64d", "#f4a6b8", "#ffffff", "#f2b64d"][i]); group.add(b); tickers.push(b.userData.tick!); return { b, x, z, ph: i * 2 }; });
+  const flies = [[-7, 15], [25, 15], [-19, 1], [3, -21]].map(([x, z], i) => { const b = butterfly(["#f2b64d", "#f4a6b8", "#ffffff", "#f2b64d"][i]); group.add(b); tickers.push(b.userData.tick!); return { b, x, z, ph: i * 2 }; });
   tickers.push((t) => flies.forEach(({ b, x, z, ph }) => { b.position.set(x + Math.sin(t * 0.6 + ph) * 2.4, TOP + 1.8 + Math.sin(t * 1.7 + ph) * 0.4, z + Math.cos(t * 0.45 + ph) * 2); b.rotation.y = t * 0.6 + ph; }));
   const uAtX = (x: number) => { let best = 0, bestD = Infinity; for (let i = 0; i <= 400; i++) { const d = Math.abs(curve.getPointAt(i / 400).x - x); if (d < bestD) { bestD = d; best = i / 400; } } return best; };
   tickers.push((t) => {

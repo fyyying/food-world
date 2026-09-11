@@ -7,13 +7,27 @@ import * as THREE from "three";
 import { CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
 import { wobble } from "./noise";
 
-/** A little speech bubble that pops over an object for a moment. */
-export function bubble(g: THREE.Object3D, text: string, y: number, ms = 1500) {
+let nextAmbientSpeech = performance.now() + 12000;
+let dismissSpeech: (() => void) | undefined;
+
+/** One speaker at a time; taps take priority over occasional background chatter. */
+export function bubble(g: THREE.Object3D, text: string, y: number, ms = 1500, ambient = false) {
+  const now = performance.now();
+  if (ambient && (document.hidden || now < nextAmbientSpeech)) return;
+  nextAmbientSpeech = now + 18000 + rnd() * 10000;
+  dismissSpeech?.();
   const el = document.createElement("div");
   el.className = "bubble";
   el.textContent = text;
   const o = new CSS2DObject(el); o.position.set(0, y, 0); g.add(o);
-  setTimeout(() => { el.classList.add("out"); setTimeout(() => g.remove(o), 300); }, ms);
+  let removeTimer: ReturnType<typeof setTimeout> | undefined;
+  const dismiss = () => {
+    clearTimeout(fadeTimer); clearTimeout(removeTimer);
+    g.remove(o);
+    if (dismissSpeech === dismiss) dismissSpeech = undefined;
+  };
+  const fadeTimer = setTimeout(() => { el.classList.add("out"); removeTimer = setTimeout(dismiss, 300); }, ms);
+  dismissSpeech = dismiss;
 }
 /** Reaction clock: poke() sets it to 1, tick() decays it; animations read it as intensity. */
 export function reaction(rate = 1.1) {
@@ -43,14 +57,15 @@ export function hopFood(g: THREE.Object3D, k: number, t: number, dt: number): vo
   if (k < 0.01) { for (const f of foods) { f.m.position.y = f.y; f.m.rotation.z = f.rz; } return; }
   foods.forEach((f, i) => { const hop = k * Math.abs(Math.sin(t * 5 + i * 0.7)); f.m.position.y = f.y + hop * 0.35; f.m.rotation.y += dt * 8 * k; f.m.rotation.z = f.rz + k * Math.sin(t * 5 + i * 0.7) * 0.8; });
 }
-/** ambient talk: every so often one of the people in the prop says a line from the region's pool (the Sichuan family table does this) */
+/** Props offer an occasional line; the shared speech cooldown prevents village-wide overlap. */
 export function ambientChat(g: THREE.Object3D, lines: string[]): (dt: number) => void {
-  let next = 6 + rnd() * 12; let people: THREE.Object3D[] | null = null;
+  let next = 12 + rnd() * 24; let people: THREE.Object3D[] | null = null;
   return (dt) => {
-    next -= dt; if (next > 0) return; next = 10 + rnd() * 14;
+    next -= dt; if (next > 0) return; next = 30 + rnd() * 30;
+    for (let ancestor: THREE.Object3D | null = g; ancestor; ancestor = ancestor.parent) if (!ancestor.visible) return;
     if (!people) { people = []; g.traverse((o) => { if ((o.userData as { upper?: unknown }).upper) people!.push(o); }); }
     if (!people.length || !lines.length) return;
-    bubble(people[Math.floor(rnd() * people.length)], lines[Math.floor(rnd() * lines.length)], 1.55, 1600);
+    bubble(people[Math.floor(rnd() * people.length)], lines[Math.floor(rnd() * lines.length)], 1.55, 2000, true);
   };
 }
 
@@ -1394,9 +1409,9 @@ export function hotpot(): P {
   const queue: P[] = []; for (let i = 0; i < 2; i++) { const q = person(["#6f9b57", "#c9413f"][i]); add(g, q, 2.2 + i * 0.55, 0, 1.2 + i * 0.35); q.rotation.y = -2.2; queue.push(q); }
   g.userData.steam = new THREE.Vector3(0, 1.3, tz);
   const re = reaction(0.5);
-  let chat = 4 + rnd() * 5;
   const lines = ["干杯! Cheers!", "好辣! So spicy!", "再来! More!", "哈哈 Haha", "加汤! More broth!", "烫一下就好 · just a dip"];
-  g.userData.poke = () => { re.poke(); diners.forEach(({ d }, i) => setTimeout(() => bubble(d, lines[i], 1.4, 1200), i * 180)); pair.forEach((d, i) => setTimeout(() => bubble(d, lines[4 + i], 1.4, 1200), 700 + i * 200)); };
+  const chat = ambientChat(g, lines);
+  g.userData.poke = () => { re.poke(); bubble(pick([...diners.map(({ d }) => d), ...pair]), pick(lines), 1.4, 1800); };
   g.userData.tick = (t, dt) => {
     const k = re.step(dt);
     diners.forEach(({ d }, i) => {
@@ -1414,7 +1429,7 @@ export function hotpot(): P {
     // the waiter sweeps back and forth along the front of the tables, never through the house behind them
     const wa = Math.PI / 2 + Math.sin(t * 0.45) * 1.15, dir = Math.cos(t * 0.45) >= 0 ? 1 : -1; waiter.position.set(Math.cos(wa) * 2.4, 0, tz + Math.sin(wa) * 2.4); waiter.rotation.y = -wa + (dir > 0 ? Math.PI : 0); (waiter.userData as { walk?: (t: number) => void }).walk?.(t);
     queue.forEach((q, i) => { const up = (q.userData as { upper?: THREE.Group }).upper; if (up) up.rotation.y = Math.sin(t * 0.7 + i * 2) * 0.25; });
-    chat -= dt; if (chat < 0) { chat = 6 + rnd() * 6; const all = [...diners.map((x) => x.d), ...pair]; bubble(all[Math.floor(rnd() * all.length)], lines[Math.floor(rnd() * lines.length)], 1.4, 1400); }
+    chat(dt);
     tickChildren(g)(t, dt);
   };
   return g;

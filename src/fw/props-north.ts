@@ -310,7 +310,7 @@ export function bingStall(): P {
   add(g, ball(0.14, "#5a3a2a", 8), 1.4, 0.98, 0.35).scale.y = 0.6;                 // the pot of braised pork for roujiamo
   add(g, cyl(0.02, 0.02, 0.3, "#8a949c", 4), -0.2, 0.9, -0.3).rotation.z = Math.PI / 2;   // cleaver
   for (const x of [-1.25, 1.25]) add(g, cyl(0.05, 0.05, 2.2, C.woodDark, 5), x, 1.1, -0.5);
-  add(g, box(3.0, 0.06, 1.7, "#c9a86a"), 0, 2.15, -0.1).rotation.x = 0.12;         // cloth awning
+  add(g, box(3.0, 0.06, 0.65, "#c9a86a"), 0, 2.15, -0.6).rotation.x = 0.12;         // cloth awning
   const baker = add(g, person("#6a7fb0", { apron: true }), 0, 0, -1.0) as Fig;
   const buyers = [person("#c0392b"), person("#e9d7b8", { hat: true })].map((p, i) => { const q = add(g, p, -0.6 + i * 1.3, 0, 1.3); q.rotation.y = Math.PI; return q as Fig; });
   signBoard(g, 0.5, 0.7, -1.45, 1.7, -0.3, "饼");                       // 饼 sign
@@ -521,23 +521,23 @@ export function jujubeTree(): P {
   const crown = new THREE.Group(); g.add(crown);
   add(crown, ball(1.05, "#6f9b57", 9), 0, 2.1, 0).scale.y = 0.85;
   const dates: THREE.Mesh[] = [];
-  for (let i = 0; i < 30; i++) { const a = (i / 30) * Math.PI * 2, r = 0.7 + (i % 3) * 0.15; dates.push(add(crown, ball(0.06, i % 4 ? "#a82a1e" : "#c9432e", 5), Math.cos(a) * r, 1.9 + Math.sin(i * 1.7) * 0.5, Math.sin(a) * r * 0.9)); }
+  for (let i = 0; i < 30; i++) { const a = (i / 30) * Math.PI * 2, r = 0.7 + (i % 3) * 0.15; dates.push(add(crown, ball(0.095, i % 4 ? "#a82a1e" : "#c9432e", 5), Math.cos(a) * r, 1.9 + Math.sin(i * 1.7) * 0.5, Math.sin(a) * r * 0.9)); }
   add(g, cyl(0.8, 0.8, 0.04, "#d9c28a", 14), 1.7, 0.02, 0.6); for (let i = 0; i < 24; i++) { const a = rnd() * Math.PI * 2, r = rnd() * 0.65; add(g, ball(0.05, i % 3 ? "#a82a1e" : "#7e1e14", 5), 1.7 + Math.cos(a) * r, 0.07, 0.6 + Math.sin(a) * r).scale.y = 0.8; }
   const falling: { m: THREE.Mesh; v: number; life: number }[] = [];
   let shake = 0;
   g.userData.poke = () => {
     shake = 1;
     bubble(g, "红枣 Red dates: sweet, and in every winter soup", 3.4, 1600);
-    for (let i = 0; i < 16; i++) { const src = dates[Math.floor(rnd() * dates.length)]; const m = ball(0.06, "#c9432e", 5); m.position.copy(src.position); m.position.x += (rnd() - 0.5) * 0.3; m.position.z += (rnd() - 0.5) * 0.3; g.add(m); falling.push({ m, v: 0, life: 0 }); }
+    for (let i = 0; i < 16; i++) { const src = dates[Math.floor(rnd() * dates.length)]; const m = ball(0.095, "#c9432e", 5); m.position.copy(src.position); m.position.x += (rnd() - 0.5) * 0.3; m.position.z += (rnd() - 0.5) * 0.3; g.add(m); falling.push({ m, v: 0, life: 0 }); }
   };
   g.userData.tick = (t, dt) => {
     if (shake > 0) { shake = Math.max(0, shake - dt * 1.3); crown.rotation.z = Math.sin(t * 28) * 0.09 * shake; crown.rotation.x = Math.cos(t * 23) * 0.06 * shake; crown.position.y = Math.abs(Math.sin(t * 20)) * 0.08 * shake; }
     else { crown.rotation.z = Math.sin(t * 0.9) * 0.02; crown.rotation.x = 0; crown.position.y = 0; }
     for (let i = falling.length - 1; i >= 0; i--) {
       const f = falling[i]; f.v += dt * 9; f.life += dt;
-      f.m.position.y = Math.max(0.06, f.m.position.y - f.v * dt);
-      if (f.m.position.y <= 0.061) f.v = 0;
-      if (f.life > 4) { g.remove(f.m); falling.splice(i, 1); }
+      f.m.position.y = Math.max(0.095, f.m.position.y - f.v * dt);
+      if (f.m.position.y <= 0.096) f.v = 0;
+      if (f.life > 4) { g.remove(f.m); f.m.geometry.dispose(); falling.splice(i, 1); }
     }
   };
   return g;

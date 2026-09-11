@@ -4,6 +4,7 @@
 // corners. Life comes from the engine's parallax and light plus steam, fire, lamps, motes, leaves and the like.
 
 import { flickerNoise, STAGE_W, STAGE_H, type SceneDef } from "./scene";
+import { roomProps } from "./scene-props";
 import sizes from "./scenes.json";
 import propSizes from "./scenes-props.json";
 
@@ -34,6 +35,7 @@ export type Walker = { name: string; w: number; y: number; from: number; to: num
 
 export type PaintedCfg = {
   id: string;
+  hotspots?: SceneDef["hotspots"];
   folder: string;
   title: string;
   zh: string;
@@ -99,6 +101,9 @@ const HALO = `<defs><radialGradient id="haloQ"><stop offset="0" stop-color="#ffc
   <radialGradient id="fireQ"><stop offset="0" stop-color="#ffb060" stop-opacity=".6"/><stop offset=".5" stop-color="#ff6a2a" stop-opacity=".2"/><stop offset="1" stop-color="#ff4a1a" stop-opacity="0"/></radialGradient></defs>`;
 
 export function paintedScene(cfg: PaintedCfg): SceneDef {
+  // The full paintings already contain their furniture, animals and hanging objects.
+  // Keep the established hotpot composition; avoid duplicate cutouts in other rooms.
+  if (cfg.painting && cfg.id !== 'hotpot') cfg = { ...cfg, hang: [], front: [], walkers: [], portrait: { ...cfg.portrait, walkers: [] } };
   const f = cfg.folder;
   const cb = cfg.painting ? { x: 0, y: 0, w: STAGE_W, h: STAGE_H } : coverBox(f);
   const dim = cfg.night ? 0.5 : 0.42;
@@ -143,14 +148,20 @@ export function paintedScene(cfg: PaintedCfg): SceneDef {
 
   const frontLayer = `${HALO}${(cfg.front ?? []).map((s, i) => sprite(f, s, `front-${i}`, "front")).join("")}${walkers}`;
 
+  const reaction = { boil: 0 };
+  const hotspots = cfg.hotspots ?? roomProps(cfg.id, (x, y) => pAt(f, x, y));
   return {
+    hotspots,
+    react: (id) => {
+      if (id === "pot") { reaction.boil = reaction.boil ? 0 : 1; return Boolean(reaction.boil); }
+    },
     id: cfg.id, title: cfg.title, zh: cfg.zh, caption: cfg.caption,
     // with a full painting the hanging pieces must sit in front of it; with a cut sheet they hang behind the cover
     layers: cfg.painting
       ? [{ svg: backLayer, depth: 0.15 }, { svg: coverLayer, depth: 0.5 }, { svg: hangLayer, depth: 0.62 }, { svg: frontLayer, depth: 1, blur: 0.5 }]
       : [{ svg: backLayer, depth: 0.15 }, { svg: hangLayer, depth: 0.42 }, { svg: coverLayer, depth: 0.5 }, { svg: frontLayer, depth: 1, blur: 0.5 }],
     fxDepth: 0.5,
-    fx: makeFx(cfg),
+    fx: makeFx(cfg, reaction),
     light: cfg.light,
     animate: (root) => {
       const q = (s: string) => Array.from(root.querySelectorAll<SVGGraphicsElement>(s));
@@ -178,7 +189,7 @@ export function paintedScene(cfg: PaintedCfg): SceneDef {
           s.halo?.setAttribute("opacity", (0.35 + flickerNoise(t, s.ph) * 0.65).toFixed(3));
         });
         staticHalos.forEach((h, i) => h.setAttribute("opacity", (0.35 + flickerNoise(t, i * 2.3 + 1) * 0.65).toFixed(3)));
-        fires.forEach((el, i) => el.setAttribute("opacity", (0.45 + flickerNoise(t, i + 2) * 0.55).toFixed(3)));
+        fires.forEach((el, i) => el.setAttribute("opacity", (0.25 + flickerNoise(t, i + 2) * 0.45).toFixed(3)));
         lamps.forEach((el, i) => el.setAttribute("opacity", (0.3 + flickerNoise(t, i * 1.9 + 7) * 0.7).toFixed(3)));
       };
     },
@@ -193,7 +204,7 @@ type Lantern = { x: number; y: number; vy: number; sway: number; age: number; li
 type Bubble = { x: number; y: number; r: number; age: number; life: number };
 type Petal = { x: number; y: number; vy: number; sway: number; rot: number; vr: number; s: number; age: number; life: number };
 
-function makeFx(cfg: PaintedCfg) {
+function makeFx(cfg: PaintedCfg, reaction: { boil: number }) {
   const steam: Steam[] = [], leaves: Leaf[] = [], lanterns: Lantern[] = [], bubbles: Bubble[] = [], petals: Petal[] = [];
   const leafImgs = [2, 3, 5, 6, 7, 8].map((i) => { const im = new Image(); im.src = `${import.meta.env.BASE_URL}scenes/hotpot/leaf-${i}.png`; return im; });
   const motes = Array.from({ length: cfg.motes ?? 0 }, () => ({ x: rnd(0, STAGE_W), y: rnd(-20, 720), vy: rnd(4, 11), r: rnd(1, 2.4), a: rnd(0.25, 0.6), f: rnd(0.4, 1.1), ph: rnd(0, 6.28) }));
@@ -205,12 +216,12 @@ function makeFx(cfg: PaintedCfg) {
     const pot = (portrait && cfg.portrait?.pot) || cfg.pot;
     if (pot) {
       // broth on the boil: domes swell out of the surface, burst, and leave a ripple that spreads and fades
-      bacc += dt * 14;
+      bacc += dt * (reaction.boil > 0 ? 90 : 8);
       while (bacc > 1) {
         bacc -= 1;
         const hot = Math.random() < 0.6 ? 0.55 : 1;   // most of the boil is around the middle
         const a = rnd(0, Math.PI * 2), r = Math.sqrt(Math.random()) * 0.92 * hot, sz = pot.rx / 138;
-        bubbles.push({ x: pot.x + Math.cos(a) * pot.rx * r, y: pot.y + Math.sin(a) * pot.ry * r, r: rnd(3.5, 9) * sz, age: 0, life: rnd(0.55, 1.1) });
+        bubbles.push({ x: pot.x + Math.cos(a) * pot.rx * r, y: pot.y + Math.sin(a) * pot.ry * r, r: rnd(3.5, reaction.boil ? 14 : 7) * sz, age: 0, life: rnd(0.55, 1.1) });
       }
       ctx.beginPath(); ctx.ellipse(pot.x, pot.y, pot.rx, pot.ry, 0, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(255,120,50,${(0.05 + (0.5 + Math.sin(t * 5.1) * 0.5) * 0.06).toFixed(3)})`; ctx.fill();
@@ -260,7 +271,7 @@ function makeFx(cfg: PaintedCfg) {
       }
     }
     emitters.forEach((e, i) => {
-      accs[i] += dt * e.rate;
+      accs[i] += dt * e.rate * (reaction.boil > 0 ? 2 : 1);
       while (accs[i] > 1) { accs[i] -= 1; steam.push({ x: rnd(e.x - e.w / 2, e.x + e.w / 2), y: rnd(e.y - 8, e.y + 8), vx: rnd(-6, 6), vy: rnd(-42, -70), r: rnd(10, 18) * Math.max(0.6, e.w / 120), a: (e.a ?? 0.34) * rnd(0.8, 1.2), life: rnd(2.6, 4.4), age: 0, drift: rnd(0, 6.28) }); }
     });
     for (let i = steam.length - 1; i >= 0; i--) {
@@ -287,7 +298,8 @@ function makeFx(cfg: PaintedCfg) {
       }
     }
     for (const m of motes) {
-      m.y -= m.vy * dt; m.x += Math.sin(t * m.f + m.ph) * 9 * dt;
+      m.y -= m.vy * dt; m.x += (Math.sin(t * m.f + m.ph) * 9) * dt;
+      if (m.x > STAGE_W + 20) m.x = -20;
       if (m.y < -20) { m.y = 720; m.x = rnd(0, STAGE_W); }
       const a = m.a * (0.55 + 0.45 * Math.sin(t * m.f * 3 + m.ph));
       ctx.beginPath(); ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2); ctx.fillStyle = cfg.night ? `rgba(255,225,170,${a.toFixed(3)})` : `rgba(255,214,150,${a.toFixed(3)})`; ctx.fill();

@@ -1,6 +1,7 @@
 // Xinjiang: the oasis strip beyond the western mountains. Ochre walls, carved wood, grape trellises, poplars, a tonur,
 // a long grill and a cauldron of polo. Uyghur-influenced food culture in this first version, with room for more.
 import * as THREE from "three";
+import { camelLeg, CAMEL_CYCLE, CAMEL_HIP_HEIGHT, CAMEL_LEG_LENGTH } from "./camel-gait";
 import { C, add, box, cyl, cone, ball, group, reaction, pick, tickChildren, smooth, mat, person, bubble, rnd, hopFood, ambientChat, type P } from "./props";
 
 const XJ_LINES = ["Yaxshimusiz? 你好吗", "Qeni, olturung! Sit, sit", "Tatliq! 真甜", "Chay iching 喝口茶", "Nan issiq 馕还热着", "Ziyade zira! 多放孜然"];
@@ -182,7 +183,7 @@ export function laghmanShop(): P {
 export function oasisBazaar(): P {
   const g = group();
   add(g, box(7.0, 0.12, 4.4, SAND), 0, 0.06, 0);
-  const awning = (x: number, z: number, col: string) => { for (const dx of [-1.1, 1.1]) add(g, cyl(0.05, 0.05, 2.2, WOOD, 5), x + dx, 1.1, z - 0.5); add(g, box(2.6, 0.05, 1.8, col), x, 2.15, z - 0.2).rotation.x = 0.12; add(g, box(2.2, 0.8, 1.0, WOOD), x, 0.4, z); };
+  const awning = (x: number, z: number, col: string) => { for (const dx of [-1.1, 1.1]) add(g, cyl(0.05, 0.05, 2.2, WOOD, 5), x + dx, 1.1, z - 0.5); add(g, box(2.6, 0.05, 0.7, col), x, 2.15, z - 0.7).rotation.x = 0.12; add(g, box(2.2, 0.8, 1.0, WOOD), x, 0.4, z); };
   awning(-2.2, -0.6, "#b8462a"); awning(0.4, -0.6, TURQ); awning(3.0, -0.6, "#e0a52c");
   for (let i = 0; i < 6; i++) add(g, ball(0.22, i % 2 ? "#a9c87a" : "#e6d27a", 8), -3.0 + (i % 3) * 0.5, 0.98 + Math.floor(i / 3) * 0.2, -0.75 + Math.floor(i / 3) * 0.2).scale.set(1.3, 0.9, 1);   // melons
   for (let i = 0; i < 4; i++) { const c = new THREE.Group(); c.position.set(-1.6 + (i % 2) * 0.3, 1.0, -0.7 + Math.floor(i / 2) * 0.3); g.add(c); for (let k = 0; k < 8; k++) add(c, ball(0.045, k % 3 ? "#5a3a6a" : "#8fb86a", 5), (rnd() - 0.5) * 0.15, (rnd() - 0.5) * 0.1, (rnd() - 0.5) * 0.15); }   // grapes
@@ -444,36 +445,54 @@ export function carrotPatch(): P {
 export function apricotWalnut(): P {
   const g = group();
   add(g, cyl(0.1, 0.14, 1.3, "#7a5a3a", 7), -1.0, 0.65, 0); const ac = add(g, ball(0.9, "#6f9b57", 9), -1.0, 1.8, 0); ac.scale.y = 0.85;
-  const fruit: THREE.Object3D[] = []; for (let i = 0; i < 18; i++) { const a = (i / 18) * Math.PI * 2, r = 0.6 + (i % 3) * 0.12; fruit.push(add(g, ball(0.07, "#e8a53f", 6), -1.0 + Math.cos(a) * r, 1.65 + Math.sin(i * 1.9) * 0.4, Math.sin(a) * r * 0.9)); }
+  const fruit: THREE.Object3D[] = []; for (let i = 0; i < 18; i++) { const a = (i / 18) * Math.PI * 2, r = 0.6 + (i % 3) * 0.12; fruit.push(add(g, ball(0.11, "#e8a53f", 6), -1.0 + Math.cos(a) * r, 1.65 + Math.sin(i * 1.9) * 0.4, Math.sin(a) * r * 0.9)); }
   add(g, cyl(0.14, 0.18, 1.8, "#5a4a3a", 7), 1.2, 0.9, -0.3); const wc = add(g, ball(1.15, "#4f7d4a", 9), 1.2, 2.4, -0.3); wc.scale.y = 0.9;
   for (let i = 0; i < 12; i++) { const a = (i / 12) * Math.PI * 2, r = 0.8; add(g, ball(0.07, "#8fa85a", 6), 1.2 + Math.cos(a) * r, 2.2 + Math.sin(i * 2.3) * 0.5, -0.3 + Math.sin(a) * r * 0.9); }
   add(g, cyl(0.7, 0.7, 0.04, "#d9c28a", 14), 0.2, 0.02, 1.4); for (let i = 0; i < 20; i++) { const a = rnd() * Math.PI * 2, r = rnd() * 0.55; add(g, ball(0.05, i % 2 ? "#e8823f" : "#c9a86a", 5), 0.2 + Math.cos(a) * r, 0.07, 1.4 + Math.sin(a) * r).scale.y = 0.7; }   // apricots and walnuts drying
   const girl = add(g, person("#c0392b"), -0.2, 0, 0.9) as Fig; girl.scale.setScalar(0.8); girl.rotation.y = Math.PI * 0.9;
-  const falling: { m: THREE.Object3D; t: number }[] = [];
+  const falling: { m: THREE.Mesh; t: number }[] = [];
   const re = reaction(0.5);
-  g.userData.poke = () => { re.poke(); for (let i = 0; i < 6; i++) falling.push({ m: add(g, ball(0.07, "#e8a53f", 6), -1.0 + (rnd() - 0.5) * 1.2, 1.7, (rnd() - 0.5) * 1.0), t: 0 }); bubble(girl, "Örük! Apricots in June, walnuts in October", 1.5, 1600); };
+  g.userData.poke = () => { re.poke(); for (let i = 0; i < 6; i++) falling.push({ m: add(g, ball(0.11, "#e8a53f", 6), -1.0 + (rnd() - 0.5) * 1.2, 1.7, (rnd() - 0.5) * 1.0), t: 0 }); bubble(girl, "Örük! Apricots in June, walnuts in October", 1.5, 1600); };
   const chat = ambientChat(g, XJ_LINES);
-  g.userData.tick = (t, dt) => { const k = re.step(dt); hopFood(g, k, t, dt); chat(dt); ac.rotation.z = Math.sin(t * 0.9) * 0.02 + k * Math.sin(t * 9) * 0.06; fruit.forEach((f, i) => { f.position.y += Math.sin(t * 2 + i) * 0.0008; }); for (let i = falling.length - 1; i >= 0; i--) { const f = falling[i]; f.t += dt; f.m.position.y = Math.max(0.07, 1.7 - f.t * f.t * 4); if (f.t > 3) { g.remove(f.m); falling.splice(i, 1); } } const a = arms(girl); if (a) a.right.rotation.x = -2.2 + k * Math.sin(t * 8) * 0.3; tickChildren(g)(t, dt); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); hopFood(g, k, t, dt); chat(dt); ac.rotation.z = Math.sin(t * 0.9) * 0.02 + k * Math.sin(t * 9) * 0.06; fruit.forEach((f, i) => { f.position.y += Math.sin(t * 2 + i) * 0.0008; }); for (let i = falling.length - 1; i >= 0; i--) { const f = falling[i]; f.t += dt; f.m.position.y = Math.max(0.11, 1.7 - f.t * f.t * 4); if (f.t > 3) { g.remove(f.m); f.m.geometry.dispose(); falling.splice(i, 1); } } const a = arms(girl); if (a) a.right.rotation.x = -2.2 + k * Math.sin(t * 8) * 0.3; tickChildren(g)(t, dt); };
   return g;
 }
 
-/** a Bactrian camel that walks: two humps, a load of bales, legs that swing from the shoulder, the head nodding with each step */
+/** A loaded Bactrian camel: alternating sides, planted pads and a quiet body sway. */
 export function camelWalker(): P {
   const g = group();
-  const body = add(g, ball(0.5, "#c9a068", 9), 0, 1.15, 0); body.scale.set(1.7, 0.85, 0.9);
-  for (const dx of [-0.32, 0.28]) add(g, ball(0.28, "#b8905a", 8), dx, 1.55, 0).scale.set(0.9, 0.8, 0.8);   // two humps
-  const neck = add(g, cyl(0.12, 0.16, 1.0, "#c9a068", 6), 0.85, 1.45, 0); neck.rotation.z = -0.7;
-  const head = new THREE.Group(); head.position.set(1.22, 1.85, 0); g.add(head);
+  const torso = new THREE.Group(); g.add(torso);
+  const body = add(torso, ball(0.5, "#c9a068", 9), 0, 1.15, 0); body.scale.set(1.7, 0.85, 0.9);
+  for (const dx of [-0.32, 0.28]) add(torso, ball(0.28, "#b8905a", 8), dx, 1.55, 0).scale.set(0.9, 0.8, 0.8);   // two humps
+  const neck = add(torso, cyl(0.12, 0.16, 1.0, "#c9a068", 6), 0.85, 1.45, 0); neck.rotation.z = -0.7;
+  const head = new THREE.Group(); head.position.set(1.22, 1.85, 0); torso.add(head);
   add(head, ball(0.16, "#c9a068", 7), 0, 0, 0).scale.set(1.4, 0.8, 0.8); add(head, box(0.06, 0.12, 0.05, "#a8804a"), -0.05, 0.14, 0.06); add(head, box(0.06, 0.12, 0.05, "#a8804a"), -0.05, 0.14, -0.06);
-  for (const dz of [-0.35, 0.35]) { add(g, box(0.9, 0.3, 0.22, "#7a4a3a"), -0.1, 1.35, dz); add(g, box(0.5, 0.12, 0.24, "#b8462a"), -0.1, 1.56, dz); }   // bales and a rug
-  const legs = [[-0.5, -0.22], [-0.5, 0.22], [0.5, -0.22], [0.5, 0.22]].map(([x, z]) => { const l = new THREE.Group(); l.position.set(x, 0.95, z); g.add(l); add(l, cyl(0.08, 0.06, 0.95, "#b8905a", 6), 0, -0.47, 0); add(l, ball(0.08, "#8a6a4a", 6), 0, -0.95, 0.02).scale.y = 0.5; return l; });
-  add(g, cyl(0.03, 0.02, 0.5, "#a8804a", 4), -0.9, 1.1, 0).rotation.z = 0.5;   // the tail
+  for (const dz of [-0.35, 0.35]) { add(torso, box(0.9, 0.3, 0.22, "#7a4a3a"), -0.1, 1.35, dz); add(torso, box(0.5, 0.12, 0.24, "#b8462a"), -0.1, 1.56, dz); }   // bales and a rug
+  const legs = [[-0.5, -0.22], [-0.5, 0.22], [0.5, -0.22], [0.5, 0.22]].map(([x, z]) => {
+    const hip = new THREE.Group(); hip.position.set(x, CAMEL_HIP_HEIGHT, z); g.add(hip);
+    add(hip, cyl(0.075, 0.055, CAMEL_LEG_LENGTH, "#b8905a", 6), 0, -CAMEL_LEG_LENGTH / 2, 0);
+    const knee = new THREE.Group(); knee.position.y = -CAMEL_LEG_LENGTH; hip.add(knee);
+    add(knee, ball(0.065, "#b8905a", 6), 0, 0, 0);
+    add(knee, cyl(0.05, 0.04, CAMEL_LEG_LENGTH, "#b8905a", 6), 0, -CAMEL_LEG_LENGTH / 2, 0);
+    const pad = new THREE.Group(); pad.position.y = -CAMEL_LEG_LENGTH; knee.add(pad);
+    add(pad, ball(0.08, "#8a6a4a", 7), 0.015, 0, 0).scale.set(1.4, 0.5, 1.1);
+    return { hip, knee, pad, side: z, front: x > 0 };
+  });
+  add(torso, cyl(0.03, 0.02, 0.5, "#a8804a", 4), -0.9, 1.1, 0).rotation.z = 0.5;   // the tail
   (g.userData as { walk?: (t: number) => void }).walk = (t) => {
-    const sw = Math.sin(t * 3.2) * 0.35;
-    // the camel walks along its own x axis, so the legs swing about z (fore and aft); it paces: the two legs on a side move together
-    legs[0].rotation.z = sw; legs[1].rotation.z = sw; legs[2].rotation.z = -sw; legs[3].rotation.z = -sw;
-    body.position.y = 1.15 + Math.abs(Math.sin(t * 3.2)) * 0.03; head.rotation.z = Math.sin(t * 3.2) * 0.08 - 0.2;
+    for (const leg of legs) {
+      const pose = camelLeg(t, leg.side, leg.front);
+      leg.hip.rotation.z = pose.upper;
+      leg.knee.rotation.z = pose.lower;
+      leg.pad.rotation.z = pose.pad;
+    }
+    const phase = t / CAMEL_CYCLE * Math.PI * 2;
+    torso.rotation.x = Math.sin(phase) * 0.025;
+    torso.position.y = Math.cos(phase * 2) * 0.008;
+    head.rotation.z = -0.12 + Math.sin(phase) * 0.025;
+
   };
+  (g.userData as { walk: (t: number) => void }).walk(0);
   return g;
 }
 

@@ -22,7 +22,7 @@ export function baoShop(): P {
   add(g, house("jiangnan", 3.4, 2.6, 2.0), 0, 0, -0.9);
   add(g, box(3.0, 0.9, 0.9, C.wood), 0, 0.45, 0.9);                       // counter
   const lids = [steamerStack(g, -1.0, 0.9, 0.9, 4), steamerStack(g, 0.1, 0.9, 0.95, 5), steamerStack(g, 1.0, 0.9, 0.85, 3, 0.28)];
-  for (let i = 0; i < 6; i++) add(g, ball(0.07, "#fbf5e8", 7), -1.3 + i * 0.22, 0.98, 1.25).scale.y = 0.8;   // buns cooling on the board
+  for (let i = 0; i < 6; i++) add(g, ball(0.11, "#fbf5e8", 7), -1.3 + i * 0.28, 0.98, 1.25).scale.y = 0.8;   // buns cooling on the board
   add(g, box(0.5, 0.7, 0.05, "#f3e6c8"), 1.55, 1.8, 0.4);                  // sign 包
   const cook = add(g, person("#f4f1ea", { apron: true, hat: false }), 0.1, 0, -0.1) as Fig;
   add(upper(cook)!, cyl(0.02, 0.02, 0.5, C.wood, 4), 0, 0.15, 0.2).rotation.z = Math.PI / 2;   // rolling pin
@@ -140,9 +140,11 @@ export function lotusPond(): P {
 export function wineCellar(): P {
   const g = group();
   add(g, box(5.2, 0.25, 4.0, C.stone), 0, 0.12, 0);
-  for (const [x, z] of [[-2.3, -1.7], [2.3, -1.7], [-2.3, 1.7], [2.3, 1.7]] as [number, number][]) add(g, cyl(0.1, 0.11, 2.4, C.woodDark, 6), x, 1.35, z);
-  add(g, chineseRoof(6.0, 4.8, 0.8, C.tile, 0.3), 0, 2.6, 0);
-  add(g, box(5.0, 2.0, 0.1, C.wall), 0, 1.25, -1.9);
+  for (const [x, z] of [[-2.3, -1.7], [2.3, -1.7]] as [number, number][]) add(g, cyl(0.1, 0.11, 2.4, C.woodDark, 6), x, 1.35, z);
+  // Only the rear urn-storage bay is roofed; the brewing courtyard stays visible.
+  add(g, chineseRoof(5.6, 1.45, 0.42, C.tile, 0.12), 0, 2.6, -1.6);
+  add(g, box(4.8, 0.14, 0.14, C.woodDark), 0, 2.5, -1.0);
+  add(g, box(5.0, 1.25, 0.1, C.wall), 0, 0.875, -1.9);
   const urns: THREE.Mesh[] = [];
   for (let r = 0; r < 2; r++) for (let i = 0; i < 4; i++) {
     const rad = 0.36 + (i % 2) * 0.05, x = -1.8 + i * 0.95 + r * 0.3, z = -1.1 + r * 0.85;
@@ -150,14 +152,20 @@ export function wineCellar(): P {
     add(g, cyl(rad * 0.55, rad * 0.6, 0.08, C.red, 10), x, 0.25 + rad * 1.95, z);                 // red cloth over the mouth
     add(g, new THREE.Mesh(new THREE.TorusGeometry(rad * 0.58, 0.02, 4, 12), mat(C.straw)), x, 0.25 + rad * 1.9, z).rotation.x = Math.PI / 2;
   }
-  add(g, cyl(0.6, 0.55, 0.9, "#8a6a3a", 12), 1.8, 0.7, 1.0);                     // the fermenting vat
-  add(g, cyl(0.52, 0.52, 0.04, "#e9dcb8", 12), 1.8, 1.14, 1.0);                     // rice cap
+  add(g, cyl(0.6, 0.55, 0.9, "#8a6a3a", 12), 1.8, 0.7, 1.3);                     // the fermenting vat
+  add(g, cyl(0.52, 0.52, 0.04, "#e9dcb8", 12), 1.8, 1.14, 1.3);                     // rice cap
   const master = add(g, person("#3f4a5a", { apron: true }), 0.6, 0.25, 1.3) as Fig; master.rotation.y = 0.9;
   const ladle = add(arms(master)!.right, cyl(0.02, 0.02, 0.5, C.wood, 4), 0.02, -0.3, 0.05); ladle.rotation.x = 1.2; add(ladle, cyl(0.07, 0.06, 0.06, C.woodDark, 8), 0, -0.25, 0);
-  add(g, cyl(0.2, 0.16, 0.34, "#e0d3b8", 10), -0.6, 0.42, 1.6); add(g, ball(0.06, "#c99a3a", 6), -0.6, 0.62, 1.6);   // a wine pot and cup
-  add(g, box(0.5, 0.7, 0.05, "#f3e6c8"), 2.7, 1.8, 1.9);                            // 酒 sign
-  add(g, lantern(0.8), -2.3, 2.05, 2.0);
-  g.userData.steam = new THREE.Vector3(1.8, 1.3, 1.0);
+  add(g, box(1.55, 0.12, 0.65, C.wood), -0.9, 0.8, 1.45);
+  for (const x of [-1.5, -0.3]) add(g, box(0.1, 0.75, 0.5, C.woodDark), x, 0.375, 1.45);
+  add(g, cyl(0.2, 0.16, 0.34, "#e0d3b8", 10), -0.6, 1.03, 1.45);
+  add(g, cyl(0.09, 0.07, 0.1, "#e0d3b8", 8), -0.28, 0.91, 1.6);
+  add(g, cyl(0.075, 0.075, 0.02, "#c99a3a", 8), -0.28, 0.97, 1.6);
+  add(g, cyl(0.28, 0.24, 0.14, C.straw, 12), -1.35, 0.93, 1.45);
+  add(g, cyl(0.25, 0.25, 0.03, "#fff0d3", 12), -1.35, 1.01, 1.45);   // a wine pot and cup
+  add(g, box(0.5, 0.7, 0.05, "#f3e6c8"), 2.35, 1.9, -1.0);                            // 酒 sign
+  add(g, lantern(0.8), -2.3, 2.05, -1.0);
+  g.userData.steam = new THREE.Vector3(1.8, 1.3, 1.3);
   const re = reaction(0.7);
   g.userData.poke = () => { re.poke(); bubble(master, "绍兴黄酒, 干杯! Shaoxing wine, cheers!", 1.6, 1600); };
   const chat = ambientChat(g, JN_LINES);
@@ -199,7 +207,7 @@ export function riverMarket(): P {
   for (const [x, col] of [[-1.5, "#3f6fb0"], [1.3, "#c9a86a"]] as [number, string][]) {
     add(g, box(2.2, 0.8, 1.1, C.wood), x, 0.4, 0);
     for (const dx of [-0.95, 0.95]) add(g, cyl(0.04, 0.04, 2.2, C.woodDark, 5), x + dx, 1.1, -0.5);
-    add(g, box(2.5, 0.06, 1.7, col), x, 2.15, -0.1).rotation.x = 0.15;
+    add(g, box(2.5, 0.06, 0.7, col), x, 2.15, -0.65).rotation.x = 0.15;
   }
   add(g, cyl(0.5, 0.42, 0.45, "#7f8a8c", 12), -2.0, 1.02, 0.1); add(g, cyl(0.44, 0.44, 0.04, "#8fc4c9", 12), -2.0, 1.24, 0.1);   // fish tub
   const fishes = [0, 1, 2].map((i) => { const f = add(g, cone(0.05, 0.22, i ? "#8a949c" : "#e07a3a", 5), -2.1 + i * 0.12, 1.28, 0.1 + (i - 1) * 0.1); f.rotation.z = Math.PI / 2; return f; });
@@ -233,15 +241,18 @@ export function riverMarket(): P {
   return g;
 }
 
-/** 河边饭馆: a two-storey house with a terrace on piles over the canal, tables of diners under lanterns. Click: 干杯. */
+/** 河边饭馆: a low house with a terrace on piles over the canal, tables of diners under lanterns. Click: 干杯. */
 export function riversideRestaurant(): P {
   const g = group();
-  add(g, house("jiangnan", 3.8, 2.8, 2.2, 2), 0, 0, -1.6);
+  add(g, house("jiangnan", 3.8, 2.8, 1.9, 1), 0, 0, -1.6);
   // the terrace deck on piles, out over the water
   add(g, box(5.4, 0.16, 3.0, C.wood), 0, 0.55, 1.4);
   for (const x of [-2.4, -0.8, 0.8, 2.4]) add(g, cyl(0.07, 0.08, 0.6, C.woodDark, 6), x, 0.25, 2.7);
   for (const x of [-2.6, 2.6]) add(g, box(0.06, 0.6, 3.0, C.woodDark), x, 0.93, 1.4);
-  add(g, box(5.4, 0.06, 0.06, C.woodDark), 0, 1.2, 2.9); for (let i = 0; i < 9; i++) add(g, box(0.05, 0.55, 0.05, C.woodDark), -2.5 + i * 0.62, 0.9, 2.9);
+  // Leave a central entrance, with steps from the terrace down to the towpath.
+  for (const x of [-1.65, 1.65]) add(g, box(2.1, 0.06, 0.06, C.woodDark), x, 1.2, 2.9);
+  for (let i = 0; i < 9; i++) { const x = -2.5 + i * 0.62; if (Math.abs(x) > 0.6) add(g, box(0.05, 0.55, 0.05, C.woodDark), x, 0.9, 2.9); }
+  for (let i = 0; i < 3; i++) { const height = 0.45 - i * 0.15; add(g, box(1.1, height, 0.3, C.stone), 0, height / 2, 3.0 + i * 0.3); }
   const diners: Fig[] = [];
   for (const [x, z] of [[-1.5, 1.3], [1.4, 1.5]] as [number, number][]) {
     add(g, cyl(0.62, 0.62, 0.08, C.wood, 12), x, 1.35, z); add(g, cyl(0.08, 0.1, 0.7, C.woodDark, 6), x, 0.98, z);
@@ -251,7 +262,7 @@ export function riversideRestaurant(): P {
   }
   const waiter = add(g, person("#f4f1ea", { apron: true }), 0, 0.63, 0.2) as Fig;
   for (const x of [-2.2, 0, 2.2]) add(g, lantern(0.8), x, 2.6, 2.9);
-  add(g, box(0.9, 0.5, 0.05, "#f3e6c8"), 0, 3.6, -0.15);   // 河鲜 sign under the eave
+  add(g, box(0.9, 0.5, 0.05, "#f3e6c8"), 0, 2.35, -0.15);   // 河鲜 sign under the eave
   g.userData.steam = new THREE.Vector3(-1.5, 1.7, 1.3);
   const re = reaction(0.7);
   g.userData.poke = () => { re.poke(); bubble(g, "干杯! 来一壶黄酒 Cheers! A pot of yellow wine", 4.2, 1600); };

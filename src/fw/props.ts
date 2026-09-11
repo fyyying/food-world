@@ -427,18 +427,20 @@ export function panda(): P {
 export function teahouse(): P {
   const g = group();
   add(g, box(6.4, 0.3, 5.2, C.stone), 0, 0.15, 0);
-  add(g, box(3.2, 2.2, 2.0, C.wallWarm), 0, 1.4, -1.4);
-  add(g, box(0.7, 1.4, 0.06, C.woodRed), 0, 1.0, -0.36);
-  for (const x of [-2.8, 0, 2.8]) for (const z of [-2.2, 2.2]) add(g, cyl(0.12, 0.14, 2.6, C.woodRed, 8), x, 1.6, z);
-  add(g, chineseRoof(7.4, 6.2, 1.2, C.tile, 0.4), 0, 2.85, 0);
+  add(g, box(3.2, 2.2, 1.3, C.wallWarm), 0, 1.4, -1.85);
+  add(g, box(0.7, 1.4, 0.06, C.woodRed), 0, 1.0, -1.16);
+  for (const x of [-2.8, 2.8]) add(g, cyl(0.12, 0.14, 2.6, C.woodRed, 8), x, 1.6, -2.2);
+  // Keep the tiled rear service room, but open the tea terrace to the village camera.
+  add(g, chineseRoof(7.0, 1.9, 0.55, C.tile, 0.16), 0, 2.85, -1.85);
+  add(g, box(5.8, 0.16, 0.18, C.woodDark), 0, 2.8, -0.95);
   // hanging sign 茶
-  add(g, box(0.55, 0.9, 0.06, "#f3e6c8"), 2.6, 2.1, 2.35);
-  add(g, box(0.06, 0.06, 0.4, C.woodDark), 2.6, 2.6, 2.35);
+  add(g, box(0.55, 0.9, 0.06, "#f3e6c8"), 2.6, 2.1, -0.85);
+  add(g, box(0.06, 0.06, 0.4, C.woodDark), 2.6, 2.6, -0.85);
   // brazier with a big copper kettle
-  add(g, cyl(0.4, 0.45, 0.5, C.iron, 10), -2.2, 0.55, -1.2);
-  add(g, ball(0.38, "#b87333", 10), -2.2, 1.1, -1.2).scale.y = 0.8;
-  add(g, cyl(0.04, 0.04, 0.5, "#b87333", 6), -1.85, 1.25, -1.2).rotation.z = -0.8;
-  g.userData.steam = new THREE.Vector3(-2.2, 1.5, -1.2);
+  add(g, cyl(0.4, 0.45, 0.5, C.iron, 10), -2.35, 0.55, -0.65);
+  add(g, ball(0.38, "#b87333", 10), -2.35, 1.1, -0.65).scale.y = 0.8;
+  add(g, cyl(0.04, 0.04, 0.5, "#b87333", 6), -2.0, 1.25, -0.65).rotation.z = -0.8;
+  g.userData.steam = new THREE.Vector3(-2.35, 1.5, -0.65);
   // tables with pots, cups and regulars
   const tables: [number, number][] = [[-1.5, 0.9], [1.4, 0.6], [0.2, -0.2]];
   const guests: P[] = [];
@@ -457,9 +459,9 @@ export function teahouse(): P {
       guests.push(p);
     }
   });
-  add(g, lantern(0.9), -2.8, 2.3, 2.2); add(g, lantern(0.9), 2.8, 2.3, 2.2);
+  add(g, lantern(0.9), -2.8, 2.3, -0.95); add(g, lantern(0.9), 2.8, 2.3, -0.95);
   // a birdcage hanging from the eave, very Chengdu
-  add(g, cyl(0.16, 0.14, 0.3, C.gold, 8), -1.4, 2.2, 2.3); add(g, cyl(0.01, 0.01, 0.35, C.woodDark, 3), -1.4, 2.5, 2.3);
+  add(g, cyl(0.16, 0.14, 0.3, C.gold, 8), -1.4, 2.2, -0.95); add(g, cyl(0.01, 0.01, 0.35, C.woodDark, 3), -1.4, 2.5, -0.95);
   const cage = g.children[g.children.length - 2];
   const re = reaction(0.6);
   g.userData.poke = () => { re.poke(); bubble(g, "请喝茶~ Have some tea", 3.0, 1500); };
@@ -887,7 +889,7 @@ export function chilliField(): P {
     const up = (farmer.userData as { upper?: THREE.Group }).upper;
     if (up) { up.rotation.z = k * Math.sin(t * 9) * 0.25; }                    // farmer waves
     strings.forEach((st, i) => { st.rotation.x = Math.sin(t * 1.4 + i) * 0.05 + k * Math.sin(t * 9 + i) * 0.35; });
-    for (let i = falling.length - 1; i >= 0; i--) { const f = falling[i]; f.v += dt * 9; f.life += dt; f.m.position.y = Math.max(0.25, f.m.position.y - f.v * dt); f.m.rotation.z += dt * 3 * (f.m.position.y > 0.26 ? 1 : 0); if (f.life > 4) { g.remove(f.m); falling.splice(i, 1); } }
+    for (let i = falling.length - 1; i >= 0; i--) { const f = falling[i]; f.v += dt * 9; f.life += dt; f.m.position.y = Math.max(0.25, f.m.position.y - f.v * dt); f.m.rotation.z += dt * 3 * (f.m.position.y > 0.26 ? 1 : 0); if (f.life > 4) { g.remove(f.m); f.m.geometry.dispose(); falling.splice(i, 1); } }
   };
   return g;
 }
@@ -899,9 +901,15 @@ export function pepperTree(): P {
   const crown = new THREE.Group();
   for (let i = 0; i < 6; i++) add(crown, new THREE.Mesh(new THREE.IcosahedronGeometry(0.75, 0), mat(i % 2 ? "#6f9f57" : "#7fae60")), (rnd() - 0.5) * 1.5, 2.2 + (rnd() - 0.3) * 0.8, (rnd() - 0.5) * 1.5);
   const berries: THREE.Mesh[] = [];
-  for (let i = 0; i < 34; i++) berries.push(add(crown, ball(0.07, "#b23a2f", 5), (rnd() - 0.5) * 2.4, 1.7 + rnd() * 1.4, (rnd() - 0.5) * 2.4));
+  for (let i = 0; i < 12; i++) {
+    const a = i * Math.PI * 2 / 12;
+    for (let j = 0; j < 4; j++) berries.push(add(crown, ball(0.105, j % 2 ? "#d35342" : "#a52e2c", 6), Math.cos(a) * 1.12 + (j % 2) * 0.13, 2.25 + (i % 3) * 0.24 + Math.floor(j / 2) * 0.13, Math.sin(a) * 1.12));
+  }
   g.add(crown);
-  // a low stone wall and a basket under the tree
+  // A harvest mat and full basket make this a food destination, even before a tap.
+  add(g, cyl(1.05, 1.05, 0.035, "#dfc18b", 24), 0.35, 0.025, 1.3);
+  for (let i = 0; i < 22; i++) { const a = i * 2.4, r = 0.25 + (i % 5) * 0.13; add(g, ball(0.065, "#ad3f32", 5), 0.35 + Math.cos(a) * r, 0.08, 1.3 + Math.sin(a) * r); }
+  // a basket under the tree
   add(g, cyl(0.4, 0.32, 0.3, C.straw, 9), 1.3, 0.15, 0.6);
   const falling: { m: THREE.Mesh; v: number; life: number }[] = [];
   // the 麻 ripple: two rings that spread from the trunk and fade, the numbing tingle made visible
@@ -1311,7 +1319,7 @@ export function prepTable(): P {
 
 export function hotpot(): P {
   const g = group();
-  add(g, house("sichuan", 4.0, 3.2, 2.0, 2), 0, 0, 0);
+  add(g, house("sichuan", 3.5, 2.8, 1.8, 1), 0, 0, 0);
   add(g, box(1.6, 0.45, 0.06, C.red), 0, 2.25, 1.75);
   add(g, box(1.2, 0.3, 0.02, C.gold), 0, 2.25, 1.79);
   // round table under a small awning
@@ -1340,7 +1348,7 @@ export function hotpot(): P {
     add(g, cyl(0.012, 0.012, 0.45, C.woodDark, 3), Math.cos(a) * 0.85 + 0.1, 0.84, tz + Math.sin(a) * 0.85).rotation.set(Math.PI / 2, 0, a);
   }
   for (const x of [-1.6, 1.6]) for (const z of [tz - 1.3, tz + 1.4]) add(g, cyl(0.05, 0.06, 2.3, C.woodDark, 6), x, 1.15, z);
-  add(g, awning(3.6, 3.2, C.red), 0, 2.32, tz);
+  add(g, awning(3.6, 0.85, C.red), 0, 2.32, tz - 1.05); // shade the back edge; keep the pot visible from above
   add(g, lantern(0.9), -1.6, 2.1, tz + 1.4); add(g, lantern(0.9), 1.6, 2.1, tz + 1.4);
   const brothBits: THREE.Mesh[] = [];
   for (let i = 0; i < 8; i++) { const b = add(g, ball(0.045, "#e8c9a0", 6), 0, 1.1, tz); brothBits.push(b); }
@@ -1457,6 +1465,7 @@ export function dumplingStall(): P {
 
 export function familyTable(): P {
   const g = group();
+  add(g, box(4.8, 0.14, 4.4, C.stone), 0, -0.07, 0);
   add(g, cyl(1.25, 1.25, 0.1, C.wood, 14), 0, 0.75, 0);
   add(g, cyl(0.12, 0.14, 0.7, C.woodDark, 6), 0, 0.35, 0);
   for (let i = 0; i < 5; i++) { const a = (i / 5) * Math.PI * 2; add(g, cyl(0.16, 0.12, 0.1, "#f7f2e6", 9), Math.cos(a) * 0.85, 0.85, Math.sin(a) * 0.85); add(g, cyl(0.12, 0.12, 0.05, "#fbf7ef", 9), Math.cos(a) * 0.85, 0.92, Math.sin(a) * 0.85); }
@@ -1464,10 +1473,21 @@ export function familyTable(): P {
   add(g, cyl(0.3, 0.3, 0.06, "#8a4a2c", 12), 0, 0.92, 0);
   add(g, cyl(0.12, 0.1, 0.24, "#3f6b8f", 8), 0.35, 0.95, -0.3);
   const colors = ["#c9413f", "#3f6b8f", "#6f9b57", "#d9a441", "#8a5a3c"];
-  for (let i = 0; i < 5; i++) { const a = (i / 5) * Math.PI * 2 + 0.3; const p = add(g, person(colors[i]), Math.cos(a) * 1.6, 0, Math.sin(a) * 1.6); p.rotation.y = -a - Math.PI / 2; if (i === 4) p.scale.setScalar(0.7); }
-  add(g, chineseRoof(4.6, 4.6, 0.6, "#5c5f66", 0), 0, 2.4, 0);   // northern courtyard: straight eaves
-  for (const [x, z] of [[-1.8, -1.8], [1.8, -1.8], [-1.8, 1.8], [1.8, 1.8]]) add(g, cyl(0.09, 0.1, 2.4, C.red, 8), x, 1.2, z);
-  for (const [x, z] of [[-1.8, 1.8], [1.8, 1.8]]) add(g, lantern(0.9), x, 2.1, z + 0.3);
+  for (let i = 0; i < 5; i++) { const a = (i / 5) * Math.PI * 2 + 0.3; const x = Math.cos(a) * 1.6, z = Math.sin(a) * 1.6; add(g, cyl(0.2, 0.21, 0.42, C.woodDark, 8), x, 0.21, z); const p = person(colors[i]); (p.userData as { sit?: () => void }).sit?.(); add(g, p, x, 0.04, z); p.rotation.y = -a - Math.PI / 2; if (i === 4) { p.scale.setScalar(0.7); p.position.y = 0.18; } }
+  // The rear tiled shelter preserves the courtyard silhouette while the meal is open to the sky.
+  add(g, chineseRoof(4.6, 1.3, 0.36, "#5c5f66", 0), 0, 2.4, -1.65);
+  add(g, box(4.0, 0.9, 0.14, C.wall), 0, 0.45, -2.0);
+  for (const x of [-1.8, 1.8]) {
+    add(g, cyl(0.09, 0.1, 2.4, C.red, 8), x, 1.2, -1.65);
+    add(g, lantern(0.75), x, 2.05, -1.1);
+  }
+  add(g, box(3.8, 0.14, 0.14, C.woodDark), 0, 2.35, -1.1);
+  // Distinct shared dishes read from above: braised pieces, greens and pale steamed buns.
+  for (let i = 0; i < 7; i++) add(g, box(0.10, 0.08, 0.10, i % 2 ? "#b86a36" : "#85472d"), (i % 3 - 1) * 0.15, 0.99, (Math.floor(i / 3) - 1) * 0.14);
+  add(g, cyl(0.28, 0.24, 0.07, C.white, 12), -0.55, 0.85, 0.26);
+  for (let i = 0; i < 6; i++) add(g, ball(0.08, i % 2 ? "#80ad49" : "#477738", 6), -0.68 + (i % 3) * 0.12, 0.92, 0.18 + Math.floor(i / 3) * 0.14).scale.set(1.1, 0.5, 1);
+  add(g, cyl(0.27, 0.24, 0.13, C.straw, 12), 0.53, 0.88, 0.27);
+  for (const [x, z] of [[0.43, 0.20], [0.62, 0.21], [0.53, 0.38]]) add(g, ball(0.095, "#fff3db", 8), x, 0.99, z).scale.y = 0.8;
   g.userData.tick = tickChildren(g);
   return g;
 }

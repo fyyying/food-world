@@ -265,3 +265,77 @@ button { font: inherit; color: inherit; cursor: pointer; }
   #story footer { margin-top: 9px; position: sticky; bottom: 0; background: rgba(247,239,226,.97); padding-top: 4px; }
   #stories { bottom: 14px; }
 }
+
+/* Small discoveries stay in the room, with the full story available on demand. */
+.discovery-story { margin: 14px 0; }
+.discovery-story summary { cursor: pointer; font-weight: 700; padding: 8px 0; }
+#scene .scene-hotspots { pointer-events: none; }
+#scene .scene-hotspot { position: absolute; transform: translate(-50%, -50%); pointer-events: auto; display: flex; align-items: center; gap: 6px; border: 1px solid #f9d998; border-radius: 24px; padding: 6px 10px; min-height: 44px; color: #fff6df; background: rgba(65, 32, 18, .78); cursor: pointer; box-shadow: 0 2px 14px #0005; }
+#scene .scene-hotspot span { font-size: 22px; }
+#scene .scene-hotspot b { font: 700 11px var(--sans); }
+#scene .scene-hotspot:hover, #scene .scene-hotspot:focus-visible { background: #814629; outline: 2px solid #ffe2a3; outline-offset: 3px; }
+#scene .scene-discovery { max-width: 480px; padding: 8px 12px; border-left: 2px solid #f0c25a; background: #23150bd9; color: #fff2d8; font-size: 13px; }
+@media (max-width: 600px) {
+  #scene .scene-hotspot { width: 44px; padding: 0; justify-content: center; }
+  #scene .scene-hotspot b { display: none; }
+  #scene .scene-discovery { font-size: 12px; }
+}
+
+@media (max-width: 600px) {
+  #scene[data-scene="hotpot"] .scene-heading { position: fixed; top: 78px; left: 18px; right: 18px; pointer-events: none; }
+  #scene[data-scene="hotpot"] .scene-heading .zh { display: inline; font-size: 24px; }
+  #scene[data-scene="hotpot"] .scene-heading h2 { display: inline; margin-left: 8px; font-size: 24px; }
+  #scene[data-scene="hotpot"] .scene-heading p { max-width: 330px; margin-top: 8px; }
+}
+/* Focusing a discovery must not scroll the enlarged parallax stage. */
+#scene[data-scene="hotpot"] { overflow: clip; }
+
+#scene .scene-feedback { position: absolute; z-index: 3; width: min(290px, calc(100% - 24px)); box-sizing: border-box; padding: 15px 36px 15px 16px; border: 1px solid #d8b78299; border-radius: 16px; background: rgba(48, 26, 17, .94); color: #fff3e0; backdrop-filter: blur(12px); box-shadow: 0 8px 32px #0007; text-shadow: none; }
+#scene .scene-feedback[hidden] { display: none; }
+#scene .scene-feedback strong { display: block; font: 700 16px var(--display); margin-bottom: 7px; }
+#scene .scene-feedback p { margin: 0; font: 14px/1.5 var(--sans); }
+#scene .scene-feedback button { position: absolute; top: 3px; right: 3px; width: 32px; height: 32px; border: 0; background: transparent; color: #f0c25a; font-size: 24px; cursor: pointer; }
+#scene .scene-hotspot[aria-expanded="true"], #scene .scene-hotspot[aria-pressed="true"] { background: #f5ce7c; color: #492815; box-shadow: 0 0 0 6px #ffcf6b55, 0 0 32px #ffb95199; }
+
+/* Let room objects receive clicks through the title and caption area. */
+#scene .scene-ui > .scene-title { pointer-events: none; }
+#scene .scene-title button { pointer-events: auto; }
+
+/* Touch points sit on the painting; they never add another copy of its objects. */
+#scene .scene-hotspot.room-touch { width: 30px; height: 30px; min-height: 30px; padding: 0; justify-content: center; border-radius: 50%; background: #3f321dcc; box-shadow: 0 1px 7px #0005; }
+#scene .room-touch::before { content: ''; position: absolute; inset: -7px; border-radius: 50%; }
+#scene .room-touch > span { font-size: 18px; line-height: 1; }
+#scene .room-touch > b { position: absolute; top: 38px; left: 50%; transform: translateX(-50%); white-space: nowrap; padding: 6px 10px; border-radius: 8px; background: #362116ef; opacity: 0; pointer-events: none; display: block; }
+#scene .room-touch:hover > b, #scene .room-touch:focus-visible > b { opacity: 1; }
+#scene .room-touch[hidden] { display: none; }
+#scene .room-response { position: absolute; transform: translate(-50%,-50%); pointer-events: none; }
+#scene .room-response-particle { position: absolute; display: block; pointer-events: none; left: 50%; top: 50%; }
+#scene .room-response-particle.water { width: 100%; height: 28%; border: 3px solid #f1fff9; border-radius: 50%; box-shadow: 0 1px 3px #426e6599, inset 0 1px 2px #ffffff88; }
+#scene .room-response-particle.leaves { width: 10px; height: 16px; border-radius: 0 85% 0 85%; background: #b4a447; box-shadow: 0 1px 2px #332a1666; }
+#scene .room-response-particle.flour-cloud { border-radius: 50%; background: radial-gradient(ellipse, #fff9e9 10%, #f9eed5bb 45%, transparent 73%); filter: blur(2px); }
+#scene .room-response-particle.flour-grain { width: 3px; height: 2px; border-radius: 50%; background: #fff8e8; }
+#scene .room-touch.room-responding { opacity: 0; }
+#scene .room-response-particle.sizzle { width: 4px; height: 6px; border-radius: 50%; background: #ffe29a; box-shadow: 0 0 5px #ffb74a; }
+#scene .room-response-particle.tea { width: 24px; height: 36px; border-radius: 50%; background: radial-gradient(ellipse, #fff9ebcc, #fff9eb77 40%, transparent 72%); filter: blur(3px); }
+#scene .room-response-particle.light { width: 180%; height: 180%; transform: translate(-50%,-50%); background: radial-gradient(ellipse,#ffe7abbf,#ffc86555 40%,transparent 70%); mix-blend-mode: screen; }
+#scene .room-response-particle.chime, #scene .room-response-particle.purr, #scene .room-response-particle.still { width: 65%; height: 45%; transform: translate(-50%,-50%); border: 1px solid #f2d8a4; border-radius: 50%; box-shadow: 0 0 12px #edc58244; }
+#scene .room-response-particle.detail { width: 85%; height: 65%; transform: translate(-50%,-50%); border: 1px solid #f2d8a4; border-radius: 50%; }
+#scene .scene-detail { margin-top: 10px; border-radius: 6px; overflow: hidden; aspect-ratio: 1.78; }
+#scene .scene-detail svg { display: block; width: 100%; height: 100%; }
+#scene.has-room-touches .scene-title { pointer-events: none; }
+#scene.has-room-touches .scene-title button { pointer-events: auto; }
+#scene.has-room-touches .scene-title .scene-heading p { display: none; }
+#scene.has-room-touches .scene-title .zh { font-size: 28px; }
+#scene.has-room-touches .scene-title h2 { font-size: 30px; }
+#scene.has-room-touches .scene-title { top: 68px; bottom: auto; max-width: 400px; }
+#scene.has-room-touches .scene-title .scene-discovery { font-size: 12px; max-width: 330px; }
+#scene.has-room-touches.portrait .scene-title { top: 62px; left: 16px; right: 16px; }
+#scene.has-room-touches.portrait .scene-title .scene-heading { display: flex; align-items: baseline; gap: 10px; }
+#scene.has-room-touches.portrait .scene-title h2 { font-size: 21px; }
+#scene.has-room-touches.portrait .scene-title .zh { font-size: 21px; }
+#scene.has-room-touches.portrait .scene-title .scene-discovery { max-width: 280px; }
+
+#scene .room-touch > b { max-width: 250px; white-space: normal; width: max-content; text-align: center; }
+#scene.has-room-touches { overflow: clip; }
+
+#scene .room-response-particle.grill-smoke { width: 26px; height: 30px; border-radius: 50%; background: radial-gradient(ellipse,#eee3d2aa,transparent 72%); filter: blur(3px); box-shadow: none; }

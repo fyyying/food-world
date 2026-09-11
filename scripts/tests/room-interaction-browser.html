@@ -1,0 +1,49 @@
+<!doctype html><html><head><title>Room interaction regression</title><style>
+body{background:#eadfc9;font:14px system-ui}#run,#results{position:relative;z-index:10000}#results{background:#eadfc9;max-height:64px;overflow:auto}#scene{left:12px;top:90px;right:auto;bottom:auto;width:960px;height:540px}
+</style></head><body><button id="run">Run all room interactions</button><div id="results" role="status">Ready</div><div id="app"></div><script type="module">
+import '/src/fw/style.css';
+import {SCENES} from '/src/fw/scenes-china.ts';
+import {openLivingScene} from '/src/fw/scene.ts';
+const results=document.querySelector('#results');
+const frame=()=>new Promise(requestAnimationFrame);
+const assert=(value,message)=>{if(!value)throw new Error(message)};
+document.querySelector('#run').onclick=async()=>{
+  let room,checked=0;const failures=[];
+  document.querySelector('#run').disabled=true;
+  for(const [id,factory] of Object.entries(SCENES)) for(const phone of [false,true]) {
+    try {
+      room=openLivingScene(factory(),{dishes:[],onDish(){},onStory(){},onClose(){}});
+      room.el.style.width=phone?'390px':'960px';room.el.style.height=phone?'740px':'540px';
+      window.dispatchEvent(new Event('resize'));room.tick(0,0);room.el.classList.add('in');
+      await frame();await frame();
+      const bounds=room.el.getBoundingClientRect();
+      for(const button of room.el.querySelectorAll('[data-hotspot]')) {
+        const b=button.getBoundingClientRect();
+        assert(b.left>=bounds.left && b.right<=bounds.right && b.top>=bounds.top && b.bottom<=bounds.bottom,'touch point outside picture');
+        button.click();await frame();
+        const index=button.dataset.hotspot,host=room.el.querySelector(`[data-response="${index}"]`);
+        if(host) {
+          const count=host.children.length;assert(count>0,'no local response');
+          button.click();assert(host.children.length===count,'repeat tap accumulated effects');
+          assert(!button.querySelector('img'),'inserted prop returned');
+        }
+        const feedback=room.el.querySelector('.scene-feedback');
+        if(!feedback.hidden) {
+          const f=feedback.getBoundingClientRect();
+          assert(f.left>=bounds.left && f.right<=bounds.right+1 && f.top>=bounds.top && f.bottom<=bounds.bottom+1,'discovery clipped');
+          if(host)assert(feedback.querySelector('.scene-detail image').getAttribute('href').includes(`/${phone?'portrait':'wide'}.jpg`),'wrong detail artwork');
+          feedback.querySelector('button').click();assert(feedback.hidden,'discovery did not close');
+        }
+        checked++;
+      }
+      // A layout change must dismiss an open detail rather than retain a stale crop.
+      const detail=room.el.querySelector('.room-touch[aria-controls]');
+      if(detail){detail.click();room.el.style.width=phone?'960px':'390px';room.el.style.height=phone?'540px':'740px';window.dispatchEvent(new Event('resize'));assert(room.el.querySelector('.scene-feedback').hidden,'stale detail after orientation change');}
+    }catch(error){failures.push(`${id} ${phone?'portrait':'wide'}: ${error.message}`)}
+    finally{room?.destroy();assert(!document.querySelector('#scene'),'scene did not detach');}
+    results.textContent=`Checked ${checked} controls. ${failures.join(' | ')}`;
+  }
+  results.textContent=failures.length?`FAIL: ${failures.join(' | ')}`:`PASS: ${checked} controls across 39 rooms in wide and portrait; repeated taps, card bounds, artwork, close, resize and exit.`;
+  document.querySelector('#run').disabled=false;
+};
+</script></body></html>

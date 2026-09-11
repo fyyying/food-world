@@ -1,0 +1,13 @@
+<!doctype html><html><head><title>Building cutaway review</title><style>body{margin:0;background:#e4dbc6;font:14px sans-serif}main{display:grid;grid-template-columns:1fr 1fr}.view{height:390px;position:relative}.label{position:absolute;top:10px;left:15px}canvas{display:block;width:100%;height:100%}</style></head><body><main></main><script type="module">
+import * as THREE from 'three';
+import { familyTable, teahouse } from '/src/fw/props.ts';
+import { wineCellar } from '/src/fw/props-jiangnan.ts';
+const views=[];
+for (const [label,factory,position] of (new URLSearchParams(location.search).has('tea') ? [['Tea house · open terrace',teahouse,[7,8,10]],['Tea house · side view',teahouse,[-8,7,7]]] : [['Courtyard family feast',familyTable,[7,8,10]],['Shaoxing wine making',wineCellar,[7,8,10]],['Courtyard · reverse view',familyTable,[-7,9,-10]],['Wine making · reverse view',wineCellar,[-7,9,-10]]])) {
+ const host=document.createElement('div');host.className='view';host.innerHTML=`<span class="label">${label}</span>`;document.querySelector('main').append(host);
+ const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(devicePixelRatio);renderer.setSize(host.clientWidth,host.clientHeight);host.append(renderer.domElement);
+ const scene=new THREE.Scene();scene.background=new THREE.Color('#e4dbc6');scene.add(new THREE.HemisphereLight(0xffffff,0x8a7958,2));const sun=new THREE.DirectionalLight(0xffffff,3);sun.position.set(5,10,8);scene.add(sun);
+ const prop=factory();scene.add(prop);const camera=new THREE.PerspectiveCamera(36,host.clientWidth/host.clientHeight,.1,100);camera.position.set(...position);camera.lookAt(0,1,0);views.push({renderer,scene,camera,prop});
+}
+let last=0;function frame(ms){const dt=Math.min(.05,(ms-last)/1000);last=ms;for(const v of views){v.prop.userData.tick?.(ms/1000,dt);v.renderer.render(v.scene,v.camera)}requestAnimationFrame(frame)}requestAnimationFrame(frame);
+</script></body></html>

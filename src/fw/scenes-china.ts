@@ -10,6 +10,11 @@ const hotpot = (): SceneDef => {
   return paintedScene({
     id: "hotpot", folder: f, title: "Hotpot house", zh: "火锅", caption: "A divided pot rolling on the burner, thin beef in and out in seconds, and a table that never empties.",
     painting: true, night: true,
+    hotspots: [
+      { id: "pot", label: "Wake the broth", activeLabel: "Let it simmer", x: 600, y: 620, portrait: pAt(f, 0.30, 0.65), text: "The pot bubbles harder. Broth, dipping sauce and ingredients come together at the table." },
+      { id: "chilli", label: "Discover málà", x: 870, y: 635, portrait: pAt(f, 0.57, 0.69), text: "麻 is Sichuan pepper’s tingle; 辣 is chilli’s heat. Together: 麻辣, málà." },
+      { id: "diner", label: "Share the table", x: 1115, y: 390, portrait: pAt(f, 0.73, 0.54), text: "One pot, a table of ingredients, and everyone cooking together. Add a little, share a little, keep talking." },
+    ],
     hang: [
       { name: "red-lantern", prop: true, x: 700, y: -8, w: 108, sway: 3, halo: 1.4 },
       { name: "lantern-2", prop: true, x: 1040, y: -10, w: 96, sway: 3.2, halo: 1.3 },

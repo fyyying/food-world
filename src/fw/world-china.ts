@@ -221,6 +221,8 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
     new THREE.Vector3(36.2, 0, -0.5), new THREE.Vector3(33.5, 0, -0.3), new THREE.Vector3(24, 0, -0.5), northEnd.clone(),
     // over the bridge and along the south-bank lane
     new THREE.Vector3(bx, 0, bz), southEnd.clone(), new THREE.Vector3(18.6, 0, 8.6), new THREE.Vector3(17.9, 0, 12.9), new THREE.Vector3(13, 0, 14.2), new THREE.Vector3(17.5, 0, 15.3), new THREE.Vector3(23.6, 0, 14.6),
+    // Return along the lane west of the terrace instead of cutting through the restaurant.
+    new THREE.Vector3(21, 0, 15), new THREE.Vector3(20.2, 0, 13.8), new THREE.Vector3(20, 0, 10.8),
     southEnd.clone().add(new THREE.Vector3(0.3, 0, 0.6)), new THREE.Vector3(bx + 0.3, 0, bz),
   ], true);
   tickers.push((t) => jnWalkers.forEach((w, i) => {
@@ -232,10 +234,15 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
     w.position.set(p.x, y, p.z); w.rotation.y = Math.atan2(n.x - p.x, n.z - p.z);
     (w.userData as { walk?: (t: number) => void }).walk?.(t + i);
   }));
-  // fisherman on the bank
-  const fisher = place(person("#4a3a32", { hat: true }), 27.5, 4.2, 2.6);
-  const rod = add(fisher, new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.02, 2.0, 4), mat("#5a3a22")), 0.2, 1.0, 0.5); rod.rotation.x = -1.1;
-  add(group, new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 1.2, 3), mat("#e8e8e8")), 33.9, 0.75, 6.2);
+  // A short fishing jetty connects the north bank to the fisher's position over the water.
+  add(group, new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.16, 3.1), mat(C.wood)), 27.5, 0.2, 3);
+  for (const x of [27, 28]) for (const z of [1.7, 4.3]) add(group, new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.07, 0.5, 6), mat(C.woodDark)), x, 0.03, z);
+  const fisher = place(person("#4a3a32", { hat: true }), 27.5, 4.2, 0.2);
+  fisher.position.y = 0.28;
+  const rod = add(fisher, new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.02, 2.0, 4), mat("#5a3a22")), 0.2, 1.0, 0.5); rod.rotation.x = 1.1;
+  const rodTip = rod.localToWorld(new THREE.Vector3(0, 1, 0));
+  const fishingLine = new THREE.BufferGeometry().setFromPoints([rodTip, new THREE.Vector3(rodTip.x, 0.05, rodTip.z)]);
+  group.add(new THREE.Line(fishingLine, new THREE.LineBasicMaterial({ color: "#e8e8e8" })));
   // woman washing at the river steps
   add(group, new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.25, 0.9), mat(C.stone)), 16.5, 0.12, 8.6);
   const washer = person("#d97a8a"); (washer.userData as { sit?: () => void }).sit?.(); place(washer, 16.5, 8.2, Math.PI).position.y = 0.05;
@@ -243,7 +250,8 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   // kids under the willows and grandparents on a bench
   for (const [x, z, c] of [[12.5, 12.8, "#e0a52c"], [13.4, 13.4, "#3f6b8f"]] as [number, number, string][]) place(person(c), x, z, x).scale.setScalar(0.62);
   add(group, new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.1, 0.45), mat(C.wood)), 22.8, 0.45, 17.6);
-  for (const x of [22.4, 23.2]) { const gp = person(x < 22.8 ? "#7a4a3a" : "#5a5a66"); (gp.userData as { sit?: () => void }).sit?.(); place(gp, x, 17.4, 0.05).position.y = 0.08; }
+  for (const x of [22.2, 23.4]) add(group, new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.4, 0.36), mat(C.woodDark)), x, 0.2, 17.6);
+  for (const x of [22.4, 23.2]) { const gp = person(x < 22.8 ? "#7a4a3a" : "#5a5a66"); (gp.userData as { sit?: () => void }).sit?.(); place(gp, x, 17.6, 0.05).position.y = 0.1; }
   // laundry line between the water-town houses
   const line = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 5.2, 4), mat(C.woodDark)); line.rotation.z = Math.PI / 2; line.position.set(17.5, 2.3, 13.6); group.add(line);
   const cloths = ["#c0392b", "#3f6b8f", "#f4f1ea", "#e0a52c", "#6a7fb0"].map((c, i) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 0.9, 1, 3), new THREE.MeshStandardMaterial({ color: c, side: THREE.DoubleSide, roughness: 1 })); m.geometry.translate(0, -0.45, 0); m.position.set(15.4 + i * 1.05, 2.3, 13.6); m.castShadow = true; group.add(m); return m; });

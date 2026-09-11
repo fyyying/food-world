@@ -56,10 +56,10 @@ export type WorldObject = {
 };
 
 /** Where the market's stalls stand, in world coordinates (mirrors market() in props.ts). */
-const MARKET: [number, number] = [-4, -1.2];
+const MARKET: [number, number] = [-1.5, -1.2];
 function stallPos(i: number): [number, number] {
   const a = -Math.PI * 0.75 + (i * (Math.PI * 1.5)) / 5;
-  return [MARKET[0] + Math.cos(a) * 6.6, MARKET[1] + Math.sin(a) * 3.4];
+  return [MARKET[0] + Math.cos(a) * 5.8, MARKET[1] + Math.sin(a) * 3.2];
 }
 
 export type AreaInfo = { name: string; zh: string; blurb: string; center: [number, number]; world: WorldId };

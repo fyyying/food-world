@@ -70,7 +70,7 @@ function signBoard(g: THREE.Object3D, w: number, h: number, x: number, y: number
 /** 饺子馆: rolling, filling, pleating and boiling under one roof; a tray of pleated dumplings and a pot that boils over when you click. */
 export function dumplingHouse(): P {
   const g = group();
-  add(g, house("northern", 4.6, 3.0, 1.9), 0, 0, -1.0);
+  add(g, house("northern", 4.6, 3.0, 1.9), 0, 0, -1.7);   // front wall at z -0.2: the rollers and the stove stand in front of it
   add(g, box(3.6, 0.85, 1.1, C.wood), -0.2, 0.42, 1.3);                      // the long work table
   add(g, box(3.4, 0.03, 0.9, FLOUR), -0.2, 0.86, 1.3);                        // flour dust
   dumplingTray(g, -1.2, 0.87, 1.35); dumplingTray(g, 0.1, 0.87, 1.4, 8);
@@ -78,7 +78,7 @@ export function dumplingHouse(): P {
   add(g, ball(0.18, "#c98a6a", 8), 1.4, 0.98, 1.55).scale.y = 0.6;              // the filling bowl
   add(g, cyl(0.03, 0.03, 0.55, C.wood, 5), 0.7, 0.9, 1.05).rotation.z = Math.PI / 2;   // rolling pin
   // the pot on a coal stove at the side
-  add(g, box(1.0, 0.8, 1.0, BRICK), 2.3, 0.4, 0.2); hearth(g, 2.3, 0.75);
+  add(g, box(1.0, 0.8, 1.0, BRICK), 2.3, 0.4, 0.45); hearth(g, 2.3, 1.0);
   const pot = add(g, cyl(0.42, 0.36, 0.42, C.iron, 12), 2.3, 1.0, 0.2);
   const lid = add(g, cyl(0.44, 0.44, 0.06, C.woodDark, 12), 2.3, 1.24, 0.2);
   const rollers = [add(g, person("#f4f1ea", { apron: true }), -1.2, 0, 0.3), add(g, person("#6a7fb0", { apron: true }), 0.2, 0, 0.3)] as Fig[];
@@ -87,7 +87,7 @@ export function dumplingHouse(): P {
   add(g, box(1.4, 0.08, 0.9, C.wood), -1.6, 0.72, 3.0); for (const [dx, dz] of [[-0.6, -0.35], [0.6, -0.35], [-0.6, 0.35], [0.6, 0.35]]) add(g, box(0.08, 0.7, 0.08, C.woodDark), -1.6 + dx, 0.35, 3.0 + dz);
   add(g, cyl(0.16, 0.13, 0.05, "#f7f2e6", 9), -1.9, 0.79, 3.0); add(g, cyl(0.1, 0.08, 0.05, "#3b2a1e", 8), -1.3, 0.79, 2.85); add(g, ball(0.06, "#f4ecdc", 6), -1.35, 0.8, 3.2);
   const diners = [-2.4, -0.8].map((x, i) => { const p = person(i ? "#c0392b" : "#2f5d3f"); (p.userData as { sit?: () => void }).sit?.(); add(g, box(0.4, 0.3, 0.4, C.woodDark), x, 0.15, 3.0); const q = add(g, p, x, -0.14, 3.0); q.rotation.y = i ? -Math.PI / 2 : Math.PI / 2; return q as Fig; });
-  signBoard(g, 0.6, 0.8, 1.7, 1.3, 0.53, "饺子");                      // 饺 sign
+  signBoard(g, 0.6, 0.8, -1.7, 1.28, -0.16, "饺子");                      // 饺 sign
   add(g, lantern(0.8), -2.0, 1.5, 0.62); add(g, lantern(0.8), 2.0, 1.5, 0.62);   // hanging under the eave, not beside it
   g.userData.steam = new THREE.Vector3(2.3, 1.45, 0.2);
   const re = reaction(0.6);

@@ -550,7 +550,7 @@ export function courtyardKitchen(): P {
   const g = group();
   add(g, box(7.0, 0.1, 5.2, "#b3a48c"), 0, 0.05, 0);                                            // the packed-earth yard
   add(g, house("northern", 3.6, 2.4, 1.8), -1.4, 0, -1.8);                                       // the main room at the back
-  brickWall(g, 2.4, -2.2, 2.2, 0, 1.2); brickWall(g, 3.5, 0, 4.4, Math.PI / 2, 0.9); brickWall(g, -3.5, 0.3, 3.8, Math.PI / 2, 0.9); brickWall(g, -1.6, 2.6, 3.8, 0, 0.8);   // low courtyard walls (the yard stays visible from above), a gap for the gate
+  brickWall(g, 2.4, -2.2, 2.2, 0, 1.2); brickWall(g, 3.5, 0, 4.4, Math.PI / 2, 0.9); brickWall(g, -3.5, 0.3, 3.8, Math.PI / 2, 0.9); brickWall(g, -1.3, 2.6, 4.4, 0, 0.8); brickWall(g, 3.1, 2.6, 0.8, 0, 0.8);   // low courtyard walls (the yard stays visible from above), closed up to the gate on both sides
   gate(g, 1.8, 2.6, 0);
   // the stove: brick, one big wok set in, the flue to the house, the steamer tier beside it
   add(g, box(1.6, 0.85, 1.1, BRICK), 1.9, 0.42, -1.4); hearth(g, 1.6, -0.85); add(g, box(0.28, 1.4, 0.28, "#6b6560"), 2.5, 1.5, -1.9);

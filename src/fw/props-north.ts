@@ -224,8 +224,8 @@ export function roastDuckShop(): P {
   add(g, box(1.6, 1.7, 1.4, BRICK), 1.6, 0.85, 0.4); add(g, cyl(0.5, 0.5, 0.08, C.iron, 12), 1.6, 1.74, 0.4);   // the brick oven
   const mouth = add(g, box(0.7, 0.6, 0.06, "#1a120e"), 1.6, 0.7, 1.12);
   const glow = add(g, box(0.6, 0.5, 0.02, "#ff7a3c"), 1.6, 0.68, 1.14);
-  add(g, box(2.4, 0.06, 0.06, C.woodDark), -0.8, 2.0, 1.2);                     // the hanging rail
-  const ducks = Array.from({ length: 4 }, (_, i) => { const d = new THREE.Group(); d.position.set(-1.7 + i * 0.6, 2.0, 1.2); g.add(d); add(d, cyl(0.01, 0.01, 0.3, C.iron, 3), 0, -0.15, 0); const body = add(d, ball(0.17, "#a04a1e", 9), 0, -0.55, 0); body.scale.set(0.8, 1.35, 0.7); add(d, ball(0.08, "#a04a1e", 7), 0, -0.3, 0.02); add(d, cone(0.03, 0.1, "#d9a441", 4), 0.02, -0.28, 0.1).rotation.x = Math.PI / 2; return d; });
+  add(g, box(2.4, 0.06, 0.06, C.woodDark), -0.4, 2.0, 1.2);                     // the hanging rail
+  const ducks = Array.from({ length: 4 }, (_, i) => { const d = new THREE.Group(); d.position.set(-1.3 + i * 0.6, 2.0, 1.2); g.add(d); add(d, cyl(0.01, 0.01, 0.3, C.iron, 3), 0, -0.15, 0); const body = add(d, ball(0.17, "#a04a1e", 9), 0, -0.55, 0); body.scale.set(0.8, 1.35, 0.7); add(d, ball(0.08, "#a04a1e", 7), 0, -0.3, 0.02); add(d, cone(0.03, 0.1, "#d9a441", 4), 0.02, -0.28, 0.1).rotation.x = Math.PI / 2; return d; });
   add(g, box(2.2, 0.85, 1.0, C.wood), -0.8, 0.42, 1.3);                          // the carving counter
   add(g, cyl(0.32, 0.32, 0.08, "#c99a63", 14), -1.2, 0.9, 1.3);                  // board
   add(g, ball(0.16, "#a04a1e", 9), -1.2, 1.02, 1.3).scale.set(0.9, 0.6, 1.3);    // the duck being carved

@@ -71,9 +71,13 @@ peaks carry snow cones, a line of poplars marks the west edge, and the objects l
 Xinjiang name map): kebab grill, nan bakery, polo kitchen, laghman shop, oasis bazaar, grape courtyard, melon oasis,
 chaikhana, home kitchen (`xjhome`), caravan stop, the Tianshan (a hit box on the snow peaks, `tianshan`) and the evening
 feast (`feast`, a dastikhan under the vines), plus 46 keyed props (kebab-plate, polo, laghman-bowl, samsa, tonur, karez,
-dastikhan…) that serve as card badges. The China table is 112 × 84 with its centre at x −6 (`cx` in the world spec); the four regions were
-spread apart on 2026-09-11 (Xinjiang 6 west, the northern band 6 north, the east bank 6 east, the south 6 south) so
-each reads as its own place with air between stands and houses. The river runs flush to both edges. Northern China's twelve rooms arrived the same day (`~/Downloads/additional game asset/northern`, cut with the
+dastikhan…) that serve as card badges. The China table is 112 × 84 with its centre at x −6 (`cx` in the world spec). Since 2026-09-11 the map is four
+tight clusters with open ground between them: Sichuan's street and market ring in the centre-west (the hotpot house
+behind it), the northern town in the north-east packed around the palace on its own street (three rows: workshops
+by the peaks, the wheat and grills on the street, dumplings and the courtyard compound below the gate), the Jiangnan
+water town on both banks of the stone bridge with its countryside east and south, and the oasis strip on the west.
+Roads connect them: the gate road climbs from the Sichuan street to the palace gate, a lane drops to the bridge, and
+the road west runs along the river through the mountain gap to the oasis road. The river runs flush to both edges. Northern China's twelve rooms arrived the same day (`~/Downloads/additional game asset/northern`, cut with the
 cutter's northern name map): dumpling house, noodle workshop, steamed-bread workshop, vinegar workshop, roast duck,
 bing stall, hutong, northern market, winter table, courtyard kitchen (`griddle`), wheat harvest and the restored skewer
 courtyard (`skewers`), plus 54 keyed props for the card badges. Both new areas have strolling people (a loop through the

@@ -21,10 +21,10 @@ export function buildChina(recipes: EnrichedRecipe[]): Diorama {
 function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   tint(-18, 6, 18, 15, "#82b263", 0.2);
   tint(20, 8, 16, 12, "#9cc484", -0.3);
-  tint(2, -22, 18, 8, "#c2bd7a");
+  tint(28, -31.5, 10, 7, "#c2bd7a");
   tint(-27, 16, 6, 5, "#7aab5c");
   // the wheat belt: dry gold along the north, in overlapping pools so it fades into the green
-  for (const [x, z, rx, rz] of [[-9, -33, 12, 11], [6, -32, 14, 11], [24, -31, 14, 11], [44, -28, 10, 10]] as [number, number, number, number][]) tint(x, z, rx, rz, "#d1bd74");
+  for (const [x, z, rx, rz] of [[10, -30, 12, 13], [26, -30, 14, 13], [42, -28, 10, 12]] as [number, number, number, number][]) tint(x, z, rx, rz, "#d1bd74");
   // the oasis strip: sand beyond the western mountains, green only where the water reaches
   for (const [x, z, rx, rz] of [[-54, -30, 9, 9], [-54, -10, 9, 9], [-54, 4, 9, 9], [-55, 18, 7, 9], [-55, 35, 7, 7]] as [number, number, number, number][]) tint(x, z, rx, rz, "#dccb9a");
   tint(-54, -2, 7, 5, "#8fb86a");
@@ -39,10 +39,11 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   for (let i = 0; i < 40; i++) { const u = i / 40; const p = curve.getPointAt(u), tg = curve.getTangentAt(u); const side = new THREE.Vector3(-tg.z, 0, tg.x).normalize().multiplyScalar(2.3 * (i % 2 ? 1 : -1)); const x = p.x + side.x, z = p.z + side.z; if (x < -42 || x > 46) continue; if (i % 3 === 0) add(group, new THREE.Mesh(new THREE.DodecahedronGeometry(0.25 + (i % 4) * 0.08, 0), mat(C.stone)), x, 0.1, z); else for (let k = 0; k < 3; k++) add(group, new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.03, 0.8, 4), mat("#6fae4f")), x + (k - 1) * 0.15, 0.4, z + (k % 2) * 0.15); }
   // village street + lanes
   group.add(path([[-22, -6], [-14, -6.5], [-6, -5.5], [2, -5], [10, -6], [18, -8]], 2.6));
-  group.add(path([[2, -5], [3, -9], [4, -18.5]], 1.6));
-  group.add(path([[2, -5], [3, 0], [3, 3]], 1.6));
-  group.add(path([[-6, -5.5], [-7, 1], [-7.5, 3]], 1.2));
-  group.add(path([[18, -8], [22, -4], [24, 0]], 1.4));
+  group.add(path([[-4, -5.4], [-4, -3.6]], 1.6));                                                    // into the market
+  group.add(path([[10, -6], [14, -10], [20, -15], [26, -19.5], [28, -23]], 1.8));                    // the gate road up to the north town
+  group.add(path([[4, -26.5], [14, -26], [24, -26.5], [32, -26.5], [41, -26.5], [47, -27]], 1.8, "#c9bfa0"));   // the north town street
+  group.add(path([[16, -8], [19, -4], [20, -0.5]], 1.4));                                            // down to the bridge
+  group.add(path([[-29, 6], [-35, 8], [-42, 8.5], [-49, 8.5], [-53.3, 7]], 1.6, "#d3bd8a"));         // the road west to the oasis
   group.add(path([[-22, -6], [-26, -1], [-29, 6]], 1.2));
 
   // ---------- mountains: a western wall and a northern backdrop ----------
@@ -67,16 +68,17 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   void hill;
   place(pagoda(5), -24, -25).position.y = 2.2;
   for (let i = 0; i < 6; i++) place(tree("pine", 1.0), -24 + Math.cos(i * 1.05) * 6.5, -25 + Math.sin(i * 1.05) * 5, i);
-  add(group, new THREE.Mesh(new THREE.CircleGeometry(7, 20), mat("#c9c0a8")), 3, TOP + 0.02, -23).rotation.x = -Math.PI / 2;
-  place(temple(), 3, -20);
-  place(gate(), 3, -12.5);
-  for (const x of [-4, 16]) place(tree("blossom", 1.2), x, -27.5, x);
-  for (const x of [-6, 12]) place(tree("ginkgo", 1.1), x, -21, x);
+  add(group, new THREE.Mesh(new THREE.CircleGeometry(6, 20), mat("#c9c0a8")), 28, TOP + 0.02, -31.5).rotation.x = -Math.PI / 2;
+  place(temple(), 28, -35.5);
+  place(gate(), 28, -25.5);
+  for (const x of [21.5, 34.5]) place(tree("blossom", 1.2), x, -36, x);
+  for (const x of [23, 33]) place(tree("ginkgo", 1.1), x, -24.5, x);
+  for (const [x, z] of [[-14, -34], [-8, -36.5], [-2, -33.5], [-19, -37]] as [number, number][]) place(tree("pine", 1.1 + (x % 2 ? 0.2 : 0)), x, z, x);   // Sichuan's wooded north
   // birds over the mountains, cranes in the paddies, and a dragon dance in the square
   place(birds(7, 14, 15), -22, -14);
   place(birds(5, 9, 11), 26, 6);
   place(crane(), 22, 17, 0.6); place(crane(), 27.5, 12.5, -1.2).scale.setScalar(0.9);
-  place(dragon({ radius: 2.6, height: 2.3, speed: 0.4, segments: 14, poles: true }), 5, -9.2);
+  place(dragon({ radius: 2.6, height: 2.3, speed: 0.4, segments: 14, poles: true }), 28, -19.5);
 
   // ---------- villages ----------
   const houses: [("sichuan" | "jiangnan" | "northern"), number, number, number, number, number, number, number][] = [
@@ -84,12 +86,12 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
     ["sichuan", -20, -18, 0.25, 3.2, 2.6, 1.9, 2], ["sichuan", -24, -11, -0.2, 2.8, 2.4, 1.7, 1], ["sichuan", -12, -10.5, 0.15, 3.6, 2.6, 1.9, 1],
     ["sichuan", -16, -1.5, 0.5, 2.6, 2.2, 1.6, 1], ["sichuan", -12, 3.8, -0.3, 3.2, 2.6, 1.9, 2],
     ["jiangnan", 15, 11, -0.4, 3.2, 2.6, 2.1, 2], ["jiangnan", 20, 12.5, 0.2, 2.8, 2.4, 1.9, 1],
-    ["jiangnan", 36, -3, 0.5, 3.0, 2.4, 2.0, 1], ["jiangnan", 21, -7.5, -0.2, 3.2, 2.6, 2.0, 2], ["jiangnan", 39, 1.2, 0.9, 2.6, 2.2, 1.8, 1],
-    ["northern", 22, -25, 0.05, 3.8, 2.8, 1.7, 1], ["northern", 33, -22, -0.1, 2.8, 2.4, 1.6, 1], ["northern", 18, -21, 0.2, 3.0, 2.4, 1.6, 1],
+    ["jiangnan", 30, -3.5, 0.5, 3.0, 2.4, 2.0, 1], ["jiangnan", 22.5, -8, -0.2, 3.2, 2.6, 2.0, 2], ["jiangnan", 33.5, 1.4, 0.9, 2.6, 2.2, 1.8, 1],
+    ["northern", 38.5, -25, 0.05, 3.8, 2.8, 1.7, 1], ["northern", 43.5, -22, -0.1, 2.8, 2.4, 1.6, 1], ["northern", 34.5, -21, 0.2, 3.0, 2.4, 1.6, 1],
   ];
   for (const [style, x, z, rot, w, d, h, st] of houses) place(house(style, w, d, h, st), x, z, rot);
   // courtyard wall for the northern compound
-  for (const [x, z, rot, len] of [[22.5, -19, 0, 12], [16.5, -23, Math.PI / 2, 8], [34.5, -23, Math.PI / 2, 8]] as [number, number, number, number][]) { add(group, new THREE.Mesh(new THREE.BoxGeometry(len, 0.9, 0.3), mat(C.brick)), x, 0.45, z).rotation.y = rot; }
+  for (const [x, z, rot, len] of [[39, -18, 0, 12], [33, -22, Math.PI / 2, 8], [45, -22, Math.PI / 2, 8]] as [number, number, number, number][]) { add(group, new THREE.Mesh(new THREE.BoxGeometry(len, 0.9, 0.3), mat(C.brick)), x, 0.45, z).rotation.y = rot; }
   // Sichuan's quiet food details: nothing to click, everything tells the story
   for (const [kind, x, z, rot] of [["chilliFrame", -11.6, 1, 0.3], ["jars", -17.5, -19.6, 0.2], ["garlicBasket", -13.9, -8.4, 0], ["vegBasket", -10.2, -8.6, 0.4], ["sausageRack", -10, -19.2, 0.1], ["chilliMat", -22.8, 5.2, 0], ["pepperMat", -17.2, 3.6, 0], ["teaMat", -24, -7.4, 0], ["choppingTable", -10.6, -1.2, 0.2], ["marketBaskets", -6.5, 11.8, 0], ["jars", -26.8, -7.6, -0.3], ["cornStrings", -20.2, 13.2, 0.4], ["cabbageRack", -9.6, 18.4, 0.1], ["sausageRack", -18.6, -3.4, 0.5], ["garlicBasket", -21.6, -1.6, 0]] as [Parameters<typeof foodDetail>[0], number, number, number][]) place(foodDetail(kind), x, z, rot);
   // lantern strings across the street
@@ -126,10 +128,10 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   place(tree("round", 1.0), 30.5, 15.5, 1); place(tree("round", 0.9), 37, 14.5, 2);
   for (let i = 0; i < 3; i++) place(tree("ginkgo", 0.9), 14 + i * 3, 28 + (i % 2) * 0.6, i);
   // the north's quiet details: coal for the winter, pickle crocks, persimmons drying, a corn crib, the stone mill, flour sacks
-  for (const [kind, x, z, rot] of [["cabbageStack", 32.2, -18.4, -0.4], ["garlicBraids", 12.6, -33.2, 0.2], ["chilliStrings", 2.4, -31.6, 0], ["chilliStrings", 39.5, -31.5, 0.3], ["noodleRack", 35.5, -19.4, 0.1], ["wheatSheaves", -4.4, -31.4, 0.3], ["wheatSheaves", -16.4, -30.6, -0.2], ["coalStack", 16.2, -11.6, 0.2], ["pickleCrocks", 35.4, -18.4, 0.1], ["persimmonString", 20.4, -18.2, 0], ["cornCrib", 17.2, -25.4, 0.3], ["stoneMill", 24.5, -30.5, 0], ["flourSacks", 39.5, -36.5, 0.4], ["pickleCrocks", 13.2, -36.6, -0.3], ["coalStack", 3, -38.6, 0.5]] as [Parameters<typeof northDetail>[0], number, number, number][]) place(northDetail(kind), x, z, rot);
-  for (let i = 0; i < 5; i++) place(tree("round", 0.8 + (i % 2) * 0.2), -3 + i * 5.5, -40.5 + (i % 2) * 1.2, i);
+  for (const [kind, x, z, rot] of [["cabbageStack", 35.5, -18.5, -0.4], ["garlicBraids", 16, -34.5, 0.2], ["chilliStrings", 7, -35.5, 0], ["chilliStrings", 41, -33.5, 0.3], ["noodleRack", 46.5, -26.5, 0.1], ["wheatSheaves", 5.5, -28.5, 0.3], ["wheatSheaves", 18.5, -28, -0.2], ["coalStack", 33, -19.5, 0.2], ["pickleCrocks", 42.5, -18.5, 0.1], ["persimmonString", 37, -18.5, 0], ["cornCrib", 15.5, -25, 0.3], ["stoneMill", 30.5, -39.5, 0], ["flourSacks", 40, -41, 0.4], ["pickleCrocks", 24, -39, -0.3], ["coalStack", 3, -40.5, 0.5]] as [Parameters<typeof northDetail>[0], number, number, number][]) place(northDetail(kind), x, z, rot);
+  for (let i = 0; i < 5; i++) place(tree("round", 0.8 + (i % 2) * 0.2), 8 + i * 8, -40.8 + (i % 2) * 1.0, i);
   // Jiangnan's quiet details: lotus roots and pods, crab pots, wine jars, tea drying, fish on the rack, spring bamboo shoots
-  for (const [kind, x, z, rot] of [["lotusBasket", 33.5, 31, 0.3], ["crabPots", 38.8, 14.2, 0.2], ["wineJars", 12.4, -1, 0.1], ["teaBaskets", 14.8, 29.6, 0], ["fishRack", 9.5, 4.2, 0.3], ["bambooShoots", 22.5, 26.5, 0.2], ["wineJars", 32.6, 1.6, -0.4], ["lotusBasket", 24.6, 26.6, 0.5]] as [Parameters<typeof jnDetail>[0], number, number, number][]) place(jnDetail(kind), x, z, rot);
+  for (const [kind, x, z, rot] of [["lotusBasket", 32, 27, 0.3], ["crabPots", 38, 13, 0.2], ["wineJars", 12.4, -1, 0.1], ["teaBaskets", 15.5, 28, 0], ["fishRack", 9.5, 4.2, 0.3], ["bambooShoots", 22.5, 26.5, 0.2], ["wineJars", 28.5, -0.6, -0.4], ["lotusBasket", 24.6, 26.6, 0.5]] as [Parameters<typeof jnDetail>[0], number, number, number][]) place(jnDetail(kind), x, z, rot);
 
   // ---------- farms ----------
   place(terrace(4, 4.2, true), -30, 23.5, 0.3);
@@ -145,7 +147,7 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   for (let i = 0; i < 4; i++) place(chicken(i % 2 ? "#c9822b" : C.white), -11 + Math.cos(i * 1.6) * 1.6, 16 + Math.sin(i * 1.6) * 1.4, i);
   place(pond(), -1, 15);
   // paddies with a water buffalo
-  place(cow(true), 28.5, 19, -0.7);
+  place(cow(true), 30.5, 18.5, -0.7);
   // ambient farmers carrying produce to market
   const walkers = [person("#3f6b8f", { pole: true }), person("#c0392b", { hat: true }), person("#e0a52c"), person("#2f5d3f", { pole: true })];
   walkers.forEach((w) => group.add(w));
@@ -156,7 +158,7 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   // ---------- northern life: neighbours along the lane between the workshops ----------
   const nWalkers = [person("#4a5a7a"), person("#8a3a3a", { hat: true }), person("#e0a52c", { pole: true }), person("#3f6b8f"), person("#c9a86a")];
   nWalkers.forEach((w) => group.add(w));
-  const nPath = new THREE.CatmullRomCurve3([new THREE.Vector3(0, 0, -30.5), new THREE.Vector3(8, 0, -30.5), new THREE.Vector3(16, 0, -30.2), new THREE.Vector3(24, 0, -28.4), new THREE.Vector3(36, 0, -30.2), new THREE.Vector3(41.5, 0, -29.4), new THREE.Vector3(47.2, 0, -28.2), new THREE.Vector3(48.2, 0, -24), new THREE.Vector3(45.5, 0, -21.2), new THREE.Vector3(39, 0, -21.6), new THREE.Vector3(33, 0, -22.4), new THREE.Vector3(20, 0, -24.7), new THREE.Vector3(14, 0, -22.5), new THREE.Vector3(3, 0, -22.5), new THREE.Vector3(-2, 0, -27)], true);
+  const nPath = new THREE.CatmullRomCurve3([new THREE.Vector3(5, 0, -27.6), new THREE.Vector3(14, 0, -27.2), new THREE.Vector3(24, 0, -27.6), new THREE.Vector3(32, 0, -27.6), new THREE.Vector3(41, 0, -27.6), new THREE.Vector3(46.5, 0, -26.6), new THREE.Vector3(41, 0, -25.5), new THREE.Vector3(32, 0, -25.4), new THREE.Vector3(24, 0, -25.3), new THREE.Vector3(14, 0, -25.1), new THREE.Vector3(4.5, 0, -25.6)], true);   // the town street, there and back
   tickers.push((t) => nWalkers.forEach((w, i) => { const u = (t * 0.01 + i * 0.2) % 1; const p = nPath.getPointAt(u), n = nPath.getPointAt((u + 0.004) % 1); w.position.set(p.x, 0, p.z); w.rotation.y = Math.atan2(n.x - p.x, n.z - p.z); (w.userData as { walk?: (t: number) => void }).walk?.(t + i); }));
   // ---------- oasis life: people up and down the road and over the wooden bridge; melons, raisins, nan, spices, carpets, chillies ----------
   for (const [kind, x, z, rot] of [["melonPile", -49, -3.6, 0.2], ["raisinRack", -59.6, -10.6, 0], ["nanStack", -46.6, -29, 0.3], ["spiceSacks", -49.2, 10.6, 0.1], ["carpetLine", -58.6, 13.2, 0.05], ["chilliStrings", -47.2, -11.2, 0.2], ["melonPile", -55.4, 14.6, -0.3]] as [Parameters<typeof xjDetail>[0], number, number, number][]) place(xjDetail(kind), x, z, rot);
@@ -209,7 +211,7 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   const cloths = ["#c0392b", "#3f6b8f", "#f4f1ea", "#e0a52c", "#6a7fb0"].map((c, i) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 0.9, 1, 3), new THREE.MeshStandardMaterial({ color: c, side: THREE.DoubleSide, roughness: 1 })); m.geometry.translate(0, -0.45, 0); m.position.set(15.4 + i * 1.05, 2.3, 13.6); m.castShadow = true; group.add(m); return m; });
   tickers.push((t) => cloths.forEach((m, i) => { m.rotation.x = Math.sin(t * 2.2 + i * 1.3) * 0.25 + 0.15; }));
   // a couple in the northern courtyard
-  place(person("#e9d7b8", { hat: true }), 21, -15.5, 0.6); place(person("#7a4a3a"), 25, -14.5, -1.8);
+  place(person("#e9d7b8", { hat: true }), 37.5, -21.5, 0.6); place(person("#7a4a3a"), 41.5, -20.5, -1.8);
 
   // ---------- koi in the river: each fish steers smoothly toward a drifting point ahead of it, bending as it swims ----------
   type Koi = { g: THREE.Group; u: number; side: number; targetSide: number; speed: number; heading: number; ph: number; leapT: number; nextLeap: number };

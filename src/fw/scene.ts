@@ -8,6 +8,7 @@
 // its particle painter and a tick that moves the small things (see scene-hotpot.ts).
 
 import { animateRoomTouch, type RoomInteraction } from "./scene-props";
+import { playRoomSound } from "./room-sound";
 import { imageUrl } from "../data";
 import { type EnrichedRecipe } from "./graph";
 import { escapeHtml as esc } from "./plates";
@@ -140,6 +141,7 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
       const interaction = spot.interaction;
       let point = portrait ? spot.portrait : spot;
       if (interaction) {
+        button.hidden = Boolean(interaction.wideOnly && portrait);
         const fractions = portrait ? interaction.phone : interaction.wide;
         const label = button.querySelector<HTMLElement>('b')!;
         label.style.left = fractions[0] > .72 ? 'auto' : fractions[0] < .28 ? '0' : '50%';
@@ -150,6 +152,7 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
         point = { x: portrait ? (STAGE_W - pw) / 2 + fractions[0] * pw : -8 + fractions[0] * 1616, y: -5 + fractions[1] * 910 };
         const response = el.querySelector<HTMLElement>(`[data-response="${button.dataset.hotspot}"]`)!;
         const diameter = interaction.extent[portrait ? 1 : 0] * (portrait ? pw : 1616) * S;
+        response.hidden = button.hidden;
         response.style.cssText = `left:${OX + point.x * S}px;top:${OY + point.y * S}px;width:${diameter}px;height:${diameter}px`;
       }
       button.style.left = `${OX + point.x * S}px`;
@@ -209,6 +212,10 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
     }
     const pressed = def.react?.(spot.id);
     if (spot.activeLabel) {
+      if (spot.id === 'pot') {
+        propCleanups.get(button)?.();
+        if (pressed) propCleanups.set(button, playRoomSound('broth'));
+      }
       if (feedback) feedback.hidden = true;
       activeHotspot?.setAttribute("aria-expanded", "false");
       activeHotspot = null;

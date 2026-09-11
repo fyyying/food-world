@@ -18,6 +18,7 @@ document.querySelector('#run').onclick=async()=>{
       await frame();await frame();
       const bounds=room.el.getBoundingClientRect();
       for(const button of room.el.querySelectorAll('[data-hotspot]')) {
+        if(button.hidden) continue;
         const b=button.getBoundingClientRect();
         assert(b.left>=bounds.left && b.right<=bounds.right && b.top>=bounds.top && b.bottom<=bounds.bottom,'touch point outside picture');
         button.click();await frame();

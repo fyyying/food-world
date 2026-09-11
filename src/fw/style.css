@@ -318,7 +318,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 #scene .room-response-particle.sizzle { width: 4px; height: 6px; border-radius: 50%; background: #ffe29a; box-shadow: 0 0 5px #ffb74a; }
 #scene .room-response-particle.tea { width: 24px; height: 36px; border-radius: 50%; background: radial-gradient(ellipse, #fff9ebcc, #fff9eb77 40%, transparent 72%); filter: blur(3px); }
 #scene .room-response-particle.light { width: 180%; height: 180%; transform: translate(-50%,-50%); background: radial-gradient(ellipse,#ffe7abbf,#ffc86555 40%,transparent 70%); mix-blend-mode: screen; }
-#scene .room-response-particle.chime, #scene .room-response-particle.purr, #scene .room-response-particle.still { width: 65%; height: 45%; transform: translate(-50%,-50%); border: 1px solid #f2d8a4; border-radius: 50%; box-shadow: 0 0 12px #edc58244; }
+#scene .room-response-particle.chime, #scene .room-response-particle.purr, #scene .room-response-particle.woof, #scene .room-response-particle.still { width: 65%; height: 45%; transform: translate(-50%,-50%); border: 1px solid #f2d8a4; border-radius: 50%; box-shadow: 0 0 12px #edc58244; }
 #scene .room-response-particle.detail { width: 85%; height: 65%; transform: translate(-50%,-50%); border: 1px solid #f2d8a4; border-radius: 50%; }
 #scene .scene-detail { margin-top: 10px; border-radius: 6px; overflow: hidden; aspect-ratio: 1.78; }
 #scene .scene-detail svg { display: block; width: 100%; height: 100%; }
@@ -339,3 +339,5 @@ button { font: inherit; color: inherit; cursor: pointer; }
 #scene.has-room-touches { overflow: clip; }
 
 #scene .room-response-particle.grill-smoke { width: 26px; height: 30px; border-radius: 50%; background: radial-gradient(ellipse,#eee3d2aa,transparent 72%); filter: blur(3px); box-shadow: none; }
+
+#scene .room-touch[hidden], #scene .room-response[hidden] { display: none; }

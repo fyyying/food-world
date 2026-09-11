@@ -10,7 +10,7 @@ try {
   const { animateRoomTouch } = await import(pathToFileURL(join(temporary, 'props.mjs')));
   let reduced = false;
   globalThis.matchMedia = () => ({ matches: reduced });
-  for (const motion of ['detail','water','leaves','flour','tea','sizzle','light','chime','purr']) {
+  for (const motion of ['detail','water','leaves','flour','tea','sizzle','light','chime','purr','woof']) {
     const animations = [], particles = [];
     const animate = (frames, options) => {
       let finish;
@@ -45,5 +45,5 @@ try {
     assert.equal(animations[0].options.duration, 350);
     reduced = false;
   }
-  console.log('PASS: nine local responses, stationary cat, repeat/exit cleanup, natural completion and reduced motion.');
+  console.log('PASS: ten local responses, stationary cat, repeat/exit cleanup, natural completion and reduced motion.');
 } finally { await rm(temporary, {recursive: true, force: true}); }

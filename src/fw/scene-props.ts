@@ -1,6 +1,7 @@
 import type { SceneHotspot } from './scene';
+import { playRoomSound } from './room-sound';
 
-export type RoomEffect = 'detail' | 'water' | 'leaves' | 'flour' | 'tea' | 'sizzle' | 'light' | 'chime' | 'purr';
+export type RoomEffect = 'detail' | 'water' | 'leaves' | 'flour' | 'tea' | 'sizzle' | 'light' | 'chime' | 'purr' | 'woof';
 type Point = [number, number];
 export type RoomInteraction = {
   effect: RoomEffect;
@@ -10,17 +11,20 @@ export type RoomInteraction = {
   /** Diameter as a fraction of the painting width, independently composed. */
   extent: [number, number];
   folder: string;
+  wideOnly?: boolean;
 };
-type Entry = { label: string; text: string; effect: RoomEffect; wide: Point; phone: Point; extent?: [number, number] };
+type Entry = { wideOnly?: boolean; label: string; text: string; effect: RoomEffect; wide: Point; phone: Point; extent?: [number, number] };
 const item = (label: string, text: string, effect: RoomEffect, wide: Point, phone: Point, extent?: [number, number]): Entry => ({ label, text, effect, wide, phone, extent });
 // These refer to features in the complete paintings, never inserted prop sprites.
 // Each portrait was inspected separately: it is a different painting, not a crop.
 const rooms: Record<string, Entry[]> = {
   noodle_shop: [
+    { ...item('Greet the dog', 'The little dog answers with a soft woof.', 'woof', [.786,.61], [.5,.5], [.045,.08]), wideOnly: true },
     item('Watch the noodle maker', 'Follow the fresh strands between the cook’s hands, above the steaming pot.', 'detail', [.20,.41], [.30,.36]),
     item('Look into the noodle bowl', 'Noodles, greens and chilli oil: look closely at the bowl before the first mouthful.', 'detail', [.46,.86], [.32,.86]),
   ],
   teahouse: [
+    item('Stroke the sleeping cat', 'The cat gives a soft purr without leaving its sunny spot.', 'purr', [.26,.875], [.27,.735], [.09,.18]),
     item('Warm your tea', 'A little warmth rises from the cup. There is time for another sip.', 'tea', [.52,.89], [.57,.85], [.045,.12]),
     item('Look at the tea service', 'The small cups, kettle and shared table make room for an unhurried afternoon.', 'detail', [.82,.86], [.78,.88]),
   ],
@@ -30,8 +34,8 @@ const rooms: Record<string, Entry[]> = {
   ],
   home_kitchen: [
     item('Explore the chopping board', 'Freshly cut vegetables and a broad kitchen knife sit ready on the family work table.', 'detail', [.56,.86], [.49,.79]),
-    item('Look at the wok', 'The cook keeps the food close to the heat, with the ingredients ready beside her.', 'detail', [.20,.49], [.22,.49]),
-    item('Greet the sleeping cat', 'A quiet purr from the cat by the wall. Its nap continues.', 'purr', [.67,.74], [.83,.68], [.09,.14]),
+    item('Listen to the wok', 'The vegetables sizzle in the hot wok beside the cook.', 'sizzle', [.20,.49], [.22,.49], [.10,.20]),
+    item('Stroke the sleeping cat', 'A quiet purr from the cat by the wall. Its nap continues.', 'purr', [.67,.74], [.83,.68], [.09,.14]),
   ],
   tower: [
     item('Ring the hanging bell', 'A soft bell note carries out beneath the eaves.', 'chime', [.505,.175], [.42,.20], [.06,.16]),
@@ -94,6 +98,7 @@ const rooms: Record<string, Entry[]> = {
     item('Inspect the filling ingredients', 'Vegetables and prepared fillings sit within reach of the cooks.', 'detail', [.51,.83], [.57,.73]),
   ],
   hutong: [
+    item('Stroke the cat', 'A contented purr from the cat beside the lane.', 'purr', [.89,.835], [.53,.685], [.08,.16]),
     item('Brush the autumn leaves', 'A few leaves drift down from the branch over the lane.', 'leaves', [.72,.07], [.80,.06], [.13,.30]),
     item('Look at the street-side dumplings', 'The dumpling board is close enough to the lane for neighbours to stop and talk.', 'detail', [.24,.59], [.30,.55]),
   ],
@@ -170,7 +175,7 @@ const rooms: Record<string, Entry[]> = {
     item('Explore the feast', 'Follow the platters across the table: bread, skewers, vegetables and fruit.', 'detail', [.62,.78], [.58,.74]),
   ],
 };
-const icons: Record<RoomEffect, string> = { detail: '⌕', water: '≈', leaves: '❧', flour: '⋯', tea: '♨', sizzle: '♨', light: '☼', chime: '♪', purr: '♡' };
+const icons: Record<RoomEffect, string> = { detail: '⌕', water: '≈', leaves: '❧', flour: '⋯', tea: '♨', sizzle: '♨', light: '☼', chime: '♪', purr: '♡', woof: '♡' };
 export function roomProps(id: string, portraitPoint: (x: number, y: number) => { x: number; y: number }): SceneHotspot[] {
   return (rooms[id] ?? []).map((entry, i) => ({
     id: `room-${i}`, label: entry.label, text: entry.text,
@@ -183,12 +188,11 @@ export function roomProps(id: string, portraitPoint: (x: number, y: number) => {
 export function animateRoomTouch(host: HTMLElement, interaction: RoomInteraction, trigger?: HTMLElement): () => void {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const nodes: HTMLElement[] = [], animations: Animation[] = [];
-  let audio: AudioContext | undefined;
   const effect = interaction.effect;
   if (effect !== 'detail') trigger?.classList.add('room-responding');
   const spread = Math.max(85, Math.min(180, host.clientWidth || 120));
   // Five times the previous particle density, contained within the painted feature.
-  const count = reduced ? 1 : effect === 'water' ? 15 : effect === 'leaves' ? 25 : effect === 'flour' ? 24 : effect === 'sizzle' ? 40 : effect === 'tea' ? 25 : effect === 'chime' || effect === 'purr' ? 5 : 1;
+  const count = reduced ? 1 : effect === 'water' ? 15 : effect === 'leaves' ? 25 : effect === 'flour' ? 24 : effect === 'sizzle' ? 40 : effect === 'tea' ? 25 : effect === 'chime' || effect === 'purr' || effect === 'woof' ? 5 : 1;
   for (let i = 0; i < count; i++) {
     const node = document.createElement('i');
     node.className = `room-response-particle ${reduced ? 'still' : effect}`;
@@ -232,7 +236,7 @@ export function animateRoomTouch(host: HTMLElement, interaction: RoomInteraction
         { opacity: 0, transform: `translate(calc(-50% + ${dx}px),calc(-50% - ${rise}px)) scale(${effect === 'tea' || smoke ? 2.5 : 1.2})` },
       ];
       duration = effect === 'tea' || smoke ? 2800 : 1400; delay = i * (effect === 'tea' ? 55 : 28);
-    } else if (effect === 'chime' || effect === 'purr') {
+    } else if (effect === 'chime' || effect === 'purr' || effect === 'woof') {
       frames = [{ opacity: 0, transform: 'translate(-50%,-50%) scale(.5)' }, { opacity: .85, offset: .2 }, { opacity: 0, transform: 'translate(-50%,-50%) scale(1.25)' }];
       duration = 2200; delay = i * 220;
     } else {
@@ -241,38 +245,10 @@ export function animateRoomTouch(host: HTMLElement, interaction: RoomInteraction
     }
     animations.push(node.animate(reduced ? [{opacity: 0}, {opacity: .5}, {opacity: 0}] : frames, {duration: reduced ? 350 : duration, delay: reduced ? 0 : delay, fill:'both', easing:'ease-out'}));
   }
-  // Audio is initiated only by the user's touch and released after this response.
-  if ((effect === 'chime' || effect === 'purr' || effect === 'sizzle') && typeof AudioContext !== 'undefined') {
-    try {
-      audio = new AudioContext();
-      void audio.resume().catch(() => {});
-      const now = audio.currentTime;
-      if (effect === 'sizzle') {
-        const buffer = audio.createBuffer(1, Math.ceil(audio.sampleRate * 1.3), audio.sampleRate);
-        const samples = buffer.getChannelData(0);
-        for (let i = 0; i < samples.length; i++) {
-          const t = i / audio.sampleRate;
-          samples[i] = (Math.random() * 2 - 1) * Math.exp(-t * 3) * (.015 + .05 * Math.pow(Math.max(0, Math.sin(t * 93)), 12));
-        }
-        const crackle = audio.createBufferSource(), filter = audio.createBiquadFilter();
-        crackle.buffer = buffer; filter.type = 'highpass'; filter.frequency.value = 900;
-        crackle.connect(filter); filter.connect(audio.destination); crackle.start();
-      }
-      const notes = effect === 'chime' ? [660, 990, 1320] : effect === 'purr' ? [27, 54] : [];
-      for (const [i, frequency] of notes.entries()) {
-        const oscillator = audio.createOscillator(), gain = audio.createGain();
-        oscillator.type = effect === 'purr' ? 'triangle' : 'sine';
-        oscillator.frequency.value = frequency;
-        gain.gain.setValueAtTime(0, now);
-        gain.gain.linearRampToValueAtTime((effect === 'purr' ? .015 : .025) / (i + 1), now + .04);
-        gain.gain.exponentialRampToValueAtTime(.0001, now + 1.3);
-        oscillator.connect(gain); gain.connect(audio.destination);
-        oscillator.start(); oscillator.stop(now + 1.4);
-      }
-    } catch { /* Visual feedback remains available when audio is unavailable. */ }
-  }
+  const stopSound = effect === 'detail' || effect === 'light' ? () => {} : playRoomSound(effect);
   let done = false;
-  const cleanup = () => { if (done) return; done = true; animations.forEach(a => a.cancel()); nodes.forEach(n => n.remove()); trigger?.classList.remove('room-responding'); if(audio && audio.state !== 'closed') void audio.close().catch(() => {}); };
-  Promise.all(animations.map(a => a.finished)).then(cleanup, () => {});
-  return cleanup;
+  const clearVisuals = () => { if (done) return; done = true; animations.forEach(a => a.cancel()); nodes.forEach(n => n.remove()); trigger?.classList.remove('room-responding'); };
+  // Reduced motion shortens the visual only, not the audible response.
+  Promise.all(animations.map(a => a.finished)).then(clearVisuals, () => {});
+  return () => { clearVisuals(); stopSound(); };
 }

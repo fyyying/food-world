@@ -38,10 +38,9 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   // reeds and stones along the bank
   for (let i = 0; i < 40; i++) { const u = i / 40; const p = curve.getPointAt(u), tg = curve.getTangentAt(u); const side = new THREE.Vector3(-tg.z, 0, tg.x).normalize().multiplyScalar(2.3 * (i % 2 ? 1 : -1)); const x = p.x + side.x, z = p.z + side.z; if (x < -42 || x > 46) continue; if (i % 3 === 0) add(group, new THREE.Mesh(new THREE.DodecahedronGeometry(0.25 + (i % 4) * 0.08, 0), mat(C.stone)), x, 0.1, z); else for (let k = 0; k < 3; k++) add(group, new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.03, 0.8, 4), mat("#6fae4f")), x + (k - 1) * 0.15, 0.4, z + (k % 2) * 0.15); }
   // village street + lanes
-  group.add(path([[-22, -6], [-14, -6.5], [-6, -5.5], [2, -5], [10, -6], [18, -8]], 2.6));
+  group.add(path([[-22, -6], [-14, -6.5], [-6, -5.5], [2, -5], [10, -6], [16, -7.8], [19.3, -5.6], [20.1, -2.4]], 2.6));   // the street: one ribbon from the west end, behind the wine house, down onto the bridge ramp
   group.add(path([[10, -6], [14, -10], [20, -15], [26, -19.5], [28, -23]], 1.8));                    // the gate road up to the north town
   group.add(path([[4, -26.5], [14, -26], [24, -26.5], [32, -26.5], [41, -26.5], [47, -27]], 1.8, "#c9bfa0"));   // the north town street
-  group.add(path([[18, -8], [19.6, -5.4], [20.1, -2.4]], 1.4));                                      // from the end of the street straight down to the bridge's north ramp, clear of the wine cellar
   group.add(path([[-29, 6], [-35, 8], [-42, 8.5], [-49, 8.5], [-53.3, 7]], 1.6, "#d3bd8a"));         // the road west to the oasis
   group.add(path([[-22, -6], [-26, -1], [-29, 6]], 1.2));
 

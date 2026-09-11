@@ -271,7 +271,7 @@ const teaHill = (): SceneDef => { const f = "tea_hill"; return paintedScene({
 
 // ---------- Xinjiang: the oasis road (paintings 1672×941 wide, 941×1672 portrait; fractions read off the grid sheets) ----------
 const kebabGrill = (): SceneDef => { const f = "kebab_grill"; return paintedScene({
-  id: "kebab_grill", folder: f, title: "The skewer stall", zh: "烤肉摊", caption: "Lamb and tail fat on iron skewers over charcoal, cumin and chilli thrown on as they turn, the smoke drifting into the vines at dusk.",
+  id: "kebab_grill", folder: f, title: "The skewer stall", zh: "Kawap", caption: "Lamb and tail fat on iron skewers over charcoal, cumin and chilli thrown on as they turn, the smoke drifting into the vines at dusk.",
   painting: true,
   steam: [{ x: wx(0.62), y: wy(0.6), w: 260, rate: 22, a: 0.34 }, { x: wx(0.5), y: wy(0.66), w: 120, rate: 8, a: 0.24 }],
   fire: [{ x: wx(0.63), y: wy(0.74), rx: 110, ry: 20 }],
@@ -282,7 +282,7 @@ const kebabGrill = (): SceneDef => { const f = "kebab_grill"; return paintedScen
 }); };
 
 const naanBakery = (): SceneDef => { const f = "naan_bakery"; return paintedScene({
-  id: "naan_bakery", folder: f, title: "The nan bakery", zh: "馕坑", caption: "Rounds stamped in the centre and slapped onto the wall of the tonur; a minute later they come out crisp on the paddle.",
+  id: "naan_bakery", folder: f, title: "The nan bakery", zh: "Nan", caption: "Rounds stamped in the centre and slapped onto the wall of the tonur; a minute later they come out crisp on the paddle.",
   painting: true,
   fire: [{ x: wx(0.6), y: wy(0.5), rx: 46, ry: 26 }],
   steam: [{ x: wx(0.72), y: wy(0.7), w: 120, rate: 7, a: 0.24 }, { x: wx(0.5), y: wy(0.66), w: 70, rate: 4, a: 0.2 }],
@@ -292,7 +292,7 @@ const naanBakery = (): SceneDef => { const f = "naan_bakery"; return paintedScen
 }); };
 
 const poloKitchen = (): SceneDef => { const f = "polo_kitchen"; return paintedScene({
-  id: "polo_kitchen", folder: f, title: "The polo kitchen", zh: "抓饭锅", caption: "One kazan for the whole street: lamb, onion and a great deal of carrot under the rice, the fire kept low until the rice has taken the fat.",
+  id: "polo_kitchen", folder: f, title: "The polo kitchen", zh: "Polo", caption: "One kazan for the whole street: lamb, onion and a great deal of carrot under the rice, the fire kept low until the rice has taken the fat.",
   painting: true,
   steam: [{ x: wx(0.28), y: wy(0.56), w: 300, rate: 26, a: 0.4 }, { x: wx(0.46), y: wy(0.62), w: 90, rate: 6, a: 0.22 }],
   fire: [{ x: wx(0.27), y: wy(0.87), rx: 80, ry: 22 }],
@@ -302,7 +302,7 @@ const poloKitchen = (): SceneDef => { const f = "polo_kitchen"; return paintedSc
 }); };
 
 const laghmanShop = (): SceneDef => { const f = "laghman_shop"; return paintedScene({
-  id: "laghman_shop", folder: f, title: "The laghman shop", zh: "拉条子", caption: "One rope of dough swung into one long noodle, boiled, and buried under lamb, tomato, pepper and onion from the wok.",
+  id: "laghman_shop", folder: f, title: "The laghman shop", zh: "Leghmen", caption: "One rope of dough swung into one long noodle, boiled, and buried under lamb, tomato, pepper and onion from the wok.",
   painting: true,
   steam: [{ x: wx(0.4), y: wy(0.62), w: 200, rate: 16, a: 0.34 }, { x: wx(0.68), y: wy(0.5), w: 150, rate: 12, a: 0.3 }, { x: wx(0.2), y: wy(0.72), w: 70, rate: 4, a: 0.2 }],
   motes: 40,
@@ -311,7 +311,7 @@ const laghmanShop = (): SceneDef => { const f = "laghman_shop"; return paintedSc
 }); };
 
 const oasisBazaar = (): SceneDef => { const f = "oasis_bazaar"; return paintedScene({
-  id: "oasis_bazaar", folder: f, title: "The oasis bazaar", zh: "巴扎", caption: "Melons in pyramids, grapes in a dozen colours, sacks of raisins and apricots, nan by the stack, and a whole lamb hanging in the shade.",
+  id: "oasis_bazaar", folder: f, title: "The oasis bazaar", zh: "Bazar", caption: "Melons in pyramids, grapes in a dozen colours, sacks of raisins and apricots, nan by the stack, and a whole lamb hanging in the shade.",
   painting: true,
   walkers: [{ name: "swallow", w: 40, y: wy(0.12), from: wx(0.45), to: wx(0.78), dur: 9, every: 26, fly: true }],
   motes: 50,
@@ -320,7 +320,7 @@ const oasisBazaar = (): SceneDef => { const f = "oasis_bazaar"; return paintedSc
 }); };
 
 const grapeCourtyard = (): SceneDef => { const f = "grape_courtyard"; return paintedScene({
-  id: "grape_courtyard", folder: f, title: "The grape courtyard", zh: "葡萄架下", caption: "A yard roofed with vines, tea and nan on the low table, grapes within reach of the children, and the afternoon going nowhere.",
+  id: "grape_courtyard", folder: f, title: "The grape courtyard", zh: "Üzüm", caption: "A yard roofed with vines, tea and nan on the low table, grapes within reach of the children, and the afternoon going nowhere.",
   painting: true,
   steam: [{ x: wx(0.62), y: wy(0.56), w: 60, rate: 4, a: 0.22 }],
   petals: { color: "rgba(176,205,110,0.9)", rate: 0.6, size: 6 },
@@ -330,7 +330,7 @@ const grapeCourtyard = (): SceneDef => { const f = "grape_courtyard"; return pai
 }); };
 
 const oasisField = (): SceneDef => { const f = "oasis_field"; return paintedScene({
-  id: "oasis_field", folder: f, title: "The melon oasis", zh: "绿洲瓜田", caption: "Hami melons and grapes picked by the channel, poplars along the water, and the mountains that sent it.",
+  id: "oasis_field", folder: f, title: "The melon oasis", zh: "Bostan", caption: "Hami melons and grapes picked by the channel, poplars along the water, and the mountains that sent it.",
   painting: true,
   mist: { x: wx(0.62), y: wy(0.72), w: 520, h: 90 },
   walkers: [{ name: "swallow", w: 44, y: wy(0.22), from: wx(0.5), to: wx(0.95), dur: 10, every: 24, fly: true }],
@@ -340,7 +340,7 @@ const oasisField = (): SceneDef => { const f = "oasis_field"; return paintedScen
 }); };
 
 const chaikhanaScene = (): SceneDef => { const f = "chaikhana"; return paintedScene({
-  id: "chaikhana", folder: f, title: "The chaikhana", zh: "茶馆", caption: "Black tea from a copper pot into bowls, nan and dried fruit on the cloth, and the old men settling in for the afternoon.",
+  id: "chaikhana", folder: f, title: "The chaikhana", zh: "Chayxana", caption: "Black tea from a copper pot into bowls, nan and dried fruit on the cloth, and the old men settling in for the afternoon.",
   painting: true,
   steam: [{ x: wx(0.6), y: wy(0.58), w: 90, rate: 6, a: 0.26 }, { x: wx(0.45), y: wy(0.68), w: 60, rate: 4, a: 0.2 }],
   motes: 40,
@@ -349,7 +349,7 @@ const chaikhanaScene = (): SceneDef => { const f = "chaikhana"; return paintedSc
 }); };
 
 const xjHome = (): SceneDef => { const f = "xj_home"; return paintedScene({
-  id: "xj_home", folder: f, title: "The oasis home kitchen", zh: "家常厨房", caption: "Dough rolled on the board, the kazan going on the hearth, onions and tomatoes waiting, and the tonur lit by the door.",
+  id: "xj_home", folder: f, title: "The oasis home kitchen", zh: "Ashxana", caption: "Dough rolled on the board, the kazan going on the hearth, onions and tomatoes waiting, and the tonur lit by the door.",
   painting: true,
   steam: [{ x: wx(0.58), y: wy(0.5), w: 180, rate: 14, a: 0.32 }, { x: wx(0.86), y: wy(0.74), w: 50, rate: 3, a: 0.2 }],
   fire: [{ x: wx(0.9), y: wy(0.5), rx: 34, ry: 26 }],
@@ -359,7 +359,7 @@ const xjHome = (): SceneDef => { const f = "xj_home"; return paintedScene({
 }); };
 
 const caravanStopScene = (): SceneDef => { const f = "caravan_stop"; return paintedScene({
-  id: "caravan_stop", folder: f, title: "The caravan stop", zh: "驿站", caption: "Travellers at a low table below the mountains at sunset, tea poured, the camels unloaded: where food changed hands for two thousand years.",
+  id: "caravan_stop", folder: f, title: "The caravan stop", zh: "Karwan", caption: "Travellers at a low table below the mountains at sunset, tea poured, the camels unloaded: where food changed hands for two thousand years.",
   painting: true,
   steam: [{ x: wx(0.62), y: wy(0.6), w: 60, rate: 4, a: 0.22 }],
   motes: 30,
@@ -368,7 +368,7 @@ const caravanStopScene = (): SceneDef => { const f = "caravan_stop"; return pain
 }); };
 
 const tianshan = (): SceneDef => { const f = "tianshan"; return paintedScene({
-  id: "tianshan", folder: f, title: "Mountains and snowmelt", zh: "天山雪水", caption: "Snow on the Tianshan all summer, and the cold channel it becomes running past the wheat and the melon patch.",
+  id: "tianshan", folder: f, title: "Mountains and snowmelt", zh: "Tengritagh", caption: "Snow on the Tianshan all summer, and the cold channel it becomes running past the wheat and the melon patch.",
   painting: true,
   mist: { x: wx(0.7), y: wy(0.8), w: 420, h: 90 },
   walkers: [{ name: "swallow", w: 44, y: wy(0.2), from: wx(0.3), to: wx(0.92), dur: 11, every: 22, fly: true }],
@@ -378,7 +378,7 @@ const tianshan = (): SceneDef => { const f = "tianshan"; return paintedScene({
 }); };
 
 const eveningFeast = (): SceneDef => { const f = "evening_feast"; return paintedScene({
-  id: "evening_feast", folder: f, title: "The evening feast", zh: "晚宴", caption: "The cloth laid under the vines at sunset: nan first, then polo, skewers, melon and tea, and nobody eats until everyone sits.",
+  id: "evening_feast", folder: f, title: "The evening feast", zh: "Dastixan", caption: "The cloth laid under the vines at sunset: nan first, then polo, skewers, melon and tea, and nobody eats until everyone sits.",
   painting: true,
   lamps: [{ x: wx(0.06), y: wy(0.14), r: 46 }, { x: wx(0.87), y: wy(0.13), r: 40 }],
   steam: [{ x: wx(0.62), y: wy(0.8), w: 160, rate: 8, a: 0.24 }, { x: wx(0.3), y: wy(0.6), w: 50, rate: 3, a: 0.2 }],

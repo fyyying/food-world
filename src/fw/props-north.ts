@@ -1,8 +1,9 @@
 // Northern China: the wheat belt. Grey brick, paper windows, flour dust, vinegar jars, coal stoves and big tables.
 // Every prop answers a click inside the world (dough rolls, lids lift, ducks swing, skewers turn) before a card opens.
 import * as THREE from "three";
-import { C, add, box, cyl, cone, ball, group, reaction, pick, tickChildren, mat, house, person, lantern, chineseRoof, bubble, rnd, type P } from "./props";
+import { C, add, box, cyl, cone, ball, group, reaction, pick, tickChildren, mat, house, person, lantern, chineseRoof, bubble, rnd, hopFood, ambientChat, type P } from "./props";
 
+const NORTH_LINES = ["吃了吗? Have you eaten?", "再来一碗! One more bowl", "醋多放点 More vinegar on mine", "天冷了, 包饺子 Cold out, dumpling weather", "刚出锅的, 趁热 Just out, eat it hot", "蘸蒜 Dip it in the garlic"];
 type Fig = P & { userData: { upper?: THREE.Group; arms?: { left: THREE.Group; right: THREE.Group }; sit?: () => void } };
 const upper = (p: THREE.Object3D) => (p.userData as { upper?: THREE.Group }).upper;
 const arms = (p: THREE.Object3D) => (p.userData as { arms?: { left: THREE.Group; right: THREE.Group } }).arms;
@@ -92,8 +93,9 @@ export function dumplingHouse(): P {
   g.userData.steam = new THREE.Vector3(2.3, 1.45, 0.45);
   const re = reaction(0.6);
   g.userData.poke = () => { re.poke(); bubble(g, "饺子下锅喽! Dumplings in the pot!", 2.8, 1600); };
+  const chat = ambientChat(g, NORTH_LINES);
   g.userData.tick = (t, dt) => {
-    const k = re.step(dt);
+    const k = re.step(dt); hopFood(g, k, t, dt); chat(dt);
     lid.position.y = 1.24 + k * Math.abs(Math.sin(t * 12)) * 0.16; lid.rotation.z = k * Math.sin(t * 9) * 0.15; pot.rotation.y = t * 0.2;
     rollers.forEach((p, i) => { const u = upper(p); if (u) { u.rotation.x = 0.3 + Math.sin(t * 2 + i) * 0.08; u.rotation.z = k * Math.sin(t * 2 + i) * 0.05; } const a = arms(p); if (a) a.right.rotation.x = -0.9 + Math.sin(t * 2.5 + i) * 0.35; });
     const uc = upper(cook); if (uc) uc.rotation.x = 0.15 + k * 0.25;
@@ -131,8 +133,9 @@ export function noodleWorkshop(): P {
   g.userData.steam = new THREE.Vector3(1.9, 1.45, 0.5);
   const re = reaction(0.5);
   g.userData.poke = () => { re.poke(); bubble(g, "刀削面, 一根一根飞进锅! Knife-cut, straight into the pot", 2.8, 1700); flakes.forEach((f, i) => { f.t = i * 0.12; }); };
+  const chat = ambientChat(g, NORTH_LINES);
   g.userData.tick = (t, dt) => {
-    const k = re.step(dt);
+    const k = re.step(dt); hopFood(g, k, t, dt); chat(dt);
     // the pull: a slow rhythm (one stretch every ~3 s), arms opening and closing, the rope following the hands; a poke only widens the stretch
     const pull = 0.5 + 0.5 * Math.sin(t * 2.2);
     const spread = 0.2 + pull * (0.45 + k * 0.4);
@@ -157,7 +160,7 @@ export function mantouKitchen(): P {
   add(g, house("northern", 4.0, 2.8, 1.8), 0, 0, -1.6);   // front wall at z -0.2, the bakers work in front of it
   add(g, box(3.0, 0.85, 1.0, C.wood), -0.5, 0.42, 1.1); add(g, box(2.8, 0.03, 0.8, FLOUR), -0.5, 0.86, 1.1);
   const dough = add(g, ball(0.28, DOUGH, 10), -1.3, 1.05, 1.1); dough.scale.y = 0.7;
-  const buns = Array.from({ length: 8 }, (_, i) => { const b = add(g, ball(0.1, FLOUR, 7), -0.6 + (i % 4) * 0.24, 0.97, 0.9 + Math.floor(i / 4) * 0.3); b.scale.y = 0.85; return b; });   // shaped buns proving
+  for (let i = 0; i < 8; i++) add(g, ball(0.1, FLOUR, 7), -0.6 + (i % 4) * 0.24, 0.97, 0.9 + Math.floor(i / 4) * 0.3).scale.y = 0.85;   // shaped buns proving (they hop on a tap)
   for (let i = 0; i < 3; i++) { const r = add(g, cyl(0.1, 0.1, 0.12, FLOUR, 8), 0.7 + i * 0.25, 0.94, 1.3); r.rotation.x = 0.2; add(r, new THREE.Mesh(new THREE.TorusGeometry(0.07, 0.02, 4, 10), mat("#e9dcb8")), 0, 0.02, 0).rotation.x = Math.PI / 2; }   // flower rolls
   // two towers of steamers on the stove, lids that lift
   add(g, box(1.6, 0.8, 1.0, BRICK), 1.9, 0.4, 0.4); hearth(g, 1.9, 0.95);
@@ -170,12 +173,12 @@ export function mantouKitchen(): P {
   g.userData.steam = new THREE.Vector3(1.9, 2.0, 0.2);
   const re = reaction(0.6);
   g.userData.poke = () => { re.poke(); bubble(g, "热馒头! Hot mantou, just off the steam", 2.7, 1500); };
+  const chat = ambientChat(g, NORTH_LINES);
   g.userData.tick = (t, dt) => {
-    const k = re.step(dt);
+    const k = re.step(dt); hopFood(g, k, t, dt); chat(dt);
     lids.forEach(({ lid, base }, i) => { lid.position.y = base + k * (0.2 + Math.abs(Math.sin(t * 9 + i)) * 0.14); lid.rotation.z = k * Math.sin(t * 7 + i) * 0.2; });
     dough.scale.set(1 + Math.sin(t * 2) * 0.08 * (1 + k * 0.3), 0.7 - Math.sin(t * 2) * 0.06 * (1 + k * 0.3), 1 + Math.cos(t * 2) * 0.08 * (1 + k * 0.3));
     const uk = upper(kneader); if (uk) { uk.rotation.x = 0.35 + Math.sin(t * 2) * 0.12 * (1 + k * 0.3); }
-    buns.forEach((b, i) => { const hop = k * Math.abs(Math.sin(t * 5 + i * 0.7)); b.position.y = 0.97 + hop * 0.4; b.rotation.y = k > 0.02 ? b.rotation.y + dt * 9 * k : 0; b.rotation.z = k * Math.sin(t * 5 + i * 0.7) * 0.9; });   // the mantou jump and turn in the air
     const us = upper(shaper); if (us) us.rotation.x = 0.25 + Math.sin(t * 1.5 + 1) * 0.05;
     const ub = upper(buyer); if (ub) ub.rotation.z = k * Math.sin(t * 5) * 0.15;
     tickChildren(g)(t, dt);
@@ -207,8 +210,9 @@ export function vinegarWorkshop(): P {
   signBoard(g, 0.55, 0.75, -2.9, 1.8, 2.1, "醋");                     // 醋 sign
   const re = reaction(0.7);
   g.userData.poke = () => { re.poke(); bubble(master, "山西老陈醋, 酸得香! Shanxi aged vinegar", 1.6, 1600); };
+  const chat = ambientChat(g, NORTH_LINES);
   g.userData.tick = (t, dt) => {
-    const k = re.step(dt);
+    const k = re.step(dt); hopFood(g, k, t, dt); chat(dt);
     const um = upper(master); if (um) { um.rotation.x = 0.25 * (1 - k) + Math.sin(t * 1.2) * 0.04; um.rotation.z = k * Math.sin(Math.min(1, k * 2) * Math.PI) * 0.3; }
     const uh = upper(helper); if (uh) uh.rotation.x = 0.3 + Math.sin(t * 1.6) * 0.1 * (1 + k * 0.3);
     rake.rotation.y = Math.sin(t * 1) * 0.5 * (0.3 + k);
@@ -245,8 +249,9 @@ export function roastDuckShop(): P {
   g.userData.smoke = new THREE.Vector3(1.6, 2.0, 0.4);
   const re = reaction(0.6);
   g.userData.poke = () => { re.poke(); bubble(g, "枣木烤鸭, 皮脆肉嫩! Crisp skin, jujube wood", 2.9, 1600); };
+  const chat = ambientChat(g, NORTH_LINES);
   g.userData.tick = (t, dt) => {
-    const k = re.step(dt);
+    const k = re.step(dt); hopFood(g, k, t, dt); chat(dt);
     ducks.forEach((d, i) => { d.rotation.z = Math.sin(t * 1.1 + i) * 0.04 + k * Math.sin(t * 5 + i) * 0.3; d.rotation.y = k * Math.sin(t * 3 + i) * 0.6; });
     glow.scale.setScalar((0.9 + Math.sin(t * 9) * 0.1) * (1 + k * 0.4)); mouth.visible = true;
     knife.rotation.x = k * Math.sin(t * 12) * 0.5 + 0.2; const uc = upper(carver); if (uc) uc.rotation.x = 0.3 + k * Math.abs(Math.sin(t * 12)) * 0.1;
@@ -280,8 +285,9 @@ export function skewerCourtyard(): P {
   g.userData.smoke = new THREE.Vector3(0, 1.3, -1.4);
   const re = reaction(0.6);
   g.userData.poke = () => { re.poke(); bubble(griller, "羊肉串, 多放孜然! Lamb skewers, extra cumin", 1.6, 1600); };
+  const chat = ambientChat(g, NORTH_LINES);
   g.userData.tick = (t, dt) => {
-    const k = re.step(dt);
+    const k = re.step(dt); hopFood(g, k, t, dt); chat(dt);
     skewers.forEach((s, i) => { s.rotation.z = Math.floor(t * 0.5 + i * 0.3) * Math.PI + k * (Math.sin(t * 8 + i) * 0.6); s.position.y = 1.1 + k * Math.abs(Math.sin(t * 10 + i)) * 0.08; });
     embers.material = embers.material; (embers.material as THREE.MeshStandardMaterial).emissive = new THREE.Color(k > 0.05 ? "#ff8a40" : "#552200");
     fan.rotation.x = Math.sin(t * 2) * 0.5; const ug = upper(griller); if (ug) ug.rotation.x = 0.2 + k * Math.abs(Math.sin(t * 3)) * 0.06;
@@ -311,8 +317,9 @@ export function bingStall(): P {
   g.userData.steam = new THREE.Vector3(0.7, 1.2, -0.1);
   const re = reaction(0.7);
   g.userData.poke = () => { re.poke(); bubble(baker, "肉夹馍, 现烤现夹! Roujiamo, baked and filled to order", 1.6, 1600); };
+  const chat = ambientChat(g, NORTH_LINES);
   g.userData.tick = (t, dt) => {
-    const k = re.step(dt);
+    const k = re.step(dt); hopFood(g, k, t, dt); chat(dt);
     breads.forEach((b, i) => { b.position.y = 1.0 + k * Math.max(0, Math.sin(t * 9 + i * 1.3)) * 0.2; b.rotation.y = k * Math.sin(t * 5 + i) * 0.6; b.rotation.x = k * Math.sin(t * 9 + i * 1.3) * 0.4; });
     stack.forEach((s, i) => { s.position.y = 0.9 + i * 0.05 + k * Math.abs(Math.sin(t * 10 + i)) * 0.02; });
     const ub = upper(baker); if (ub) ub.rotation.x = 0.25 + Math.sin(t * 2) * 0.08 * (1 + k * 0.3);
@@ -347,8 +354,9 @@ export function harvestField(): P {
   const driver = add(cart, person("#c0392b", { hat: true }), -0.9, 0.85, 0) as Fig; driver.scale.setScalar(0.85);
   const re = reaction(0.5);
   g.userData.poke = () => { re.poke(); bubble(g, "麦浪! The wheat is in", 1.8, 1500); };
+  const chat = ambientChat(g, NORTH_LINES);
   g.userData.tick = (t, dt) => {
-    const k = re.step(dt);
+    const k = re.step(dt); hopFood(g, k, t, dt); chat(dt);
     stalks.forEach((st) => { st.rotation.z = Math.sin(t * 1.3 + st.position.x * 1.1 + st.position.z * 0.5) * 0.06 + k * Math.sin((1 - k) * 12 - st.position.x * 1.2) * 0.45; });
     reapers.forEach((r, i) => { const u = upper(r); if (u) { u.rotation.x = 0.4 + Math.sin(t * 1.2 + i) * 0.12 * (1 + k * 0.3); } const a = arms(r); if (a) a.right.rotation.x = -0.6 + Math.sin(t * 1.2 + i) * 0.5; });
     ox.position.y = Math.abs(Math.sin(t * 1.6)) * 0.02; const ud = upper(driver); if (ud) ud.rotation.z = Math.sin(t * 1.6) * 0.05;
@@ -383,8 +391,9 @@ export function hutongLane(): P {
   add(g, cyl(0.16, 0.16, 0.3, "#5c3a28", 9), -3.4, 0.15, -0.9);                       // a pickle crock
   const re = reaction(0.6);
   g.userData.poke = () => { re.poke(); bubble(talkers[0], "吃了吗? Have you eaten?", 1.6, 1600); };
+  const chat = ambientChat(g, NORTH_LINES);
   g.userData.tick = (t, dt) => {
-    const k = re.step(dt);
+    const k = re.step(dt); hopFood(g, k, t, dt); chat(dt);
     cloths.forEach((m, i) => { m.rotation.x = Math.sin(t * 2.2 + i * 1.3) * 0.25 * (1 + k * 0.3) + 0.1; });
     talkers.forEach((p, i) => { const u = upper(p); if (u) { u.rotation.z = Math.sin(t * 1.2 + i * 2) * 0.06 + k * Math.sin(t * 6 + i) * 0.15; u.rotation.x = k * 0.15; } });
     const ug = upper(granny); if (ug) ug.rotation.x = 0.2 + Math.sin(t * 1.4) * 0.05;
@@ -424,8 +433,9 @@ export function northMarket(): P {
   const shoppers = [person("#c0392b"), person("#e9d7b8"), person("#2f5d3f")].map((p, i) => { const q = add(g, p, -0.6 + i * 1.1, 0, 0.9 + (i % 2) * 0.5); q.rotation.y = Math.PI + (i - 1) * 0.3; q.scale.setScalar(i === 2 ? 0.65 : 0.95); return q as Fig; });
   const re = reaction(0.6);
   g.userData.poke = () => { re.poke(); bubble(seller, "大白菜, 冬储的! Winter cabbage, stock up!", 1.6, 1600); };
+  const chat = ambientChat(g, NORTH_LINES);
   g.userData.tick = (t, dt) => {
-    const k = re.step(dt);
+    const k = re.step(dt); hopFood(g, k, t, dt); chat(dt);
     const us = upper(seller); if (us) { us.rotation.z = Math.sin(t * 1.1) * 0.05 + k * Math.sin(t * 6) * 0.2; } const a = arms(seller); if (a) a.right.rotation.x = -0.4 - k * 1.6;
     shoppers.forEach((p, i) => { const u = upper(p); if (u) u.rotation.z = Math.sin(t * 0.9 + i * 1.7) * 0.05 + k * Math.sin(t * 5 + i) * 0.1; });
     cart.rotation.z = k * Math.sin(t * 8) * 0.02; const uc = upper(carter); if (uc) uc.rotation.x = 0.2 + k * 0.2;
@@ -469,7 +479,8 @@ export function cabbagePile(): P {
   const child = add(g, person("#e0a52c"), 0.4, 0, 1.4) as Fig; child.scale.setScalar(0.7); child.rotation.y = Math.PI;
   const re = reaction(0.5);
   g.userData.poke = () => { re.poke(); bubble(child, "冬储大白菜 A hundred cabbages for the winter!", 1.3, 1600); };
-  g.userData.tick = (t, dt) => { const k = re.step(dt); const u = upper(child); if (u) { u.rotation.z = Math.sin(t * 1.5) * 0.06 + k * Math.sin(t * 8) * 0.25; } const a = arms(child); if (a) a.right.rotation.x = -0.4 - k * 1.6; tickChildren(g)(t, dt); };
+  const chat = ambientChat(g, NORTH_LINES);
+  g.userData.tick = (t, dt) => { const k = re.step(dt); hopFood(g, k, t, dt); chat(dt); const u = upper(child); if (u) { u.rotation.z = Math.sin(t * 1.5) * 0.06 + k * Math.sin(t * 8) * 0.25; } const a = arms(child); if (a) a.right.rotation.x = -0.4 - k * 1.6; tickChildren(g)(t, dt); };
   return g;
 }
 
@@ -483,7 +494,8 @@ export function sheepPen(): P {
   add(g, cyl(0.02, 0.02, 1.0, "#c9a86a", 4), 2.35, 0.8, 0.4).rotation.z = 0.5;
   const re = reaction(0.5);
   g.userData.poke = () => { re.poke(); bubble(boy, "咩~ Baa! Mutton for the winter pot", 1.7, 1500); };
-  g.userData.tick = (t, dt) => { const k = re.step(dt); sheep.forEach((sh, i) => { sh.position.y = k * Math.abs(Math.sin(t * 6 + i)) * 0.25; sh.children[1].rotation.z = Math.sin(t * 1.2 + i) * 0.15 - 0.2; }); tickChildren(g)(t, dt); };
+  const chat = ambientChat(g, NORTH_LINES);
+  g.userData.tick = (t, dt) => { const k = re.step(dt); hopFood(g, k, t, dt); chat(dt); sheep.forEach((sh, i) => { sh.position.y = k * Math.abs(Math.sin(t * 6 + i)) * 0.25; sh.children[1].rotation.z = Math.sin(t * 1.2 + i) * 0.15 - 0.2; }); tickChildren(g)(t, dt); };
   return g;
 }
 
@@ -497,7 +509,8 @@ export function milletPatch(): P {
   add(g, cyl(0.28, 0.3, 0.5, "#e6dcc4", 9), 2.1, 0.25, -0.6); add(g, cyl(0.24, 0.24, 0.04, "#e8c95a", 12), 2.1, 0.52, -0.6);   // a sack of hulled millet
   const re = reaction(0.5);
   g.userData.poke = () => { re.poke(); bubble(g, "小米粥 Millet porridge, the north's breakfast", 2.2, 1600); };
-  g.userData.tick = (t, dt) => { const k = re.step(dt); heads.forEach((h, i) => { h.rotation.x = Math.sin(t * 1.4 + i * 0.7) * 0.08 * (1 + k * 3); }); };
+  const chat = ambientChat(g, NORTH_LINES);
+  g.userData.tick = (t, dt) => { const k = re.step(dt); hopFood(g, k, t, dt); chat(dt); heads.forEach((h, i) => { h.rotation.x = Math.sin(t * 1.4 + i * 0.7) * 0.08 * (1 + k * 3); }); };
   return g;
 }
 
@@ -512,7 +525,8 @@ export function jujubeTree(): P {
   const falling: { m: THREE.Object3D; t: number }[] = [];
   const re = reaction(0.5);
   g.userData.poke = () => { re.poke(); for (let i = 0; i < 6; i++) { const m = add(g, ball(0.06, "#c9432e", 5), (rnd() - 0.5) * 1.4, 1.9, (rnd() - 0.5) * 1.2); falling.push({ m, t: 0 }); } bubble(g, "红枣 Red dates: sweet, and in every winter soup", 3.2, 1600); };
-  g.userData.tick = (t, dt) => { const k = re.step(dt); crown.rotation.z = Math.sin(t * 0.9) * 0.02 + k * Math.sin(t * 9) * 0.05; dates.forEach((d, i) => { d.position.y += Math.sin(t * 2 + i) * 0.0008; }); for (let i = falling.length - 1; i >= 0; i--) { const f = falling[i]; f.t += dt; f.m.position.y = Math.max(0.06, 1.9 - f.t * f.t * 4); if (f.t > 3) { g.remove(f.m); falling.splice(i, 1); } } };
+  const chat = ambientChat(g, NORTH_LINES);
+  g.userData.tick = (t, dt) => { const k = re.step(dt); hopFood(g, k, t, dt); chat(dt); crown.rotation.z = Math.sin(t * 0.9) * 0.02 + k * Math.sin(t * 9) * 0.05; dates.forEach((d, i) => { d.position.y += Math.sin(t * 2 + i) * 0.0008; }); for (let i = falling.length - 1; i >= 0; i--) { const f = falling[i]; f.t += dt; f.m.position.y = Math.max(0.06, 1.9 - f.t * f.t * 4); if (f.t > 3) { g.remove(f.m); falling.splice(i, 1); } } };
   return g;
 }
 
@@ -526,7 +540,8 @@ export function scallionBed(): P {
   add(g, cyl(0.02, 0.025, 0.5, "#6fae4f", 5), 2.1, 1.1, 1.1).rotation.x = -0.6;
   const re = reaction(0.5);
   g.userData.poke = () => { re.poke(); bubble(man, "大葱蘸酱 A raw scallion, bean paste, a bing. Lunch.", 1.7, 1600); };
-  g.userData.tick = (t, dt) => { const k = re.step(dt); const a = arms(man); if (a) a.right.rotation.x = -1.6 + k * Math.sin(t * 6) * 0.4; const u = upper(man); if (u) u.rotation.z = Math.sin(t * 0.8) * 0.04; tickChildren(g)(t, dt); };
+  const chat = ambientChat(g, NORTH_LINES);
+  g.userData.tick = (t, dt) => { const k = re.step(dt); hopFood(g, k, t, dt); chat(dt); const a = arms(man); if (a) a.right.rotation.x = -1.6 + k * Math.sin(t * 6) * 0.4; const u = upper(man); if (u) u.rotation.z = Math.sin(t * 0.8) * 0.04; tickChildren(g)(t, dt); };
   return g;
 }
 
@@ -557,8 +572,9 @@ export function courtyardKitchen(): P {
   g.userData.smoke = new THREE.Vector3(2.5, 2.3, -1.9);
   const re = reaction(0.5);
   g.userData.poke = () => { re.poke(); bubble(cook, "一锅到底 One wok, the whole winter", 1.8, 1600); };
+  const chat = ambientChat(g, NORTH_LINES);
   g.userData.tick = (t, dt) => {
-    const k = re.step(dt);
+    const k = re.step(dt); hopFood(g, k, t, dt); chat(dt);
     const a = arms(cook); if (a) a.right.rotation.x = -1.1 + Math.sin(t * 2.5) * 0.3;
     const u = upper(cook); if (u) u.rotation.x = 0.2 + Math.sin(t * 2.5) * 0.03;
     wok.rotation.z = Math.sin(t * 2.5) * 0.02 * (1 + k * 3);

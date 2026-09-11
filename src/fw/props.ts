@@ -21,6 +21,39 @@ export function reaction(rate = 1.1) {
   return { poke: () => { k = 1; }, step: (dt: number) => { k = Math.max(0, k - dt * rate); return k; }, get k() { return k; } };
 }
 
+/** colours that mean "food on a table" in the regional props: dough, breads, buns, dumplings, melons, grapes, apricots, cabbage, duck, bowls */
+const FOOD_COLORS = new Set(["#f7f1e3", "#f0e2c4", "#d9a05a", "#e8b874", "#e6d27a", "#a9c87a", "#c9d99a", "#b9d28a", "#e6ecc8", "#e8a53f", "#a04a1e", "#f7f2e6", "#e9c98a", "#c9713a", "#f1e6c8", "#d94f3a", "#c98a6a", "#e6d2f0", "#f3ece0", "#fbf5e8"]);   // (no vine leaves or hanging grapes: those are scenery, not the table)
+type Food = { m: THREE.Mesh; y: number; rz: number };
+/** on a tap the food on the tables jumps and turns in the air; the people keep their own rhythm. Foods are found once by colour and size, never inside a person. */
+export function hopFood(g: THREE.Object3D, k: number, t: number, dt: number): void {
+  let foods = (g.userData as { _foods?: Food[] })._foods;
+  if (!foods) {
+    foods = [];
+    g.traverse((o) => {
+      if (!(o instanceof THREE.Mesh)) return;
+      const m = o.material as THREE.MeshStandardMaterial; if (!m || !m.color) return;
+      if (!FOOD_COLORS.has("#" + m.color.getHexString())) return;
+      for (let a: THREE.Object3D | null = o.parent; a; a = a.parent) if ((a.userData as { upper?: unknown }).upper) return;   // part of a person
+      o.geometry.computeBoundingSphere(); const r = (o.geometry.boundingSphere?.radius ?? 1) * Math.max(o.scale.x, o.scale.y, o.scale.z);
+      if (r > 0.5) return;
+      foods!.push({ m: o, y: o.position.y, rz: o.rotation.z });
+    });
+    (g.userData as { _foods?: Food[] })._foods = foods;
+  }
+  if (k < 0.01) { for (const f of foods) { f.m.position.y = f.y; f.m.rotation.z = f.rz; } return; }
+  foods.forEach((f, i) => { const hop = k * Math.abs(Math.sin(t * 5 + i * 0.7)); f.m.position.y = f.y + hop * 0.35; f.m.rotation.y += dt * 8 * k; f.m.rotation.z = f.rz + k * Math.sin(t * 5 + i * 0.7) * 0.8; });
+}
+/** ambient talk: every so often one of the people in the prop says a line from the region's pool (the Sichuan family table does this) */
+export function ambientChat(g: THREE.Object3D, lines: string[]): (dt: number) => void {
+  let next = 6 + rnd() * 12; let people: THREE.Object3D[] | null = null;
+  return (dt) => {
+    next -= dt; if (next > 0) return; next = 10 + rnd() * 14;
+    if (!people) { people = []; g.traverse((o) => { if ((o.userData as { upper?: unknown }).upper) people!.push(o); }); }
+    if (!people.length || !lines.length) return;
+    bubble(people[Math.floor(rnd() * people.length)], lines[Math.floor(rnd() * lines.length)], 1.55, 1600);
+  };
+}
+
 export const mat = (color: string, extra: Partial<THREE.MeshStandardMaterialParameters> = {}) =>
   new THREE.MeshStandardMaterial({ color, flatShading: true, roughness: 0.9, metalness: 0, ...extra });
 export const smooth = (color: string, extra: Partial<THREE.MeshStandardMaterialParameters> = {}) =>

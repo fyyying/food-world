@@ -62,7 +62,7 @@ export function kebabGrill(): P {
     add(g, box(1.4, 0.08, 0.7, WOOD), x, 0.5, z); for (const [dx, dz] of [[-0.6, -0.25], [0.6, -0.25], [-0.6, 0.25], [0.6, 0.25]]) add(g, box(0.07, 0.5, 0.07, WOOD), x + dx, 0.25, z + dz);
     add(g, box(1.2, 0.02, 0.5, "#b8462a"), x, 0.55, z); for (let i = 0; i < 3; i++) add(g, cyl(0.05, 0.04, 0.08, TURQ, 8), x - 0.3 + i * 0.3, 0.6, z);
     add(g, cyl(0.12, 0.09, 0.14, "#8a6a3a", 8), x + 0.45, 0.62, z - 0.15);
-    for (let i = 0; i < 2; i++) { const p = person(pick(["#c0392b", "#2f5f9a", "#e0a52c", "#3f9aa3"])); (p.userData as { sit?: () => void }).sit?.(); const q = add(g, p, x, 0.26, z + (i ? 0.85 : -0.85)); q.rotation.y = i ? Math.PI : 0; add(g, box(1.2, 0.06, 0.3, WOOD), x, 0.38, z + (i ? 0.85 : -0.85)); guests.push(q as Fig); }
+    for (let i = 0; i < 2; i++) { const p = person(pick(["#c0392b", "#2f5f9a", "#e0a52c", "#3f9aa3"])); (p.userData as { sit?: () => void }).sit?.(); const q = add(g, p, x, -0.03, z + (i ? 0.85 : -0.85)); q.rotation.y = i ? Math.PI : 0; add(g, box(1.2, 0.06, 0.3, WOOD), x, 0.38, z + (i ? 0.85 : -0.85)); guests.push(q as Fig); }
   }
   g.userData.smoke = new THREE.Vector3(-0.6, 1.3, -1.5);
   const re = reaction(0.6);
@@ -157,7 +157,7 @@ export function laghmanShop(): P {
   const diners: Fig[] = [];
   add(g, box(1.5, 0.08, 0.9, WOOD), -1.4, 0.72, 3.0); for (const [dx, dz] of [[-0.6, -0.35], [0.6, -0.35], [-0.6, 0.35], [0.6, 0.35]]) add(g, box(0.08, 0.7, 0.08, WOOD), -1.4 + dx, 0.35, 3.0 + dz);
   for (const x of [-1.85, -0.95]) { add(g, cyl(0.2, 0.15, 0.12, TURQ, 10), x, 0.82, 3.0); add(g, cyl(0.17, 0.17, 0.02, "#e9dcb8", 10), x, 0.89, 3.0); for (let i = 0; i < 4; i++) add(g, ball(0.035, i % 2 ? "#d94f3a" : "#6f9b57", 4), x + (rnd() - 0.5) * 0.2, 0.92, 3.0 + (rnd() - 0.5) * 0.2); }
-  [-2.3, -0.5].forEach((x, i) => { const p = person(i ? "#e0a52c" : "#2f5f9a"); (p.userData as { sit?: () => void }).sit?.(); const q = add(g, p, x, 0.32, 3.0); q.rotation.y = i ? -Math.PI / 2 : Math.PI / 2; diners.push(q as Fig); });
+  [-2.3, -0.5].forEach((x, i) => { const p = person(i ? "#e0a52c" : "#2f5f9a"); (p.userData as { sit?: () => void }).sit?.(); add(g, box(0.4, 0.3, 0.4, WOOD), x, 0.15, 3.0); const q = add(g, p, x, -0.14, 3.0); q.rotation.y = i ? -Math.PI / 2 : Math.PI / 2; diners.push(q as Fig); });
   g.userData.steam = new THREE.Vector3(1.9, 1.45, 0.3);
   const re = reaction(0.5);
   g.userData.poke = () => { re.poke(); bubble(puller, "Leghmen! 拉条子", 1.6, 1500); };
@@ -212,7 +212,7 @@ export function grapeCourtyard(): P {
   add(g, cyl(0.24, 0.24, 0.04, BREAD, 14), 0.5, 0.48, 0.2); add(g, ball(0.14, "#a9c87a", 8), 0.2, 0.55, 0.55).scale.y = 0.7;
   for (let i = 0; i < 6; i++) add(g, ball(0.03, i % 2 ? "#e8a53f" : "#8a4a30", 4), 0.8 + (i % 3) * 0.08, 0.5, 0.55 + Math.floor(i / 3) * 0.08);   // dried apricots and raisins
   const family: Fig[] = [];
-  for (const [x, z, col, s] of [[-1.5, 0.3, "#c0392b", 1], [1.5, 0.2, "#2f5f9a", 1], [0, 1.5, "#e0a52c", 0.65], [-0.7, 1.4, "#3f9aa3", 0.6]] as [number, number, string, number][]) { const p = person(col); (p.userData as { sit?: () => void }).sit?.(); const q = add(g, p, x, 0.05, z); q.scale.setScalar(s); q.rotation.y = Math.atan2(0 - x, 0.2 - z); add(g, box(0.5, 0.06, 0.5, i2c(col)), x, 0.03, z); family.push(q as Fig); }
+  for (const [x, z, col, s] of [[-1.5, 0.3, "#c0392b", 1], [1.5, 0.2, "#2f5f9a", 1], [0, 1.5, "#e0a52c", 0.65], [-0.7, 1.4, "#3f9aa3", 0.6]] as [number, number, string, number][]) { const p = person(col); (p.userData as { sit?: () => void }).sit?.(); const q = add(g, p, x, 0.25 - 0.44 * s, z); q.scale.setScalar(s); q.rotation.y = Math.atan2(0 - x, 0.2 - z); add(g, box(0.5, 0.06, 0.5, i2c(col)), x, 0.03, z); family.push(q as Fig); }
   add(g, poplar(0.8), 2.8, 0, -1.6);
   const re = reaction(0.5);
   g.userData.poke = () => { re.poke(); bubble(g, "Qeni, chay iching! 请喝茶", 2.6, 1600); };
@@ -262,7 +262,7 @@ export function chaikhana(): P {
   for (let i = 0; i < 4; i++) add(g, cyl(0.06, 0.05, 0.05, i % 2 ? TURQ : CREAM, 8), -0.4 + i * 0.27, 0.78, 1.3);
   add(g, cyl(0.2, 0.2, 0.04, BREAD, 14), 0.4, 0.77, 0.7); for (let i = 0; i < 6; i++) add(g, ball(0.03, i % 2 ? "#e8a53f" : "#c9a86a", 4), -0.5 + (i % 3) * 0.08, 0.78, 0.7 + Math.floor(i / 3) * 0.08);
   const guests: Fig[] = [];
-  for (const [x, z, col] of [[-1.3, 0.6, "#c0392b"], [1.3, 0.6, "#2f5f9a"], [-1.2, 1.6, "#e0a52c"], [1.2, 1.6, "#3f9aa3"]] as [number, number, string][]) { const p = person(col); (p.userData as { sit?: () => void }).sit?.(); const q = add(g, p, x, 0.5, z); q.rotation.y = Math.atan2(0 - x, 1.0 - z); guests.push(q as Fig); }
+  for (const [x, z, col] of [[-1.3, 0.6, "#c0392b"], [1.3, 0.6, "#2f5f9a"], [-1.2, 1.6, "#e0a52c"], [1.2, 1.6, "#3f9aa3"]] as [number, number, string][]) { const p = person(col); (p.userData as { sit?: () => void }).sit?.(); const q = add(g, p, x, 0.2, z); q.rotation.y = Math.atan2(0 - x, 1.0 - z); guests.push(q as Fig); }
   add(g, cyl(0.2, 0.22, 0.5, "#b87333", 10), 2.4, 0.7, 0.2); add(g, cyl(0.06, 0.06, 0.4, "#b87333", 6), 2.4, 1.1, 0.2);   // the samovar
   g.userData.steam = new THREE.Vector3(2.4, 1.35, 0.2);
   const re = reaction(0.5);
@@ -286,7 +286,7 @@ export function caravanStop(): P {
   for (let i = 0; i < 5; i++) add(g, cyl(0.26, 0.3, 0.5, ["#e6dcc4", "#b8462a", "#2f5f9a", "#e6dcc4", "#c9a86a"][i], 9), -2.6 + (i % 3) * 0.6, 0.25 + Math.floor(i / 3) * 0.5, -1.2 + (i % 3) * 0.2);   // sacks and bales
   add(g, box(0.8, 0.4, 0.5, "#8a5a3a"), -2.8, 0.2, 0.6); add(g, box(0.8, 0.4, 0.5, "#8a5a3a"), -2.7, 0.62, 0.65);   // tea bricks
   const travellers: Fig[] = [];
-  for (const [x, z, col] of [[-1.4, 1.4, "#c0392b"], [0.3, 1.5, "#2f5f9a"], [-1.5, -0.3, "#e9d7b8"]] as [number, number, string][]) { const p = person(col, { hat: col === "#e9d7b8" }); (p.userData as { sit?: () => void }).sit?.(); const q = add(g, p, x, 0.05, z); q.rotation.y = Math.atan2(-0.6 - x, 0.6 - z); travellers.push(q as Fig); }
+  for (const [x, z, col] of [[-1.4, 1.4, "#c0392b"], [0.3, 1.5, "#2f5f9a"], [-1.5, -0.3, "#e9d7b8"]] as [number, number, string][]) { const p = person(col, { hat: col === "#e9d7b8" }); (p.userData as { sit?: () => void }).sit?.(); const q = add(g, p, x, -0.12, z); q.rotation.y = Math.atan2(-0.6 - x, 0.6 - z); travellers.push(q as Fig); }
   const trader = add(g, person("#3f9aa3"), 1.0, 0, -1.6) as Fig; trader.rotation.y = 2.6;
   for (let i = 0; i < 3; i++) add(g, cyl(0.2, 0.2, 0.04, BREAD, 12), -0.2 + i * 0.05, 0.14 + i * 0.045, 1.6);
   add(g, poplar(0.9), 3.2, 0, -1.9); add(g, poplar(0.7), -3.3, 0, 1.9);
@@ -351,9 +351,9 @@ export function eveningFeast(): P {
   for (let i = 0; i < 3; i++) add(g, ball(0.16, i % 2 ? "#a9c87a" : "#e6d27a", 8), 1.4 + i * 0.3, 0.62, -0.25).scale.set(1.3, 0.9, 1);   // melon
   const guests: Fig[] = [];
   for (const [x, z, col] of [[-1.6, -1.3, "#c0392b"], [-0.4, -1.3, "#2f5f9a"], [0.8, -1.3, "#e0a52c"], [-1.2, 1.3, "#3f9aa3"], [0.2, 1.3, "#8a4a8a"], [1.5, 1.3, "#e9d7b8"]] as [number, number, string][]) {
-    const p = person(col); (p.userData as { sit?: () => void }).sit?.(); const q = add(g, p, x, 0.12, z); q.rotation.y = z < 0 ? 0 : Math.PI; guests.push(q as Fig);
+    const p = person(col); (p.userData as { sit?: () => void }).sit?.(); const q = add(g, p, x, -0.14, z); q.rotation.y = z < 0 ? 0 : Math.PI; guests.push(q as Fig);
   }
-  guests[2].scale.setScalar(0.75); guests[4].scale.setScalar(0.75);   // two children
+  for (const c of [guests[2], guests[4]]) { c.scale.setScalar(0.75); c.position.y = -0.03; }   // two children, feet still on the carpet
   const lamps = [-2.4, 2.4].map((x) => { const l = new THREE.Group(); l.position.set(x, 2.4, 0); g.add(l); add(l, cyl(0.02, 0.02, 0.3, WOOD, 4), 0, -0.15, 0); const b = add(l, ball(0.16, "#ffb35a", 8), 0, -0.42, 0); b.scale.y = 1.3; return l; });
   add(g, poplar(0.8), 3.9, 0, -2.2);
   const re = reaction(0.5);

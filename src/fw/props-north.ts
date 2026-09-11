@@ -49,7 +49,7 @@ export function dumplingHouse(): P {
   // diners at a sturdy table outside with vinegar bowls and garlic
   add(g, box(1.4, 0.08, 0.9, C.wood), -1.6, 0.72, 3.0); for (const [dx, dz] of [[-0.6, -0.35], [0.6, -0.35], [-0.6, 0.35], [0.6, 0.35]]) add(g, box(0.08, 0.7, 0.08, C.woodDark), -1.6 + dx, 0.35, 3.0 + dz);
   add(g, cyl(0.16, 0.13, 0.05, "#f7f2e6", 9), -1.9, 0.79, 3.0); add(g, cyl(0.1, 0.08, 0.05, "#3b2a1e", 8), -1.3, 0.79, 2.85); add(g, ball(0.06, "#f4ecdc", 6), -1.35, 0.8, 3.2);
-  const diners = [-2.4, -0.8].map((x, i) => { const p = person(i ? "#c0392b" : "#2f5d3f"); (p.userData as { sit?: () => void }).sit?.(); const q = add(g, p, x, 0.32, 3.0); q.rotation.y = i ? -Math.PI / 2 : Math.PI / 2; return q as Fig; });
+  const diners = [-2.4, -0.8].map((x, i) => { const p = person(i ? "#c0392b" : "#2f5d3f"); (p.userData as { sit?: () => void }).sit?.(); add(g, box(0.4, 0.3, 0.4, C.woodDark), x, 0.15, 3.0); const q = add(g, p, x, -0.14, 3.0); q.rotation.y = i ? -Math.PI / 2 : Math.PI / 2; return q as Fig; });
   add(g, box(0.6, 0.8, 0.05, "#f3e6c8"), 2.5, 1.9, 0.45);                      // 饺 sign
   add(g, lantern(0.8), -2.2, 1.95, 0.6); add(g, lantern(0.8), 2.2, 1.95, 0.6);
   g.userData.steam = new THREE.Vector3(2.3, 1.45, 0.2);
@@ -81,25 +81,32 @@ export function noodleWorkshop(): P {
   add(g, box(1.0, 0.8, 1.0, BRICK), 1.9, 0.4, 0.5); add(g, cone(0.12, 0.16, "#ff7a3c", 6), 1.9, 0.35, 1.05);
   add(g, cyl(0.42, 0.36, 0.42, C.iron, 12), 1.9, 1.0, 0.5); add(g, cyl(0.38, 0.38, 0.03, "#e9dcb8", 12), 1.9, 1.2, 0.5);
   const shaver = add(g, person("#7a4a3a", { apron: true }), 1.9, 0, 1.3) as Fig; shaver.rotation.y = Math.PI;
-  const slab = add(upper(shaver)!, box(0.5, 0.18, 0.2, DOUGH), -0.25, 0.35, 0);
+  // the dough for knife-cut noodles: a loaf on a small board held in the left hand, the right hand shaving off it
+  const slab = new THREE.Group(); slab.position.set(0, -0.36, 0.06); arms(shaver)!.left.add(slab);
+  add(slab, box(0.34, 0.02, 0.2, C.woodDark), 0, 0, 0); add(slab, ball(0.12, DOUGH, 8), 0, 0.07, 0).scale.set(1.35, 0.6, 0.8);
   const flakes = Array.from({ length: 6 }, () => { const f = add(g, box(0.16, 0.02, 0.05, DOUGH), 1.9, 1.3, 0.7); f.visible = false; return { m: f, t: -1 }; });
   // diners with big bowls, a vinegar jar and garlic on the table
   add(g, box(1.4, 0.08, 0.9, C.wood), -1.4, 0.72, 3.0); for (const [dx, dz] of [[-0.6, -0.35], [0.6, -0.35], [-0.6, 0.35], [0.6, 0.35]]) add(g, box(0.08, 0.7, 0.08, C.woodDark), -1.4 + dx, 0.35, 3.0 + dz);
   for (const x of [-1.8, -1.0]) { add(g, cyl(0.2, 0.15, 0.14, "#f7f2e6", 10), x, 0.83, 3.0); add(g, cyl(0.16, 0.16, 0.02, "#d9a441", 10), x, 0.9, 3.0); }
   add(g, cyl(0.1, 0.09, 0.2, "#3b2a1e", 8), -1.4, 0.86, 2.65);
-  const diners = [-2.2, -0.6].map((x, i) => { const p = person(i ? "#e0a52c" : "#6a7fb0"); (p.userData as { sit?: () => void }).sit?.(); const q = add(g, p, x, 0.32, 3.0); q.rotation.y = i ? -Math.PI / 2 : Math.PI / 2; return q as Fig; });
+  const diners = [-2.2, -0.6].map((x, i) => { const p = person(i ? "#e0a52c" : "#6a7fb0"); (p.userData as { sit?: () => void }).sit?.(); add(g, box(0.4, 0.3, 0.4, C.woodDark), x, 0.15, 3.0); const q = add(g, p, x, -0.14, 3.0); q.rotation.y = i ? -Math.PI / 2 : Math.PI / 2; return q as Fig; });
   add(g, box(0.6, 0.8, 0.05, "#f3e6c8"), 1.6, 1.5, -0.16);                     // 面 sign on the front wall
   g.userData.steam = new THREE.Vector3(1.9, 1.45, 0.5);
   const re = reaction(0.5);
   g.userData.poke = () => { re.poke(); bubble(g, "刀削面, 一根一根飞进锅! Knife-cut, straight into the pot", 2.8, 1700); flakes.forEach((f, i) => { f.t = i * 0.12; }); };
   g.userData.tick = (t, dt) => {
     const k = re.step(dt);
-    const stretch = 1 + k * (0.6 + Math.abs(Math.sin(t * 3)) * 0.8);
-    rope.scale.x = stretch; rope.rotation.z = Math.sin(t * (1.5 + k * 4)) * 0.15 * (1 + k);
-    strands.forEach((s, i) => { s.position.y = Math.sin(t * 6 + i) * 0.03 * (1 + k * 3); });
-    const up = upper(puller); if (up) up.rotation.z = Math.sin(t * (1.5 + k * 4)) * 0.12 * (1 + k);
-    const a = arms(puller); if (a) { a.left.rotation.x = -1.2; a.right.rotation.x = -1.2; a.left.rotation.z = 0.4 + k * 0.5; a.right.rotation.z = -0.4 - k * 0.5; }
-    const us = upper(shaver); if (us) us.rotation.x = 0.2 + k * Math.abs(Math.sin(t * 10)) * 0.2; slab.rotation.z = k * Math.sin(t * 10) * 0.2;
+    // the pull: a slow rhythm (one stretch every ~3 s), arms opening and closing, the rope following the hands; a poke only widens the stretch
+    const pull = 0.5 + 0.5 * Math.sin(t * 2.2);
+    const spread = 0.2 + pull * (0.45 + k * 0.4);
+    const a = arms(puller); if (a) { a.left.rotation.x = -1.1; a.right.rotation.x = -1.1; a.left.rotation.z = spread; a.right.rotation.z = -spread; }
+    rope.scale.x = 0.9 + pull * (0.5 + k * 0.5); rope.rotation.z = Math.sin(t * 2.2) * 0.03;
+    strands.forEach((s, i) => { s.position.y = (i - 2) * 0.02 + Math.sin(t * 2.2 + i) * 0.012 * (1 + k); });
+    const up = upper(puller); if (up) { up.rotation.z = Math.sin(t * 2.2) * 0.03; up.rotation.x = 0.08 + pull * 0.06; }
+    // the shaver: a steady stroke of the right arm over the pot, the body just leaning into it
+    const us = upper(shaver); if (us) us.rotation.x = 0.22 + Math.sin(t * 3) * 0.03 * (1 + k);
+    const as = arms(shaver); if (as) { as.right.rotation.x = -0.9 + Math.sin(t * (3 + k * 1.5)) * 0.35; as.left.rotation.x = -1.35; as.left.rotation.z = 0.25; }
+    slab.rotation.x = 1.35 + Math.sin(t * 3) * 0.03;   // the board stays level in the hand
     flakes.forEach((f) => { if (f.t < 0) { f.m.visible = false; return; } f.t += dt; f.m.visible = true; const a2 = f.t / 0.7; f.m.position.set(1.9 - 0.3 * a2, 1.35 + Math.sin(a2 * Math.PI) * 0.3, 1.1 - 0.6 * a2); f.m.rotation.z = a2 * 6; if (a2 >= 1) f.t = -1; });
     diners.forEach((p, i) => { const u = upper(p); if (u) u.rotation.x = 0.15 + Math.sin(t * 1.3 + i) * 0.05; });
     tickChildren(g)(t, dt);
@@ -190,7 +197,7 @@ export function roastDuckShop(): P {
   add(g, ball(0.08, "#3b2a1e", 6), 0.35, 0.94, 1.15).scale.y = 0.5; for (let i = 0; i < 4; i++) add(g, cyl(0.015, 0.015, 0.25, "#6fae4f", 4), 0.4 + i * 0.05, 0.95, 1.5).rotation.z = 0.3;   // sauce, scallions
   const carver = add(g, person("#f4f1ea", { apron: true, hat: false }), -1.2, 0, 0.35) as Fig;
   const knife = add(arms(carver)!.right, box(0.03, 0.02, 0.28, C.steel), 0.02, -0.32, 0.12);
-  const diners = [-2.6, 2.9].map((x, i) => { const p = person(i ? "#6a7fb0" : "#d97a8a"); (p.userData as { sit?: () => void }).sit?.(); const q = add(g, p, x + (i ? 0.9 : -0.9), 0.32, 2.6); q.rotation.y = i ? -Math.PI / 2 : Math.PI / 2; return q as Fig; });
+  const diners = [-2.6, 2.9].map((x, i) => { const p = person(i ? "#6a7fb0" : "#d97a8a"); (p.userData as { sit?: () => void }).sit?.(); const q = add(g, p, x + (i ? 0.9 : -0.9), -0.11, 2.6); q.rotation.y = i ? -Math.PI / 2 : Math.PI / 2; return q as Fig; });
   for (const x of [-2.6, 2.9]) {   // two small tables on legs, a stool under each diner
     add(g, box(1.2, 0.08, 0.8, C.wood), x, 0.72, 2.6); for (const [dx, dz] of [[-0.5, -0.3], [0.5, -0.3], [-0.5, 0.3], [0.5, 0.3]]) add(g, box(0.07, 0.7, 0.07, C.woodDark), x + dx, 0.35, 2.6 + dz);
     add(g, box(0.5, 0.06, 0.4, C.woodDark), x + (x < 0 ? -0.9 : 0.9), 0.3, 2.6); for (const [dx, dz] of [[-0.18, -0.14], [0.18, -0.14], [-0.18, 0.14], [0.18, 0.14]]) add(g, box(0.05, 0.3, 0.05, C.woodDark), x + (x < 0 ? -0.9 : 0.9) + dx, 0.15, 2.6 + dz);
@@ -229,7 +236,7 @@ export function skewerCourtyard(): P {
     add(g, box(1.3, 0.08, 0.8, C.wood), x, 0.6, z); for (const [dx, dz] of [[-0.55, -0.3], [0.55, -0.3], [-0.55, 0.3], [0.55, 0.3]]) add(g, box(0.07, 0.6, 0.07, C.woodDark), x + dx, 0.3, z + dz);
     for (let i = 0; i < 2; i++) add(g, cyl(0.13, 0.13, 0.02, DOUGH, 10), x - 0.3 + i * 0.5, 0.66, z - 0.15);
     for (let i = 0; i < 3; i++) add(g, cyl(0.04, 0.035, 0.18, "#5a7a3a", 8), x - 0.3 + i * 0.3, 0.73, z + 0.2);
-    for (let i = 0; i < 2; i++) { const p = person(pick(["#c0392b", "#e0a52c", "#6a7fb0", "#2f5d3f"])); (p.userData as { sit?: () => void }).sit?.(); const q = add(g, p, x, 0.28, z + (i ? 0.95 : -0.95)); q.rotation.y = i ? Math.PI : 0; add(g, box(1.2, 0.06, 0.3, C.wood), x, 0.4, z + (i ? 0.95 : -0.95)); guests.push(q as Fig); }
+    for (let i = 0; i < 2; i++) { const p = person(pick(["#c0392b", "#e0a52c", "#6a7fb0", "#2f5d3f"])); (p.userData as { sit?: () => void }).sit?.(); const q = add(g, p, x, -0.01, z + (i ? 0.95 : -0.95)); q.rotation.y = i ? Math.PI : 0; add(g, box(1.2, 0.06, 0.3, C.wood), x, 0.4, z + (i ? 0.95 : -0.95)); guests.push(q as Fig); }
   }
   add(g, cyl(0.05, 0.06, 2.4, C.woodDark, 6), 2.7, 1.2, 1.9); add(g, lantern(0.8), 2.7, 2.2, 1.9);
   g.userData.smoke = new THREE.Vector3(0, 1.3, -1.4);
@@ -330,7 +337,7 @@ export function hutongLane(): P {
   const cloths = ["#3f6b8f", "#f4f1ea", "#c0392b", "#e0a52c"].map((c, i) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(0.45, 0.7, 1, 3), new THREE.MeshStandardMaterial({ color: c, side: THREE.DoubleSide, roughness: 1 })); m.geometry.translate(0, -0.35, 0); m.position.set(1.5, 2.1, -1.0 + i * 0.6); m.rotation.y = Math.PI / 2; m.castShadow = true; g.add(m); return m; });
   // the grandmother on a stool with a basin of beans; two neighbours talking at the gate
   add(g, cyl(0.16, 0.14, 0.32, C.wood, 8), -1.2, 0.16, 0.7);
-  const granny = person("#5a5a66"); (granny.userData as { sit?: () => void }).sit?.(); add(g, granny, -1.2, 0.05, 0.7).rotation.y = -0.4;
+  const granny = person("#5a5a66"); (granny.userData as { sit?: () => void }).sit?.(); add(g, granny, -1.2, -0.12, 0.7).rotation.y = -0.4;
   add(g, cyl(0.28, 0.22, 0.14, "#e9e2d2", 10), -0.7, 0.07, 0.75); for (let i = 0; i < 8; i++) add(g, ball(0.03, "#8fc26a", 4), -0.7 + (rnd() - 0.5) * 0.3, 0.15, 0.75 + (rnd() - 0.5) * 0.3);
   const talkers = [add(g, person("#7a4a3a"), 2.4, 0, 0.5), add(g, person("#e9d7b8"), 3.0, 0, 0.2)] as Fig[]; talkers[0].rotation.y = 0.9; talkers[1].rotation.y = -2.2;
   const kid = add(g, person("#e0a52c"), -3.2, 0, 0.3) as Fig; kid.scale.setScalar(0.6);

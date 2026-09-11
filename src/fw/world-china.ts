@@ -41,7 +41,7 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   group.add(path([[-22, -6], [-14, -6.5], [-6, -5.5], [2, -5], [10, -6], [16, -7.8], [19.3, -5.6], [20.1, -2.4]], 2.6));   // the street: one ribbon from the west end, behind the wine house, down onto the bridge ramp
   group.add(path([[10, -6], [14, -10], [20, -15], [26, -19.5], [28, -23]], 1.8));                    // the gate road up to the north town
   group.add(path([[4, -26.5], [14, -26], [24, -26.5], [32, -26.5], [41, -26.5], [47, -27]], 1.8, "#c9bfa0"));   // the north town street
-  group.add(path([[-29, 6], [-35, 8], [-42, 8.5], [-49, 8.5], [-53.3, 7]], 1.6, "#d3bd8a"));         // the road west to the oasis
+  const westRoad = path([[-29, 6], [-35, 8], [-42, 8.5], [-49, 8.5], [-52.8, 8.2]], 1.6, "#d3bd8a"); westRoad.position.y = 0.004; group.add(westRoad);   // the road west to the oasis, joining the oasis road a hair above it so the two ribbons never z-fight
   group.add(path([[-22, -6], [-26, -1], [-29, 6]], 1.2));
 
   // ---------- mountains: a western wall and a northern backdrop ----------
@@ -58,7 +58,7 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   }
   // the oasis road south from the mountains, with a line of poplars at the western edge
   group.add(path([[-53, -36], [-53.5, -24], [-53, -4], [-53.2, 0.2]], 1.6, "#d3bd8a"));
-  group.add(path([[-53.3, 6], [-53.5, 8], [-52, 14]], 1.6, "#d3bd8a"));
+  group.add(path([[-53.3, 6.8], [-53.5, 9], [-52, 14]], 1.6, "#d3bd8a"));   // starts on dry bank, clear of the river's edge
   for (let i = 0; i < 6; i++) place(poplar(0.9 + (i % 3) * 0.15), -59.6 + (i % 2) * 0.4, -25 + i * 4.4, i);
   for (let i = 0; i < 4; i++) place(poplar(0.8), -46.6, -26 + i * 6, i);
   // pagoda on a hill in the north-west, temple with plaza north-centre, gate at the head of the street

@@ -15,10 +15,15 @@ export function roomSoundSamples(kind: RoomSound, rate: number, random = Math.ra
     const edge = Math.min(1, t / .025, (length - t) / .1);
     let value = 0;
     if (kind === 'purr') {
-      // Throaty harmonics, fluttering at 25 Hz, with a slow breathing envelope.
+      // A short voiced greeting followed by a purr. Keep audible harmonics
+      // above the bass range rather than relying on 100 Hz on small speakers.
       const breath = .45 + .55 * Math.pow(Math.sin(Math.PI * t / 1.3), 2);
       const flutter = .3 + .7 * Math.pow(.5 + .5 * Math.sin(tau * 25 * t), 2);
-      value = (.055 * Math.sin(tau * 100 * t) + .025 * Math.sin(tau * 200 * t) + .055 * low) * breath * flutter;
+      const greeting = t < .7 ? Math.pow(Math.sin(Math.PI * t / .7), 1.5) : 0;
+      phase += tau * (440 + 180 * Math.sin(Math.PI * Math.min(t / .7, 1))) / rate;
+      const voice = .12 * Math.sin(phase) + .055 * Math.sin(2 * phase) + .025 * Math.sin(3 * phase);
+      const rumble = .055 * Math.sin(tau * 100 * t) + .11 * Math.sin(tau * 300 * t) + .075 * Math.sin(tau * 600 * t) + .04 * low;
+      value = voice * greeting + rumble * breath * flutter * (1 - .6 * greeting);
     } else if (kind === 'woof') {
       phase += tau * (160 - 65 * Math.min(1, t / .24)) / rate;
       const voice = Math.sin(phase) + .45 * Math.sin(phase * 2) + .22 * Math.sin(phase * 3);

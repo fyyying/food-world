@@ -2,6 +2,30 @@
 import '/src/fw/style.css';
 import { SCENES } from '/src/fw/scenes-china.ts';
 import { openLivingScene } from '/src/fw/scene.ts';
+// Optional real-browser audio diagnostics: ?room=home_kitchen&portrait&audio
+// Observe the production control's source; do not replace or mock playback.
+if (new URLSearchParams(location.search).has('audio')) {
+  const status = document.createElement('output');
+  status.setAttribute('aria-label', 'Audio diagnostics');
+  status.style.cssText = 'position:fixed;bottom:0;left:0;background:white;color:black;padding:8px;z-index:10001';
+  status.textContent = 'Tap a room control to check audio playback.';
+  document.body.append(status);
+  const NativeContext = window.AudioContext;
+  window.AudioContext = class extends NativeContext {
+    createBufferSource() {
+      const source = super.createBufferSource();
+      const start = source.start.bind(source);
+      source.start = (...args) => {
+        start(...args);
+        const samples = source.buffer.getChannelData(0);
+        const rms = Math.sqrt(samples.reduce((sum, v) => sum + v * v, 0) / samples.length);
+        status.textContent = `Audio started: context ${this.state}, ${source.buffer.duration.toFixed(1)} seconds, RMS ${rms.toFixed(4)}.`;
+      };
+      source.addEventListener('ended', () => { status.textContent += ' Source ended.'; });
+      return source;
+    }
+  };
+}
 const picker = document.createElement('select');
 picker.setAttribute('aria-label', 'Room');
 picker.style.cssText = 'position:fixed;top:12px;left:50%;z-index:10000';

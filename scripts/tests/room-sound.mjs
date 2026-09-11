@@ -21,6 +21,20 @@ try {
     signatures.add(`${samples.length}:${energy.toFixed(6)}`);
   }
   assert.equal(signatures.size, 9, 'distinct sound profiles');
+  // A conservative small-speaker proxy: remove low bass twice at 350 Hz.
+  // This is a signal regression check, not a physical-device listening test.
+  const purr = roomSoundSamples('purr', 44100, () => .5);
+  let low1 = 0, low2 = 0, midEnergy = 0;
+  const alpha = 1 - Math.exp(-2 * Math.PI * 350 / 44100);
+  for (const sample of purr) {
+    low1 += (sample - low1) * alpha;
+    const high1 = sample - low1;
+    low2 += (high1 - low2) * alpha;
+    midEnergy += (high1 - low2) ** 2;
+  }
+  const purrMidRms = Math.sqrt(midEnergy / purr.length);
+  console.log(`Cat response after bass filtering: ${purrMidRms.toFixed(5)} RMS`);
+  assert.ok(purrMidRms >= .018, 'cat response needs a clear midrange voice, not only low bass');
   const contexts = [];
   const session = { type: 'ambient' };
   Object.defineProperty(navigator, 'audioSession', { value: session, configurable: true });

@@ -41,7 +41,7 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   group.add(path([[-22, -6], [-14, -6.5], [-6, -5.5], [2, -5], [10, -6], [18, -8]], 2.6));
   group.add(path([[10, -6], [14, -10], [20, -15], [26, -19.5], [28, -23]], 1.8));                    // the gate road up to the north town
   group.add(path([[4, -26.5], [14, -26], [24, -26.5], [32, -26.5], [41, -26.5], [47, -27]], 1.8, "#c9bfa0"));   // the north town street
-  group.add(path([[16, -8], [19, -4], [20, -0.5]], 1.4));                                            // down to the bridge
+  group.add(path([[18, -8], [19.6, -5.4], [20.1, -2.4]], 1.4));                                      // from the end of the street straight down to the bridge's north ramp, clear of the wine cellar
   group.add(path([[-29, 6], [-35, 8], [-42, 8.5], [-49, 8.5], [-53.3, 7]], 1.6, "#d3bd8a"));         // the road west to the oasis
   group.add(path([[-22, -6], [-26, -1], [-29, 6]], 1.2));
 

@@ -116,6 +116,8 @@ export function lotusPond(): P {
   add(pav, pavilionRoof(1.6, 0.9, C.tile, 6), 0, 2.3, 0);
   add(pav, lantern(0.7), 0, 2.0, 1.0);
   const guests = [person("#e9d7b8"), person("#6a7fb0")].map((p, i) => { (p.userData as { sit?: () => void }).sit?.(); const q = add(pav, p, -0.4 + i * 0.8, 0.32, 0.1); q.rotation.y = i ? -1.6 : 1.6; return q as Fig; });
+  for (const x of [-0.4, 0.4]) add(pav, cyl(0.17, 0.17, 0.44, C.woodDark, 8), x, 0.52, 0.1);
+  add(pav, cyl(0.055, 0.08, 0.52, C.woodDark, 8), 0, 0.56, 0.1);
   add(pav, cyl(0.3, 0.3, 0.06, C.wood, 10), 0, 0.85, 0.1); add(pav, ball(0.08, "#f7f2e6", 6), 0, 0.95, 0.1);
   // a dragonfly on a loop
   const fly = new THREE.Group(); g.add(fly);
@@ -253,12 +255,15 @@ export function riversideRestaurant(): P {
   for (const x of [-1.65, 1.65]) add(g, box(2.1, 0.06, 0.06, C.woodDark), x, 1.2, 2.9);
   for (let i = 0; i < 9; i++) { const x = -2.5 + i * 0.62; if (Math.abs(x) > 0.6) add(g, box(0.05, 0.55, 0.05, C.woodDark), x, 0.9, 2.9); }
   for (let i = 0; i < 3; i++) { const height = 0.45 - i * 0.15; add(g, box(1.1, height, 0.3, C.stone), 0, height / 2, 3.0 + i * 0.3); }
+  // A freestanding timber frame carries the terrace lanterns.
+  for (const x of [-2.5, 2.5]) add(g, box(0.13, 2.43, 0.13, C.woodDark), x, 1.845, 2.9);
+  add(g, box(5.2, 0.14, 0.14, C.woodDark), 0, 3.0, 2.9);
   const diners: Fig[] = [];
   for (const [x, z] of [[-1.5, 1.3], [1.4, 1.5]] as [number, number][]) {
     add(g, cyl(0.62, 0.62, 0.08, C.wood, 12), x, 1.35, z); add(g, cyl(0.08, 0.1, 0.7, C.woodDark, 6), x, 0.98, z);
     add(g, cyl(0.2, 0.18, 0.06, "#f7f2e6", 10), x, 1.42, z); add(g, ball(0.12, "#c9413f", 7), x, 1.48, z).scale.y = 0.5;
     for (let i = 0; i < 3; i++) { const a = i * 2.1 + x; add(g, cyl(0.06, 0.05, 0.05, "#f7f2e6", 8), x + Math.cos(a) * 0.4, 1.42, z + Math.sin(a) * 0.4); }
-    for (let i = 0; i < 2; i++) { const a = i * Math.PI + 0.7 + x; const px = x + Math.cos(a) * 1.0, pz = z + Math.sin(a) * 1.0; const p = person(pick(["#3f6b8f", "#6a7fb0", "#e9d7b8", "#d97a8a"])); (p.userData as { sit?: () => void }).sit?.(); add(g, p, px, 0.95, pz).rotation.y = Math.atan2(x - px, z - pz); diners.push(p as Fig); }
+    for (let i = 0; i < 2; i++) { const a = i * Math.PI + 0.7 + x; const px = x + Math.cos(a) * 1.0, pz = z + Math.sin(a) * 1.0; const p = person(pick(["#3f6b8f", "#6a7fb0", "#e9d7b8", "#d97a8a"])); (p.userData as { sit?: () => void }).sit?.(); add(g, cyl(0.22, 0.22, 0.44, C.woodDark, 8), px, 0.85, pz); add(g, p, px, 0.67, pz).rotation.y = Math.atan2(x - px, z - pz); diners.push(p as Fig); }
   }
   const waiter = add(g, person("#f4f1ea", { apron: true }), 0, 0.63, 0.2) as Fig;
   for (const x of [-2.2, 0, 2.2]) add(g, lantern(0.8), x, 2.6, 2.9);

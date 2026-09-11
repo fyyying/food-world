@@ -1,7 +1,7 @@
 // Northern China: the wheat belt. Grey brick, paper windows, flour dust, vinegar jars, coal stoves and big tables.
 // Every prop answers a click inside the world (dough rolls, lids lift, ducks swing, skewers turn) before a card opens.
 import * as THREE from "three";
-import { C, add, box, cyl, cone, ball, group, reaction, pick, tickChildren, mat, house, person, lantern, chineseRoof, bubble, rnd, hopFood, ambientChat, type P } from "./props";
+import { C, add, box, cyl, cone, ball, stem, group, reaction, pick, tickChildren, mat, house, person, lantern, chineseRoof, bubble, rnd, hopFood, ambientChat, type P } from "./props";
 
 const NORTH_LINES = ["吃了吗? Have you eaten?", "再来一碗! One more bowl", "醋多放点 More vinegar on mine", "天冷了, 包饺子 Cold out, dumpling weather", "刚出锅的, 趁热 Just out, eat it hot", "蘸蒜 Dip it in the garlic"];
 type Fig = P & { userData: { upper?: THREE.Group; arms?: { left: THREE.Group; right: THREE.Group }; sit?: () => void } };
@@ -89,7 +89,7 @@ export function dumplingHouse(): P {
   add(g, cyl(0.16, 0.13, 0.05, "#f7f2e6", 9), -1.9, 0.79, 3.0); add(g, cyl(0.1, 0.08, 0.05, "#3b2a1e", 8), -1.3, 0.79, 2.85); add(g, ball(0.06, "#f4ecdc", 6), -1.35, 0.8, 3.2);
   const diners = [-2.4, -0.8].map((x, i) => { const p = person(i ? "#c0392b" : "#2f5d3f"); (p.userData as { sit?: () => void }).sit?.(); add(g, box(0.4, 0.3, 0.4, C.woodDark), x, 0.15, 3.0); const q = add(g, p, x, -0.14, 3.0); q.rotation.y = i ? -Math.PI / 2 : Math.PI / 2; return q as Fig; });
   signBoard(g, 0.6, 0.8, -1.7, 1.28, -0.16, "饺子");                      // 饺 sign
-  add(g, lantern(0.8), -2.0, 1.5, 0.62); add(g, lantern(0.8), 2.0, 1.5, 0.62);   // hanging under the eave, not beside it
+  add(g, lantern(0.8), -2.0, 1.5, 0.08); add(g, lantern(0.8), 2.0, 1.5, 0.08);   // hanging under the eave, not beside it
   g.userData.steam = new THREE.Vector3(2.3, 1.45, 0.45);
   const re = reaction(0.6);
   g.userData.poke = () => { re.poke(); bubble(g, "饺子下锅喽! Dumplings in the pot!", 2.8, 1600); };
@@ -279,9 +279,9 @@ export function skewerCourtyard(): P {
     add(g, box(1.3, 0.08, 0.8, C.wood), x, 0.6, z); for (const [dx, dz] of [[-0.55, -0.3], [0.55, -0.3], [-0.55, 0.3], [0.55, 0.3]]) add(g, box(0.07, 0.6, 0.07, C.woodDark), x + dx, 0.3, z + dz);
     for (let i = 0; i < 2; i++) add(g, cyl(0.13, 0.13, 0.02, DOUGH, 10), x - 0.3 + i * 0.5, 0.66, z - 0.15);
     for (let i = 0; i < 3; i++) add(g, cyl(0.04, 0.035, 0.18, "#5a7a3a", 8), x - 0.3 + i * 0.3, 0.73, z + 0.2);
-    for (let i = 0; i < 2; i++) { const p = person(pick(["#c0392b", "#e0a52c", "#6a7fb0", "#2f5d3f"])); (p.userData as { sit?: () => void }).sit?.(); const q = add(g, p, x, -0.01, z + (i ? 0.95 : -0.95)); q.rotation.y = i ? Math.PI : 0; add(g, box(1.2, 0.06, 0.3, C.wood), x, 0.4, z + (i ? 0.95 : -0.95)); guests.push(q as Fig); }
+    for (let i = 0; i < 2; i++) { const p = person(pick(["#c0392b", "#e0a52c", "#6a7fb0", "#2f5d3f"])); (p.userData as { sit?: () => void }).sit?.(); const q = add(g, p, x, -0.01, z + (i ? 0.95 : -0.95)); q.rotation.y = i ? Math.PI : 0; add(g, box(1.2, 0.06, 0.3, C.wood), x, 0.4, z + (i ? 0.95 : -0.95)); for (const dx of [-0.45, 0.45]) add(g, box(0.08, 0.37, 0.25, C.wood), x + dx, 0.185, z + (i ? 0.95 : -0.95)); guests.push(q as Fig); }
   }
-  add(g, cyl(0.05, 0.06, 2.4, C.woodDark, 6), 2.7, 1.2, 1.9); add(g, lantern(0.8), 2.7, 2.2, 1.9);
+  add(g, cyl(0.05, 0.06, 2.4, C.woodDark, 6), 2.7, 1.2, 1.9); add(g, box(0.3, 0.08, 0.08, C.woodDark), 2.6, 2.4, 1.9); add(g, lantern(0.8), 2.5, 2.04, 1.9);
   g.userData.smoke = new THREE.Vector3(0, 1.3, -1.4);
   const re = reaction(0.6);
   g.userData.poke = () => { re.poke(); bubble(griller, "羊肉串, 多放孜然! Lamb skewers, extra cumin", 1.6, 1600); };
@@ -522,17 +522,20 @@ export function jujubeTree(): P {
   add(crown, ball(1.05, "#6f9b57", 9), 0, 2.1, 0).scale.y = 0.85;
   const dates: THREE.Mesh[] = [];
   for (let i = 0; i < 30; i++) { const a = (i / 30) * Math.PI * 2, r = 0.7 + (i % 3) * 0.15; dates.push(add(crown, ball(0.095, i % 4 ? "#a82a1e" : "#c9432e", 5), Math.cos(a) * r, 1.9 + Math.sin(i * 1.7) * 0.5, Math.sin(a) * r * 0.9)); }
+  for (const date of dates) stem(crown, new THREE.Vector3(0, 1.6, 0), date.position, 0.018, "#5a4a3a");
+  for (const child of crown.children) child.position.y -= 1.6;
+  crown.position.y = 1.6;
   add(g, cyl(0.8, 0.8, 0.04, "#d9c28a", 14), 1.7, 0.02, 0.6); for (let i = 0; i < 24; i++) { const a = rnd() * Math.PI * 2, r = rnd() * 0.65; add(g, ball(0.05, i % 3 ? "#a82a1e" : "#7e1e14", 5), 1.7 + Math.cos(a) * r, 0.07, 0.6 + Math.sin(a) * r).scale.y = 0.8; }
   const falling: { m: THREE.Mesh; v: number; life: number }[] = [];
   let shake = 0;
   g.userData.poke = () => {
     shake = 1;
     bubble(g, "红枣 Red dates: sweet, and in every winter soup", 3.4, 1600);
-    for (let i = 0; i < 16; i++) { const src = dates[Math.floor(rnd() * dates.length)]; const m = ball(0.095, "#c9432e", 5); m.position.copy(src.position); m.position.x += (rnd() - 0.5) * 0.3; m.position.z += (rnd() - 0.5) * 0.3; g.add(m); falling.push({ m, v: 0, life: 0 }); }
+    for (let i = 0; i < 16; i++) { const src = dates[Math.floor(rnd() * dates.length)]; const m = ball(0.095, "#c9432e", 5); m.position.copy(g.worldToLocal(src.getWorldPosition(new THREE.Vector3()))); m.position.x += (rnd() - 0.5) * 0.3; m.position.z += (rnd() - 0.5) * 0.3; g.add(m); falling.push({ m, v: 0, life: 0 }); }
   };
   g.userData.tick = (t, dt) => {
-    if (shake > 0) { shake = Math.max(0, shake - dt * 1.3); crown.rotation.z = Math.sin(t * 28) * 0.09 * shake; crown.rotation.x = Math.cos(t * 23) * 0.06 * shake; crown.position.y = Math.abs(Math.sin(t * 20)) * 0.08 * shake; }
-    else { crown.rotation.z = Math.sin(t * 0.9) * 0.02; crown.rotation.x = 0; crown.position.y = 0; }
+    if (shake > 0) { shake = Math.max(0, shake - dt * 1.3); crown.rotation.z = Math.sin(t * 28) * 0.09 * shake; crown.rotation.x = Math.cos(t * 23) * 0.06 * shake; }
+    else { crown.rotation.z = Math.sin(t * 0.9) * 0.02; crown.rotation.x = 0; }
     for (let i = falling.length - 1; i >= 0; i--) {
       const f = falling[i]; f.v += dt * 9; f.life += dt;
       f.m.position.y = Math.max(0.095, f.m.position.y - f.v * dt);

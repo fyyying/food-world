@@ -2,7 +2,7 @@
 // a long grill and a cauldron of polo. Uyghur-influenced food culture in this first version, with room for more.
 import * as THREE from "three";
 import { camelLeg, CAMEL_CYCLE, CAMEL_HIP_HEIGHT, CAMEL_LEG_LENGTH } from "./camel-gait";
-import { C, add, box, cyl, cone, ball, group, reaction, pick, tickChildren, smooth, mat, person, bubble, rnd, hopFood, ambientChat, type P } from "./props";
+import { C, add, box, cyl, cone, ball, stem, group, reaction, pick, tickChildren, smooth, mat, person, bubble, rnd, hopFood, ambientChat, type P } from "./props";
 
 const XJ_LINES = ["Yaxshimusiz? 你好吗", "Qeni, olturung! Sit, sit", "Tatliq! 真甜", "Chay iching 喝口茶", "Nan issiq 馕还热着", "Ziyade zira! 多放孜然"];
 type Fig = P & { userData: { upper?: THREE.Group; arms?: { left: THREE.Group; right: THREE.Group }; sit?: () => void } };
@@ -39,9 +39,22 @@ function trellis(g: THREE.Object3D, x: number, z: number, w: number, d: number, 
   for (const dx of [-w / 2, w / 2]) for (const dz of [-d / 2, d / 2]) add(t, cyl(0.06, 0.07, h, WOOD, 6), dx, h / 2, dz);
   for (let i = 0; i <= 4; i++) add(t, box(0.05, 0.05, d + 0.2, WOOD), -w / 2 + (i / 4) * w, h, 0);
   for (let i = 0; i <= 3; i++) add(t, box(w + 0.2, 0.05, 0.05, WOOD), 0, h, -d / 2 + (i / 3) * d);
-  for (let i = 0; i < Math.floor(w * d * 2); i++) add(t, new THREE.Mesh(new THREE.CircleGeometry(0.22 + rnd() * 0.1, 6), mat(rnd() < 0.5 ? "#6f9b57" : "#8fb86a", { side: THREE.DoubleSide })), (rnd() - 0.5) * w, h + 0.06 + rnd() * 0.1, (rnd() - 0.5) * d).rotation.x = -Math.PI / 2 + (rnd() - 0.5) * 0.5;
+  for (let i = 0; i < Math.floor(w * d * 2); i++) {
+    const leaf = add(t, new THREE.Mesh(new THREE.CircleGeometry(0.22 + rnd() * 0.1, 6), mat(rnd() < 0.5 ? "#6f9b57" : "#8fb86a", { side: THREE.DoubleSide })), (rnd() - 0.5) * w, h + 0.06 + rnd() * 0.1, (rnd() - 0.5) * d);
+    leaf.rotation.x = -Math.PI / 2 + (rnd() - 0.5) * 0.5;
+    const beamX = -w / 2 + Math.round((leaf.position.x + w / 2) / w * 4) / 4 * w;
+    stem(t, new THREE.Vector3(beamX, h, leaf.position.z), leaf.position, 0.014, WOOD);
+  }
   const grapes: THREE.Group[] = [];
-  for (let i = 0; i < Math.floor(w * d * 0.8); i++) { const c = new THREE.Group(); c.position.set((rnd() - 0.5) * w * 0.9, h - 0.05, (rnd() - 0.5) * d * 0.9); t.add(c); for (let k = 0; k < 7; k++) add(c, ball(0.05, k % 3 ? "#5a3a6a" : "#7a4a8a", 5), (rnd() - 0.5) * 0.12, -0.05 - k * 0.04, (rnd() - 0.5) * 0.12); grapes.push(c); }
+  for (let i = 0; i < Math.floor(w * d * 0.8); i++) {
+    const c = new THREE.Group(); c.position.set(-w / 2 + (i % 5) / 4 * w, h, (rnd() - 0.5) * d * 0.9); t.add(c);
+    add(c, cyl(0.012, 0.015, 0.3, WOOD, 5), 0, -0.15, 0);
+    for (let k = 0; k < 7; k++) {
+      const grape = add(c, ball(0.05, k % 3 ? "#5a3a6a" : "#7a4a8a", 5), (rnd() - 0.5) * 0.12, -0.05 - k * 0.04, (rnd() - 0.5) * 0.12);
+      stem(c, new THREE.Vector3(0, grape.position.y + 0.02, 0), grape.position, 0.008, WOOD);
+    }
+    grapes.push(c);
+  }
   return grapes;
 }
 
@@ -64,7 +77,7 @@ export function kebabGrill(): P {
     add(g, box(1.4, 0.08, 0.7, WOOD), x, 0.5, z); for (const [dx, dz] of [[-0.6, -0.25], [0.6, -0.25], [-0.6, 0.25], [0.6, 0.25]]) add(g, box(0.07, 0.5, 0.07, WOOD), x + dx, 0.25, z + dz);
     add(g, box(1.2, 0.02, 0.5, "#b8462a"), x, 0.55, z); for (let i = 0; i < 3; i++) add(g, cyl(0.05, 0.04, 0.08, TURQ, 8), x - 0.3 + i * 0.3, 0.6, z);
     add(g, cyl(0.12, 0.09, 0.14, "#8a6a3a", 8), x + 0.45, 0.62, z - 0.15);
-    for (let i = 0; i < 2; i++) { const p = person(pick(["#c0392b", "#2f5f9a", "#e0a52c", "#3f9aa3"])); (p.userData as { sit?: () => void }).sit?.(); const q = add(g, p, x, -0.03, z + (i ? 0.85 : -0.85)); q.rotation.y = i ? Math.PI : 0; add(g, box(1.2, 0.06, 0.3, WOOD), x, 0.38, z + (i ? 0.85 : -0.85)); guests.push(q as Fig); }
+    for (let i = 0; i < 2; i++) { const p = person(pick(["#c0392b", "#2f5f9a", "#e0a52c", "#3f9aa3"])); (p.userData as { sit?: () => void }).sit?.(); const q = add(g, p, x, -0.03, z + (i ? 0.85 : -0.85)); q.rotation.y = i ? Math.PI : 0; add(g, box(1.2, 0.06, 0.3, WOOD), x, 0.38, z + (i ? 0.85 : -0.85)); for (const dx of [-0.45, 0.45]) add(g, box(0.08, 0.35, 0.25, WOOD), x + dx, 0.175, z + (i ? 0.85 : -0.85)); guests.push(q as Fig); }
   }
   g.userData.smoke = new THREE.Vector3(-0.6, 1.3, -1.5);
   const re = reaction(0.6);

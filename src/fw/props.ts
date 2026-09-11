@@ -80,6 +80,16 @@ export const cyl = (rt: number, rb: number, h: number, color: string, seg = 10) 
 export const cone = (r: number, h: number, color: string, seg = 8) => new THREE.Mesh(new THREE.ConeGeometry(r, h, seg), mat(color));
 export const ball = (r: number, color: string, seg = 8) => new THREE.Mesh(new THREE.SphereGeometry(r, seg, Math.max(4, seg - 2)), mat(color));
 
+/** A branch or vine connecting two points, including fruit outside the leaf canopy. */
+export function stem(g: THREE.Object3D, from: THREE.Vector3, to: THREE.Vector3, radius: number, color: string) {
+  const direction = to.clone().sub(from);
+  const m = cyl(radius, radius, direction.length(), color, 5);
+  m.position.copy(from).add(to).multiplyScalar(0.5);
+  m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize());
+  g.add(m);
+  return m;
+}
+
 let seed = 7;
 export const rnd = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
 export const pick = <T,>(arr: T[]) => arr[Math.floor(rnd() * arr.length)];
@@ -178,6 +188,7 @@ export function pavilionRoof(r: number, h: number, color = C.tile, segs = 8): TH
   const m = new THREE.Mesh(geo, smooth(color, { map: roofTiles(), side: THREE.DoubleSide }));
   m.castShadow = true; m.receiveShadow = true;
   g.add(m);
+  add(g, cyl(0.035, 0.05, 0.24, C.gold, 6), 0, h + 0.1, 0);
   add(g, ball(0.12, C.gold, 8), 0, h + 0.3, 0);
   return g;
 }
@@ -192,14 +203,21 @@ function lattice(w: number, h: number): THREE.Group {
 
 export function lantern(scale = 1): P {
   const g = group();
+  g.name = "hanging-lantern";
+  const anchorY = 0.45 * scale;
+  g.userData.suspensionPoint = new THREE.Vector3(0, anchorY, 0);
   const body = add(g, ball(0.22 * scale, C.red, 10), 0, -0.05 * scale, 0);
   body.scale.y = 0.85;
   add(g, cyl(0.09 * scale, 0.09 * scale, 0.05, C.gold, 8), 0, 0.15 * scale, 0);
   add(g, cyl(0.07 * scale, 0.07 * scale, 0.05, C.gold, 8), 0, -0.25 * scale, 0);
   add(g, cyl(0.012, 0.012, 0.22 * scale, C.gold, 4), 0, -0.38 * scale, 0);
   add(g, cyl(0.01, 0.01, 0.3 * scale, C.woodDark, 4), 0, 0.3 * scale, 0);
+  const swing = new THREE.Group();
+  swing.position.y = anchorY;
+  for (const part of [...g.children]) { part.position.y -= anchorY; swing.add(part); }
+  g.add(swing);
   const phase = rnd() * 6;
-  g.userData.tick = (t) => { g.rotation.z = Math.sin(t * 1.6 + phase) * 0.1; g.rotation.x = Math.cos(t * 1.1 + phase) * 0.05; };
+  g.userData.tick = (t) => { swing.rotation.z = Math.sin(t * 1.6 + phase) * 0.1; swing.rotation.x = Math.cos(t * 1.1 + phase) * 0.05; };
   return g;
 }
 
@@ -903,8 +921,11 @@ export function pepperTree(): P {
   const berries: THREE.Mesh[] = [];
   for (let i = 0; i < 12; i++) {
     const a = i * Math.PI * 2 / 12;
+    stem(crown, new THREE.Vector3(0, 1.7, 0), new THREE.Vector3(Math.cos(a) * 1.12 + 0.065, 2.25 + (i % 3) * 0.24 + 0.065, Math.sin(a) * 1.12), 0.025, C.woodDark);
     for (let j = 0; j < 4; j++) berries.push(add(crown, ball(0.105, j % 2 ? "#d35342" : "#a52e2c", 6), Math.cos(a) * 1.12 + (j % 2) * 0.13, 2.25 + (i % 3) * 0.24 + Math.floor(j / 2) * 0.13, Math.sin(a) * 1.12));
   }
+  for (const child of crown.children) child.position.y -= 1.7;
+  crown.position.y = 1.7;
   g.add(crown);
   // A harvest mat and full basket make this a food destination, even before a tap.
   add(g, cyl(1.05, 1.05, 0.035, "#dfc18b", 24), 0.35, 0.025, 1.3);
@@ -918,10 +939,11 @@ export function pepperTree(): P {
   g.userData.poke = () => {
     shake = 1; rip = 1;
     bubble(g, "麻 · the tingle", 3.6, 1300);
-    for (let i = 0; i < 18; i++) { const src = berries[Math.floor(rnd() * berries.length)]; const m = ball(0.07, "#b23a2f", 5); m.position.copy(src.position); m.position.x += (rnd() - 0.5) * 0.3; m.position.z += (rnd() - 0.5) * 0.3; g.add(m); falling.push({ m, v: 0, life: 0 }); }
+    for (let i = 0; i < 18; i++) { const src = berries[Math.floor(rnd() * berries.length)]; const m = ball(0.07, "#b23a2f", 5); m.position.copy(g.worldToLocal(src.getWorldPosition(new THREE.Vector3()))); m.position.x += (rnd() - 0.5) * 0.3; m.position.z += (rnd() - 0.5) * 0.3; g.add(m); falling.push({ m, v: 0, life: 0 }); }
   };
   g.userData.tick = (t, dt) => {
-    if (shake > 0) { shake = Math.max(0, shake - dt * 1.3); crown.rotation.z = Math.sin(t * 28) * 0.09 * shake; crown.rotation.x = Math.cos(t * 23) * 0.06 * shake; crown.position.y = Math.abs(Math.sin(t * 20)) * 0.08 * shake; }
+    if (shake > 0) { shake = Math.max(0, shake - dt * 1.3); crown.rotation.z = Math.sin(t * 28) * 0.09 * shake; crown.rotation.x = Math.cos(t * 23) * 0.06 * shake; }
+    else crown.rotation.set(0, 0, 0);
     if (rip > 0) { rip = Math.max(0, rip - dt * 0.55); ripples.forEach((m, i) => { const u = Math.max(0, Math.min(1, (1 - rip) * 1.25 - i * 0.25)); const s = 1 + u * 4.5; m.scale.set(s, s, 1); (m.material as THREE.MeshBasicMaterial).opacity = u > 0 && u < 1 ? (1 - u) * 0.55 : 0; }); } else ripples.forEach((m) => { (m.material as THREE.MeshBasicMaterial).opacity = 0; });
     for (let i = falling.length - 1; i >= 0; i--) {
       const f = falling[i]; f.v += dt * 9; f.life += dt;
@@ -1349,7 +1371,8 @@ export function hotpot(): P {
   }
   for (const x of [-1.6, 1.6]) for (const z of [tz - 1.3, tz + 1.4]) add(g, cyl(0.05, 0.06, 2.3, C.woodDark, 6), x, 1.15, z);
   add(g, awning(3.6, 0.85, C.red), 0, 2.32, tz - 1.05); // shade the back edge; keep the pot visible from above
-  add(g, lantern(0.9), -1.6, 2.1, tz + 1.4); add(g, lantern(0.9), 1.6, 2.1, tz + 1.4);
+  add(g, box(3.4, 0.12, 0.12, C.woodDark), 0, 2.32, tz + 1.4);
+  add(g, lantern(0.9), -1.4, 1.92, tz + 1.4); add(g, lantern(0.9), 1.4, 1.92, tz + 1.4);
   const brothBits: THREE.Mesh[] = [];
   for (let i = 0; i < 8; i++) { const b = add(g, ball(0.045, "#e8c9a0", 6), 0, 1.1, tz); brothBits.push(b); }
   // plates of raw ingredients waiting to go in: rolled lamb, greens, tofu, mushrooms, and a tiered trolley with more

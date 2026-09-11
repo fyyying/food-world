@@ -47,8 +47,8 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   // ---------- mountains: a western wall and a northern backdrop ----------
   const peaks: [number, number, number, number, boolean][] = [
     [-35, -28, 5.5, 12, false], [-33, -9, 4.5, 9, true], [-37.5, 17, 3.6, 10, false], [-35, 32.5, 3.2, 6, true],
-    [-27, -41, 4, 9, true], [-16, -41, 3.4, 7, false], [-6, -42, 4, 9, true], [4, -42, 3.2, 6, false], [14, -42, 3.8, 8, true], [24, -41, 3, 6, false],
-    [32, -42, 3.4, 7, false], [40, -41, 3.6, 7, true], [49, -39, 3.2, 6, false], [48.5, -18, 2.8, 5, true],
+    [-27, -42.5, 4, 9, true], [-16, -42.5, 3.4, 7, false], [-6, -43.5, 4, 9, true], [4, -43.5, 3.2, 6, false], [14, -43.5, 3.8, 8, true], [24, -42.5, 3, 6, false],
+    [32, -43.5, 3.4, 7, false], [40, -42.5, 3.6, 7, true], [49, -40.5, 3.2, 6, false], [48.5, -18, 2.8, 5, true],
   ];
   peaks.forEach(([x, z, r, h, dark], i) => { const m = place(mountain(r * (0.9 + (i % 3) * 0.1), h * (0.85 + ((i * 7) % 5) * 0.08), dark), x, z, i * 1.7); m.scale.x *= 1 + (i % 2) * 0.25; });
   // the Tianshan behind the oasis strip: higher, and white above the tree line
@@ -67,9 +67,9 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   place(pagoda(5), -24, -25).position.y = 2.2;
   for (let i = 0; i < 6; i++) place(tree("pine", 1.0), -24 + Math.cos(i * 1.05) * 6.5, -25 + Math.sin(i * 1.05) * 5, i);
   add(group, new THREE.Mesh(new THREE.CircleGeometry(6, 20), mat("#c9c0a8")), 28, TOP + 0.02, -31.5).rotation.x = -Math.PI / 2;
-  place(temple(), 28, -35.5);
+  place(temple(), 28, -35);
   place(gate(), 28, -25.5);
-  for (const x of [21.5, 34.5]) place(tree("blossom", 1.2), x, -36, x);
+  for (const x of [22.5, 33.5]) place(tree("blossom", 1.2), x, -33, x);
   for (const x of [23, 33]) place(tree("ginkgo", 1.1), x, -24.5, x);
   for (const [x, z] of [[-14, -34], [-8, -36.5], [-2, -33.5], [-19, -37]] as [number, number][]) place(tree("pine", 1.1 + (x % 2 ? 0.2 : 0)), x, z, x);   // Sichuan's wooded north
   // birds over the mountains, cranes in the paddies, and a dragon dance in the square
@@ -126,8 +126,8 @@ function layoutChina({ group, tickers, place, tint, TOP }: LayoutCtx) {
   place(tree("round", 1.0), 30.5, 15.5, 1); place(tree("round", 0.9), 37, 14.5, 2);
   for (let i = 0; i < 3; i++) place(tree("ginkgo", 0.9), 14 + i * 3, 28 + (i % 2) * 0.6, i);
   // the north's quiet details: coal for the winter, pickle crocks, persimmons drying, a corn crib, the stone mill, flour sacks
-  for (const [kind, x, z, rot] of [["cabbageStack", 35.5, -18.5, -0.4], ["garlicBraids", 16, -34.5, 0.2], ["chilliStrings", 7, -35.5, 0], ["chilliStrings", 41, -33.5, 0.3], ["noodleRack", 46.5, -26.5, 0.1], ["wheatSheaves", 5.5, -28.5, 0.3], ["wheatSheaves", 18.5, -28, -0.2], ["coalStack", 33, -19.5, 0.2], ["pickleCrocks", 42.5, -18.5, 0.1], ["persimmonString", 37, -18.5, 0], ["cornCrib", 15.5, -25, 0.3], ["stoneMill", 30.5, -39.5, 0], ["flourSacks", 40, -41, 0.4], ["pickleCrocks", 24, -39, -0.3], ["coalStack", 3, -40.5, 0.5]] as [Parameters<typeof northDetail>[0], number, number, number][]) place(northDetail(kind), x, z, rot);
-  for (let i = 0; i < 5; i++) place(tree("round", 0.8 + (i % 2) * 0.2), 8 + i * 8, -40.8 + (i % 2) * 1.0, i);
+  for (const [kind, x, z, rot] of [["cabbageStack", 35.5, -18.5, -0.4], ["garlicBraids", 13.8, -33.5, 0.2], ["chilliStrings", 6.5, -33.5, 0], ["chilliStrings", 41, -33.5, 0.3], ["noodleRack", 46.5, -26.5, 0.1], ["wheatSheaves", 5.5, -28.5, 0.3], ["wheatSheaves", 18.5, -28, -0.2], ["coalStack", 33, -19.5, 0.2], ["pickleCrocks", 42.5, -18.5, 0.1], ["persimmonString", 37, -18.5, 0], ["cornCrib", 15.5, -25, 0.3], ["stoneMill", 30.5, -39.5, 0], ["flourSacks", 33, -39.5, 0.4], ["pickleCrocks", 20.5, -39.6, -0.3], ["coalStack", 3, -40.5, 0.5]] as [Parameters<typeof northDetail>[0], number, number, number][]) place(northDetail(kind), x, z, rot);
+  for (let i = 0; i < 5; i++) place(tree("round", 0.8 + (i % 2) * 0.2), 8 + i * 8, -41.8 + (i % 2) * 0.8, i);
   // Jiangnan's quiet details: lotus roots and pods, crab pots, wine jars, tea drying, fish on the rack, spring bamboo shoots
   for (const [kind, x, z, rot] of [["lotusBasket", 32, 27, 0.3], ["crabPots", 38, 13, 0.2], ["wineJars", 12.4, -1, 0.1], ["teaBaskets", 15.5, 28, 0], ["fishRack", 9.5, 4.2, 0.3], ["bambooShoots", 22.5, 26.5, 0.2], ["wineJars", 28.5, -0.6, -0.4], ["lotusBasket", 24.6, 26.6, 0.5]] as [Parameters<typeof jnDetail>[0], number, number, number][]) place(jnDetail(kind), x, z, rot);
 

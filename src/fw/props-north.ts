@@ -79,8 +79,8 @@ export function dumplingHouse(): P {
   add(g, cyl(0.03, 0.03, 0.55, C.wood, 5), 0.7, 0.9, 1.05).rotation.z = Math.PI / 2;   // rolling pin
   // the pot on a coal stove at the side
   add(g, box(1.0, 0.8, 1.0, BRICK), 2.3, 0.4, 0.45); hearth(g, 2.3, 1.0);
-  const pot = add(g, cyl(0.42, 0.36, 0.42, C.iron, 12), 2.3, 1.0, 0.2);
-  const lid = add(g, cyl(0.44, 0.44, 0.06, C.woodDark, 12), 2.3, 1.24, 0.2);
+  const pot = add(g, cyl(0.42, 0.36, 0.42, C.iron, 12), 2.3, 1.0, 0.45);
+  const lid = add(g, cyl(0.44, 0.44, 0.06, C.woodDark, 12), 2.3, 1.24, 0.45);
   const rollers = [add(g, person("#f4f1ea", { apron: true }), -1.2, 0, 0.3), add(g, person("#6a7fb0", { apron: true }), 0.2, 0, 0.3)] as Fig[];
   const cook = add(g, person("#e9d7b8", { apron: true }), 2.3, 0, 1.2) as Fig; cook.rotation.y = Math.PI;
   // diners at a sturdy table outside with vinegar bowls and garlic
@@ -89,13 +89,13 @@ export function dumplingHouse(): P {
   const diners = [-2.4, -0.8].map((x, i) => { const p = person(i ? "#c0392b" : "#2f5d3f"); (p.userData as { sit?: () => void }).sit?.(); add(g, box(0.4, 0.3, 0.4, C.woodDark), x, 0.15, 3.0); const q = add(g, p, x, -0.14, 3.0); q.rotation.y = i ? -Math.PI / 2 : Math.PI / 2; return q as Fig; });
   signBoard(g, 0.6, 0.8, -1.7, 1.28, -0.16, "饺子");                      // 饺 sign
   add(g, lantern(0.8), -2.0, 1.5, 0.62); add(g, lantern(0.8), 2.0, 1.5, 0.62);   // hanging under the eave, not beside it
-  g.userData.steam = new THREE.Vector3(2.3, 1.45, 0.2);
+  g.userData.steam = new THREE.Vector3(2.3, 1.45, 0.45);
   const re = reaction(0.6);
   g.userData.poke = () => { re.poke(); bubble(g, "饺子下锅喽! Dumplings in the pot!", 2.8, 1600); };
   g.userData.tick = (t, dt) => {
     const k = re.step(dt);
     lid.position.y = 1.24 + k * Math.abs(Math.sin(t * 12)) * 0.16; lid.rotation.z = k * Math.sin(t * 9) * 0.15; pot.rotation.y = t * 0.2;
-    rollers.forEach((p, i) => { const u = upper(p); if (u) { u.rotation.x = 0.3 + Math.sin(t * (2 + k * 5) + i) * 0.08; u.rotation.z = k * Math.sin(t * 7 + i) * 0.1; } const a = arms(p); if (a) a.right.rotation.x = -0.9 + Math.sin(t * (2.5 + k * 6) + i) * 0.35; });
+    rollers.forEach((p, i) => { const u = upper(p); if (u) { u.rotation.x = 0.3 + Math.sin(t * 2 + i) * 0.08; u.rotation.z = k * Math.sin(t * 2 + i) * 0.05; } const a = arms(p); if (a) a.right.rotation.x = -0.9 + Math.sin(t * 2.5 + i) * 0.35; });
     const uc = upper(cook); if (uc) uc.rotation.x = 0.15 + k * 0.25;
     diners.forEach((p, i) => { const u = upper(p); if (u) u.rotation.x = 0.1 + k * Math.sin(Math.min(1, k * 2) * Math.PI) * 0.3 * (i ? 1 : -1); });
     tickChildren(g)(t, dt);
@@ -138,11 +138,11 @@ export function noodleWorkshop(): P {
     const spread = 0.2 + pull * (0.45 + k * 0.4);
     const a = arms(puller); if (a) { a.left.rotation.x = -1.1; a.right.rotation.x = -1.1; a.left.rotation.z = spread; a.right.rotation.z = -spread; }
     rope.scale.x = 0.9 + pull * (0.5 + k * 0.5); rope.rotation.z = Math.sin(t * 2.2) * 0.03;
-    strands.forEach((s, i) => { s.position.y = (i - 2) * 0.02 + Math.sin(t * 2.2 + i) * 0.012 * (1 + k); });
+    strands.forEach((s, i) => { s.position.y = (i - 2) * 0.02 + Math.sin(t * 2.2 + i) * 0.012 * (1 + k * 0.3); });
     const up = upper(puller); if (up) { up.rotation.z = Math.sin(t * 2.2) * 0.03; up.rotation.x = 0.08 + pull * 0.06; }
     // the shaver: a steady stroke of the right arm over the pot, the body just leaning into it
-    const us = upper(shaver); if (us) us.rotation.x = 0.22 + Math.sin(t * 3) * 0.03 * (1 + k);
-    const as = arms(shaver); if (as) { as.right.rotation.x = -0.9 + Math.sin(t * (3 + k * 1.5)) * 0.35; as.left.rotation.x = -1.35; as.left.rotation.z = 0.25; }
+    const us = upper(shaver); if (us) us.rotation.x = 0.22 + Math.sin(t * 3) * 0.03 * (1 + k * 0.3);
+    const as = arms(shaver); if (as) { as.right.rotation.x = -0.9 + Math.sin(t * 3) * 0.35; as.left.rotation.x = -1.35; as.left.rotation.z = 0.25; }
     slab.rotation.x = 1.35 + Math.sin(t * 3) * 0.03;   // the board stays level in the hand
     flakes.forEach((f) => { if (f.t < 0) { f.m.visible = false; return; } f.t += dt; f.m.visible = true; const a2 = f.t / 0.7; f.m.position.set(1.9 - 0.3 * a2, 1.35 + Math.sin(a2 * Math.PI) * 0.3, 1.1 - 0.6 * a2); f.m.rotation.z = a2 * 6; if (a2 >= 1) f.t = -1; });
     diners.forEach((p, i) => { const u = upper(p); if (u) u.rotation.x = 0.15 + Math.sin(t * 1.3 + i) * 0.05; });
@@ -157,7 +157,7 @@ export function mantouKitchen(): P {
   add(g, house("northern", 4.0, 2.8, 1.8), 0, 0, -1.6);   // front wall at z -0.2, the bakers work in front of it
   add(g, box(3.0, 0.85, 1.0, C.wood), -0.5, 0.42, 1.1); add(g, box(2.8, 0.03, 0.8, FLOUR), -0.5, 0.86, 1.1);
   const dough = add(g, ball(0.28, DOUGH, 10), -1.3, 1.05, 1.1); dough.scale.y = 0.7;
-  for (let i = 0; i < 8; i++) add(g, ball(0.1, FLOUR, 7), -0.6 + (i % 4) * 0.24, 0.97, 0.9 + Math.floor(i / 4) * 0.3).scale.y = 0.85;   // shaped buns proving
+  const buns = Array.from({ length: 8 }, (_, i) => { const b = add(g, ball(0.1, FLOUR, 7), -0.6 + (i % 4) * 0.24, 0.97, 0.9 + Math.floor(i / 4) * 0.3); b.scale.y = 0.85; return b; });   // shaped buns proving
   for (let i = 0; i < 3; i++) { const r = add(g, cyl(0.1, 0.1, 0.12, FLOUR, 8), 0.7 + i * 0.25, 0.94, 1.3); r.rotation.x = 0.2; add(r, new THREE.Mesh(new THREE.TorusGeometry(0.07, 0.02, 4, 10), mat("#e9dcb8")), 0, 0.02, 0).rotation.x = Math.PI / 2; }   // flower rolls
   // two towers of steamers on the stove, lids that lift
   add(g, box(1.6, 0.8, 1.0, BRICK), 1.9, 0.4, 0.4); hearth(g, 1.9, 0.95);
@@ -173,8 +173,9 @@ export function mantouKitchen(): P {
   g.userData.tick = (t, dt) => {
     const k = re.step(dt);
     lids.forEach(({ lid, base }, i) => { lid.position.y = base + k * (0.2 + Math.abs(Math.sin(t * 9 + i)) * 0.14); lid.rotation.z = k * Math.sin(t * 7 + i) * 0.2; });
-    dough.scale.set(1 + Math.sin(t * (2 + k * 6)) * 0.08 * (1 + k), 0.7 - Math.sin(t * (2 + k * 6)) * 0.06 * (1 + k), 1 + Math.cos(t * (2 + k * 6)) * 0.08 * (1 + k));
-    const uk = upper(kneader); if (uk) { uk.rotation.x = 0.35 + Math.sin(t * (2 + k * 6)) * 0.12 * (1 + k); }
+    dough.scale.set(1 + Math.sin(t * 2) * 0.08 * (1 + k * 0.3), 0.7 - Math.sin(t * 2) * 0.06 * (1 + k * 0.3), 1 + Math.cos(t * 2) * 0.08 * (1 + k * 0.3));
+    const uk = upper(kneader); if (uk) { uk.rotation.x = 0.35 + Math.sin(t * 2) * 0.12 * (1 + k * 0.3); }
+    buns.forEach((b, i) => { const hop = k * Math.abs(Math.sin(t * 5 + i * 0.7)); b.position.y = 0.97 + hop * 0.4; b.rotation.y = k > 0.02 ? b.rotation.y + dt * 9 * k : 0; b.rotation.z = k * Math.sin(t * 5 + i * 0.7) * 0.9; });   // the mantou jump and turn in the air
     const us = upper(shaper); if (us) us.rotation.x = 0.25 + Math.sin(t * 1.5 + 1) * 0.05;
     const ub = upper(buyer); if (ub) ub.rotation.z = k * Math.sin(t * 5) * 0.15;
     tickChildren(g)(t, dt);
@@ -209,8 +210,8 @@ export function vinegarWorkshop(): P {
   g.userData.tick = (t, dt) => {
     const k = re.step(dt);
     const um = upper(master); if (um) { um.rotation.x = 0.25 * (1 - k) + Math.sin(t * 1.2) * 0.04; um.rotation.z = k * Math.sin(Math.min(1, k * 2) * Math.PI) * 0.3; }
-    const uh = upper(helper); if (uh) uh.rotation.x = 0.3 + Math.sin(t * (1.6 + k * 5)) * 0.1 * (1 + k);
-    rake.rotation.y = Math.sin(t * (1 + k * 5)) * 0.5 * (0.3 + k);
+    const uh = upper(helper); if (uh) uh.rotation.x = 0.3 + Math.sin(t * 1.6) * 0.1 * (1 + k * 0.3);
+    rake.rotation.y = Math.sin(t * 1) * 0.5 * (0.3 + k);
     jars.forEach((j, i) => { j.scale.y = 1.2 + k * Math.sin(t * 10 + i) * 0.03; });
     tickChildren(g)(t, dt);
   };
@@ -283,7 +284,7 @@ export function skewerCourtyard(): P {
     const k = re.step(dt);
     skewers.forEach((s, i) => { s.rotation.z = Math.floor(t * 0.5 + i * 0.3) * Math.PI + k * (Math.sin(t * 8 + i) * 0.6); s.position.y = 1.1 + k * Math.abs(Math.sin(t * 10 + i)) * 0.08; });
     embers.material = embers.material; (embers.material as THREE.MeshStandardMaterial).emissive = new THREE.Color(k > 0.05 ? "#ff8a40" : "#552200");
-    fan.rotation.x = Math.sin(t * (2 + k * 12)) * 0.5; const ug = upper(griller); if (ug) ug.rotation.x = 0.2 + k * Math.abs(Math.sin(t * 10)) * 0.1;
+    fan.rotation.x = Math.sin(t * 2) * 0.5; const ug = upper(griller); if (ug) ug.rotation.x = 0.2 + k * Math.abs(Math.sin(t * 3)) * 0.06;
     guests.forEach((p, i) => { const u = upper(p); if (u) { u.rotation.z = Math.sin(t * 0.8 + i * 1.7) * 0.06; u.rotation.x = 0.05 - k * 0.2; } const a = arms(p); if (a) a.right.rotation.x = -0.8 - k * Math.sin(Math.min(1, k * 2) * Math.PI) * 1.2; });
     tickChildren(g)(t, dt);
   };
@@ -314,7 +315,7 @@ export function bingStall(): P {
     const k = re.step(dt);
     breads.forEach((b, i) => { b.position.y = 1.0 + k * Math.max(0, Math.sin(t * 9 + i * 1.3)) * 0.2; b.rotation.y = k * Math.sin(t * 5 + i) * 0.6; b.rotation.x = k * Math.sin(t * 9 + i * 1.3) * 0.4; });
     stack.forEach((s, i) => { s.position.y = 0.9 + i * 0.05 + k * Math.abs(Math.sin(t * 10 + i)) * 0.02; });
-    const ub = upper(baker); if (ub) ub.rotation.x = 0.25 + Math.sin(t * (2 + k * 8)) * 0.08 * (1 + k);
+    const ub = upper(baker); if (ub) ub.rotation.x = 0.25 + Math.sin(t * 2) * 0.08 * (1 + k * 0.3);
     buyers.forEach((p, i) => { const u = upper(p); if (u) u.rotation.z = Math.sin(t * 1.1 + i) * 0.05 + k * Math.sin(t * 6 + i) * 0.12; });
     tickChildren(g)(t, dt);
   };
@@ -349,7 +350,7 @@ export function harvestField(): P {
   g.userData.tick = (t, dt) => {
     const k = re.step(dt);
     stalks.forEach((st) => { st.rotation.z = Math.sin(t * 1.3 + st.position.x * 1.1 + st.position.z * 0.5) * 0.06 + k * Math.sin((1 - k) * 12 - st.position.x * 1.2) * 0.45; });
-    reapers.forEach((r, i) => { const u = upper(r); if (u) { u.rotation.x = 0.4 + Math.sin(t * (1.2 + k * 4) + i) * 0.12 * (1 + k); } const a = arms(r); if (a) a.right.rotation.x = -0.6 + Math.sin(t * (1.2 + k * 4) + i) * 0.5; });
+    reapers.forEach((r, i) => { const u = upper(r); if (u) { u.rotation.x = 0.4 + Math.sin(t * 1.2 + i) * 0.12 * (1 + k * 0.3); } const a = arms(r); if (a) a.right.rotation.x = -0.6 + Math.sin(t * 1.2 + i) * 0.5; });
     ox.position.y = Math.abs(Math.sin(t * 1.6)) * 0.02; const ud = upper(driver); if (ud) ud.rotation.z = Math.sin(t * 1.6) * 0.05;
     tickChildren(g)(t, dt);
   };
@@ -384,7 +385,7 @@ export function hutongLane(): P {
   g.userData.poke = () => { re.poke(); bubble(talkers[0], "吃了吗? Have you eaten?", 1.6, 1600); };
   g.userData.tick = (t, dt) => {
     const k = re.step(dt);
-    cloths.forEach((m, i) => { m.rotation.x = Math.sin(t * 2.2 + i * 1.3) * 0.25 * (1 + k) + 0.1; });
+    cloths.forEach((m, i) => { m.rotation.x = Math.sin(t * 2.2 + i * 1.3) * 0.25 * (1 + k * 0.3) + 0.1; });
     talkers.forEach((p, i) => { const u = upper(p); if (u) { u.rotation.z = Math.sin(t * 1.2 + i * 2) * 0.06 + k * Math.sin(t * 6 + i) * 0.15; u.rotation.x = k * 0.15; } });
     const ug = upper(granny); if (ug) ug.rotation.x = 0.2 + Math.sin(t * 1.4) * 0.05;
     kid.position.x = -3.2 + Math.sin(t * 0.6) * 0.6; kid.rotation.y = Math.cos(t * 0.6) > 0 ? Math.PI / 2 : -Math.PI / 2; kid.position.y = k * Math.abs(Math.sin(t * 10)) * 0.1;
@@ -529,4 +530,42 @@ export function scallionBed(): P {
   return g;
 }
 
-export const NORTH_PROPS: Record<string, () => P> = { dumplingHouse, noodleWorkshop, mantouKitchen, vinegarWorkshop, roastDuckShop, skewerCourtyard, bingStall, harvestField, hutongLane, northMarket, cabbagePile, sheepPen, milletPatch, jujubeTree, scallionBed };
+/** 院子里的厨房: a northern courtyard kitchen: a walled yard with a brick stove and one big wok, the steamer beside it, a dough board, cabbages and potatoes under a quilt, garlic braids, a woman at the wok and a child fetching scallions. */
+export function courtyardKitchen(): P {
+  const g = group();
+  add(g, box(7.0, 0.1, 5.2, "#b3a48c"), 0, 0.05, 0);                                            // the packed-earth yard
+  add(g, house("northern", 3.6, 2.4, 1.8), -1.4, 0, -1.8);                                       // the main room at the back
+  brickWall(g, 2.4, -2.2, 2.2, 0, 1.2); brickWall(g, 3.5, 0, 4.4, Math.PI / 2, 0.9); brickWall(g, -3.5, 0.3, 3.8, Math.PI / 2, 0.9); brickWall(g, -1.6, 2.6, 3.8, 0, 0.8);   // low courtyard walls (the yard stays visible from above), a gap for the gate
+  gate(g, 1.8, 2.6, 0);
+  // the stove: brick, one big wok set in, the flue to the house, the steamer tier beside it
+  add(g, box(1.6, 0.85, 1.1, BRICK), 1.9, 0.42, -1.4); hearth(g, 1.6, -0.85); add(g, box(0.28, 1.4, 0.28, "#6b6560"), 2.5, 1.5, -1.9);
+  const wok = add(g, cyl(0.42, 0.12, 0.26, C.iron, 14), 1.55, 0.95, -1.4);
+  for (let i = 0; i < 8; i++) add(g, box(0.14, 0.04, 0.1, i % 2 ? "#a9c87a" : "#e6ecc8"), 1.55 + (rnd() - 0.5) * 0.5, 1.02, -1.4 + (rnd() - 0.5) * 0.4);   // cabbage in the wok
+  add(g, cyl(0.32, 0.32, 0.16, "#c9a86a", 12), 2.45, 0.93, -1.2); add(g, cyl(0.32, 0.32, 0.16, "#c9a86a", 12), 2.45, 1.1, -1.2); add(g, cyl(0.34, 0.34, 0.05, "#a5813f", 12), 2.45, 1.21, -1.2);   // steamers
+  // the board under the eave: dough, a rolling pin, a basket of potatoes
+  add(g, box(2.0, 0.75, 0.9, C.wood), -1.5, 0.37, 0.2); add(g, box(1.9, 0.03, 0.8, FLOUR), -1.5, 0.76, 0.2);
+  add(g, ball(0.22, DOUGH, 9), -2.0, 0.9, 0.2).scale.y = 0.7; add(g, cyl(0.03, 0.03, 0.5, C.wood, 5), -1.2, 0.8, 0.35).rotation.z = Math.PI / 2;
+  add(g, cyl(0.26, 0.2, 0.3, C.straw, 9), -0.5, 0.15, 1.2); for (let i = 0; i < 5; i++) add(g, ball(0.09, "#c9a86a", 6), -0.5 + (rnd() - 0.5) * 0.3, 0.36 + (i % 2) * 0.08, 1.2 + (rnd() - 0.5) * 0.3).scale.y = 0.8;   // potatoes
+  add(g, northDetail("cabbageStack"), -2.6, 0, 1.6).rotation.y = 0.2;                                // the winter store against the wall
+  add(g, northDetail("garlicBraids"), 3.0, 0, 1.6);
+  add(g, northDetail("pickleCrocks"), 2.4, 0, 0.6);
+  const cook = add(g, person("#8a3a3a", { apron: true }), 1.5, 0, -0.4) as Fig;
+  const child = add(g, person("#4a5a7a"), 0.2, 0, 1.0) as Fig; child.scale.setScalar(0.7); child.rotation.y = -0.6;
+  add(child, cyl(0.02, 0.025, 0.5, "#6fae4f", 5), 0.25, 0.6, 0.15).rotation.x = -0.5;                 // a scallion in hand
+  const cat = add(g, ball(0.16, "#e8a53f", 8), -2.9, 0.16, -0.2); cat.scale.set(1.5, 0.8, 0.9);      // the cat on the step
+  g.userData.steam = new THREE.Vector3(2.45, 1.4, -1.2);
+  g.userData.smoke = new THREE.Vector3(2.5, 2.3, -1.9);
+  const re = reaction(0.5);
+  g.userData.poke = () => { re.poke(); bubble(cook, "一锅到底 One wok, the whole winter", 1.8, 1600); };
+  g.userData.tick = (t, dt) => {
+    const k = re.step(dt);
+    const a = arms(cook); if (a) a.right.rotation.x = -1.1 + Math.sin(t * 2.5) * 0.3;
+    const u = upper(cook); if (u) u.rotation.x = 0.2 + Math.sin(t * 2.5) * 0.03;
+    wok.rotation.z = Math.sin(t * 2.5) * 0.02 * (1 + k * 3);
+    const uc = upper(child); if (uc) uc.rotation.z = Math.sin(t * 1.4) * 0.06 + k * Math.sin(t * 6) * 0.2;
+    tickChildren(g)(t, dt);
+  };
+  return g;
+}
+
+export const NORTH_PROPS: Record<string, () => P> = { dumplingHouse, courtyardKitchen, noodleWorkshop, mantouKitchen, vinegarWorkshop, roastDuckShop, skewerCourtyard, bingStall, harvestField, hutongLane, northMarket, cabbagePile, sheepPen, milletPatch, jujubeTree, scallionBed };

@@ -206,7 +206,7 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
       const response = el.querySelector<HTMLElement>(`[data-response="${button.dataset.hotspot}"]`)!;
       propCleanups.set(button, animateRoomTouch(response, spot.interaction, button));
       activeHotspot?.setAttribute("aria-expanded", "false");
-      el.querySelector(".scene-discovery")!.textContent = spot.text;
+      el.querySelector(".scene-discovery")!.textContent = spot.interaction.effect === 'detail' ? spot.label : spot.text;
       if (spot.interaction.effect !== 'detail') {
         if (feedback) feedback.hidden = true;
         activeHotspot = null;

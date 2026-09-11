@@ -24,8 +24,17 @@ try {
     const trigger = { classList: { add: c => classes.add(c), remove: c => classes.delete(c) } };
     const cleanup = animateRoomTouch(host, interaction, trigger);
     assert.ok(animations.length > 0 && particles.length > 0, `${motion}: visible local feedback`);
-    const denseCounts = {water: 15, leaves: 25, tea: 25, sizzle: 40};
-    if (denseCounts[motion]) assert.equal(particles.length, denseCounts[motion], 'fivefold particle density');
+    const denseCounts = {water: 3, leaves: 4, tea: 25, sizzle: 40};
+    if (denseCounts[motion]) assert.equal(particles.length, denseCounts[motion], 'bounded particle count for this response');
+    if (motion === 'water') {
+      assert.ok(animations.every(a => a.frames.length >= 5 && a.options.easing === 'linear'), 'ripples expand progressively without a sudden easing stop');
+      assert.ok(animations[1].options.delay >= 350, 'separate wavefronts instead of a stack of bright rings');
+    }
+    if (motion === 'leaves') {
+      assert.ok(animations.every(a => a.frames.length >= 6), 'leaves flutter through intermediate positions');
+      assert.equal(new Set(animations.map(a => a.options.duration)).size, particles.length, 'leaves do not fall in lockstep');
+      assert.ok(animations.every(a => a.frames.some(f => f.transform?.includes('scaleX'))), 'leaves turn edge-on as they tumble');
+    }
     if (motion !== 'detail') assert.ok(classes.has('room-responding'), 'marker clears the effect');
     cleanup(); cleanup();
     assert.equal(classes.size, 0, 'marker restored on cancellation');

@@ -267,8 +267,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 
 /* Small discoveries stay in the room, with the full story available on demand. */
-.discovery-story { margin: 14px 0; }
-.discovery-story summary { cursor: pointer; font-weight: 700; padding: 8px 0; }
 #scene .scene-hotspots { pointer-events: none; }
 #scene .scene-hotspot { position: absolute; transform: translate(-50%, -50%); pointer-events: auto; display: flex; align-items: center; gap: 6px; border: 1px solid #f9d998; border-radius: 24px; padding: 6px 10px; min-height: 44px; color: #fff6df; background: rgba(65, 32, 18, .78); cursor: pointer; box-shadow: 0 2px 14px #0005; }
 #scene .scene-hotspot span { font-size: 22px; }
@@ -310,8 +308,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
 #scene .room-touch[hidden] { display: none; }
 #scene .room-response { position: absolute; transform: translate(-50%,-50%); pointer-events: none; }
 #scene .room-response-particle { position: absolute; display: block; pointer-events: none; left: 50%; top: 50%; }
-#scene .room-response-particle.water { width: 100%; height: 28%; border: 3px solid #f1fff9; border-radius: 50%; box-shadow: 0 1px 3px #426e6599, inset 0 1px 2px #ffffff88; }
-#scene .room-response-particle.leaves { width: 10px; height: 16px; border-radius: 0 85% 0 85%; background: #b4a447; box-shadow: 0 1px 2px #332a1666; }
+#scene .room-response-particle.water { width: 100%; height: 28%; box-sizing: border-box; border: 1.5px solid #dcece2b3; border-left-color: #90b7a854; border-right-color: #90b7a854; border-radius: 50%; box-shadow: 0 1px 1px #426e6533; }
+#scene .room-response-particle.leaves { border-radius: 5% 85% 12% 85%; background: #87964e; transform-origin: 50% 25%; box-shadow: 0 1px 1px #332a1626; }
+#scene .room-response-particle.leaves::after { content: ''; position: absolute; width: 1px; height: 75%; top: 13%; left: 50%; background: #e1d8a566; transform: rotate(-28deg); }
 #scene .room-response-particle.flour-cloud { border-radius: 50%; background: radial-gradient(ellipse, #fff9e9 10%, #f9eed5bb 45%, transparent 73%); filter: blur(2px); }
 #scene .room-response-particle.flour-grain { width: 3px; height: 2px; border-radius: 50%; background: #fff8e8; }
 #scene .room-touch.room-responding { opacity: 0; }

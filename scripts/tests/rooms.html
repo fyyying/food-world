@@ -38,6 +38,19 @@ if(phone) {const style=document.createElement('style');style.textContent='#scene
 function show() { room?.destroy(); room = openLivingScene(SCENES[picker.value](), { dishes: [], onDish() {}, onStory() {}, onClose() { room?.destroy(); } }); }
 picker.onchange = show;
 picker.value = new URLSearchParams(location.search).get('room') || 'teahouse'; show();
+// Inspect production effect keyframes against the painting in either orientation.
+if (new URLSearchParams(location.search).has('motion')) {
+  const controls = document.createElement('nav');
+  controls.style.cssText = 'position:fixed;bottom:8px;right:8px;z-index:10001;display:flex;gap:6px';
+  for (const fraction of [.25,.5,.75]) {
+    const button = document.createElement('button'); button.textContent = `Inspect ${fraction*100}%`;
+    button.onclick = () => document.querySelectorAll('.room-response-particle').forEach(node => node.getAnimations().forEach(animation => {
+      const timing = animation.effect.getTiming(); animation.pause(); animation.currentTime = timing.delay + Number(timing.duration) * fraction;
+    }));
+    controls.append(button);
+  }
+  document.body.append(controls);
+}
 let last=performance.now();
 function tick(now) { room?.tick(now/1000, Math.min(.05,(now-last)/1000)); last=now; requestAnimationFrame(tick); }
 requestAnimationFrame(tick);

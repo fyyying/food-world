@@ -117,16 +117,9 @@ const OBJECTS_NOW = () => objectsOf(world);
 let hoveredRegion: PlacedRegion | null = null;
 let hoveredThing: Placed | DishMarker | null = null;
 let currentArea: Area | null = null;
-let pepperTrail: EnrichedRecipe | undefined;
-function showPepperTrail() {
-  if (!pepperTrail || world !== "china" || livingScene) return false;
-  diorama?.highlight(new Set(["pepper", pepperTrail.place]), new Set([pepperTrail.id]), true);
-  diorama?.pin(new Set(["pepper", pepperTrail.place]));
-  return true;
-}
 
 const ui = mountUi({
-  onClose: () => { ui.hide(); if (!showPepperTrail()) { diorama?.highlight(null, null); diorama?.pin(null); } },
+  onClose: () => { ui.hide(); diorama?.highlight(null, null); diorama?.pin(null); },
   onOpenRecipe: (r) => openDish(r),
   onGoObject: (o) => afterScene(() => openObject(diorama!.placed.find((p) => p.obj.id === o.id)!)),
   onCook: (r) => { showRecipePage(r, () => {}); },
@@ -482,12 +475,12 @@ function enterRegion(region: MapRegion) {
 function setCrumbsWorld() {
   setCrumbs([{ label: "🌍 Food World", onClick: () => leaveWorld() }, { label: `${WORLDS[world].name} · ${WORLDS[world].zh}` }], {
     current: currentArea, areas: areasOf(world),
-    onPick: (a) => { pepperTrail = undefined; diorama?.pin(null); diorama?.highlight(null, null); currentArea = a; setCrumbsWorld(); if (a) { glideTo(areaCenter(a), 42, 1.3); hint(`${AREAS[a].name} · ${AREAS[a].blurb}`, 6000); } },
+    onPick: (a) => { diorama?.pin(null); diorama?.highlight(null, null); currentArea = a; setCrumbsWorld(); if (a) { glideTo(areaCenter(a), 42, 1.3); hint(`${AREAS[a].name} · ${AREAS[a].blurb}`, 6000); } },
   });
 }
 
 function leaveWorld() {
-  pepperTrail = undefined; diorama?.pin(null);
+  diorama?.pin(null);
   const fade = document.getElementById("fade")!;
   fade.classList.add("on");
   setTimeout(() => { dropScene(); showMap(false); fade.classList.remove("on"); }, 500);
@@ -569,7 +562,6 @@ const COARSE = window.matchMedia("(pointer: coarse)").matches;
 let cardTimer: number | undefined, revealTimer: number | undefined;
 function openObject(p: Placed) {
   const obj = p.obj.alias ? objectById(p.obj.alias) : p.obj;   // a market stall opens its ingredient's card
-  pepperTrail = obj.id === "pepper" ? china.find((r) => /^mapo tofu/i.test(r.title)) : undefined;
   diorama?.pin(null);
   const recipes = china.filter((r) => obj.match(r));
   if (obj.scene && SCENES[obj.scene]) { enterLivingScene(p, obj, recipes); return; }
@@ -579,7 +571,6 @@ function openObject(p: Placed) {
   ui.hide();
   diorama!.highlight(new Set([obj.id]), null);
   cardTimer = window.setTimeout(() => {
-    showPepperTrail();
     ui.showObject(obj, recipes, OBJECTS_NOW());
   }, COARSE ? 1200 : 800);
   diorama!.poke(p);
@@ -688,7 +679,7 @@ window.addEventListener("pointerup", (e) => {
     else ui.showRegion(region.region, region.count, "/");
   } else if (level === "world") {
     const thing = castWorld(e.clientX, e.clientY);
-    if (!thing) { pepperTrail = undefined; clearTimeout(cardTimer); clearTimeout(revealTimer); ui.hide(); diorama!.highlight(null, null); diorama!.pin(null); return; }
+    if (!thing) { clearTimeout(cardTimer); clearTimeout(revealTimer); ui.hide(); diorama!.highlight(null, null); diorama!.pin(null); return; }
     if ("recipe" in thing) openDish(thing.recipe);
     else openObject(thing);
   }
@@ -696,7 +687,7 @@ window.addEventListener("pointerup", (e) => {
 window.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
     if (!document.getElementById("recipe")!.hidden) { document.getElementById("recipe")!.hidden = true; return; }
-    if (ui.open) { clearTimeout(cardTimer); clearTimeout(revealTimer); ui.hide(); if (!livingScene && !showPepperTrail()) { diorama?.highlight(null, null); diorama?.pin(null); } return; }
+    if (ui.open) { clearTimeout(cardTimer); clearTimeout(revealTimer); ui.hide(); if (!livingScene) { diorama?.highlight(null, null); diorama?.pin(null); } return; }
     if (livingScene) { leaveLivingScene(); return; }
     if (story) { endStory(); return; }
     if (level === "world") leaveWorld();

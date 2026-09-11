@@ -100,7 +100,6 @@ export function mountUi(h: UiHandlers) {
     const kindLabel = { ingredient: "Ingredient", flavour: "Signature flavour", technique: "Technique", landmark: "Place", place: "Place", dish: "Dish" }[o.kind];
     const partnerObjs = (o.partners ?? []).map((p) => ({ p, obj: partnerObject(p, o, allObjects) }));
     const story = o.blurb.split(/\n\n+/).map((para) => `<p class="blurb">${esc(para)}</p>`).join("");
-    const mapo = o.id === "pepper" ? recipes.find((r) => /^mapo tofu/i.test(r.title)) : undefined;
     el.className = "";
     el.innerHTML = `
       <button class="close" aria-label="Close">×</button>
@@ -112,10 +111,7 @@ export function mountUi(h: UiHandlers) {
         </div>
       </div>
       <p class="tagline">${esc(o.tagline)}</p>
-      ${o.id === "pepper" ? `<p class="blurb">It tingles rather than burns. Pair it with chilli to make 麻辣 — numbing and hot.</p>
-        ${mapo ? `<button class="explore" data-recipe="${mapo.id}">Find it in Mapo Tofu →</button>` : ""}
-        <details class="discovery-story"><summary>Explore the story</summary>${story}</details>`
-        : story}
+      ${story}
       ${storiesThrough(o).map((st) => `<button class="explore origin" data-story="${st.id}"><span class="em">${st.emoji}</span><span><b>Where it came from</b><small>${esc(st.title)} · ${esc(st.chapters[0].era)}</small></span></button>`).join("")}
       ${o.flavour ? `<h4>Flavour</h4><div class="chips">${o.flavour.map((f) => `<span class="chip fl">${esc(f)}</span>`).join("")}</div>` : ""}
       ${o.partners ? `<h4>Often paired with</h4><div class="chips">${partnerObjs.map(({ p, obj }) => obj ? `<button class="chip link" data-object="${obj.id}">${obj.emoji} ${esc(p)}</button>` : `<span class="chip">${esc(p)}</span>`).join("")}</div>` : ""}

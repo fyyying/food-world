@@ -341,3 +341,5 @@ button { font: inherit; color: inherit; cursor: pointer; }
 #scene .room-response-particle.grill-smoke { width: 26px; height: 30px; border-radius: 50%; background: radial-gradient(ellipse,#eee3d2aa,transparent 72%); filter: blur(3px); box-shadow: none; }
 
 #scene .room-touch[hidden], #scene .room-response[hidden] { display: none; }
+
+#scene .scene-sound-credit { font-size: 10px; color: #f1e3c8; text-underline-offset: 3px; order: 5; }

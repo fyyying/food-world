@@ -1,0 +1,12 @@
+Cat purr recording
+
+"Cat purring.ogg" by Peter Hull (Z8kflt), 29 November 2007.
+Source: https://commons.wikimedia.org/wiki/File:Cat_purring.ogg
+License: Creative Commons Attribution-ShareAlike 4.0 International
+https://creativecommons.org/licenses/by-sa/4.0/
+
+The cat-purr.wav adaptation is also licensed CC BY-SA 4.0.
+Changes: excerpt from 12.0 to 14.6 seconds; mixed to mono;
+DC offset removed; level reduced to a peak of 0.24;
+140 ms fade-in and fade-out; converted to 16-bit PCM WAV.
+No synthetic tones, reverb, or looping added.

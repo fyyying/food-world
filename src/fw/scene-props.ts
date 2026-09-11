@@ -35,7 +35,7 @@ const rooms: Record<string, Entry[]> = {
   home_kitchen: [
     item('Explore the chopping board', 'Freshly cut vegetables and a broad kitchen knife sit ready on the family work table.', 'detail', [.56,.86], [.49,.79]),
     item('Listen to the wok', 'The vegetables sizzle in the hot wok beside the cook.', 'sizzle', [.20,.49], [.22,.49], [.10,.20]),
-    item('Stroke the sleeping cat', 'A soft mrr, then a contented purr from the cat by the wall.', 'purr', [.67,.74], [.83,.68], [.09,.14]),
+    item('Stroke the sleeping cat', 'A contented purr from the cat resting by the wall.', 'purr', [.67,.74], [.83,.68], [.09,.14]),
   ],
   tower: [
     item('Ring the hanging bell', 'A soft bell note carries out beneath the eaves.', 'chime', [.505,.175], [.42,.20], [.06,.16]),

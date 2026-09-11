@@ -1,9 +1,10 @@
-/** Short, quiet, gesture-triggered sounds. No downloads or background loops. */
+/** Short, quiet, gesture-triggered sounds. No background loops. The cat uses a bundled recording. */
 export type RoomSound = 'purr' | 'woof' | 'flour' | 'sizzle' | 'tea' | 'water' | 'leaves' | 'chime' | 'broth';
-const seconds: Record<RoomSound, number> = { purr: 2.6, woof: .7, flour: .65, sizzle: 2.2, tea: 1.7, water: 1.2, leaves: 1.3, chime: 2, broth: 2.6 };
+type SynthSound = Exclude<RoomSound, 'purr'>;
+const seconds: Record<SynthSound, number> = { woof: .7, flour: .65, sizzle: 2.2, tea: 1.7, water: 1.2, leaves: 1.3, chime: 2, broth: 2.6 };
 
 // Pure synthesis keeps the sample envelope and output level testable.
-export function roomSoundSamples(kind: RoomSound, rate: number, random = Math.random): Float32Array {
+export function roomSoundSamples(kind: SynthSound, rate: number, random = Math.random): Float32Array {
   const length = seconds[kind], samples = new Float32Array(Math.ceil(length * rate));
   const tau = Math.PI * 2;
   const bubbleStarts = kind === 'water' ? [.02, .16, .42] : [.02, .19, .36, .65, .83, 1.14, 1.32, 1.58, 1.91, 2.15, 2.36];
@@ -14,17 +15,7 @@ export function roomSoundSamples(kind: RoomSound, rate: number, random = Math.ra
     low += (noise - low) * (1 - Math.exp(-tau * 750 / rate));
     const edge = Math.min(1, t / .025, (length - t) / .1);
     let value = 0;
-    if (kind === 'purr') {
-      // A short voiced greeting followed by a purr. Keep audible harmonics
-      // above the bass range rather than relying on 100 Hz on small speakers.
-      const breath = .45 + .55 * Math.pow(Math.sin(Math.PI * t / 1.3), 2);
-      const flutter = .3 + .7 * Math.pow(.5 + .5 * Math.sin(tau * 25 * t), 2);
-      const greeting = t < .7 ? Math.pow(Math.sin(Math.PI * t / .7), 1.5) : 0;
-      phase += tau * (440 + 180 * Math.sin(Math.PI * Math.min(t / .7, 1))) / rate;
-      const voice = .12 * Math.sin(phase) + .055 * Math.sin(2 * phase) + .025 * Math.sin(3 * phase);
-      const rumble = .055 * Math.sin(tau * 100 * t) + .11 * Math.sin(tau * 300 * t) + .075 * Math.sin(tau * 600 * t) + .04 * low;
-      value = voice * greeting + rumble * breath * flutter * (1 - .6 * greeting);
-    } else if (kind === 'woof') {
+    if (kind === 'woof') {
       phase += tau * (160 - 65 * Math.min(1, t / .24)) / rate;
       const voice = Math.sin(phase) + .45 * Math.sin(phase * 2) + .22 * Math.sin(phase * 3);
       value = (.08 * voice + .10 * low) * pulse(t, .025, 15);
@@ -52,6 +43,17 @@ export function roomSoundSamples(kind: RoomSound, rate: number, random = Math.ra
     samples[i] = Math.max(-.3, Math.min(.3, value * edge));
   }
   return samples;
+}
+
+let catRecording: Promise<ArrayBuffer> | undefined;
+export function preloadCatSound(): Promise<ArrayBuffer> {
+  if (!catRecording) {
+    catRecording = fetch(`${import.meta.env.BASE_URL}audio/cat-purr.wav`).then(response => {
+      if (!response.ok) throw new Error('Cat recording unavailable');
+      return response.arrayBuffer();
+    }).catch(error => { catRecording = undefined; throw error; });
+  }
+  return catRecording;
 }
 
 let activeStop: (() => void) | undefined;
@@ -90,11 +92,17 @@ export function playRoomSound(kind: RoomSound): () => void {
     context = new AudioContext();
     activeStop = stop;
     const ctx = context;
-    void ctx.resume().then(() => {
+    void ctx.resume().then(async () => {
       if (stopped) return;
-      const samples = roomSoundSamples(kind, ctx.sampleRate);
-      const buffer = ctx.createBuffer(1, samples.length, ctx.sampleRate);
-      buffer.getChannelData(0).set(samples);
+      let buffer: AudioBuffer;
+      if (kind === 'purr') {
+        buffer = await ctx.decodeAudioData((await preloadCatSound()).slice(0));
+      } else {
+        const samples = roomSoundSamples(kind, ctx.sampleRate);
+        buffer = ctx.createBuffer(1, samples.length, ctx.sampleRate);
+        buffer.getChannelData(0).set(samples);
+      }
+      if (stopped) return;
       source = ctx.createBufferSource();
       source.buffer = buffer;
       source.connect(ctx.destination);

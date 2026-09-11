@@ -8,7 +8,7 @@
 // its particle painter and a tick that moves the small things (see scene-hotpot.ts).
 
 import { animateRoomTouch, type RoomInteraction } from "./scene-props";
-import { playRoomSound } from "./room-sound";
+import { playRoomSound, preloadCatSound } from "./room-sound";
 import { imageUrl } from "../data";
 import { type EnrichedRecipe } from "./graph";
 import { escapeHtml as esc } from "./plates";
@@ -75,6 +75,8 @@ export type LivingScene = {
 export const flickerNoise = (t: number, seed = 0) => 0.5 + (Math.sin(t * 7.3 + seed) * 0.45 + Math.sin(t * 13.1 + seed * 2.1) * 0.3 + Math.sin(t * 2.7 + seed * 0.7) * 0.25) * 0.5;
 
 export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
+  const hasCatSound = Boolean(def.hotspots?.some(h => h.interaction?.effect === 'purr'));
+  if (hasCatSound) void preloadCatSound().catch(() => {});
   const anchoredRoom = Boolean(def.hotspots?.some(h => h.interaction));
   const el = document.createElement("section");
   el.id = "scene";
@@ -104,6 +106,7 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
         ${opts.stalls?.length ? `<div class="scene-stalls"><span class="lbl">${esc(opts.stallsLabel ?? "The stands")}</span>${opts.stalls.map((st, i) => `<button class="stall" type="button" data-i="${i}">${esc(st.label)}</button>`).join("")}</div>` : ""}
         ${def.hotspots?.length ? `<p class="scene-discovery" role="status" aria-live="polite">${def.id === "hotpot" ? "Touch the pot, the chilli bowl or a diner." : "Touch a small mark to explore the picture."}</p>` : ""}
         <div class="scene-actions">
+          ${hasCatSound ? `<a class="scene-sound-credit" href="${import.meta.env.BASE_URL}audio/CREDITS.txt" target="_blank" rel="noopener">Purr recording credit</a>` : ''}
           <button class="story" type="button">📖 The story</button>
           ${opts.dishes.length ? `<span class="lbl">${esc(opts.label ?? "On the table")}</span><span class="plates">${opts.dishes.map((r) => `<button class="dish" type="button" data-recipe="${r.id}" title="${esc(r.title)}" aria-label="${esc(r.title)}"><span class="th" ${r.imageUrl ? `style="background-image:url(${imageUrl(r.id)})"` : ""}></span></button>`).join("")}</span>` : ""}
         </div>

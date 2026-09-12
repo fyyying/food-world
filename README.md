@@ -8,6 +8,8 @@ recipe from Notion.
 
 Live at https://fyyying.github.io/food-world/.
 
+The [product roadmap](docs/product-roadmap.md) tracks the shared UI, languages, children's mode, room menus, My World, and Modern World.
+
 ## Run
 
 ```bash

@@ -10,6 +10,7 @@ Saved from the product discussion on 2026-09-12. This is the working list to ret
 | 4. Appropriate dishes and recipes in each room | Initial placement audit completed; changes pending |
 | 5. My World and cooking history | Discussed; behavior to refine |
 | 6. Modern World | Added to the list; design pending |
+| 7. Mobile zoom returns to the landing page | Reported; needs reproduction |
 
 ## 1. Quieter opening and shared navigation
 
@@ -97,8 +98,16 @@ Saved from the product discussion on 2026-09-12. This is the working list to ret
 
 **Open:** Name, visual setting, initial dishes, and the boundary between Modern World and personal variations in regional worlds.
 
+## 7. Mobile zoom returns to the landing page
+
+**User report:** On mobile, zooming to inspect the pictures jumps out to the landing page.
+
+**Expected behavior:** Zooming should preserve the current picture, place, and view without returning to the landing page.
+
+**Status:** Reported; not yet reproduced or fixed. Identify the affected phone/browser, zoom gesture, and view during reproduction before determining the cause.
+
 ## How to continue
 
-The first UI pass is complete. No implementation order has been agreed for topics 2–6.
+The first UI pass is complete. No implementation order has been agreed for topics 2–7.
 
 A suggested next step was a small Sichuan example combining appropriate room menus with English/Chinese and standard/children's explanations, before expanding across regions. This remains a proposal. Update this file as decisions are made and work is completed.

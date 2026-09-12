@@ -104,7 +104,7 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
         <p>${esc(def.caption)}</p>
         </div>
         ${opts.stalls?.length ? `<div class="scene-stalls"><span class="lbl">${esc(opts.stallsLabel ?? "The stands")}</span>${opts.stalls.map((st, i) => `<button class="stall" type="button" data-i="${i}">${esc(st.label)}</button>`).join("")}</div>` : ""}
-        ${def.hotspots?.length ? `<p class="scene-discovery" role="status" aria-live="polite">${def.id === "hotpot" ? "Touch the pot, the chilli bowl or a diner." : "Touch a small mark to explore the picture."}</p>` : ""}
+        ${def.hotspots?.length ? `<p class="scene-discovery" role="status" aria-live="polite"></p>` : ""}
         <div class="scene-actions">
           ${hasCatSound ? `<a class="scene-sound-credit" href="${import.meta.env.BASE_URL}audio/CREDITS.txt" target="_blank" rel="noopener">Purr recording credit</a>` : ''}
           <button class="story" type="button">📖 The story</button>

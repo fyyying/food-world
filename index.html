@@ -14,21 +14,27 @@
       <canvas id="stage" aria-label="Food World"></canvas>
       <div id="labels"></div>
       <nav id="crumbs" hidden></nav>
-      <div id="hint" hidden></div>
       <aside id="card" hidden></aside>
       <section id="recipe" hidden></section>
       <div id="fade"></div>
       <div id="home">
         <div class="home-inner">
-          <p class="eyebrow">Food World</p>
-          <h1>Explore the world<br/>through food.</h1>
-          <p class="lede">A miniature world containing the food I love and know how to cook.</p>
-          <button id="enter" class="enter">Enter the world →</button>
-          <p class="fine" id="home-status">Waking the villages…</p>
+          <h1>Food World</h1>
+          <p class="lede">Explore the world through food.</p>
+          <button id="enter" class="enter">Enter →</button>
+          <p class="fine" id="home-status" role="status">Waking the villages…</p>
         </div>
       </div>
       <button id="stories" class="stories" hidden>📜 Stories</button>
       <aside id="story" hidden></aside>
+      <button id="settings-toggle" type="button" aria-label="Settings" title="Settings" aria-haspopup="dialog" aria-controls="settings" aria-expanded="false">
+        <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M4 6h4m4 0h8M4 12h10m4 0h2M4 18h3m4 0h9"/><circle cx="10" cy="6" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="9" cy="18" r="2"/></svg>
+      </button>
+      <dialog id="settings" aria-labelledby="settings-title">
+        <header><h2 id="settings-title">Settings</h2><form method="dialog"><button type="submit" aria-label="Close settings">×</button></form></header>
+        <label class="sound-setting" for="sound-enabled"><span>Sound</span><input id="sound-enabled" type="checkbox" role="switch" checked/><span class="switch-track" aria-hidden="true"></span></label>
+        <details class="controls-help"><summary>How to explore</summary><p>Choose a place, then explore its food, people and objects. Open a dish for its recipe.</p><p class="touch-help">Drag to move around. Pinch with two fingers to zoom.</p><p class="mouse-help">Drag to move around. Scroll to zoom, or drag with the right mouse button to look around.</p><p>Use the back arrow to return. On a keyboard, Escape closes the current view.</p></details>
+      </dialog>
       <div id="toasts"></div>
     </div>
     <script type="module" src="/src/fw/main.ts"></script>

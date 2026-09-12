@@ -1,0 +1,36 @@
+/* Shared controls stay above every game surface, including the welcome screen. */
+#settings-toggle {
+  position: absolute; top: max(16px, env(safe-area-inset-top)); right: max(18px, env(safe-area-inset-right)); z-index: 45;
+  display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid var(--line); border-radius: 50%;
+  background: rgba(247,239,226,.94); color: var(--ink-2); box-shadow: 0 4px 14px rgba(60,40,20,.12);
+}
+#settings-toggle:hover { background: #fff; color: var(--ink); }
+#settings-toggle:focus-visible, #settings button:focus-visible, #settings summary:focus-visible { outline: 2px solid var(--red-ink); outline-offset: 3px; }
+#settings {
+  box-sizing: border-box; position: fixed; inset: max(70px, calc(env(safe-area-inset-top) + 54px)) max(18px, env(safe-area-inset-right)) auto auto;
+  width: min(320px, calc(100% - 24px)); max-height: calc(100dvh - 94px); margin: 0; padding: 20px; overflow: auto; overscroll-behavior: contain;
+  border: 1px solid var(--line); border-radius: 20px; background: var(--paper); color: var(--ink); box-shadow: var(--shadow); font-family: var(--sans);
+}
+#settings::backdrop { background: rgba(47,38,32,.2); }
+#settings header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+#settings h2 { margin: 0; font: 600 24px var(--display); }
+#settings form { margin: 0; }
+#settings header button { width: 44px; height: 44px; margin: -8px -8px -8px 0; padding: 0; border: 0; border-radius: 50%; background: transparent; font-size: 26px; }
+.sound-setting { position: relative; display: flex; align-items: center; gap: 10px; min-height: 64px; margin-top: 14px; cursor: pointer; font-weight: 700; }
+.sound-setting > span:first-child { margin-right: auto; }
+.sound-setting input { position: absolute; right: 0; width: 44px; height: 44px; margin: 0; opacity: 0; cursor: pointer; }
+.switch-track { width: 44px; height: 26px; padding: 3px; border-radius: 99px; background: #a99b88; pointer-events: none; transition: background .15s; }
+.switch-track::after { content: ""; display: block; width: 20px; height: 20px; border-radius: 50%; background: #fffaf1; box-shadow: 0 1px 3px #0002; transition: transform .15s; }
+.sound-setting input:checked + .switch-track { background: var(--ink); }
+.sound-setting input:checked + .switch-track::after { transform: translateX(18px); }
+.sound-setting input:focus-visible + .switch-track { outline: 2px solid var(--red-ink); outline-offset: 3px; }
+.controls-help { border-top: 1px solid var(--line); }
+.controls-help summary { min-height: 44px; padding: 16px 0 4px; font-weight: 700; cursor: pointer; }
+.controls-help p { margin: 12px 0 0; color: var(--ink-2); font-size: 14px; line-height: 1.55; }
+.touch-help { display: none; }
+@media (pointer: coarse) { .touch-help { display: block; } .mouse-help { display: none; } }
+@media (max-width: 720px) {
+  #settings-toggle { top: max(10px, env(safe-area-inset-top)); right: max(10px, env(safe-area-inset-right)); }
+  #settings { top: max(64px, calc(env(safe-area-inset-top) + 54px)); right: max(10px, env(safe-area-inset-right)); }
+}
+@media (prefers-reduced-motion: reduce) { .switch-track, .switch-track::after { transition: none; } }

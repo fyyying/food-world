@@ -24,10 +24,12 @@ import { STORIES, type Story } from "./stories";
 import { escapeHtml } from "./plates";
 import { type Diorama, type DishMarker, type Placed } from "./worldkit";
 const areaCenter = (a: Area) => new THREE.Vector3(AREAS[a].center[0], 0, AREAS[a].center[1]);
-import { mountUi, showRecipePage, setCrumbs, hint, toast } from "./ui";
+import { mountUi, showRecipePage, setCrumbs, toast } from "./ui";
+import { mountSettings } from "./settings";
 import { person } from "./props";
 import { snapshotObject } from "./snapshot";
 const SCENES = { ...CHINA_SCENES, ...TURKEY_SCENES };
+mountSettings();
 
 // ---------- renderer ----------
 const canvas = document.getElementById("stage") as HTMLCanvasElement;
@@ -133,8 +135,6 @@ const ui = mountUi({
     diorama!.pin(ids);
     const spots = diorama!.placed.filter((p) => ids.has(p.obj.id));
     if (spots.length) frameThings(spots.map((p) => p.anchor));
-    const names = spots.map((p) => p.obj.name).join(", ");
-    hint(`${r.title} is made from: ${names}. Tap a label to read about it.`, 9000);
   }),
   onEnterRegion: (region) => enterRegion(region),
 });
@@ -162,8 +162,9 @@ async function boot() {
     counts.set("central-europe", recipes.filter(isCeuropeRecipe).length);
     mapWorld = buildMap(counts);
     mapScene.add(mapWorld.group);
-    for (const r of mapWorld.regions) r.labelEl.addEventListener("click", () => { if (level !== "map" || flight) return; if (r.region.built) enterRegion(r.region); else ui.showRegion(r.region, r.count, "/"); });
-    status.textContent = `${recipes.length} dishes · ${counts.get("china")} in China · ${counts.get("italy")} in Italy · ${counts.get("korea")} in Korea · ${counts.get("mexico")} in Mexico · ${counts.get("middle-east")} in the Middle East · ${counts.get("mediterranean")} around the Mediterranean · ${counts.get("india")} in India · ${counts.get("southeast-asia")} in Southeast Asia · ${counts.get("north-america")} in North America · ${counts.get("japan")} in Japan · ${counts.get("central-europe")} in Central Europe`;
+    for (const r of mapWorld.regions) r.labelEl.addEventListener("click", () => { if (level !== "map" || flight) return; if (r.region.built) enterRegion(r.region); else ui.showRegion(r.region); });
+    status.textContent = "";
+    status.hidden = true;
   } catch (e) {
     status.textContent = `Couldn't load the cookbook: ${(e as Error).message}`;
     return;
@@ -171,6 +172,7 @@ async function boot() {
   enter.disabled = false;
   enter.addEventListener("click", () => {
     document.getElementById("home")!.classList.add("out");
+    document.getElementById("home")!.inert = true;
     showMap(true);
   });
   // map camera parked, ready behind the home screen
@@ -210,7 +212,6 @@ function showMap(first = false) {
   if (first) {
     camera.position.copy(pos).multiplyScalar(1.5);
     fly(pos, target, 2.2);
-    hint("Hover a region to wake it. Click China to go in.", 9000);
   } else {
     camera.position.set(22, 40, 30); controls.target.set(22, 0, -6);
     fly(pos, target, 1.6);
@@ -246,7 +247,6 @@ function startStory(id: string) {
   story = { def, i: 0 };
   storiesBtn.hidden = true;
   ui.hide();
-  document.getElementById("hint")!.classList.add("fade");   // the panel takes the hint's place at the bottom
   showChapter();
 }
 
@@ -471,13 +471,12 @@ function enterRegion(region: MapRegion) {
       fly(target.clone().add(id === 'middle-east' ? new THREE.Vector3(2,36,46) : new THREE.Vector3(2,48,60)), target, 2.0);
       fade.classList.remove("on");
       setCrumbsWorld();
-      hint("Drag to pan · scroll to zoom · right-drag to peek around. Tap anything that looks edible.", 9000);
     }, 560);
   });
 }
 
 function setCrumbsWorld() {
-  setCrumbs([{ label: "🌍 Food World", onClick: () => leaveWorld() }, { label: `${WORLDS[world].name} · ${WORLDS[world].zh}` }], {
+  setCrumbs([{ label: "Back to world map", onClick: () => leaveWorld() }, { label: `${WORLDS[world].name} · ${WORLDS[world].zh}` }], {
     current: currentArea, areas: areasOf(world),
     onPick: (a) => {
       diorama?.pin(null); diorama?.highlight(null, null); currentArea = a; setCrumbsWorld();
@@ -485,7 +484,6 @@ function setCrumbsWorld() {
         const turkey = a === 'istanbul';
         const distance = turkey ? Math.max(145, 118 / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect * .92)) : 42;
         glideTo(turkey ? new THREE.Vector3(-6,0,-22) : areaCenter(a), distance, 1.3);
-        hint(`${AREAS[a].name} · ${AREAS[a].blurb}`, 6000);
       }
       else if (world === 'middle-east') {
         const distance = Math.min(490, Math.max(215, 124 / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect * .9)));
@@ -603,8 +601,6 @@ function revealPlace(p: Placed) {
   diorama!.poke(p);
   glideTo(p.anchor.clone().add(new THREE.Vector3(0, 1.2, 0)), stalls.length ? 20 : 15, 1.2);
   if (!recipes.length && !stalls.length) { ui.showObject(p.obj, [], OBJECTS_NOW()); return; }
-  const what = [stalls.length ? "a stall" : "", recipes.length ? (recipes.length === 1 ? "the plate" : "a plate") : ""].filter(Boolean).join(" or ");
-  hint(`${p.obj.placeName ?? p.obj.name} · tap ${what}`, 6000);
 }
 
 function openDish(r: EnrichedRecipe) {
@@ -680,19 +676,19 @@ function clearHover() {
   canvas.classList.remove("pointing");
 }
 canvas.addEventListener("pointerleave", clearHover);
-for (const id of ["card", "crumbs", "recipe"]) document.getElementById(id)!.addEventListener("pointerenter", clearHover);
+for (const id of ["card", "crumbs", "recipe", "settings-toggle", "settings"]) document.getElementById(id)!.addEventListener("pointerenter", clearHover);
 
 canvas.addEventListener("pointerdown", (e) => { if (e.target === canvas && !flight) down = { x: e.clientX, y: e.clientY, t: performance.now() }; });
 window.addEventListener("pointerup", (e) => {
   if (!down) return;
   const isTap = Math.hypot(e.clientX - down.x, e.clientY - down.y) < 7 && performance.now() - down.t < 500;
   down = null;
-  if (!isTap || flight || (e.target as HTMLElement).closest("#card, #crumbs, #recipe, #home")) return;
+  if (!isTap || flight || (e.target as HTMLElement).closest("#card, #crumbs, #recipe, #home, #settings-toggle, #settings")) return;
   if (level === "map") {
     const region = castMap(e.clientX, e.clientY);
     if (!region) { ui.hide(); return; }
     if (region.region.built) enterRegion(region.region);
-    else ui.showRegion(region.region, region.count, "/");
+    else ui.showRegion(region.region);
   } else if (level === "world") {
     const thing = castWorld(e.clientX, e.clientY);
     if (!thing) { clearTimeout(cardTimer); clearTimeout(revealTimer); ui.hide(); diorama!.highlight(null, null); diorama!.pin(null); return; }

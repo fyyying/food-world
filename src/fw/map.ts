@@ -202,7 +202,7 @@ export function buildMap(counts: Map<string, number>): MapWorld {
 
     const labelEl = document.createElement("div");
     labelEl.className = `region-label${region.built ? "" : " unbuilt"}`;
-    labelEl.innerHTML = `<div class="emo">${region.emoji.map((e) => `<span>${e}</span>`).join("")}</div><div class="n">${region.name}</div><div class="c">${region.built ? `${count} dishes · enter →` : count ? `${count} ${count === 1 ? "dish" : "dishes"} ☁︁` : "not yet"}</div>`;
+    labelEl.innerHTML = `<div class="n">${region.name}</div>${region.built ? "" : '<div class="c">Coming soon</div>'}`;
     const label = new CSS2DObject(labelEl);
     label.position.set(0, h + (region.built ? 6.5 : 4.6), region.size * 0.15);
     g.add(label);

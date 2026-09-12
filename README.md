@@ -126,9 +126,11 @@ nutrition table; the section parser in `server/index.mjs` treats lists under a N
 | Action | How |
 | --- | --- |
 | Enter a world | click its model on the atlas |
+| Choose a region | use the location picker at the top |
 | Look around | drag pans, wheel zooms, right-drag peeks |
 | Open something | click any object, stall, animal or building |
 | Leave | `Esc` closes a card, then leaves the world |
+| Sound and help | open Settings at the top right; sound is remembered on this device |
 
 ## House rules for a world
 

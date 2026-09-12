@@ -7,7 +7,7 @@ import { build } from 'rolldown';
 const dir = await mkdtemp(join(tmpdir(), 'room-sound-'));
 try {
   await build({ input: 'src/fw/room-sound.ts', platform: 'node', output: { file: join(dir, 'sound.mjs'), format: 'esm', banner: 'import.meta.env = { BASE_URL: "/food-world/" };' } });
-  const { roomSoundSamples, playRoomSound, preloadCatSound } = await import(pathToFileURL(join(dir, 'sound.mjs')));
+  const { roomSoundSamples, playRoomSound, preloadCatSound, isRoomSoundEnabled, setRoomSoundEnabled } = await import(pathToFileURL(join(dir, 'sound.mjs')));
   const signatures = new Set();
   for (const kind of ['woof','flour','sizzle','tea','water','leaves','chime','broth']) {
     let seed = 42;
@@ -99,8 +99,31 @@ try {
   assert.ok(nextCat.sources[0].buffer.recorded, 'cat playback uses decoded audio, never synthetic tones');
   assert.equal(requests, 1, 'recording is cached for subsequent taps');
   stopNextCat();
+  const saved = new Map();
+  Object.defineProperty(globalThis, 'localStorage', { configurable: true, value: { getItem: key => saved.get(key) ?? null, setItem: (key, value) => saved.set(key, value) } });
+  playRoomSound('tea');
+  const playing = contexts.at(-1); playing.unlock(); await flush();
+  setRoomSoundEnabled(false);
+  assert.ok(playing.sources[0].stopped, 'muting stops the current sound immediately');
+  assert.equal(isRoomSoundEnabled(), false);
+  const mutedCount = contexts.length;
+  playRoomSound('broth')();
+  assert.equal(contexts.length, mutedCount, 'muted taps never create an audio context');
+  const reloaded = await import(`${pathToFileURL(join(dir, 'sound.mjs'))}?saved`);
+  assert.equal(reloaded.isRoomSoundEnabled(), false, 'a later visit restores the saved mute preference');
+  setRoomSoundEnabled(true);
+  playRoomSound('tea');
+  const unlocking = contexts.at(-1);
+  setRoomSoundEnabled(false); unlocking.unlock(); await flush();
+  assert.equal(unlocking.sources.length, 0, 'mute during browser unlock prevents delayed playback');
+  Object.defineProperty(globalThis, 'localStorage', { configurable: true, get() { throw new Error('storage blocked'); } });
+  setRoomSoundEnabled(true);
+  assert.ok(isRoomSoundEnabled(), 'settings still work when browser storage is blocked');
+  const privateVisit = await import(`${pathToFileURL(join(dir, 'sound.mjs'))}?private`);
+  assert.ok(privateVisit.isRoomSoundEnabled(), 'unavailable storage does not prevent startup');
+  delete globalThis.localStorage;
   globalThis.fetch = originalFetch;
   delete globalThis.AudioContext;
   playRoomSound('chime')();
-  console.log('PASS: real cat recording without fixed ringing tones, decode cancellation, caching, 8 synthesized sounds, gentle levels, envelopes, one voice, delayed unlock, exit and denied audio.');
+  console.log('PASS: real cat recording, decode cancellation, caching, 8 synthesized sounds, gentle levels, one voice, delayed unlock, mute cancellation and persistence, blocked storage, exit and denied audio.');
 } finally { await rm(dir, { recursive: true, force: true }); }

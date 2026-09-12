@@ -56,11 +56,22 @@ export function preloadCatSound(): Promise<ArrayBuffer> {
   return catRecording;
 }
 
+const SOUND_KEY = 'food-world:sound';
+let soundEnabled = true;
+try { soundEnabled = localStorage.getItem(SOUND_KEY) !== 'off'; } catch { /* Storage is optional. */ }
+export const isRoomSoundEnabled = () => soundEnabled;
+
 let activeStop: (() => void) | undefined;
+export function setRoomSoundEnabled(enabled: boolean) {
+  soundEnabled = enabled;
+  if (!enabled) activeStop?.();
+  try { localStorage.setItem(SOUND_KEY, enabled ? 'on' : 'off'); } catch { /* Keep the preference for this visit. */ }
+}
+
 /** One voice at a time. Exit/repeat cancels even a pending browser audio unlock. */
 export function playRoomSound(kind: RoomSound): () => void {
   activeStop?.();
-  if (typeof AudioContext === 'undefined') return () => {};
+  if (!soundEnabled || typeof AudioContext === 'undefined') return () => {};
   let context: AudioContext | undefined, source: AudioBufferSourceNode | undefined;
   let restoreSession = () => {};
   let stopped = false;

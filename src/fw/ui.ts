@@ -121,7 +121,7 @@ export function mountUi(h: UiHandlers) {
       ${storiesThrough(o).map((st) => `<button class="explore origin" data-story="${st.id}"><span class="em">${st.emoji}</span><span><b>Where it came from</b><small>${esc(st.title)} · ${esc(st.chapters[0].era)}</small></span></button>`).join("")}
       ${o.flavour ? `<h4>Flavour</h4><div class="chips">${o.flavour.map((f) => `<span class="chip fl">${esc(f)}</span>`).join("")}</div>` : ""}
       ${o.partners ? `<h4>Often paired with</h4><div class="chips">${partnerObjs.map(({ p, obj }) => obj ? `<button class="chip link" data-object="${obj.id}">${obj.emoji} ${esc(p)}</button>` : `<span class="chip">${esc(p)}</span>`).join("")}</div>` : ""}
-      ${recipes.length ? `<h4>Appears in ${recipes.length} ${recipes.length === 1 ? "dish" : "dishes"} you cook</h4>${dishRows(recipes)}` : ""}
+      ${recipes.length ? `<h4>Related recipes</h4>${dishRows(recipes)}` : ""}
       ${nextPlaces.length ? `<h4>Continue exploring</h4><div class="chips">${nextPlaces.map(p => `<button class="chip link" data-object="${p.id}">${p.emoji} ${esc(p.name)}</button>`).join('')}</div>` : ''}
 `;
     el.querySelectorAll<HTMLButtonElement>("button[data-story]").forEach((b) => b.addEventListener("click", () => h.onStartStory(b.dataset.story!)));
@@ -156,7 +156,7 @@ export function mountUi(h: UiHandlers) {
     el.querySelector("#ingredients")!.addEventListener("click", () => h.onExploreIngredients(r));
   }
 
-  function showRegion(region: MapRegion, count: number, tourUrl: string) {
+  function showRegion(region: MapRegion) {
     current.recipes = [];
     el.className = "";
     el.innerHTML = `
@@ -164,10 +164,9 @@ export function mountUi(h: UiHandlers) {
       <div class="badge">${region.emoji[0]}</div>
       <span class="ribbon">Region · ${region.emoji.slice(1).join(" ")}</span>
       <h2>${esc(region.name)}</h2>
-      <p class="tagline">${count ? `${count} ${count === 1 ? "dish" : "dishes"} you cook come from here.` : "Nothing cooked from here yet."}</p>
       ${region.built
-        ? `<p class="blurb">The only region built so far. Mountains, a river, a village and every Chinese dish in the cookbook.</p><button class="explore" id="enter">Enter ${esc(region.name)} →</button>`
-        : `<p class="blurb">This region isn't built yet. Its dishes live on the <a href="${tourUrl}" style="color:inherit">island map</a> for now.</p>`}`;
+        ? `<button class="explore" id="enter">Enter ${esc(region.name)} →</button>`
+        : `<p class="blurb">This part of the world is still growing.</p>`}`;
     el.hidden = false;
     el.querySelector("#enter")?.addEventListener("click", () => h.onEnterRegion(region));
   }
@@ -249,24 +248,21 @@ export async function showRecipePage(r: EnrichedRecipe, onBack: () => void) {
   if (notes.length) page.querySelector("#notes")!.innerHTML = `<h3>Notes</h3>${notes.map((n) => `<p class="${/^(cooking time|servings|substitutions|spice level|storage|labels)/i.test(n) ? "fact" : "story"}">${esc(n)}</p>`).join("")}`;
 }
 
-// ---------- crumbs, hint, toast ----------
+// ---------- navigation and toast ----------
 
 export function setCrumbs(parts: { label: string; onClick?: () => void }[], areas?: { current: Area | null; areas: Area[]; onPick: (a: Area | null) => void }) {
   const nav = document.getElementById("crumbs")!;
   nav.hidden = false;
-  nav.innerHTML = parts.map((p, i) => `${i ? `<span class="sep">›</span>` : ""}${p.onClick ? `<button data-i="${i}">${esc(p.label)}</button>` : `<span class="here">${esc(p.label)}</span>`}`).join("")
-    + (areas ? `<span class="areas">${areas.areas.filter(a => !["aegean", "anatolia", "blacksea-tr"].includes(a)).map((a) => `<button data-area="${a}" class="${areas.current === a ? "on" : ""}">${a === "istanbul" ? "Turkey" : AREAS[a].name}<span class="zh">${a === "istanbul" ? "Türkiye" : AREAS[a].zh}</span></button>`).join("")}</span>` : "");
+  nav.setAttribute("aria-label", "World navigation");
+  nav.innerHTML = parts.map((p, i) => p.onClick ? `<button type="button" data-i="${i}" aria-label="${esc(p.label)}" title="${esc(p.label)}">←</button>` : areas ? "" : `<span class="here">${esc(p.label)}</span>`).join("")
+    + (areas ? `<select aria-label="Choose a region"><option value="">${esc(parts[parts.length - 1].label)}</option>${areas.areas.filter(a => !['aegean', 'anatolia', 'blacksea-tr'].includes(a)).map(a => `<option value="${a}"${areas.current === a ? ' selected' : ''}>${esc(a === 'istanbul' ? 'Turkey · Türkiye' : `${AREAS[a].name} · ${AREAS[a].zh}`)}</option>`).join("")}</select>` : "");
   nav.querySelectorAll<HTMLButtonElement>("button[data-i]").forEach((b) => b.addEventListener("click", () => parts[Number(b.dataset.i)].onClick?.()));
-  nav.querySelectorAll<HTMLButtonElement>("button[data-area]").forEach((b) => b.addEventListener("click", () => areas?.onPick(areas.current === b.dataset.area ? null : (b.dataset.area as Area))));
-}
-
-let hintTimer: number | undefined;
-export function hint(text: string, ms = 7000) {
-  const el = document.getElementById("hint")!;
-  if (!document.getElementById("story")!.hidden) return;   // a story panel stands where the hint would go: the story speaks for itself
-  el.hidden = false; el.textContent = text; el.classList.remove("fade");
-  clearTimeout(hintTimer);
-  hintTimer = window.setTimeout(() => el.classList.add("fade"), ms);
+  const picker = nav.querySelector<HTMLSelectElement>("select");
+  picker?.addEventListener("change", () => {
+    const focused = document.activeElement === picker;
+    areas?.onPick(picker.value ? picker.value as Area : null);
+    if (focused) nav.querySelector<HTMLSelectElement>("select")?.focus();
+  });
 }
 
 export function toast(message: string, kind: "ok" | "err" = "ok", ms = 2600) {

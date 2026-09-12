@@ -11,6 +11,8 @@ export type RoomInteraction = {
   /** Diameter as a fraction of the painting width, independently composed. */
   extent: [number, number];
   folder: string;
+  /** Optional supplied food illustration shown in the discovery card. */
+  food?: string;
   wideOnly?: boolean;
 };
 type Entry = { wideOnly?: boolean; label: string; text: string; effect: RoomEffect; wide: Point; phone: Point; extent?: [number, number] };

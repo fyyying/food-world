@@ -115,7 +115,8 @@ export function ferry(): P {
   for (let i = 0; i < 5; i++) add(g, box(0.25, 0.25, 0.04, "#6fb3c9"), -1.1 + i * 0.45, 0.8, 0.52);
   add(g, cyl(0.16, 0.16, 0.7, "#e0b34c", 8), -0.4, 1.4, 0); add(g, cyl(0.17, 0.17, 0.12, "#2a2a2e", 8), -0.4, 1.8, 0);
   add(g, box(0.5, 0.35, 0.02, "#c9302a"), 1.3, 1.3, 0); add(g, cyl(0.015, 0.015, 0.8, "#f4f1ea", 4), 1.3, 1.1, 0);
-  for (let i = 0; i < 3; i++) add(g, local(pick(["#3f6fb5", "#c0392b", "#f4f1ea"])), -0.9 + i * 0.7, 0.55, i % 2 ? 0.3 : -0.3).scale.setScalar(0.8);
+  // Passengers stand on the open upper deck, clear of the cabin and funnel.
+  for (const [x,z] of [[-.95,-.27],[.30,-.27],[.65,.27]]) add(g, local(pick(["#3f6fb5", "#c0392b", "#f4f1ea"])), x, 1.11, z).scale.setScalar(0.65);
   g.userData.smoke = new THREE.Vector3(-0.4, 1.9, 0);
   g.userData.tick = (t) => { g.rotation.z = Math.sin(t * 0.9) * 0.02; };
   return g;
@@ -176,7 +177,9 @@ export function bazaar(): P {
   const g = group();
   add(g, new THREE.Mesh(new THREE.PlaneGeometry(16, 10), mat("#c9bda3")), 0, 0.02, 0).rotation.x = -Math.PI / 2;
   for (const x of [-7.5, -2.5, 2.5, 7.5]) for (const z of [-4.5, 4.5]) add(g, box(0.5, 3.4, 0.5, ME.stoneDark), x, 1.7, z);
-  for (let i = 0; i < 4; i++) add(g, new THREE.Mesh(new THREE.CylinderGeometry(2.1, 2.1, 4.3, 12, 1, false, 0, Math.PI), mat("#e3d7bf", { transparent: true, opacity: 0.32 })), -6 + i * 4, 3.4, 0).rotation.set(0, 0, Math.PI / 2), (g.children[g.children.length - 1] as THREE.Mesh).renderOrder = 3;   // see-through vaults
+  for (const x of [-7.5,-2.5,2.5,7.5]) add(g,box(.5,.25,9.5,ME.stoneDark),x,3.3,0);
+  // Opaque vaults avoid transparent surfaces sorting over one another as the camera moves.
+  for (let i = 0; i < 4; i++) add(g, new THREE.Mesh(new THREE.CylinderGeometry(2.1, 2.1, 4, 12, 1, false, 0, Math.PI), mat("#e3d3b3")), -6 + i * 4, 3.4, 0).rotation.set(0, 0, Math.PI / 2);
   for (let i = 0; i <= 4; i++) add(g, new THREE.Mesh(new THREE.TorusGeometry(2.1, 0.12, 6, 14, Math.PI), mat(ME.stoneDark)), -8 + i * 4, 3.4, 0).rotation.y = Math.PI / 2;
   const vendors: Fig[] = [];
   const lamps: THREE.Mesh[] = [];
@@ -194,7 +197,7 @@ export function bazaar(): P {
       case "tea": for (let i = 0; i < 6; i++) add(goods, cyl(0.06, 0.04, 0.14, "#8fc4c9", 6), -0.9 + i * 0.36, 0.07, 0.3); add(goods, cyl(0.24, 0.2, 0.5, ME.copper, 10), 0.4, 0.25, -0.2); add(goods, cyl(0.12, 0.12, 0.12, ME.copper, 8), 0.4, 0.56, -0.2); add(goods, box(0.5, 0.2, 0.3, "#2a2a2e"), -0.6, 0.1, -0.2); break;
       case "olives": for (let i = 0; i < 3; i++) { add(goods, cyl(0.28, 0.24, 0.28, "#8c9096", 10), -0.85 + i * 0.7, 0.14, 0); for (let k = 0; k < 14; k++) add(goods, ball(0.045, ["#6f9b57", "#2f3a2a", "#5a3a5a"][i], 5), -0.85 + i * 0.7 + (rnd() - 0.5) * 0.4, 0.3 + (rnd() - 0.5) * 0.04, (rnd() - 0.5) * 0.4); } for (let k = 0; k < 2; k++) { add(goods, box(0.22, 0.34, 0.16, "#e0b34c"), 0.75 + (k % 2) * 0.28, 0.17, -0.3 + k * 0.1); add(goods, box(0.14, 0.14, 0.02, "#2f5d3f"), 0.75 + (k % 2) * 0.28, 0.2, -0.21 + k * 0.1); } for (let k = 0; k < 2; k++) { add(goods, cyl(0.05, 0.06, 0.3, "#c9b45a", 7), 0.75 + k * 0.28, 0.15, 0.35); add(goods, cyl(0.02, 0.02, 0.1, "#c9b45a", 5), 0.75 + k * 0.28, 0.35, 0.35); } break;   // green, black and purple olives in tubs, oil in tins and bottles
     }
-    const v = local(pick(["#3f6fb5", "#c0392b", "#f4f1ea", "#2f5d3f"]), { apron: true, fez: kind === "tea", skull: kind === "spices" }); add(s, v, 0.3, 0, -0.95); vendors.push(v);
+    const v = local(pick(["#3f6fb5", "#c0392b", "#f4f1ea", "#2f5d3f"]), { apron: true }); add(s, v, 0.3, 0.02, -0.95); v.name='turkish-market-vendor'; vendors.push(v);
     return s;
   };
   const layout: [string, number, number, number][] = [["spices", -5.5, -2.6, 0], ["lamps", -0.5, -2.6, 0], ["sweets", 4.5, -2.6, 0], ["nuts", -4, 2.6, Math.PI], ["tea", 1, 2.6, Math.PI], ["olives", 6, 2.6, Math.PI]];
@@ -203,10 +206,11 @@ export function bazaar(): P {
   type Shopper = { p: Fig; pos: THREE.Vector3; target: THREE.Vector3; wait: number; speed: number };
   const shoppers: Shopper[] = [0, 1, 2].map((i) => { const p = local(pick(["#c0392b", "#f2c14e", "#3f6fb5", "#f4f1ea"]), { hijab: i === 2 ? "#9b59b6" : undefined, fez: i === 1 }); const st = spots[i].clone(); p.position.copy(st); g.add(p); return { p, pos: st, target: spots[(i + 2) % spots.length].clone(), wait: i * 0.8, speed: 0.7 + rnd() * 0.4 }; });
   const re = reaction(0.6);
+  g.userData.ownReaction=true;
   g.userData.poke = () => { re.poke(); bubble(g, "Buyurun! Welcome!", 3.9, 1400); };
   g.userData.tick = (t, dt) => {
     const k = re.step(dt);
-    vendors.forEach((v, i) => { if (v.userData.upper) v.userData.upper.rotation.z = k * Math.sin(t * 8 + i) * 0.35; v.position.y = k * Math.abs(Math.sin(t * 9 + i)) * 0.2; });
+    vendors.forEach((v, i) => { if (v.userData.upper) v.userData.upper.rotation.z = k * Math.sin(t * 8 + i) * 0.18; });
     lamps.forEach((l, i) => { l.rotation.z = Math.sin(t * 1.4 + i) * 0.08 + k * Math.sin(t * 9 + i) * 0.5; });
     for (const sh of shoppers) {
       if (sh.wait > 0) { sh.wait -= dt; continue; }

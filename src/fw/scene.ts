@@ -243,7 +243,9 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
         const cropW = width * (isPortrait ? .50 : .17), cropH = cropW * .56;
         const left = Math.max(0, Math.min(width - cropW, x * width - cropW / 2));
         const top = Math.max(0, Math.min(height - cropH, y * height - cropH / 2));
-        detail.innerHTML = `<svg viewBox="${left} ${top} ${cropW} ${cropH}" xmlns="http://www.w3.org/2000/svg"><image href="${import.meta.env.BASE_URL}scenes/${folder}/${isPortrait ? 'portrait' : 'wide'}.jpg" width="${width}" height="${height}" preserveAspectRatio="none"/></svg>`;
+        detail.innerHTML = spot.interaction.food
+          ? `<img class="scene-food" src="${import.meta.env.BASE_URL}scenes/turkey-food/${esc(spot.interaction.food)}.webp" alt="${esc(spot.label)}">`
+          : `<svg viewBox="${left} ${top} ${cropW} ${cropH}" xmlns="http://www.w3.org/2000/svg"><image href="${import.meta.env.BASE_URL}scenes/${folder}/${isPortrait ? 'portrait' : 'wide'}.jpg" width="${width}" height="${height}" preserveAspectRatio="none"/></svg>`;
       }
       feedback.querySelector("strong")!.textContent = spot.label;
       feedback.querySelector("p")!.textContent = spot.text;

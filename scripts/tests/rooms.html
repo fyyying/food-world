@@ -1,6 +1,8 @@
 <!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>Room interaction checks</title></head><body><div id="app"></div><script type="module">
 import '/src/fw/style.css';
-import { SCENES } from '/src/fw/scenes-china.ts';
+import { SCENES as CHINA_SCENES } from '/src/fw/scenes-china.ts';
+import { TURKEY_SCENES } from '/src/fw/scenes-turkey.ts';
+const SCENES = { ...CHINA_SCENES, ...TURKEY_SCENES };
 import { openLivingScene } from '/src/fw/scene.ts';
 // Optional real-browser audio diagnostics: ?room=home_kitchen&portrait&audio
 // Observe the production control's source; do not replace or mock playback.

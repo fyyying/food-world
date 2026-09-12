@@ -1,9 +1,11 @@
+import { TURKEY_SOURCES } from './turkey-stories';
 import { escapeHtml as esc } from "./plates";
 import { fetchBody, minutesLabel, type RecipeBody } from "../data";
 import { imageUrl } from "../data";
 import { AREAS, SPICE, objectById, type Area, type EnrichedRecipe, type MapRegion, type WorldObject } from "./graph";
 import { snapshot } from "./snapshot";
 import { STORIES } from "./stories";
+import { TURKEY_CARD_ART, TURKEY_NEXT } from "./turkey-objects";
 
 export type UiHandlers = {
   onClose: () => void;
@@ -29,7 +31,9 @@ const CARD_ART: Record<string, string> = {
   cabbage: "chinese-cabbage", sheep: "lamb-north", millet: "grain", scallion: "scallion", xjsheep: "lamb", cumin: "cumin", carrot: "carrot", apricot: "walnut", osmanthus: "osmanthus",
   kebab: "kebab-plate", naan: "naan-breads", polo: "polo", laghman: "laghman-bowl", bazaar: "fruit-stand", grapes: "grapes", oasis: "melon", chaikhana: "teapot", caravan: "rug", xjhome: "dough", feast: "dastikhan", tianshan: "karez",
 };
-const cardArt = (id: string) => (CARD_ART[id] ? `${import.meta.env.BASE_URL}scenes/props/${CARD_ART[id]}.webp` : null);
+const cardArt = (o: WorldObject) => o.world === 'middle-east' && TURKEY_CARD_ART[o.id]
+  ? `${import.meta.env.BASE_URL}scenes/turkey-food/${TURKEY_CARD_ART[o.id]}.webp`
+  : o.world === 'china' && CARD_ART[o.id] ? `${import.meta.env.BASE_URL}scenes/props/${CARD_ART[o.id]}.webp` : null;
 const ICON_KEYS: Record<string, true> = { beefCe: true, mushroomsCe: true, pastryCe: true, beansWalnut: true, cheeseCe: true, paprika: true, khmeli: true, bogracs: true, supra: true, roastPub: true, bigBen: true, towerBridge: true, londonEye: true, redBus: true, parliamentHu: true, chainBridge: true, thermalBath: true, puszta: true, alps: true, chalet: true, cableCar: true, tbilisi: true, sulfurBaths: true, jvari: true, qvevri: true, blackSea: true, fishJp: true, misoSoy: true, vegJp: true, riceJp: true, wheatJp: true, dashi: true, sesameGinger: true, umami: true, ramen: true, robata: true, saikyo: true, tonkatsu: true, shibuya: true, tokyoTower: true, kinkakuji: true, torii: true, miyajima: true, fuji: true, onsen: true, shinkansen: true, sakura: true, bamboo: true, beefNA: true, porkNA: true, chickenNA: true, cornNA: true, dairyNA: true, mapleApple: true, citrusNA: true, bananaNut: true, smoke: true, chilliNA: true, smokehouse: true, diner: true, burgerStand: true, farmKitchen: true, backyard: true, bakeStand: true, farmersMarket: true, slawVeg: true, hotDog: true, liberty: true, lighthouse: true, barnLand: true, ferrisWheel: true, saloon: true, pumpjack: true, hitchingPost: true, goldenGate: true, redwoods: true, foodTruck: true, riceSea: true, chickenSea: true, herbsSea: true, coconutSea: true, spicesSea: true, chilliesSea: true, fishSauce: true, curryPaste: true, hanoiKitchen: true, banhMi: true, floatingMarket: true, "stall-fruit": true, "stall-noodles": true, wat: true, almsRound: true, hoanKiem: true, motorbikes: true, stilts: true, karsts: true, longtail: true, tukTuk: true, wheatNaan: true, dairyIn: true, chickenIn: true, lentils: true, spicesIn: true, coconut: true, aromaticsIn: true, vegIn: true, mango: true, tandoor: true, dhaba: true, thali: true, southKitchen: true, market: true, streetFood: true, dabbawala: true, backwaters: true, nets: true, elephant: true, saladVeg: true, feta: true, olivesGr: true, fishMed: true, oranges: true, cabbage: true, pulses: true, spicesMed: true, tagine: true, taverna: true, plancha: true, konoba: true, souk: true, mintTea: true, jemaa: true, flamenco: true, riceIt: true, spicesMe: true, chickpeas: true, lambYogurt: true, herbs: true, oliveLemon: true, dates: true, spices: true, saffron: true, mangal: true, spit: true, taboon: true, mezze: true, bazaar: true, tea: true, sweets: true, coffee: true, pilaf: true, camels: true, corn: true, chilliesMx: true, tomatoMx: true, avocado: true, limes: true, cacao: true, beefMx: true, carnitas: true, comal: true, molcajete: true, trompo: true, fonda: true, churros: true, tequila: true, mole: true, pib: true, mariachi: true, xochimilco: true, kimchi: true, hanwoo: true, riceKr: true, namul: true, seafoodKr: true, tangerine: true, blackPig: true, gochugaru: true, aromaticsKr: true, grill: true, dolsot: true, gwangjang: true, pojangmacha: true, "stall-gimbap": true, tomato: true, pasta: true, olive: true, cheese: true, basil: true, italyBeef: true, italyChicken: true, mushrooms: true, lemon: true, seafood: true, oven: true, ragu: true, gelateria: true, bacaro: true, "stall-arancini": true, pastry: true, garlic: true, fish: true, chilli: true, pepper: true, jars: true, tofu: true, veg: true, mushroom: true, rice: true, wheat: true, cow: true, pig: true, chicken: true, aromatics: true, wok: true, claypot: true, griddle: true, prep: true, noodle: true, dumpling: true, hotpot: true, teahouse: true };
 
 /** Which world object a "paired with" word points at, so every partner that exists in the world is clickable. */
@@ -100,11 +104,12 @@ export function mountUi(h: UiHandlers) {
     const kindLabel = { ingredient: "Ingredient", flavour: "Signature flavour", technique: "Technique", landmark: "Place", place: "Place", dish: "Dish" }[o.kind];
     const partnerObjs = (o.partners ?? []).map((p) => ({ p, obj: partnerObject(p, o, allObjects) }));
     const story = o.blurb.split(/\n\n+/).map((para) => `<p class="blurb">${esc(para)}</p>`).join("");
+    const nextPlaces = (o.world === 'middle-east' ? TURKEY_NEXT[o.id] ?? [] : []).flatMap(id => allObjects.filter(p => p.id === id));
     el.className = "";
     el.innerHTML = `
       <button class="close" aria-label="Close">×</button>
       <div class="head">
-        <div class="badge${cardArt(o.id) ? " painted" : ""}">${(() => { const art = cardArt(o.id); if (art) return `<img src="${art}" alt="">`; const img = snapshot(o.id in ICON_KEYS ? o.id : o.prop); return img ? `<img src="${img}" alt="">` : o.emoji; })()}</div>
+        <div class="badge${cardArt(o) ? " painted" : ""}">${(() => { const art = cardArt(o); if (art) return `<img src="${art}" alt="">`; const img = snapshot(o.id in ICON_KEYS ? o.id : o.prop); return img ? `<img src="${img}" alt="">` : o.emoji; })()}</div>
         <div class="titles">
           <h2>${esc(o.name)}${o.zh ? `<span class="zh">${o.zh}</span>` : ""}</h2>
           <div class="kind">${o.emoji} ${kindLabel} · ${AREAS[o.area].name}</div>
@@ -112,10 +117,12 @@ export function mountUi(h: UiHandlers) {
       </div>
       <p class="tagline">${esc(o.tagline)}</p>
       ${story}
+      ${o.world==='middle-east' && TURKEY_SOURCES[o.id]?.length ? `<details class="story-sources"><summary>Sources and further reading</summary>${TURKEY_SOURCES[o.id].map(s=>`<p><a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${esc(s.title)}</a></p>`).join('')}</details>` : ''}
       ${storiesThrough(o).map((st) => `<button class="explore origin" data-story="${st.id}"><span class="em">${st.emoji}</span><span><b>Where it came from</b><small>${esc(st.title)} · ${esc(st.chapters[0].era)}</small></span></button>`).join("")}
       ${o.flavour ? `<h4>Flavour</h4><div class="chips">${o.flavour.map((f) => `<span class="chip fl">${esc(f)}</span>`).join("")}</div>` : ""}
       ${o.partners ? `<h4>Often paired with</h4><div class="chips">${partnerObjs.map(({ p, obj }) => obj ? `<button class="chip link" data-object="${obj.id}">${obj.emoji} ${esc(p)}</button>` : `<span class="chip">${esc(p)}</span>`).join("")}</div>` : ""}
       ${recipes.length ? `<h4>Appears in ${recipes.length} ${recipes.length === 1 ? "dish" : "dishes"} you cook</h4>${dishRows(recipes)}` : ""}
+      ${nextPlaces.length ? `<h4>Continue exploring</h4><div class="chips">${nextPlaces.map(p => `<button class="chip link" data-object="${p.id}">${p.emoji} ${esc(p.name)}</button>`).join('')}</div>` : ''}
 `;
     el.querySelectorAll<HTMLButtonElement>("button[data-story]").forEach((b) => b.addEventListener("click", () => h.onStartStory(b.dataset.story!)));
     el.hidden = false;
@@ -248,7 +255,7 @@ export function setCrumbs(parts: { label: string; onClick?: () => void }[], area
   const nav = document.getElementById("crumbs")!;
   nav.hidden = false;
   nav.innerHTML = parts.map((p, i) => `${i ? `<span class="sep">›</span>` : ""}${p.onClick ? `<button data-i="${i}">${esc(p.label)}</button>` : `<span class="here">${esc(p.label)}</span>`}`).join("")
-    + (areas ? `<span class="areas">${areas.areas.map((a) => `<button data-area="${a}" class="${areas.current === a ? "on" : ""}">${AREAS[a].name}<span class="zh">${AREAS[a].zh}</span></button>`).join("")}</span>` : "");
+    + (areas ? `<span class="areas">${areas.areas.filter(a => !["aegean", "anatolia", "blacksea-tr"].includes(a)).map((a) => `<button data-area="${a}" class="${areas.current === a ? "on" : ""}">${a === "istanbul" ? "Turkey" : AREAS[a].name}<span class="zh">${a === "istanbul" ? "Türkiye" : AREAS[a].zh}</span></button>`).join("")}</span>` : "");
   nav.querySelectorAll<HTMLButtonElement>("button[data-i]").forEach((b) => b.addEventListener("click", () => parts[Number(b.dataset.i)].onClick?.()));
   nav.querySelectorAll<HTMLButtonElement>("button[data-area]").forEach((b) => b.addEventListener("click", () => areas?.onPick(areas.current === b.dataset.area ? null : (b.dataset.area as Area))));
 }

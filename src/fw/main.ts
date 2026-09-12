@@ -18,7 +18,8 @@ import { buildJapan } from "./world-japan";
 import { buildCeurope } from "./world-ceurope";
 import { auditDiorama } from "./audit";
 import { openLivingScene, type LivingScene } from "./scene";
-import { SCENES } from "./scenes-china";
+import { SCENES as CHINA_SCENES } from "./scenes-china";
+import { TURKEY_SCENES } from "./scenes-turkey";
 import { STORIES, type Story } from "./stories";
 import { escapeHtml } from "./plates";
 import { type Diorama, type DishMarker, type Placed } from "./worldkit";
@@ -26,6 +27,7 @@ const areaCenter = (a: Area) => new THREE.Vector3(AREAS[a].center[0], 0, AREAS[a
 import { mountUi, showRecipePage, setCrumbs, hint, toast } from "./ui";
 import { person } from "./props";
 import { snapshotObject } from "./snapshot";
+const SCENES = { ...CHINA_SCENES, ...TURKEY_SCENES };
 
 // ---------- renderer ----------
 const canvas = document.getElementById("stage") as HTMLCanvasElement;
@@ -182,7 +184,8 @@ function configureControls(l: Level) {
     controls.minPolarAngle = 0.45; controls.maxPolarAngle = 1.15;
     controls.minAzimuthAngle = -0.6; controls.maxAzimuthAngle = 0.6;
   } else {
-    controls.minDistance = 10; controls.maxDistance = 90;
+    controls.minDistance = 10; controls.maxDistance = world === 'middle-east' ? 500 : 90;
+    worldScene.fog = new THREE.Fog('#e9e0cd', world === 'middle-east' ? 500 : 90, world === 'middle-east' ? 600 : 200);
     controls.minPolarAngle = 0.5; controls.maxPolarAngle = 1.12;
     controls.minAzimuthAngle = -0.75; controls.maxAzimuthAngle = 0.75;
   }
@@ -451,7 +454,7 @@ function enterRegion(region: MapRegion) {
   ui.hide(); storiesBtn.hidden = true;
   const id = region.id as WorldId;
   if (diorama) worldScene.remove(diorama.group);
-  world = id; currentArea = null;
+  world = id; currentArea = id === 'middle-east' ? 'istanbul' : null;
   diorama = getWorld(id);
   china = worldRecipes(id, allRecipes).map(enrich);
   worldScene.add(diorama.group);
@@ -463,8 +466,9 @@ function enterRegion(region: MapRegion) {
     fade.classList.add("on");
     setTimeout(() => {
       level = "world"; switchScene(worldScene); configureControls("world");
-      camera.position.set(-6, 80, 90); controls.target.set(-4, 0, 0);
-      fly(new THREE.Vector3(-2, 48, 62), new THREE.Vector3(-4, 0, 2), 2.0);
+      const target = id === 'middle-east' ? areaCenter('istanbul') : new THREE.Vector3(-4, 0, 2);
+      camera.position.copy(target).add(new THREE.Vector3(-2,80,90)); controls.target.copy(target);
+      fly(target.clone().add(id === 'middle-east' ? new THREE.Vector3(2,36,46) : new THREE.Vector3(2,48,60)), target, 2.0);
       fade.classList.remove("on");
       setCrumbsWorld();
       hint("Drag to pan · scroll to zoom · right-drag to peek around. Tap anything that looks edible.", 9000);
@@ -475,7 +479,19 @@ function enterRegion(region: MapRegion) {
 function setCrumbsWorld() {
   setCrumbs([{ label: "🌍 Food World", onClick: () => leaveWorld() }, { label: `${WORLDS[world].name} · ${WORLDS[world].zh}` }], {
     current: currentArea, areas: areasOf(world),
-    onPick: (a) => { diorama?.pin(null); diorama?.highlight(null, null); currentArea = a; setCrumbsWorld(); if (a) { glideTo(areaCenter(a), 42, 1.3); hint(`${AREAS[a].name} · ${AREAS[a].blurb}`, 6000); } },
+    onPick: (a) => {
+      diorama?.pin(null); diorama?.highlight(null, null); currentArea = a; setCrumbsWorld();
+      if (a) {
+        const turkey = a === 'istanbul';
+        const distance = turkey ? Math.max(145, 118 / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect * .92)) : 42;
+        glideTo(turkey ? new THREE.Vector3(-6,0,-22) : areaCenter(a), distance, 1.3);
+        hint(`${AREAS[a].name} · ${AREAS[a].blurb}`, 6000);
+      }
+      else if (world === 'middle-east') {
+        const distance = Math.min(490, Math.max(215, 124 / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect * .9)));
+        glideTo(new THREE.Vector3(0,0,0), distance, 1.3);
+      }
+    },
   });
 }
 
@@ -504,8 +520,8 @@ function enterLivingScene(p: Placed, obj: WorldObject, recipes: EnrichedRecipe[]
     fade.classList.add("on");
     later(() => {
       controls.enabled = false;
-      // the dishes on the table, or, if no recipe sits here yet, what this kitchen cooks
-      const dishes = recipes.length ? recipes : china.filter((r) => r.area === obj.area).slice(0, 5);
+      // Turkish rooms only show recipes belonging here; coffee and tea do not inherit the area's kebab.
+      const dishes = recipes.length || world === 'middle-east' ? recipes : china.filter((r) => r.area === obj.area).slice(0, 5);
       // a place with stands inside (the market): each stand is a button in the scene that opens its own card
       const stalls = OBJECTS_NOW().filter((o) => o.parent === obj.id).map((st) => {
         const target = st.alias ? objectById(st.alias) : st;
@@ -718,6 +734,7 @@ function frame(forcedDt?: number) {
   controls.update();
   if (level === "map" || level === "home") { mapWorld?.tick(t, dt); routeTick(t); }
   if (level === "world") diorama?.tick(t, dt);
+  labelRenderer.domElement.classList.toggle('quiet-overview', level === 'world' && world === 'middle-east' && camera.position.distanceTo(controls.target) > 120);
   renderer.render(active, camera);
   labelRenderer.render(active, camera);
 }

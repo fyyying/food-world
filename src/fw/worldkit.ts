@@ -35,6 +35,7 @@ export type WorldSpec = {
   W: number; D: number;
   /** table centre on x, for worlds whose scenery sits off-centre (default 0) */
   cx?: number;
+  cz?: number;
   ground: string; plinth: string;
   recipes: EnrichedRecipe[];
   objects: WorldObject[];
@@ -94,17 +95,17 @@ function tintFade() {
 
 export function buildWorld(spec: WorldSpec): Diorama {
   const { W, D, recipes, objects: OBJECTS, props: PROPS } = spec;
-  const CX = spec.cx ?? 0;
+  const CX = spec.cx ?? 0, CZ = spec.cz ?? 0;
   const group = new THREE.Group();
   const tickers: ((t: number, dt: number) => void)[] = [];
   const place = <T extends THREE.Object3D>(o: T, x: number, z: number, rot = 0, s = 1): T => { o.position.set(x, TOP, z); o.rotation.y = rot; o.scale.setScalar(s); group.add(o); const tk = (o as unknown as P).userData?.tick; if (tk) tickers.push(tk); return o; };
 
   // ---------- base: a model on a wooden plinth ----------
   const plinth = new THREE.Mesh(new THREE.BoxGeometry(W + 4, 2.4, D + 4), mat(spec.plinth, { roughness: 0.6 }));
-  plinth.position.set(CX, -1.7, 0); plinth.receiveShadow = true; group.add(plinth);
-  add(group, new THREE.Mesh(new THREE.BoxGeometry(W + 4.6, 0.25, D + 4.6), mat("#8a5f3a")), CX, -0.55, 0);
+  plinth.position.set(CX, -1.7, CZ); plinth.receiveShadow = true; group.add(plinth);
+  add(group, new THREE.Mesh(new THREE.BoxGeometry(W + 4.6, 0.25, D + 4.6), mat("#8a5f3a")), CX, -0.55, CZ);
   const ground = new THREE.Mesh(new THREE.BoxGeometry(W, 1.0, D), mat(spec.ground));
-  ground.position.set(CX, -0.5, 0); ground.receiveShadow = true; group.add(ground);
+  ground.position.set(CX, -0.5, CZ); ground.receiveShadow = true; group.add(ground);
   // a tint is a soft-edged pool of colour on the ground: solid in the middle, fading to nothing at the rim, so regions blend instead of ending in a line
   // overlapping tints are transparent planes at (almost) the same height, so they get a fixed draw order in the order
   // they were laid down, plus a hair of height each; otherwise their order swaps with the camera angle and they flicker
@@ -136,7 +137,8 @@ export function buildWorld(spec: WorldSpec): Diorama {
       return p;
     }
     const prop = PROPS[obj.prop]();
-    prop.position.set(obj.pos[0], TOP, obj.pos[1]);
+    const baseY = TOP + (obj.elevation ?? 0);
+    prop.position.set(obj.pos[0], baseY, obj.pos[1]);
     prop.rotation.y = obj.rot ?? 0;
     group.add(prop);
     prop.updateMatrixWorld(true);
@@ -149,12 +151,12 @@ export function buildWorld(spec: WorldSpec): Diorama {
     const roam = obj.prop === "cow" ? 1.8 : 0;
     const hit = new THREE.Mesh(new THREE.BoxGeometry(Math.max(2.2, size.x + 0.4 + roam), Math.max(2, size.y + 0.6), Math.max(2.2, size.z + 0.4 + roam)), new THREE.MeshBasicMaterial({ visible: false }));
     hit.position.copy(center); group.add(hit);
-    const ring = ringMesh(Math.max(size.x, size.z) * 0.55 + 0.4); ring.position.set(center.x, TOP + 0.07, center.z); group.add(ring);
+    const ring = ringMesh(Math.max(size.x, size.z) * 0.55 + 0.4); ring.position.set(center.x, baseY + 0.07, center.z); group.add(ring);
     const labelEl = document.createElement("div");
     labelEl.className = "obj-label";
     labelEl.innerHTML = `<span class="pill">${obj.emoji} ${esc(obj.placeName ?? obj.name)}${obj.zh && !obj.placeName ? `<span class="zh">${obj.zh}</span>` : ""}<span class="k">${obj.placeName || obj.kind === "landmark" ? "place" : obj.kind}</span></span>`;
     const label = new CSS2DObject(labelEl); label.position.set(center.x, box.max.y + 0.4, center.z); group.add(label);
-    const p: Placed = { obj, group: prop, hit, labelEl, anchor: new THREE.Vector3(center.x, TOP, center.z), top: box.max.y, ring, small: spec.small.test(obj.prop) };
+    const p: Placed = { obj, group: prop, hit, labelEl, anchor: new THREE.Vector3(center.x, baseY, center.z), top: box.max.y, ring, small: spec.small.test(obj.prop) };
     hit.userData.placed = p;
     return p;
   });
@@ -231,7 +233,7 @@ export function buildWorld(spec: WorldSpec): Diorama {
   const sparkGeo = new THREE.BoxGeometry(0.16, 0.16, 0.16);
   const sparkMats = ["#f2c14e", "#ffffff", "#f4a6b8", "#e0483a", "#8fc4c9"].map((c) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.6, emissive: new THREE.Color(c), emissiveIntensity: 0.35 }));
   function burst(p: Placed) {
-    bounce.set(p.group, 1);
+    if(!p.group.userData.ownReaction) bounce.set(p.group, 1);
     const n = 0;   // no confetti: the object's own reaction and a small bounce are the whole answer
     for (let i = 0; i < n; i++) {
       const m = new THREE.Mesh(sparkGeo, sparkMats[i % sparkMats.length]);
@@ -303,7 +305,7 @@ export function buildWorld(spec: WorldSpec): Diorama {
 
   return {
     group, placed, dishes,
-    bounds: new THREE.Box3(new THREE.Vector3(CX - W / 2, 0, -D / 2), new THREE.Vector3(CX + W / 2, 0, D / 2)),
+    bounds: new THREE.Box3(new THREE.Vector3(CX - W / 2, 0, CZ - D / 2), new THREE.Vector3(CX + W / 2, 0, CZ + D / 2)),
     tick: (t, dt) => { for (const f of tickers) f(t, dt); },
     highlight,
     hover: (thing) => { hovered = thing && "obj" in thing ? thing : null; if (thing && "recipe" in thing) thing.group.scale.setScalar(1.15); },
@@ -344,13 +346,13 @@ export const freshWater = () => flowingWaterMaterial("#a8dfe6", "#6fc0cf");
 
 /** A river that meets the sea: fresh water upstream, fading into the sea's colours within `radius` of the mouth. */
 /** `axis: "z"` blends by distance along z only, so everything past the coast line (z ≥ mouth) is exactly the sea's colour, cap corners included. */
-export const estuaryWater = (x: number, z: number, radius: number, axis: "radial" | "z" = "radial") => flowingWaterMaterial("#a8dfe6", "#6fc0cf", { x, z, radius, shallow: "#4f95b8", deep: "#245f88", axis });
+export const estuaryWater = (x: number, z: number, radius: number, axis: "radial" | "z" | "x" = "radial") => flowingWaterMaterial("#a8dfe6", "#6fc0cf", { x, z, radius, shallow: "#4f95b8", deep: "#245f88", axis });
 
-export function flowingWaterMaterial(shallow = "#6ab3c2", deep = "#3f8fa4", mouth?: { x: number; z: number; radius: number; shallow: string; deep: string; axis?: "radial" | "z" }): THREE.ShaderMaterial {
+export function flowingWaterMaterial(shallow = "#6ab3c2", deep = "#3f8fa4", mouth?: { x: number; z: number; radius: number; shallow: string; deep: string; axis?: "radial" | "z" | "x" }): THREE.ShaderMaterial {
   const m = new THREE.ShaderMaterial({
     uniforms: {
       uTime: { value: 0 }, uShallow: { value: new THREE.Color(shallow) }, uDeep: { value: new THREE.Color(deep) },
-      uMouth: { value: new THREE.Vector4(mouth?.x ?? 0, mouth?.z ?? 0, mouth?.radius ?? 0, mouth?.axis === "z" ? 1 : 0) }, uSeaShallow: { value: new THREE.Color(mouth?.shallow ?? shallow) }, uSeaDeep: { value: new THREE.Color(mouth?.deep ?? deep) },
+      uMouth: { value: new THREE.Vector4(mouth?.x ?? 0, mouth?.z ?? 0, mouth?.radius ?? 0, mouth?.axis === "x" ? 2 : mouth?.axis === "z" ? 1 : 0) }, uSeaShallow: { value: new THREE.Color(mouth?.shallow ?? shallow) }, uSeaDeep: { value: new THREE.Color(mouth?.deep ?? deep) },
     },
     vertexShader: `varying vec3 vPos; void main(){ vec4 wp = modelMatrix * vec4(position,1.0); vPos = wp.xyz; gl_Position = projectionMatrix * viewMatrix * wp; }`,
     fragmentShader: `uniform float uTime; uniform vec3 uShallow; uniform vec3 uDeep; uniform vec4 uMouth; uniform vec3 uSeaShallow; uniform vec3 uSeaDeep; varying vec3 vPos;
@@ -361,7 +363,7 @@ export function flowingWaterMaterial(shallow = "#6ab3c2", deep = "#3f8fa4", mout
         vec2 p = vPos.xz;
         float n = noise(p*0.35 + vec2(uTime*0.12, -uTime*0.08))*0.6 + noise(p*0.9 - vec2(uTime*0.2, uTime*0.1))*0.4;
         float wave = 0.5 + 0.5*sin(p.x*1.6 + p.y*0.9 + uTime*1.4 + n*3.0);
-        float dMouth = uMouth.w > 0.5 ? max(0.0, uMouth.y - p.y) : distance(p, uMouth.xy);
+        float dMouth = uMouth.w > 1.5 ? max(0.0, uMouth.x - p.x) : uMouth.w > 0.5 ? max(0.0, uMouth.y - p.y) : distance(p, uMouth.xy);
         float toSea = uMouth.z > 0.0 ? 1.0 - smoothstep(0.0, uMouth.z, dMouth) : 0.0;   // 1 at (and past) the river mouth, 0 upstream
         vec3 shallow = mix(uShallow, uSeaShallow, toSea), deep = mix(uDeep, uSeaDeep, toSea);
         vec3 col = mix(deep, shallow, wave*0.55 + n*0.25);

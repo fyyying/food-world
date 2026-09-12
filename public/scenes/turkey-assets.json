@@ -1,0 +1,515 @@
+[
+  {
+    "source": "bread horizontal.png",
+    "source_sha256": "f6daffb4317874b6e02e0101731b842886f3e0a5376db2a7e16abf9b70bcf6cc",
+    "path": "scenes/tr_simit/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "bread.png",
+    "source_sha256": "a1391b5dcfc2d7eab1cd5f3480593ea2d49ec6f2654867ef59949b1e5342f937",
+    "path": "scenes/tr_simit/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "bread making horizontal.png",
+    "source_sha256": "f3112212f0e0e89af1397ecbeabdef6b4a6e0cb943bf11f55e862cd23ee3f345",
+    "path": "scenes/tr_yufka/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "bread making.png",
+    "source_sha256": "03d6b0218359742be7f09f66b90574205699c298229c30731ec84dba53462d0f",
+    "path": "scenes/tr_yufka/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "dough horizontal.png",
+    "source_sha256": "b0e8c4e1cf2cf59b764c6516ca54e08f8062f6ce94747328a8305623b1ad97ee",
+    "path": "scenes/tr_baklava/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "dough.png",
+    "source_sha256": "bf4df148c2ba1ea20cddc6b94fa70a25411b1af14adce01ee337bf58c49bb0d4",
+    "path": "scenes/tr_baklava/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "fish horizontal.png",
+    "source_sha256": "a969375ca84fe66ae748807c148b16e06e249760b34f47a5c5dc403c6299b772",
+    "path": "scenes/tr_fish/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "fish.png",
+    "source_sha256": "6e2e73e718038a8c9d57333d7de9fbf451dfaa82cd9d4ba1f9f904920947d7b2",
+    "path": "scenes/tr_fish/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "home horizontal.png",
+    "source_sha256": "29e4d10bf8fcc5cadc61b1ac081e80dabd327ca38d7a69698291851e767d4f03",
+    "path": "scenes/tr_breakfast/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "home.png",
+    "source_sha256": "2ddb0fe24aa60a99042f8a834b3291ba2899df5c1066e8bad36aefb4c34dea9c",
+    "path": "scenes/tr_breakfast/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "kebab horizontal.png",
+    "source_sha256": "6e3fcb0652bfcc48bf4b869bb45fceb485f72ec7f422ef6cbf166f88185a3ce8",
+    "path": "scenes/tr_kebab/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "kebab.png",
+    "source_sha256": "c35575aae37759bcc920de11db26c8d1e54e3336683c5a7b5e993db9bfdba16d",
+    "path": "scenes/tr_kebab/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "meat platter horizontal.png",
+    "source_sha256": "4aa1a808b1d55ded50bb181547ea992d3cd1b92b459a43a10ba1ad7ecc7a04c4",
+    "path": "scenes/tr_supper/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "meat platter.png",
+    "source_sha256": "4d8202229684d929a0de42b093e8988c779f313e661f15d806be75f3526f6982",
+    "path": "scenes/tr_supper/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "mezze horizontal.png",
+    "source_sha256": "7380bc67cc87e4a40266dd20a952f7744e622f41578e29df3eefc74896bbcc25",
+    "path": "scenes/tr_meze/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "mezze",
+    "source_sha256": "d9d975bc1456aaf901d16ee6993745c5250ce79054854c61cf7c2c61493302e1",
+    "path": "scenes/tr_meze/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "olive horizontal.png",
+    "source_sha256": "c5ea4ff33d70b308bc65086a9e13babbc42e7442fb54c4bc5dd27f6ac22d4e26",
+    "path": "scenes/tr_olive/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "olive.png",
+    "source_sha256": "683186bd0f24ddfce79e26e819c0ba833cd66eca1480ce125d4b53f1ed2017f9",
+    "path": "scenes/tr_olive/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "pita horizontal.png",
+    "source_sha256": "418220af114157a24dba4bf106303a5856c93a91c1d302a7403fcd636e5ce943",
+    "path": "scenes/tr_pide/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "pita.png",
+    "source_sha256": "3b62c7d8a1473557c0ad1ab41b5610974f49a01151e1b2477ad96e1f3893b605",
+    "path": "scenes/tr_pide/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "stuffed pepper horizontal.png",
+    "source_sha256": "576f937b793b92227c5450769f9c718376183fb4b2d6fbd36c9dfc0f80003b1b",
+    "path": "scenes/tr_dolma/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "stuffed pepper.png",
+    "source_sha256": "18f59a2c37a9ff7480da31594722067c0ee988e43ae95d5f9feee56a0155fc31",
+    "path": "scenes/tr_dolma/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "tea hill horizontal.png",
+    "source_sha256": "134553e76e3580ed558a64672065313c658bab87a575ceedddcfe1fd95f16879",
+    "path": "scenes/tr_tea_hill/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "tea.png",
+    "source_sha256": "30f55f5185553c646ce66b7882d4b166c3066c0830e2e612b12e67febcae72c3",
+    "path": "scenes/tr_tea_hill/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "tea horizontal.png",
+    "source_sha256": "94b38ac43019a9f9dd3dc4feb765a5e251b74f697fbed79c446991936beacc31",
+    "path": "scenes/tr_tea/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "tea",
+    "source_sha256": "720e10cfacca18fa49dd281a03be622030a413e291776cf4e7ab85557f9460f8",
+    "path": "scenes/tr_tea/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "turkish coffee horizontal.png",
+    "source_sha256": "aeb746635b36478382875fafdbc5125665a51afc7403ceb245736b49f8806f9f",
+    "path": "scenes/tr_coffee/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "turkish coffee.png",
+    "source_sha256": "f8ef70c843c0601d5dfb7d5896cd6fa65ce887485295ac19666ef3a8c995e5b3",
+    "path": "scenes/tr_coffee/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "turkish market horizontal.png",
+    "source_sha256": "2b173978e38923e475515e92e95327b78f0e258c4a91b7b0af36682e6affa9fb",
+    "path": "scenes/tr_market/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "turkish market.png",
+    "source_sha256": "0bf89c2ba40682c6fd8bfa5291a9ff3d0aaeb5a24e507d40d475165146e39e32",
+    "path": "scenes/tr_market/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "apero.png",
+    "source_sha256": "4036889ebce0ae6d806f036841782a21107e72a13331bb5cc6188f6e0ec7fb8b",
+    "path": "scenes/turkey-food/meze-bowls.webp",
+    "size": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "source": "baklava with pistachio.png",
+    "source_sha256": "de7f126221836b77e6941c85b0aa0470747b0189411d7a162c2525845ee7d217",
+    "path": "scenes/turkey-food/baklava.webp",
+    "size": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "source": "baklava.png",
+    "source_sha256": "c37f1d70eb49120a1e7883075918be00d56ecd144c8192defa17015ab40ef0ef",
+    "path": "scenes/turkey-food/borek.webp",
+    "size": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "source": "bulgar.png",
+    "source_sha256": "7a11cad06d6824969afbe5d20e656bb5c123bf25282158b3daac3f27df298051",
+    "path": "scenes/turkey-food/bulgur.webp",
+    "size": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "source": "cevap.png",
+    "source_sha256": "4bf2c56da38025de9338f19708d822606d7159d2b29fdc297bc06ab95e10b540",
+    "path": "scenes/turkey-food/kofte.webp",
+    "size": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "source": "cheese bread.png",
+    "source_sha256": "74a63e1c817f3d1a6cd9fb8b0c5f68eba72412b6c91202bd69ed8465ff446c90",
+    "path": "scenes/turkey-food/pide.webp",
+    "size": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "source": "coffee kettle.png",
+    "source_sha256": "e027faf463bbe4ff7af1cd2a18ad5b4614f37f6dc9170a4db007e7d3d1cb0b2d",
+    "path": "scenes/turkey-food/caydanlik.webp",
+    "size": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "source": "cold mezze.png",
+    "source_sha256": "41c8412cfc11974a5941f9e438ca67bea51f3fa9a7e2c579c3a9b2c1a5332a2e",
+    "path": "scenes/turkey-food/breakfast.webp",
+    "size": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "source": "cup of te.png",
+    "source_sha256": "bdac068b55119b88468544a2b7bf22c720f6abbb95d5fddec828f6759b9217f4",
+    "path": "scenes/turkey-food/tea.webp",
+    "size": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "source": "dumplings.png",
+    "source_sha256": "7053b51a1219eca2ca5ad42d5f36f6e6adaadf6f34ae62d8d2659da9116479ca",
+    "path": "scenes/turkey-food/manti.webp",
+    "size": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "source": "kebab skewer.png",
+    "source_sha256": "0e29eb73ec9cb7579eb3900829c6295cd0ab4ab4d0aa31c6635f2bd29cf68a4a",
+    "path": "scenes/turkey-food/sis.webp",
+    "size": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "source": "lentil.png",
+    "source_sha256": "ef900d814181441170f68977a23f6c9c39929b422fa940fb37ebf39d6c2cd99c",
+    "path": "scenes/turkey-food/lentil-soup.webp",
+    "size": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "source": "mezze.png",
+    "source_sha256": "6151818b8f01bbda51df2bc4b7f2ea5907d779f6a1166536121e528da211cb5f",
+    "path": "scenes/turkey-food/meze.webp",
+    "size": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "source": "olive branch.png",
+    "source_sha256": "4828cded39b8a692a44b7db393da5d8c09c5d2d731a3815584ec9a1f631af9ec",
+    "path": "scenes/turkey-food/olive-branch.webp",
+    "size": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "source": "olive oil.png",
+    "source_sha256": "8984b3317c81c55bb4715431338d2310eda5eaa10b7fb37142bee409aecdfb5a",
+    "path": "scenes/turkey-food/olive-oil.webp",
+    "size": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "source": "pistachio.png",
+    "source_sha256": "e9dadbaf0d71cbbcffe53cbbd94ab3b63dc5843d0d32c6621d94539906639b68",
+    "path": "scenes/turkey-food/pistachios.webp",
+    "size": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "source": "pizza.png",
+    "source_sha256": "c0c8e9266d46ad86ee43c7f0fdcf7452547c44013d13f6ef2c33c293b2e8b4cc",
+    "path": "scenes/turkey-food/lahmacun.webp",
+    "size": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "source": "sandwich.png",
+    "source_sha256": "caf3b7d7620ef812a638844182c1b487fd4fc3742eb5170c7219bdd12783d2c3",
+    "path": "scenes/turkey-food/balik-ekmek.webp",
+    "size": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "source": "simit.png",
+    "source_sha256": "5fedc2d61fd2286f8ce5ee33ae19d5bd16c8143ac8dc1c0c966e7069faf83323",
+    "path": "scenes/turkey-food/simit.webp",
+    "size": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "source": "skewer.png",
+    "source_sha256": "ebbfe5a72f71ae0875f426f8a4b7f082ef635f9806419b745ea2308e6036d0ca",
+    "path": "scenes/turkey-food/skewers.webp",
+    "size": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "source": "smoke.png",
+    "source_sha256": "fd7c02d541bdeafb0c07c881ad654e9933add844f95dec9338e11d96431e5ecc",
+    "path": "scenes/turkey-food/smoke.webp",
+    "size": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "source": "sour cream.png",
+    "source_sha256": "eb15cc02b757f311f4abe9d690d271c801db71f23a924328930141830822a04a",
+    "path": "scenes/turkey-food/yogurt.webp",
+    "size": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "source": "stew.png",
+    "source_sha256": "62dc33ccb5c476300b024bb3740e84cca1e5a3077c19c4177a909841d249c973",
+    "path": "scenes/turkey-food/stew.webp",
+    "size": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "source": "stuffed veggies.png",
+    "source_sha256": "40dee3aaab49d3abea325409d6e23388ef1099bce927c0a3c463008a927986e4",
+    "path": "scenes/turkey-food/dolma.webp",
+    "size": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "source": "stuffed.png",
+    "source_sha256": "52a3b4277335bd9fd5a367b689c695cb769d76f352c7e41c965f3322f2472cc7",
+    "path": "scenes/turkey-food/sarma.webp",
+    "size": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "source": "tea leaves.png",
+    "source_sha256": "6d53fddb07a1c97d14b19746eb2e2eaa546d7e42ce43253869c58a19d872f4b1",
+    "path": "scenes/turkey-food/tea-leaves.webp",
+    "size": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "source": "turkish coffee2.png",
+    "source_sha256": "4a5ebc42c828b3467f554c54fd3dd7197a0a1e29ef75a6fd35ba1ac195d44587",
+    "path": "scenes/turkey-food/coffee.webp",
+    "size": [
+      1254,
+      1254
+    ]
+  }
+]

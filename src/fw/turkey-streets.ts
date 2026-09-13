@@ -1,30 +1,11 @@
 import * as THREE from 'three';
 import { add, mat, person, type P } from './props';
+import { ottomanHouse } from './turkey-architecture';
 
 const box=(w:number,h:number,d:number,c:string)=>new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(c));
 /** Timber bays and tiled roofs give the small lanes a domestic scale. */
 export function turkeyHouse(color:string,storeys=2):P {
-  const g=new THREE.Group() as P,h=storeys*1.65;
-  add(g,box(3,h,2.6,color),0,h/2,0);
-  add(g,box(.60,1.25,.035,'#74583f'),-.65,.625,1.32);
-  for(let floor=0;floor<storeys;floor++){
-    const y=.90+floor*1.65;
-    for(const x of [-.84,.72]){
-      add(g,box(.67,.83,.06,'#6e604f'),x,y,1.35);
-      add(g,box(.52,.66,.065,'#7aabae'),x,y,1.39);
-      add(g,box(.045,.69,.07,'#e8d5b6'),x,y,1.43);
-      add(g,box(.54,.04,.07,'#e8d5b6'),x,y,1.43);
-    }
-    add(g,box(3.04,.08,2.64,'#ad9270'),0,(floor+1)*1.65-.08,0);
-  }
-  if(storeys===2){
-    add(g,box(1.2,1.2,.4,color),.25,2.52,1.42);
-    for(const x of [-.08,.52])add(g,box(.4,.65,.035,'#7aabae'),x,2.55,1.64);
-    for(const x of [-.2,.7]){const bracket=add(g,box(.1,.65,.1,'#7b5d43'),x,1.82,1.4);bracket.rotation.x=-.4;}
-  }
-  for(const side of [-1,1]){const roof=add(g,box(3.5,.13,1.75,'#b26747'),0,h+.22,side*.78);roof.rotation.x=side*.32;}
-  add(g,box(.35,.7,.35,'#bda488'),.9,h+.4,-.6);
-  return g;
+  return ottomanHouse(color,storeys);
 }
 
 /** A compact electric tram on its own clear track, separate from walking lanes. */

@@ -173,7 +173,7 @@ export function arcadeBridge(len = 14): P {
 // ---------- food places ----------
 
 /** The Grand Bazaar: vaulted arcades with skylights, stalls of spices, lamps, sweets, nuts, tea and olives. */
-export function bazaar(): P {
+export function bazaar(figure:typeof local=local): P {
   const g = group();
   add(g, new THREE.Mesh(new THREE.PlaneGeometry(16, 10), mat("#c9bda3")), 0, 0.02, 0).rotation.x = -Math.PI / 2;
   for (const x of [-7.5, -2.5, 2.5, 7.5]) for (const z of [-4.5, 4.5]) add(g, box(0.5, 3.4, 0.5, ME.stoneDark), x, 1.7, z);
@@ -197,14 +197,14 @@ export function bazaar(): P {
       case "tea": for (let i = 0; i < 6; i++) add(goods, cyl(0.06, 0.04, 0.14, "#8fc4c9", 6), -0.9 + i * 0.36, 0.07, 0.3); add(goods, cyl(0.24, 0.2, 0.5, ME.copper, 10), 0.4, 0.25, -0.2); add(goods, cyl(0.12, 0.12, 0.12, ME.copper, 8), 0.4, 0.56, -0.2); add(goods, box(0.5, 0.2, 0.3, "#2a2a2e"), -0.6, 0.1, -0.2); break;
       case "olives": for (let i = 0; i < 3; i++) { add(goods, cyl(0.28, 0.24, 0.28, "#8c9096", 10), -0.85 + i * 0.7, 0.14, 0); for (let k = 0; k < 14; k++) add(goods, ball(0.045, ["#6f9b57", "#2f3a2a", "#5a3a5a"][i], 5), -0.85 + i * 0.7 + (rnd() - 0.5) * 0.4, 0.3 + (rnd() - 0.5) * 0.04, (rnd() - 0.5) * 0.4); } for (let k = 0; k < 2; k++) { add(goods, box(0.22, 0.34, 0.16, "#e0b34c"), 0.75 + (k % 2) * 0.28, 0.17, -0.3 + k * 0.1); add(goods, box(0.14, 0.14, 0.02, "#2f5d3f"), 0.75 + (k % 2) * 0.28, 0.2, -0.21 + k * 0.1); } for (let k = 0; k < 2; k++) { add(goods, cyl(0.05, 0.06, 0.3, "#c9b45a", 7), 0.75 + k * 0.28, 0.15, 0.35); add(goods, cyl(0.02, 0.02, 0.1, "#c9b45a", 5), 0.75 + k * 0.28, 0.35, 0.35); } break;   // green, black and purple olives in tubs, oil in tins and bottles
     }
-    const v = local(pick(["#3f6fb5", "#c0392b", "#f4f1ea", "#2f5d3f"]), { apron: true }); add(s, v, 0.3, 0.02, -0.95); v.name='turkish-market-vendor'; vendors.push(v);
+    const v = figure(pick(["#3f6fb5", "#c0392b", "#f4f1ea", "#2f5d3f"]), { apron: true }); add(s, v, 0.3, 0.02, -0.95); v.name='turkish-market-vendor'; vendors.push(v);
     return s;
   };
   const layout: [string, number, number, number][] = [["spices", -5.5, -2.6, 0], ["lamps", -0.5, -2.6, 0], ["sweets", 4.5, -2.6, 0], ["nuts", -4, 2.6, Math.PI], ["tea", 1, 2.6, Math.PI], ["olives", 6, 2.6, Math.PI]];
   for (const [k, x, z, rot] of layout) { const s = stall(k); s.position.set(x, 0, z); s.rotation.y = rot; g.add(s); }
-  const spots = [new THREE.Vector3(-5.5, 0, 0), new THREE.Vector3(-1, 0, 0), new THREE.Vector3(3, 0, 0), new THREE.Vector3(6.5, 0, 0.3), new THREE.Vector3(-3, 0, -0.3)];
+  const spots = [new THREE.Vector3(-5.5, .024, 0), new THREE.Vector3(-1, .024, 0), new THREE.Vector3(3, .024, 0), new THREE.Vector3(6.5, .024, 0.3), new THREE.Vector3(-3, .024, -0.3)];
   type Shopper = { p: Fig; pos: THREE.Vector3; target: THREE.Vector3; wait: number; speed: number };
-  const shoppers: Shopper[] = [0, 1, 2].map((i) => { const p = local(pick(["#c0392b", "#f2c14e", "#3f6fb5", "#f4f1ea"]), { hijab: i === 2 ? "#9b59b6" : undefined, fez: i === 1 }); const st = spots[i].clone(); p.position.copy(st); g.add(p); return { p, pos: st, target: spots[(i + 2) % spots.length].clone(), wait: i * 0.8, speed: 0.7 + rnd() * 0.4 }; });
+  const shoppers: Shopper[] = [0, 1, 2].map((i) => { const p = figure(pick(["#c0392b", "#f2c14e", "#3f6fb5", "#f4f1ea"]), { hijab: i === 2 ? "#9b59b6" : undefined, fez: i === 1 }); const st = spots[i].clone(); p.position.copy(st); g.add(p); return { p, pos: st, target: spots[(i + 2) % spots.length].clone(), wait: i * 0.8, speed: p.userData.pace ?? 0.7 + rnd() * 0.4 }; });
   const re = reaction(0.6);
   g.userData.ownReaction=true;
   g.userData.poke = () => { re.poke(); bubble(g, "Buyurun! Welcome!", 3.9, 1400); };

@@ -584,6 +584,8 @@ export function person(shirt = "#3f6b8f", opts: { hat?: boolean; pole?: boolean;
   if (opts.apron) { add(upper, box(0.24 * s, 0.42 * s, 0.04, C.white), 0, U(0.58 * s), 0.15 * s); add(upper, cyl(0.15 * s, 0.15 * s, 0.1 * s, C.white, 8), 0, U(1.18 * s), 0); }
   (g.userData as { upper?: THREE.Group; hipY?: number }).upper = upper;
   (g.userData as { upper?: THREE.Group; hipY?: number }).hipY = hipY;
+  g.userData.legs = { left: legL, right: legR };
+  g.userData.figureScale = s;
   (g.userData as { arms?: { left: THREE.Group; right: THREE.Group; hand: number } }).arms = { left: armL, right: armR, hand: -0.37 * s };
   if (opts.pole) {
     // a shoulder pole the traditional way: resting on the right shoulder, running front to back, one hand steadying it

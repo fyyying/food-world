@@ -466,9 +466,9 @@ function enterRegion(region: MapRegion) {
     fade.classList.add("on");
     setTimeout(() => {
       level = "world"; switchScene(worldScene); configureControls("world");
-      const target = id === 'middle-east' ? areaCenter('istanbul') : new THREE.Vector3(-4, 0, 2);
+      const target = id === 'middle-east' ? new THREE.Vector3(-24,0,-20) : new THREE.Vector3(-4, 0, 2);
       camera.position.copy(target).add(new THREE.Vector3(-2,80,90)); controls.target.copy(target);
-      fly(target.clone().add(id === 'middle-east' ? new THREE.Vector3(2,36,46) : new THREE.Vector3(2,48,60)), target, 2.0);
+      fly(target.clone().add(id === 'middle-east' ? new THREE.Vector3(12,36,57) : new THREE.Vector3(2,48,60)), target, 2.0);
       fade.classList.remove("on");
       setCrumbsWorld();
     }, 560);
@@ -482,8 +482,8 @@ function setCrumbsWorld() {
       diorama?.pin(null); diorama?.highlight(null, null); currentArea = a; setCrumbsWorld();
       if (a) {
         const turkey = a === 'istanbul';
-        const distance = turkey ? Math.max(145, 118 / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect * .92)) : 42;
-        glideTo(turkey ? new THREE.Vector3(-6,0,-22) : areaCenter(a), distance, 1.3);
+        const distance = turkey ? Math.max(145, 134 / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect * .92)) : 42;
+        glideTo(turkey ? new THREE.Vector3(0,0,-17) : areaCenter(a), distance, 1.3);
       }
       else if (world === 'middle-east') {
         const distance = Math.min(490, Math.max(215, 124 / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect * .9)));

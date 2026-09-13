@@ -47,6 +47,10 @@ The Black Sea is below the slopes, while wet mountain country rises inland. Pick
 Bulgur is prepared wheat, while lentils are pulses: they bring different textures and uses to the pantry. In the painting, the bulgur, soup and yogurt each have their own bowl or platter. Pass the bread and build a bite from several dishes. The knowledge here is also social: learning a family’s preferred texture, remembering someone’s favourite plate and making enough to share.`,
 };
 export const TURKEY_SOURCES: Record<string,{title:string;url:string}[]> = {
+  mosqueTr:[{title:'UNESCO · Historic Areas of Istanbul',url:'https://whc.unesco.org/en/list/356/'}],
+  ottomanTr:[{title:'UNESCO · City of Safranbolu',url:'https://whc.unesco.org/en/list/614/'}],
+  waterfrontTr:[{title:'UNESCO · Istanbul and the Bosphorus',url:'https://whc.unesco.org/en/list/356/'}],
+  cappadociaTr:[{title:'UNESCO · Göreme and Cappadocia',url:'https://whc.unesco.org/en/list/357/'}],
   hammamTr:[{title:'GoTürkiye · Turkish hammam culture',url:'https://goturkiye.com/wellness/turkish-hamam'}],
   citrusTr:[{title:'GoTürkiye · Mediterranean produce',url:'https://goturkiye.com/mediterranean'}],
   teaGarden:[{title:'UNESCO · Tea culture and hospitality',url:'https://ich.unesco.org/en/RL/culture-of-ay-tea-a-symbol-of-identity-hospitality-and-social-interaction-01685'}],

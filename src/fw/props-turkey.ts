@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { add, mat, person, tree, bubble, ambientChat, type P } from './props';
 import { oliveTree } from './props-italy';
 import { local, ME } from './props-mideast';
+import { TR, block, tilePanel, masonry, bathhouse, iznikFountain, kilim, ottomanHouse, hipRoof } from './turkey-architecture';
 
 const group = () => new THREE.Group() as P;
 const box = (w: number, h: number, d: number, c: string) => new THREE.Mesh(new THREE.BoxGeometry(w,h,d), mat(c));
@@ -38,7 +39,7 @@ function sit(g: THREE.Object3D,x: number,z: number,angle: number,shirt: string):
   p.name='turkey-sitter'; p.userData.seat=seat;
   return p;
 }
-function roomShell(g: P, color = '#e5ceab', w = 5.4) {
+function roomShell(g: P, color = '#e5ceab', w = 5.4, roofStyle:'gable'|'hip'|'pergola'='gable') {
   // An open-front shop: back and side walls, no invisible front wall through the cook.
   add(g,box(w,.10,3.3,'#cbbb9b'),0,.05,-.7);
   add(g,box(w,2.6,.16,color),0,1.35,-2.3);
@@ -46,7 +47,14 @@ function roomShell(g: P, color = '#e5ceab', w = 5.4) {
   for(const x of [-w/2+.08,w/2-.08]) add(g,box(.20,.26,3.3,ME.wood),x,2.77,-.8);
   add(g,box(w,.34,.18,ME.wood),0,2.81,-2.3);
   for(const x of [-w/2+.16,w/2-.16]) add(g,box(.18,2.9,.18,ME.wood),x,1.45,1.9);
-  for (const side of [-1,1]) {
+  if(roofStyle==='hip')add(g,masonry(hipRoof(w+.4,3.5,3.0)),0,0,-.8);
+  else if(roofStyle==='pergola'){
+    const canopy=new THREE.Group();
+    for(let i=0;i<9;i++)add(canopy,block(.10,.14,3.4,TR.wood),-w/2+i*w/8,2.94,-.8);
+    for(let i=0;i<15;i++)add(canopy,ball(.40,i%3?'#70824e':'#8a9b64'),-w/2+.25+(i%5)*(w-.5)/4,3.17,-1.9+Math.floor(i/5)*1.1).scale.set(1.2,.45,1);
+    g.add(masonry(canopy));
+  }
+  else for (const side of [-1,1]) {
     const roof=add(g,box(w+.4,.13,1.75,'#b3613d'),0,3.15,-1.0+side*.78);
     roof.rotation.x=side*.30;
     for(let i=0;i<12;i++) add(roof,box(.065,.04,1.74,'#cb7a50'),-w/2+i*w/11,.085,0);
@@ -55,6 +63,20 @@ function roomShell(g: P, color = '#e5ceab', w = 5.4) {
   add(g,box(w+.2,.10,.65,'#ba5546'),0,2.87,1.62);
   for(const x of [-w/2+.16,w/2-.16])add(g,box(.12,.12,1.8,ME.wood),x,2.86,.75);
   add(g,box(w-.3,.26,.09,'#386d76'),0,2.72,1.9);
+  const details=new THREE.Group();
+  for(const x of [-w/2+.18,w/2-.18]){
+    add(details,block(.12,2.6,.08,TR.wood),x,1.35,-2.19);
+    add(details,block(.12,.12,3.1,TR.wood),x,1.85,-.8);
+  }
+  add(details,tilePanel(1.45,.65),0,1.90,-2.18);
+  for(let i=0;i<Math.floor(w/.42);i+=2)add(details,block(.39,.02,.66,'#dfccb0'),-w/2+.25+i*.42,2.93,1.62);
+  add(details,block(w+.10,.11,.12,TR.wood),0,2.83,1.96);
+  for(const x of [-w/2+.35,w/2-.35]){
+    add(details,block(.36,.28,.4,'#a66b50'),x,.14,2.2);
+    add(details,ball(.26,'#758250'),x,.46,2.2);
+    add(details,ball(.13,'#ac6077'),x,.63,2.2);
+  }
+  g.add(masonry(details));
 }
 function life(g: P, people: Figure[], phrase: string, work?: (t:number,k:number)=>void) {
   g.userData.ownReaction=true;
@@ -69,7 +91,7 @@ function life(g: P, people: Figure[], phrase: string, work?: (t:number,k:number)
     work?.(t,reaction);
     food.forEach(({object,y,rotation,scale},i)=>{
       const lift=Math.sin(Math.PI*reaction);
-      object.position.y=y+lift*.34;object.rotation.y=rotation.y+(reaction?Math.PI*2*(1-reaction):0);
+      object.position.y=y+lift*.34;object.rotation.y=rotation.y+t*(object.userData.spinRate??0)+(reaction?Math.PI*2*(1-reaction):0);
       object.scale.copy(scale).multiplyScalar(1+lift*.12);
     });
     if(reaction)people.forEach(p=>{const arms=p.userData.arms as {right:THREE.Group};arms.right.rotation.z=-Math.sin(reaction*Math.PI)*.45;});
@@ -106,6 +128,20 @@ export function turkeyTeaGarden(): P {
   return life(g,people,'Bir çay daha? Another tea?');
 }
 
+/** Small shared café nooks fit beside the square; both diners remain attached to real stools. */
+export function turkeyTeaCorner():P {
+  const g=group(),y=table(g,0,0,1.35,.78);
+  glass(g,-.32,y,0);glass(g,.32,y,0);
+  const people=[sit(g,-1.05,0,Math.PI/2,'#849291'),sit(g,1.05,0,-Math.PI/2,'#b07d63')];
+  const shade=new THREE.Group();
+  for(const x of [-1.55,1.55])for(const z of [-.72,.72])add(shade,block(.07,2.65,.07,TR.wood),x,1.325,z);
+  for(const z of [-.72,.72])add(shade,block(3.2,.11,.10,TR.wood),0,2.64,z);
+  for(let i=0;i<7;i++)add(shade,block(.08,.11,1.6,TR.wood),-1.5+i*.5,2.68,0);
+  for(const x of [-1.4,-.9,.9,1.4])add(shade,ball(.35,'#688055'),x,2.79,.40).scale.set(1,.45,1);
+  g.add(masonry(shade));
+  return life(g,people,'Biraz oturalım. Let’s sit a while.');
+}
+
 export function turkeySimitCart(): P {
   const g=group();
   for(const x of [-.62,.62]) for(const z of [-.4,.4]) add(g,cyl(.20,.10,'#353035'),x,.2,z).rotation.z=Math.PI/2;
@@ -113,6 +149,7 @@ export function turkeySimitCart(): P {
   add(g,box(1.65,.07,1.1,'#e8c280'),0,1.01,0);
   for(const x of [-.69,.69]) for(const z of [-.44,.44]) add(g,box(.045,1.0,.045,ME.wood),x,1.5,z);
   add(g,box(1.9,.13,1.4,'#b84136'),0,2.06,0);
+  for(let i=0;i<5;i++)add(g,box(.18,.02,1.4,'#f0dcc0'),-.8+i*.4,2.135,0);
   for(let i=0;i<12;i++) add(g,new THREE.Mesh(new THREE.TorusGeometry(.12,.04,7,14),mat('#cb8d3d')),-.5+(i%4)*.33,1.08+Math.floor(i/4)*.075,(i%2-.5)*.35).rotation.x=Math.PI/2;
   g.children.filter(o=>o instanceof THREE.Mesh && o.geometry instanceof THREE.TorusGeometry).forEach(o=>o.userData.foodReaction=true);
   const seller=add(g,local('#46718a',{apron:true}),0,0,-1.1);
@@ -120,7 +157,7 @@ export function turkeySimitCart(): P {
 }
 
 function foodHouse(kind: 'kebab'|'fish'|'pide'|'baklava'|'coffee'|'yufka'|'dolma'): P {
-  const g=group(); roomShell(g,kind==='fish'?'#b6cbd0':kind==='coffee'?'#c6ad91':'#e5ceab');
+  const g=group(); roomShell(g,kind==='fish'?'#b6cbd0':kind==='coffee'?'#c6ad91':'#e5ceab',5.4,kind==='fish'||kind==='baklava'?'hip':kind==='yufka'?'pergola':'gable');
   const cook=add(g,local('#ece3cf',{apron:true}),-.9,.10,-.15);
   const y=table(g,0,1.0,3.8,1.0), moving:THREE.Object3D[]=[];
   const foodColours=['#bd6c38','#577747','#bd4932','#e7c37a'];
@@ -154,6 +191,16 @@ function foodHouse(kind: 'kebab'|'fish'|'pide'|'baklava'|'coffee'|'yufka'|'dolma
   }
   const customer=add(g,local('#5d7884'),-1.8,0,2.4);customer.rotation.y=Math.PI;
   const phrases={kebab:'Afiyet olsun! Enjoy your meal!',fish:'Balık ekmek! Fish in fresh bread!',pide:'Fırından yeni çıktı! Fresh from the oven!',baklava:'Fıstıklı baklava! Pistachio baklava!',coffee:'Kahve hazır. Coffee is ready.',yufka:'Hamur dinlensin. Let the dough rest.',dolma:'Birlikte yapalım. Let’s make them together.'};
+  if(kind==='coffee'){
+    const upstairs=add(g,ottomanHouse('#ddd2ba',1),0,3.45,-.85);upstairs.scale.set(.95,.65,.78);
+    add(g,box(3.65,.7,2.5,TR.cream),0,3.10,-.85);
+    add(g,tilePanel(2.4,.55),0,3.4,.44);
+    add(g,kilim(.75,1.2),2.36,2.35,1.98);
+  }
+  if(kind==='baklava'){
+    add(g,kilim(.65,1.25),-2.48,2.37,1.98);
+    for(let i=0;i<6;i++)bowl(g,-1.5+i*.6,y+.04,1.34,i%2?'#d0a073':'#bc7980',.13);
+  }
   return life(g,[cook,customer],phrases[kind],(t,k)=>{
     const arms=cook.userData.arms as {left:THREE.Group;right:THREE.Group};
     arms.right.rotation.x=-.75+Math.sin(t*1.2)*.12;arms.left.rotation.x=-.5;
@@ -163,7 +210,7 @@ function foodHouse(kind: 'kebab'|'fish'|'pide'|'baklava'|'coffee'|'yufka'|'dolma
 }
 
 function familyTable(kind: 'breakfast'|'meze'|'supper'): P {
-  const g=group();roomShell(g,kind==='meze'?'#b8c7ba':'#dfc4a0',6.2);
+  const g=group();roomShell(g,kind==='meze'?'#b8c7ba':'#dfc4a0',6.2,kind==='meze'?'pergola':kind==='supper'?'hip':'gable');
   const y=table(g,0,1.6,4.3,1.45);
   for(let i=0;i<10;i++) bowl(g,-1.7+(i%5)*.85,y,1.26+Math.floor(i/5)*.7,['#577749','#e9cf8b','#bc5934','#eee1be','#594834'][i%5],.22);
   for(const x of [-1.7,0,1.7]) glass(g,x,y,2.12);
@@ -224,22 +271,15 @@ export function turkeyCopper(): P {
   return life(g,[smith],'Bakır işliyoruz. We are working copper.',(t,k)=>{hand.rotation.x=-.9+Math.sin(t*(3+k*5))*.18;});
 }
 export function turkeyFountain(): P {
-  const g=group();add(g,box(2.4,.18,1.5,'#b7aa8d'),0,.09,0);add(g,box(2,2,.35,'#d2c2a4'),0,1,-.5);
-  add(g,box(2,.5,1,'#c0af90'),0,.25,.23);add(g,box(1.7,.025,.68,'#75acb0'),0,.51,.25);
-  add(g,cyl(.07,.3,ME.copper),0,1,-.23).rotation.x=Math.PI/2;
-  const stream=add(g,cyl(.025,.49,'#97c8cb'),0,.765,-.08);
+  const g=iznikFountain(),streams=g.children.filter(o=>o.name==='fountain-stream');
   let pulse=0;g.userData.ownReaction=true;g.userData.poke=()=>{pulse=1;bubble(g,'Şırıl şırıl… Water in the lane.',2.3,1600);};
-  g.userData.tick=(t,dt)=>{pulse=Math.max(0,pulse-dt);stream.scale.x=stream.scale.z=1+Math.sin(t*7)*.12+pulse*.8;};return g;
+  g.userData.tick=(t,dt)=>{pulse=Math.max(0,pulse-dt);streams.forEach(stream=>{stream.scale.x=stream.scale.z=1+Math.sin(t*7)*.12+pulse*.8;});};return g;
 }
 Object.assign(TURKEY_PROPS,{turkeyPottery,turkeyCopper,turkeyFountain,turkishCat});
 
 export function turkeyHammam(): P {
-  const g=group();add(g,box(5,2.1,4,'#d6c5a5'),0,1.05,0);
-  add(g,new THREE.Mesh(new THREE.SphereGeometry(2.05,18,9,0,Math.PI*2,0,Math.PI/2),mat('#b8baa9')),0,2.1,0);
-  add(g,box(1.15,1.6,.08,'#79583f'),0,.8,2.04);add(g,box(1.8,.25,.5,'#daccad'),0,1.78,2.15);
-  for(const x of [-1.6,1.6]){add(g,box(.65,.9,.06,'#79a5a9'),x,1.15,2.03);add(g,box(.065,.95,.09,'#e1d4b9'),x,1.15,2.07);}
-  for(const [x,z] of [[0,0],[-.8,0],[.8,0],[0,-.8],[0,.8]])add(g,ball(.13,'#b6dde0'),x,2.1+Math.sqrt(2.05**2-x*x-z*z),z);
-  const visitor=add(g,local('#637c8c'),-1.5,0,2.9);g.userData.steam=new THREE.Vector3(0,4.2,0);
+  const g=group();g.add(bathhouse());
+  const visitor=add(g,local('#637c8c'),-1.5,0,3.3);g.userData.steam=new THREE.Vector3(0,5.25,-.7);
   return life(g,[visitor],'Hoş geldiniz. Welcome to the hammam.');
 }
 export function turkeyCitrus(): P {
@@ -254,3 +294,32 @@ export function turkeyCitrus(): P {
   return life(g,[picker],'Portakal zamanı! Orange season!');
 }
 Object.assign(TURKEY_PROPS,{turkeyHammam,turkeyCitrus});
+
+/** Small street kitchens react in 3D before opening their food cards. */
+function streetKitchen(kind:'doner'|'gozleme'):P {
+  const g=group();
+  add(g,box(3.2,.1,2.8,TR.stone),0,.05,0);
+  for(const x of [-1.45,1.45])add(g,box(.1,2.7,.1,TR.wood),x,1.35,-1.18);
+  add(g,box(3.5,.13,2.8,kind==='doner'?TR.red:'#788657'),0,2.76,-.05);
+  for(let i=0;i<8;i+=2)add(g,box(.40,.025,2.8,'#e4d4b8'),-1.45+i*.42,2.84,-.05);
+  const y=table(g,0,.75,2.8,.8);
+  const cook=add(g,local('#dfcfb1',{apron:true}),-1,.1,-.55);
+  const food=add(g,group(),.5,y,.75);food.userData.foodReaction=true;
+  if(kind==='doner'){
+    add(g,box(.75,1.7,.18,'#716c60'),.5,1.5,.35);
+    add(g,cyl(.06,1.8,ME.copper),.5,y+.9,.75);
+    food.userData.spinRate=.25;
+    food.name='doner-meat';
+    for(let i=0;i<12;i++)add(food,new THREE.Mesh(new THREE.CylinderGeometry(.26+i*.009,.25+i*.009,.10,12),mat(i%2?'#a66543':'#bd8053')),0,.23+i*.1,0);
+    bowl(g,-.6,y,.8,'#7b954d');bowl(g,-1.12,y,.8,'#b6553a');
+  }else{
+    add(g,cyl(.72,.12,'#504b44'),.5,y+.06,.75).name='gozleme-griddle';
+    for(const x of [-.29,.29]){const bread=add(food,ball(.3,'#d1aa6e'),x,.15,0);bread.scale.set(1,.1,1.3);}
+    bowl(g,-.80,y,.8,'#6a8350');
+    const pin=add(g,cyl(.045,.72,TR.wood),-.72,y+.11,.55);pin.rotation.z=Math.PI/2;
+  }
+  return life(g,[cook],kind==='doner'?'Döner hazır! Thin slices, warm bread.':'Gözleme sıcak! Hot from the griddle.',(t,k)=>{
+    (cook.userData.arms as {right:THREE.Group}).right.rotation.x=-.85+Math.sin(t*1.5)*.13;
+  });
+}
+Object.assign(TURKEY_PROPS,{turkeyDoner:()=>streetKitchen('doner'),turkeyGozleme:()=>streetKitchen('gozleme')});

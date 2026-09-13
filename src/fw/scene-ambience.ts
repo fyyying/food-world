@@ -103,8 +103,9 @@ export function drawAmbience(ctx: CanvasRenderingContext2D, t: number, portrait:
     } else if (patch.kind === 'mist') {
       for (let i = 0; i < 4; i++) {
         ctx.save();
-        ctx.translate(x + w * (.18 + i * .20 + Math.sin(t * .25 + i) * .15), y + h * (.38 + i * .10 + Math.sin(t * .32 + i) * .08));
-        ctx.scale(w * .31, h * .35);
+        // Keep the whole soft bank inside its clip, avoiding a straight fog edge as it drifts.
+        ctx.translate(x + w * (.25 + i * .16 + Math.sin(t * .25 + i) * .025), y + h * (.40 + i * .055 + Math.sin(t * .32 + i) * .07));
+        ctx.scale(w * .22, h * .29);
         const fog = ctx.createRadialGradient(0, 0, .08, 0, 0, 1);
         fog.addColorStop(0, 'rgba(237,243,232,.30)'); fog.addColorStop(.45, 'rgba(237,243,232,.16)'); fog.addColorStop(1, 'rgba(237,243,232,0)');
         ctx.fillStyle = fog; ctx.beginPath(); ctx.arc(0, 0, 1, 0, Math.PI * 2); ctx.fill(); ctx.restore();

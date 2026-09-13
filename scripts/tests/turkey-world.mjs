@@ -6,7 +6,13 @@ import { pathToFileURL } from 'node:url';
 import { build } from 'rolldown';
 const ctx=new Proxy({}, {get:(_,key)=>key==='createLinearGradient'||key==='createRadialGradient'?()=>({addColorStop(){}}):key==='measureText'?()=>({width:20}):()=>{},set:()=>true});
 globalThis.document={visibilityState:'hidden',defaultView:{Element:class {}},createElement:()=>({ownerDocument:document,getContext:()=>ctx,style:{},setAttribute(){},classList:{add(){},remove(){},toggle(){}},addEventListener(){}})};
-globalThis.Image=class { set src(_){} };
+globalThis.Image=class { complete=true;naturalWidth=24;naturalHeight=14;set src(_){} };
+const sampleMotion=(scene,portrait)=>{
+  const count={gradients:0,ellipses:0,images:0,svg:scene.layers.some(layer=>/class="sway"|id="(?:fire|lamp)-/.test(layer.svg))?1:0};
+  const fxCtx=new Proxy({}, {get:(_,key)=>key==='createRadialGradient'?()=>{count.gradients++;return {addColorStop(){}}}:key==='ellipse'?()=>{count.ellipses++}:key==='drawImage'?()=>{count.images++}:()=>{},set:()=>true});
+  for(let frame=0;frame<60;frame++)scene.fx(fxCtx,frame*.2,.2,portrait);
+  return count;
+};
 const temp=await mkdtemp(join(tmpdir(),'turkey-world-'));
 try {
   await build({input:{world:'src/fw/world-mideast.ts',rooms:'src/fw/scenes-turkey.ts',objects:'src/fw/turkey-objects.ts',landscape:'src/fw/turkey-landscape.ts'},platform:'node',output:{banner:'import.meta.env={VITE_STATIC:"1",BASE_URL:"/"};',dir:temp,format:'esm',entryFileNames:'[name].mjs',chunkFileNames:'[name].mjs'}});
@@ -19,6 +25,7 @@ try {
   const world=buildMideast([]);world.group.updateMatrixWorld(true);
   const rooms=world.placed.filter(p=>p.obj.scene);
   assert.equal(rooms.length,15);assert.equal(new Set(rooms.map(p=>p.obj.scene)).size,15);
+  let fallingLeafRooms=0,driftingFlakeRooms=0;
   for(const [from,links] of Object.entries(TURKEY_NEXT)){
     assert.ok(world.placed.some(p=>p.obj.id===from));
     for(const id of links)assert.ok(rooms.some(p=>p.obj.id===id),`${from}: unknown next destination ${id}`);
@@ -26,12 +33,19 @@ try {
   for(const {obj} of rooms){
     assert.ok(TURKEY_SCENES[obj.scene],`${obj.id}: missing room`);
     const room=TURKEY_SCENES[obj.scene]();assert.ok(room.hotspots.length>=3);
+    for(const portrait of [false,true]){
+      const motion=sampleMotion(TURKEY_SCENES[obj.scene](),portrait);
+      assert.ok(Object.values(motion).some(Boolean),`${obj.scene}: painting has no visible ${portrait?'phone':'wide'} ambient motion`);
+      if(!portrait){fallingLeafRooms+=Number(motion.images>0);driftingFlakeRooms+=Number(motion.ellipses>0);}
+    }
     for(const h of room.hotspots){
       for(const p of [h.interaction.wide,h.interaction.phone]) assert.ok(p.every(n=>n>0&&n<1));
       if(h.interaction.food)await access(`public/scenes/turkey-food/${h.interaction.food}.webp`);
     }
     for(const layer of room.layers)for(const m of layer.svg.matchAll(/<image[^>]*href="([^"]+)"/g))await access(join('public',m[1]));
   }
+  assert.ok(fallingLeafRooms>=2,'Turkey needs falling leaves as well as smoke and steam');
+  assert.ok(driftingFlakeRooms>=5,'Turkey needs subtle drifting foliage and flour in its painted scenes');
   const manifest=JSON.parse(await readFile('public/scenes/turkey-assets.json','utf8'));
   assert.equal(manifest.length,57);for(const a of manifest)await access(join('public',a.path));
   const lanes=world.group.children.filter(o=>o.name==='walking-lane');

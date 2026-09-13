@@ -27,6 +27,7 @@ import { type Diorama, type DishMarker, type Placed } from "./worldkit";
 const areaCenter = (a: Area) => new THREE.Vector3(AREAS[a].center[0], 0, AREAS[a].center[1]);
 import { mountUi, showRecipePage, setCrumbs, toast } from "./ui";
 import { mountSettings } from "./settings";
+import { mountWorldIntro } from "./world-intro";
 import { person } from "./props";
 import { snapshotObject } from "./snapshot";
 const SCENES = { ...CHINA_SCENES, ...TURKEY_SCENES };
@@ -151,6 +152,13 @@ const ui = mountUi({
   }),
   onEnterRegion: (region) => enterRegion(region),
 });
+const worldIntro = mountWorldIntro({
+  onExploreArea: (area) => afterScene(() => {
+    document.getElementById("recipe")!.hidden = true;
+    ui.hide();
+    focusWorldArea(area);
+  }),
+});
 
 // ---------- boot ----------
 async function boot() {
@@ -218,6 +226,7 @@ function mapPlacement(): { pos: THREE.Vector3; target: THREE.Vector3 } {
 
 function showMap(first = false) {
   level = "map"; switchScene(mapScene); configureControls("map");
+  worldIntro.leave();
   ui.hide(); diorama?.highlight(null, null);
   setCrumbs([{ label: "🌍 Food World" }]);
   document.getElementById("crumbs")!.hidden = true;
@@ -481,7 +490,10 @@ function enterRegion(region: MapRegion) {
       level = "world"; switchScene(worldScene); configureControls("world");
       const target = id === 'middle-east' ? new THREE.Vector3(-24,0,-20) : new THREE.Vector3(-4, 0, 2);
       camera.position.copy(target).add(new THREE.Vector3(-2,80,90)); controls.target.copy(target);
-      fly(target.clone().add(id === 'middle-east' ? new THREE.Vector3(12,36,57) : new THREE.Vector3(2,48,60)), target, 2.0);
+      worldIntro.enter(id, false);
+      fly(target.clone().add(id === 'middle-east' ? new THREE.Vector3(12,36,57) : new THREE.Vector3(2,48,60)), target, 2.0, () => {
+        if (!story) worldIntro.enter(id);
+      });
       fade.classList.remove("on");
       setCrumbsWorld();
     }, 560);
@@ -491,19 +503,21 @@ function enterRegion(region: MapRegion) {
 function setCrumbsWorld() {
   setCrumbs([{ label: "Back to world map", onClick: () => leaveWorld() }, { label: `${WORLDS[world].name} · ${WORLDS[world].zh}` }], {
     current: currentArea, areas: areasOf(world),
-    onPick: (a) => {
-      diorama?.pin(null); diorama?.highlight(null, null); currentArea = a; setCrumbsWorld();
-      if (a) {
-        const turkey = a === 'istanbul';
-        const distance = turkey ? Math.max(145, 134 / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect * .92)) : 42;
-        glideTo(turkey ? new THREE.Vector3(0,0,-17) : areaCenter(a), distance, 1.3);
-      }
-      else if (world === 'middle-east') {
-        const distance = Math.min(490, Math.max(215, 124 / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect * .9)));
-        glideTo(new THREE.Vector3(0,0,0), distance, 1.3);
-      }
-    },
+    onPick: focusWorldArea,
   });
+}
+
+function focusWorldArea(area: Area | null) {
+  diorama?.pin(null); diorama?.highlight(null, null); currentArea = area; setCrumbsWorld();
+  if (area) {
+    const turkey = area === 'istanbul';
+    const distance = turkey ? Math.max(145, 134 / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect * .92)) : 42;
+    glideTo(turkey ? new THREE.Vector3(0,0,-17) : areaCenter(area), distance, 1.3);
+  }
+  else if (world === 'middle-east') {
+    const distance = Math.min(490, Math.max(215, 124 / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect * .9)));
+    glideTo(new THREE.Vector3(0,0,0), distance, 1.3);
+  }
 }
 
 function leaveWorld() {
@@ -689,14 +703,14 @@ function clearHover() {
   canvas.classList.remove("pointing");
 }
 canvas.addEventListener("pointerleave", clearHover);
-for (const id of ["card", "crumbs", "recipe", "settings-toggle", "settings"]) document.getElementById(id)!.addEventListener("pointerenter", clearHover);
+for (const id of ["card", "crumbs", "recipe", "world-intro-toggle", "world-intro", "settings-toggle", "settings"]) document.getElementById(id)!.addEventListener("pointerenter", clearHover);
 
 canvas.addEventListener("pointerdown", (e) => { if (e.target === canvas && !flight) down = { x: e.clientX, y: e.clientY, t: performance.now() }; });
 window.addEventListener("pointerup", (e) => {
   if (!down) return;
   const isTap = Math.hypot(e.clientX - down.x, e.clientY - down.y) < 7 && performance.now() - down.t < 500;
   down = null;
-  if (!isTap || flight || (e.target as HTMLElement).closest("#card, #crumbs, #recipe, #home, #settings-toggle, #settings")) return;
+  if (!isTap || flight || (e.target as HTMLElement).closest("#card, #crumbs, #recipe, #home, #world-intro-toggle, #world-intro, #settings-toggle, #settings")) return;
   if (level === "map") {
     const region = castMap(e.clientX, e.clientY);
     if (!region) { ui.hide(); return; }

@@ -2,7 +2,7 @@
 
 Saved from the product discussion on 2026-09-12. This is the working list to return to across tasks. The user directions below define the intended outcomes; suggestions and open decisions still need refinement before implementation.
 
-Last updated: 2026-09-13 — added world introductions and the exploration pass.
+Last updated: 2026-09-13 — added world introductions, the exploration pass, and visibility controls for unfinished worlds.
 
 | Topic | Status |
 | --- | --- |
@@ -15,6 +15,7 @@ Last updated: 2026-09-13 — added world introductions and the exploration pass.
 | 7. Mobile zoom returns to the landing page | Reported; needs reproduction |
 | 8. Introduce each world's food story | Added to the list; content and presentation pending |
 | 9. Exploration pass and milestone awards | Added to the list; goals and rewards to define |
+| 10. Unfinished worlds and owner preview | Added to the list; visibility and preview access to define |
 
 ## 1. Quieter opening and shared navigation
 
@@ -138,8 +139,22 @@ Last updated: 2026-09-13 — added world introductions and the exploration pass.
 
 **Open:** What counts as exploring each item, milestone thresholds, award design, saving progress across visits/devices, and how newly added places affect completion and previously earned awards.
 
+## 10. Unfinished worlds and owner preview
+
+**User direction:** Grey out worlds that are still in progress for visitors, while allowing the owner to see and explore the unfinished content.
+
+**Suggested approach:**
+
+- Give each world an explicit in-progress or published status.
+- Show in-progress worlds as subdued placeholders with a short "Coming soon" label. Visitors can see that a world exists but cannot enter its unfinished content.
+- Provide an owner preview that can open in-progress worlds, with a clear preview indicator.
+- Apply public availability consistently across the map, location menus, and direct entry links.
+- Exclude unpublished content from visitors' exploration-pass completion requirements.
+
+**Open:** Which worlds are currently ready for visitors, how the owner accesses the preview, and how a world is marked ready for publication.
+
 ## How to continue
 
-The first UI pass is complete. No implementation order has been agreed for topics 2–9.
+The first UI pass is complete. No implementation order has been agreed for topics 2–10.
 
 A suggested next step was a small Sichuan example combining appropriate room menus with English/Chinese and standard/children's explanations, before expanding across regions. This remains a proposal. Update this file as decisions are made and work is completed.

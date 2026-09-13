@@ -10,6 +10,8 @@ Live at https://fyyying.github.io/food-world/.
 
 The [product roadmap](docs/product-roadmap.md) tracks product directions, open decisions, reported bugs, and implementation progress.
 
+The [new-area methodology](docs/new-area-methodology.md) documents the workflow from ChatGPT research and image generation to Codex's 3D worlds, living rooms, and food discoveries.
+
 ## Run
 
 ```bash

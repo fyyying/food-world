@@ -1,0 +1,825 @@
+We are creating production-quality illustrated scene assets for a project called Food World.
+
+This world represents **UK food culture**, with a strong focus on everyday British food, regional traditions, pubs, bakeries, tea, roasts, pies, fish and chips, markets, coastal food, breakfasts, Indian-British influence, seasonal produce and family meals.
+
+The world should feel culturally broad enough to reflect the UK significantly, while avoiding the mistake of reducing British food to only fish and chips, tea and roast dinner.
+
+The visual world should communicate:
+
+hearth  
+rain  
+warm interiors  
+pub culture  
+baking  
+tea  
+roasts  
+pies  
+coastal food  
+markets  
+seasonality  
+comfort food  
+multicultural cities  
+family meals
+
+CORE VISUAL LANGUAGE
+
+Use:
+
+- warm brick
+- dark timber
+- cream plaster
+- weathered stone
+- slate grey
+- deep green
+- burgundy
+- mustard
+- navy
+- copper and brass accents
+- cozy window light
+- rain outside warm interiors
+- pub woodwork
+- market stalls
+- bakery counters
+- tiled cafés
+- village streets
+- coastal harbours
+- allotments
+- rolling green countryside
+- hedgerows
+- old stone walls
+- fireplaces
+- enamelware
+- ceramic mugs
+- cast iron
+- wooden tables
+- chalkboards used sparingly
+- patterned pub carpets only if subtle
+
+Avoid:
+
+- making every scene look Victorian
+- excessive Union Jack decoration
+- royal / palace imagery
+- generic Harry Potter fantasy styling
+- stereotypes like red phone boxes everywhere
+- turning every room into a pub
+- overly twee cottage aesthetics
+- making all UK food brown and heavy
+
+The world should feel lived-in, contemporary enough to be recognizable, but rooted in long food traditions.
+
+IMPORTANT PRODUCTION RULES
+
+1. Generate every full room or environment as its own image.
+2. Never combine multiple rooms into a contact sheet or collage.
+3. Use the largest native output size available.
+4. Generate portrait and wide versions independently.
+5. Do not crop or upscale one image to create another.
+6. No captions, filenames, borders or checkerboards inside images.
+7. For props, only generate items that are useful for animation, interaction, or scene layering.
+8. Prop background must be pure plain white.
+9. One object or one tightly related small group per image.
+10. Make each prop large enough that its short side is at least 400 px when extracted.
+11. If an asset is too small, regenerate it rather than resizing afterwards.
+
+--------------------------------------------------
+CORE UK SCENES
+--------------------------------------------------
+
+1. TRADITIONAL PUB
+
+Create a warm neighborhood British pub.
+
+Show:
+
+- dark wooden bar
+- brass beer taps
+- pint glasses
+- simple pub food
+- locals chatting
+- fireplace or warm wall lighting
+- wooden tables
+- chalkboard menu in background
+- rain or evening street visible through windows
+- subtle historic details without making it feel like a museum
+
+Food visible can include:
+
+- pie
+- chips
+- sausages
+- mash
+- Sunday roast elements
+- pickles
+- crisps or simple bar snacks
+
+Atmosphere:
+
+warm  
+social  
+cozy  
+slightly noisy  
+shelter from bad weather
+
+Key interaction potential:
+
+fire flicker  
+beer pour  
+rain on window  
+steam from food  
+door opening
+
+--------------------------------------------------
+
+2. FISH & CHIP SHOP
+
+Create a classic British fish and chip shop.
+
+Show:
+
+- fryer
+- battered fish
+- chips
+- vinegar
+- salt
+- mushy peas
+- takeaway boxes or paper wrapping
+- counter service
+- customers waiting
+- tiled walls
+- bright but warm practical lighting
+
+This should feel like a real neighborhood chippy, not a tourist caricature.
+
+Possible cultural stories:
+
+industrial towns  
+coastal fishing  
+fried fish traditions  
+vinegar and salt  
+takeaway culture
+
+Key interaction:
+
+fryer bubbles  
+fish lifts from oil  
+steam rises  
+vinegar shake
+
+--------------------------------------------------
+
+3. SUNDAY ROAST / FAMILY DINING ROOM
+
+Create a warm family Sunday lunch.
+
+Show:
+
+- roast beef, chicken or lamb
+- roast potatoes
+- Yorkshire pudding
+- gravy
+- carrots
+- peas or greens
+- stuffing
+- family sharing food
+- large dining table
+- cozy domestic interior
+- rainy or autumn light outside
+
+Atmosphere:
+
+family  
+ritual  
+comfort  
+weekend
+
+Possible cultural story:
+
+Sunday roast traditions  
+regional variations  
+Yorkshire pudding  
+roast dinners as family ritual
+
+--------------------------------------------------
+
+4. BAKERY / PIE SHOP
+
+Create a British bakery and pie shop.
+
+Show:
+
+- meat pies
+- sausage rolls
+- Cornish pasty
+- fruit pies
+- scones
+- bread
+- trays coming from oven
+- baker working
+- wooden and tiled surfaces
+- customers choosing food
+
+Atmosphere:
+
+warm  
+buttery  
+busy  
+everyday
+
+Key interaction:
+
+oven opens  
+steam escapes  
+pastry tray moves  
+flour dust
+
+--------------------------------------------------
+
+5. AFTERNOON TEA ROOM
+
+Create an elegant but approachable British tea room.
+
+Show:
+
+- teapot
+- tea cups
+- scones
+- clotted cream
+- jam
+- finger sandwiches
+- small cakes
+- tiered stand
+- natural daylight
+- floral or restrained traditional details
+- mixed-age diners
+
+Avoid making it overly luxurious or aristocratic.
+
+This should feel like a recognizable cultural ritual rather than a palace experience.
+
+Key interaction:
+
+tea pours  
+steam rises  
+cake stand rotates or highlights  
+jam/scone interaction
+
+--------------------------------------------------
+
+6. FULL ENGLISH BREAKFAST CAFÉ
+
+Create a classic British café.
+
+Show:
+
+- eggs
+- bacon
+- sausages
+- baked beans
+- grilled tomato
+- mushrooms
+- toast
+- hash browns optional
+- tea mugs
+- simple laminate or wooden tables
+- open kitchen
+- regular customers
+
+Atmosphere:
+
+unpretentious  
+filling  
+morning  
+familiar
+
+Possible cultural story:
+
+café culture  
+working breakfasts  
+regional breakfast variations
+
+--------------------------------------------------
+
+7. STREET MARKET / BOROUGH-STYLE FOOD MARKET
+
+Create a lively British food market in a historic urban setting.
+
+Show:
+
+- cheese
+- bread
+- pies
+- vegetables
+- preserves
+- cured meats
+- seafood
+- pastries
+- multicultural food stalls
+- shoppers
+- fabric awnings
+- old brick architecture
+
+The market should show modern UK food culture as well as traditional foods.
+
+Include subtle diversity in both people and food.
+
+Atmosphere:
+
+busy  
+urban  
+curious  
+contemporary  
+historic backdrop
+
+--------------------------------------------------
+
+8. BRITISH-INDIAN CURRY HOUSE
+
+Create a warm British-Indian curry restaurant.
+
+Show:
+
+- curry dishes
+- naan
+- rice
+- chutneys
+- poppadoms
+- tandoori-style food
+- diners sharing dishes
+- warm restaurant lighting
+- kitchen activity visible
+
+This scene is important.
+
+British food culture is incomplete without acknowledging the deep role of South Asian communities and British-Indian restaurant culture.
+
+Avoid reducing the scene to stereotypes.
+
+Possible cultural stories:
+
+post-war migration  
+curry houses  
+chicken tikka masala  
+regional South Asian influence on British food  
+how immigrant communities reshape national cuisine
+
+Key interaction:
+
+naan enters oven  
+curry steam  
+tandoor glow  
+dish sharing
+
+--------------------------------------------------
+
+9. COASTAL SEAFOOD HARBOUR
+
+Create a British coastal harbour food scene.
+
+Show:
+
+- fishing boats
+- fresh fish
+- crab
+- mussels
+- oysters or shellfish where appropriate
+- seafood stall
+- harbour wall
+- gulls
+- windy weather
+- simple seafood meals
+- people eating outdoors or in a harbour café
+
+Possible cultural stories:
+
+fishing communities  
+regional seafood  
+Cornwall  
+Scotland  
+Whitby  
+coastal food traditions
+
+Atmosphere:
+
+salty  
+windy  
+fresh  
+working harbour
+
+--------------------------------------------------
+
+10. CORNISH / SOUTHWEST PASTY SCENE
+
+Create a small bakery or outdoor lunch scene focused on Cornish pasties.
+
+Show:
+
+- pasties
+- rough stone walls
+- coastal or village backdrop
+- simple bakery counter
+- workers or travellers eating
+
+Possible story:
+
+mining communities  
+portable meals  
+Cornish food identity
+
+--------------------------------------------------
+
+11. CHEESEMAKER / FARM SHOP
+
+Create a countryside cheese and farm-shop scene.
+
+Show:
+
+- cheddar-style cheeses
+- regional cheeses
+- milk churns
+- bread
+- chutneys
+- apples
+- farm produce
+- wooden shelves
+- countryside outside
+
+Possible cultural stories:
+
+Cheddar  
+Stilton  
+territorial cheeses  
+dairy farming  
+farm shops
+
+--------------------------------------------------
+
+12. ALLOTMENT / KITCHEN GARDEN
+
+Create a British allotment or kitchen garden.
+
+Show:
+
+- potatoes
+- peas
+- cabbage
+- carrots
+- leeks
+- herbs
+- rhubarb
+- berries
+- small shed
+- watering can
+- compost
+- gardener harvesting
+
+This scene should connect everyday home food to seasonality.
+
+Possible story:
+
+allotments  
+wartime growing  
+seasonal vegetables  
+home gardening
+
+--------------------------------------------------
+
+13. VILLAGE PUB GARDEN / SUMMER SCENE
+
+Create a warm summer pub garden.
+
+Show:
+
+- outdoor wooden tables
+- simple pub meals
+- cider or soft drinks
+- families
+- dogs
+- flowers
+- village setting
+- late afternoon sun
+
+This gives the UK world a warmer seasonal contrast to rainy interiors.
+
+--------------------------------------------------
+
+14. BLACK TEA / BREAKFAST KITCHEN
+
+Create an ordinary British home kitchen in the morning.
+
+Show:
+
+- kettle
+- mugs
+- toast
+- butter
+- marmalade
+- cereal
+- tea
+- simple breakfast preparation
+- newspaper or phone nearby
+- soft morning light
+
+This should represent everyday food habits, not only iconic special dishes.
+
+--------------------------------------------------
+
+15. HISTORIC INN / HEARTH KITCHEN
+
+Create an older British inn or farmhouse kitchen.
+
+Show:
+
+- large hearth
+- cast iron pots
+- bread
+- stew
+- root vegetables
+- pies
+- wooden table
+- stone walls
+- drying herbs
+
+This is the historical storytelling scene.
+
+Possible stories:
+
+hearth cooking  
+preservation  
+regional stews  
+pies  
+bread ovens  
+food before modern kitchens
+
+--------------------------------------------------
+KEY FOOD STORIES THE WORLD SHOULD SUPPORT
+--------------------------------------------------
+
+The world should support stories about:
+
+- pub culture
+- Sunday roast
+- fish and chips
+- pies and pastry
+- sausages
+- tea culture
+- afternoon tea
+- full English breakfast
+- coastal fishing
+- regional cheeses
+- Cornish pasties
+- Scottish and northern food traditions
+- seasonal vegetables
+- allotments
+- preserves and chutneys
+- baking
+- curry houses
+- South Asian influence on modern British cuisine
+- migration and multicultural food
+- working-class café culture
+- farm shops
+- regional differences across England, Scotland, Wales and Northern Ireland
+
+The user should feel:
+
+“British food is much broader, more regional and more culturally layered than the stereotypes suggest.”
+
+--------------------------------------------------
+REDUCED ANIMATION ASSET SET
+--------------------------------------------------
+
+Do NOT generate dozens of static props.
+
+Only generate the following useful animation assets separately on pure white backgrounds.
+
+PUB
+
+uk_pub_fire.png
+Single fireplace flame / fire element suitable for flicker animation.
+
+uk_beer_pour.png
+Pint glass with beer actively being poured.
+
+uk_pub_food_steam.png
+Soft steam plume for hot food.
+
+--------------------------------------------------
+
+FISH & CHIP SHOP
+
+uk_frying_fish.png
+Single battered fish piece suitable for fryer animation.
+
+uk_fryer_bubbles.png
+Oil bubbling element.
+
+uk_vinegar_bottle.png
+Single vinegar bottle suitable for tilt/pour interaction.
+
+--------------------------------------------------
+
+ROAST DINNER
+
+uk_gravy_jug.png
+Gravy jug suitable for pouring animation.
+
+uk_roast_steam.png
+Soft steam plume.
+
+--------------------------------------------------
+
+BAKERY
+
+uk_baker.png
+Baker handling pastry tray or dough.
+
+uk_pastry_tray.png
+Tray of pies or sausage rolls.
+
+uk_flour_dust.png
+Soft flour particle element.
+
+--------------------------------------------------
+
+TEA ROOM
+
+uk_teapot.png
+Single British teapot suitable for pouring.
+
+uk_tea_steam.png
+Soft tea steam element.
+
+uk_cake_stand.png
+Tiered afternoon tea stand.
+
+--------------------------------------------------
+
+BREAKFAST CAFÉ
+
+uk_frying_pan.png
+Pan with breakfast food.
+
+uk_cafe_steam.png
+Soft food steam.
+
+--------------------------------------------------
+
+MARKET
+
+uk_market_vendor.png
+Single market vendor handling food.
+
+uk_market_awning.png
+Fabric awning edge suitable for subtle wind movement.
+
+--------------------------------------------------
+
+BRITISH-INDIAN RESTAURANT
+
+uk_tandoor_glow.png
+Warm oven / tandoor glow element.
+
+uk_naan.png
+Single naan suitable for oven movement.
+
+uk_curry_steam.png
+Soft curry steam.
+
+--------------------------------------------------
+
+COAST
+
+uk_fishing_boat.png
+Small fishing boat suitable for slow water movement.
+
+uk_seagull.png
+Single gull suitable for simple flight animation.
+
+uk_harbour_flag.png
+Small fabric flag or banner for wind movement.
+
+--------------------------------------------------
+
+ALLOTMENT
+
+uk_rhubarb.png
+Rhubarb leaves/stalks suitable for subtle sway.
+
+uk_garden_leaves.png
+Small leafy plant cluster for wind movement.
+
+--------------------------------------------------
+
+HISTORIC HEARTH
+
+uk_hearth_fire.png
+Fire suitable for looping.
+
+uk_hanging_pot.png
+Single iron pot suitable for gentle sway.
+
+--------------------------------------------------
+OPTIONAL HERO PROPS
+--------------------------------------------------
+
+Only generate these if they are useful for clickable discovery:
+
+uk_yorkshire_pudding.png
+Single Yorkshire pudding.
+
+uk_pie.png
+Single traditional meat pie.
+
+uk_scone.png
+Single scone with cream and jam.
+
+uk_fish_and_chips.png
+Single plated or wrapped fish and chips.
+
+uk_simit_DO_NOT_GENERATE
+This is not a UK asset.
+
+uk_cheddar.png
+Single wedge of mature cheddar-style cheese.
+
+uk_pasty.png
+Single Cornish pasty.
+
+uk_tea_glass_DO_NOT_GENERATE
+Use British tea cup / mug instead.
+
+uk_tea_cup.png
+Single tea cup.
+
+uk_breakfast_plate.png
+Compact full English breakfast plate.
+
+--------------------------------------------------
+REGIONAL BALANCE
+--------------------------------------------------
+
+Do not make the world purely London/England-focused.
+
+Visually or editorially leave room for:
+
+SCOTLAND
+- smoked salmon
+- oats
+- porridge
+- seafood
+- shortbread
+- haggis
+- whisky-related food history if desired later
+
+WALES
+- Welsh cakes
+- lamb
+- leeks
+- laverbread
+- cheese traditions
+
+NORTHERN IRELAND
+- breads
+- potato dishes
+- Ulster fry
+- dairy
+- seafood
+
+ENGLAND
+- pies
+- roast dinners
+- cheeses
+- fish and chips
+- tea
+- regional baking
+- curries and urban multicultural food
+
+The first visual world does not need one room for every nation, but the cultural layer should make clear that “British food” is not one homogeneous cuisine.
+
+--------------------------------------------------
+ANIMATION PRINCIPLES
+--------------------------------------------------
+
+The full room paintings must already feel complete.
+
+Separate assets exist only where motion adds value.
+
+Prioritize:
+
+steam  
+fire  
+pouring  
+rain  
+wind  
+boat movement  
+food preparation  
+oven glow  
+small character actions
+
+Do not generate static bowls, chairs, plates or decorations separately unless they need to move or be clickable.
+
+Generate one full room at a time.
+
+Then generate only the reduced animation asset set.
+
+Never combine multiple requested outputs into one asset sheet.

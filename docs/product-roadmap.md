@@ -2,7 +2,9 @@
 
 Saved from the product discussion on 2026-09-12. This is the working list to return to across tasks. The user directions below define the intended outcomes; suggestions and open decisions still need refinement before implementation.
 
-Last updated: 2026-09-13 — added world introductions, the exploration pass, and visibility controls for unfinished worlds.
+Use the [new-area methodology](new-area-methodology.md) when creating a country, region, or neighbourhood. It records the research, image-generation, 3D construction, animation, and food-discovery workflow.
+
+Last updated: 2026-09-13 — added the new-area methodology and connections between foods across worlds.
 
 | Topic | Status |
 | --- | --- |
@@ -16,6 +18,7 @@ Last updated: 2026-09-13 — added world introductions, the exploration pass, an
 | 8. Introduce each world's food story | Added to the list; content and presentation pending |
 | 9. Exploration pass and milestone awards | Added to the list; goals and rewards to define |
 | 10. Unfinished worlds and owner preview | Added to the list; visibility and preview access to define |
+| 11. Connect foods across worlds | Added to the list; stories and other connections to develop |
 
 ## 1. Quieter opening and shared navigation
 
@@ -153,8 +156,25 @@ Last updated: 2026-09-13 — added world introductions, the exploration pass, an
 
 **Open:** Which worlds are currently ready for visitors, how the owner accesses the preview, and how a world is marked ready for publication.
 
+## 11. Connect foods across worlds
+
+**User direction:** As more worlds are added, make foods more connected through stories or other means so visitors can discover relationships across the worlds.
+
+**Suggested approach:**
+
+- Link foods through shared ingredients, related dishes, cooking techniques, and documented histories of trade, migration, or exchange
+- Explain what connects two foods, including meaningful differences, rather than showing an unexplained list of related items
+- Let visitors follow a connection from a story card to a food, ingredient, place, or recipe in another available world
+- Develop optional journeys across worlds around an ingredient, technique, or food story
+- Consider visual connections and exploration-pass goals alongside story links, while keeping the main scenes uncluttered
+- Keep a shared ingredient or similar technique distinct from a proven historical influence; support historical connections with sources
+
+Story cards should have depth in food history, ingredients, and dishes. The [new-area methodology](new-area-methodology.md) records how to write that content alongside short initial discoveries.
+
+**Open:** The first connections to develop, how visitors find and follow them, and how they relate to the exploration pass as more worlds become available.
+
 ## How to continue
 
-The first UI pass is complete. No implementation order has been agreed for topics 2–10.
+The first UI pass is complete. No implementation order has been agreed for topics 2–11.
 
 A suggested next step was a small Sichuan example combining appropriate room menus with English/Chinese and standard/children's explanations, before expanding across regions. This remains a proposal. Update this file as decisions are made and work is completed.

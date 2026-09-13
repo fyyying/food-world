@@ -2,6 +2,8 @@
 
 Saved from the product discussion on 2026-09-12. This is the working list to return to across tasks. The user directions below define the intended outcomes; suggestions and open decisions still need refinement before implementation.
 
+Last updated: 2026-09-13 — added world introductions and the exploration pass.
+
 | Topic | Status |
 | --- | --- |
 | 1. Quieter opening and shared navigation | First pass implemented in `36f6cea` |
@@ -11,6 +13,8 @@ Saved from the product discussion on 2026-09-12. This is the working list to ret
 | 5. My World and cooking history | Discussed; behavior to refine |
 | 6. Modern World | Added to the list; design pending |
 | 7. Mobile zoom returns to the landing page | Reported; needs reproduction |
+| 8. Introduce each world's food story | Added to the list; content and presentation pending |
+| 9. Exploration pass and milestone awards | Added to the list; goals and rewards to define |
 
 ## 1. Quieter opening and shared navigation
 
@@ -106,8 +110,36 @@ Saved from the product discussion on 2026-09-12. This is the working list to ret
 
 **Status:** Reported; not yet reproduced or fixed. Identify the affected phone/browser, zoom gesture, and view during reproduction before determining the cause.
 
+## 8. Introduce each world's food story
+
+**User direction:** When entering a world, introduce its food culture at a higher level before the visitor explores the details. For China, this should connect food history, tea heritage, the variety of regional cuisines, and how people eat today.
+
+**Suggested approach:**
+
+- Offer a short, illustrated introduction on entry, with a clear way to start exploring and revisit the introduction later.
+- Connect the overview to the regions and places the visitor can explore. Explain how they fit into the wider food culture.
+- Cover historical roots, characteristic ingredients and practices, regional variety, and present-day life. Adapt the story to each world, including Modern World.
+- Keep the introduction concise on phones, with optional deeper reading. Support the chosen language and children's mode.
+- Research specific dates, origins, and any "oldest" claims before writing them as facts. The user's examples describe desired topics, not verified historical claims.
+
+**Open:** First-entry versus repeat-entry behavior, format and length, and the initial China story and sources. The overview should distinguish the game's selected regions from a complete classification of Chinese cuisines.
+
+## 9. Exploration pass and milestone awards
+
+**User direction:** Add an exploration pass for each world. For China, give visitors goals to explore all places, ingredients, and other discoveries, with awards as they pass milestones.
+
+**Suggested approach:**
+
+- Show goals and progress in a dedicated pass that stays easy to reach without adding clutter to the main scene.
+- Track places visited and ingredients discovered. Possible additional goals include dishes, cooking techniques, and stories; the full set remains to be agreed.
+- Celebrate intermediate milestones as well as completion of all available discoveries in a world. Possible awards include stamps or badges.
+- Keep exploration progress distinct from the "I cooked this" history in My World, while making both accessible to the visitor.
+- Preserve progress across language and reading-mode changes. Only available content should be required for completion.
+
+**Open:** What counts as exploring each item, milestone thresholds, award design, saving progress across visits/devices, and how newly added places affect completion and previously earned awards.
+
 ## How to continue
 
-The first UI pass is complete. No implementation order has been agreed for topics 2–7.
+The first UI pass is complete. No implementation order has been agreed for topics 2–9.
 
 A suggested next step was a small Sichuan example combining appropriate room menus with English/Chinese and standard/children's explanations, before expanding across regions. This remains a proposal. Update this file as decisions are made and work is completed.

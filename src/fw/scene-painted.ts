@@ -7,6 +7,7 @@ import { flickerNoise, STAGE_W, STAGE_H, type SceneDef } from "./scene";
 import { roomProps } from "./scene-props";
 import sizes from "./scenes.json";
 import propSizes from "./scenes-props.json";
+import { ambientPainter, type AmbientPatch } from './scene-ambience';
 
 const SIZES = sizes as unknown as Record<string, Record<string, [number, number]>>;
 const PROPS = (propSizes as unknown as { rooms: Record<string, Record<string, [number, number]>>; props: Record<string, [number, number]> });
@@ -63,6 +64,8 @@ export type PaintedCfg = {
   sky?: boolean;
   /** a slow river mist */
   mist?: { x: number; y: number; w: number; h: number };
+  /** Always-on movement aligned to the wide and phone paintings. */
+  ambience?: AmbientPatch[];
   /** the room is one painting that fills the stage (public/scenes/<folder>/wide.jpg), with a portrait twin for phones */
   painting?: boolean;
   /** figures that walk across the front now and then */
@@ -189,8 +192,8 @@ export function paintedScene(cfg: PaintedCfg): SceneDef {
           s.halo?.setAttribute("opacity", (0.35 + flickerNoise(t, s.ph) * 0.65).toFixed(3));
         });
         staticHalos.forEach((h, i) => h.setAttribute("opacity", (0.35 + flickerNoise(t, i * 2.3 + 1) * 0.65).toFixed(3)));
-        fires.forEach((el, i) => el.setAttribute("opacity", (0.25 + flickerNoise(t, i + 2) * 0.45).toFixed(3)));
-        lamps.forEach((el, i) => el.setAttribute("opacity", (0.3 + flickerNoise(t, i * 1.9 + 7) * 0.7).toFixed(3)));
+        fires.forEach((el, i) => el.setAttribute("opacity", (0.45 + flickerNoise(t, i + 2) * 0.55).toFixed(3)));
+        lamps.forEach((el, i) => el.setAttribute("opacity", (0.60 + Math.sin(t * 1.5 + i * 1.9) * .25 + Math.sin(t * 3.7 + i) * .08).toFixed(3)));
       };
     },
   };
@@ -205,14 +208,29 @@ type Bubble = { x: number; y: number; r: number; age: number; life: number };
 type Petal = { x: number; y: number; vy: number; sway: number; rot: number; vr: number; s: number; age: number; life: number };
 
 function makeFx(cfg: PaintedCfg, reaction: { boil: number }) {
+  const ambience = ambientPainter(cfg.folder, cfg.ambience ?? []);
   const steam: Steam[] = [], leaves: Leaf[] = [], lanterns: Lantern[] = [], bubbles: Bubble[] = [], petals: Petal[] = [];
   const leafImgs = [2, 3, 5, 6, 7, 8].map((i) => { const im = new Image(); im.src = `${import.meta.env.BASE_URL}scenes/hotpot/leaf-${i}.png`; return im; });
   const motes = Array.from({ length: cfg.motes ?? 0 }, () => ({ x: rnd(0, STAGE_W), y: rnd(-20, 720), vy: rnd(4, 11), r: rnd(1, 2.4), a: rnd(0.25, 0.6), f: rnd(0.4, 1.1), ph: rnd(0, 6.28) }));
   const stars = cfg.sky ? Array.from({ length: 90 }, () => ({ x: rnd(0, STAGE_W), y: rnd(0, 300), r: rnd(0.6, 1.8), ph: rnd(0, 6.28), f: rnd(0.5, 2.2) })) : [];
   const accs = Array.from({ length: Math.max(cfg.steam?.length ?? 0, cfg.portrait?.steam?.length ?? 0) }, () => 0);
+  let previousPortrait: boolean | undefined;
   let leafAt = 1.5, lanternAt = 1, bacc = 0, pacc = 0;
   return (ctx: CanvasRenderingContext2D, t: number, dt: number, portrait: boolean) => {
     const emitters = (portrait && cfg.portrait?.steam) || cfg.steam || [];
+    // Enter with an established plume. Re-seed on rotation so steam cannot linger at old coordinates.
+    if (portrait !== previousPortrait) {
+      steam.length = 0; accs.fill(0);
+      emitters.forEach(e => {
+        for (let i = 0; i < Math.ceil(e.rate * 2); i++) {
+          const age = rnd(.25, 2.2);
+          steam.push({ x: rnd(e.x - e.w / 2, e.x + e.w / 2), y: e.y - age * 48,
+            vx: rnd(-6, 6), vy: rnd(-42, -70), r: rnd(10, 18) * Math.max(.6, e.w / 120),
+            a: (e.a ?? .34) * rnd(.8, 1.2), life: rnd(2.6, 4.4), age, drift: rnd(0, 6.28) });
+        }
+      });
+      previousPortrait = portrait;
+    }
     const pot = (portrait && cfg.portrait?.pot) || cfg.pot;
     if (pot) {
       // broth on the boil: domes swell out of the surface, burst, and leave a ripple that spreads and fades
@@ -248,7 +266,7 @@ function makeFx(cfg: PaintedCfg, reaction: { boil: number }) {
         const x = m.x + ((t * 12 + i * m.w * 0.3) % (m.w * 1.2)) - m.w * 0.1, y = m.y + Math.sin(t * 0.4 + i) * m.h * 0.2, r = m.w * 0.22;
         ctx.save(); ctx.translate(x, y); ctx.scale(1, m.h / r);
         const g = ctx.createRadialGradient(0, 0, 0, 0, 0, r);
-        g.addColorStop(0, "rgba(235,225,240,.09)"); g.addColorStop(1, "rgba(235,225,240,0)");
+        g.addColorStop(0, "rgba(235,225,240,.22)"); g.addColorStop(1, "rgba(235,225,240,0)");
         ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill(); ctx.restore();
       }
     }
@@ -321,5 +339,6 @@ function makeFx(cfg: PaintedCfg, reaction: { boil: number }) {
         ctx.drawImage(l.img, -l.img.naturalWidth / 2, -l.img.naturalHeight / 2); ctx.restore();
       }
     }
+    ambience(ctx, t, portrait);
   };
 }

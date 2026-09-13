@@ -16,10 +16,17 @@ const sampleMotion=(scene,portrait)=>{
 };
 const temp=await mkdtemp(join(tmpdir(),'turkey-world-'));
 try {
-  await build({input:{world:'src/fw/world-mideast.ts',rooms:'src/fw/scenes-turkey.ts',objects:'src/fw/turkey-objects.ts',ambience:'src/fw/turkey-ambience.ts',landscape:'src/fw/turkey-landscape.ts'},platform:'node',output:{banner:'import.meta.env={VITE_STATIC:"1",BASE_URL:"/"};',dir:temp,format:'esm',entryFileNames:'[name].mjs',chunkFileNames:'[name].mjs'}});
+  await build({input:{world:'src/fw/world-mideast.ts',rooms:'src/fw/scenes-turkey.ts',objects:'src/fw/turkey-objects.ts',ambience:'src/fw/turkey-ambience.ts',painter:'src/fw/scene-ambience.ts',landscape:'src/fw/turkey-landscape.ts',camera:'src/fw/world-camera.ts'},platform:'node',output:{banner:'import.meta.env={VITE_STATIC:"1",BASE_URL:"/"};',dir:temp,format:'esm',entryFileNames:'[name].mjs',chunkFileNames:'[name].mjs'}});
   const {buildMideast,MIDEAST_LANES}=await import(pathToFileURL(join(temp,'world.mjs')));
   const {TURKEY_SCENES}=await import(pathToFileURL(join(temp,'rooms.mjs')));
-  const {TURKEY_AMBIENCE,drawTurkeyAmbience,paintingFrame}=await import(pathToFileURL(join(temp,'ambience.mjs')));
+  const {TURKEY_AMBIENCE}=await import(pathToFileURL(join(temp,'ambience.mjs')));
+  const {drawAmbience,paintingFrame}=await import(pathToFileURL(join(temp,'painter.mjs')));
+  const {worldZoomLimit}=await import(pathToFileURL(join(temp,'camera.mjs')));
+  for(const [w,h] of [[390,844],[430,932],[720,1024],[667,375]]) {
+    assert.equal(worldZoomLimit('middle-east',w,h),worldZoomLimit('china',w,h),'phone worlds must have the same zoom-out limit');
+    assert.equal(worldZoomLimit('middle-east',w,h),90);
+  }
+  assert.equal(worldZoomLimit('middle-east',1280,720),500,'desktop keeps the regional overview');
   const {TURKEY_NEXT}=await import(pathToFileURL(join(temp,'objects.mjs')));
   const {LAND_SHORE,waterOutline}=await import(pathToFileURL(join(temp,'landscape.mjs')));
   const inPoly=(x,z,poly)=>{let yes=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const [ax,az]=poly[i],[bx,bz]=poly[j];if((az>z)!==(bz>z)&&x<(bx-ax)*(z-az)/(bz-az)+ax)yes=!yes;}return yes;};
@@ -104,7 +111,7 @@ try {
         for(const n of args)if(typeof n==='number')assert.ok(Number.isFinite(n),`${id}: invalid ${k} coordinate`);
         if(['rect','moveTo','quadraticCurveTo','translate','arc','ellipse'].includes(k))calls.push([k,...args]);
       },set:()=>true});
-      drawTurkeyAmbience(painter,t,portrait,patches);
+      drawAmbience(painter,t,portrait,patches);
       assert.equal(saves,0,'effects must restore their clip and opacity');
       assert.equal(clips,patches.filter(p=>portrait?p.phone:p.wide).length,'every local effect must be clipped');
       return calls;

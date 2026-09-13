@@ -1,0 +1,53 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Automatic room motion audit</title></head><body><div id="app"></div>
+<nav style="position:fixed;bottom:4px;right:4px;z-index:10001;background:#fff;color:#222;padding:8px;font:12px system-ui;max-width:85vw"><select aria-label="Room"></select><button id="audit">Audit Turkey rooms</button><output style="display:block" aria-label="Motion results"></output><details><summary>Completed rooms</summary><pre></pre></details></nav>
+<script type="module">
+import '/src/fw/style.css';
+import {TURKEY_SCENES} from '/src/fw/scenes-turkey.ts';
+import {SCENES as CHINA_SCENES} from '/src/fw/scenes-china.ts';
+import {openLivingScene} from '/src/fw/scene.ts';
+import {paintingFrame} from '/src/fw/scene-ambience.ts';
+const scenes={...TURKEY_SCENES,...CHINA_SCENES},picker=document.querySelector('select'),output=document.querySelector('output'),history=document.querySelector('pre');
+for(const id of Object.keys(scenes))picker.add(new Option(id,id));
+let room,picture,started=0,baseline,queue=[],results=[],last=performance.now(),sampled=false;
+function open(id){
+  room?.destroy();picker.value=id;baseline=null;sampled=false;started=performance.now();
+  room=openLivingScene(scenes[id](),{dishes:[],onDish(){},onStory(){},onClose(){room?.destroy();room=null}});
+  picture=new Image();picture.src=room.el.querySelector(`image[href$="${room.el.classList.contains('portrait')?'portrait':'wide'}.jpg"]`).getAttribute('href');
+  output.textContent=`${id}: observing automatic motion; no room touches.`;
+}
+picker.onchange=()=>{queue=[];open(picker.value)};
+document.querySelector('#audit').onclick=()=>{results=[];history.textContent='';queue=Object.keys(TURKEY_SCENES);open(queue.shift())};
+function capture(){
+  const canvas=room.el.querySelector('canvas.fx'),composite=document.createElement('canvas');
+  composite.width=canvas.width;composite.height=canvas.height;
+  const ctx=composite.getContext('2d'),scale=Math.max(canvas.width/1600,canvas.height/900);
+  const painting=paintingFrame(room.el.classList.contains('portrait'),canvas.width/scale);
+  ctx.setTransform(scale,0,0,scale,(canvas.width-1600*scale)/2,(canvas.height-900*scale)/2);
+  ctx.drawImage(picture,painting.x,painting.y,painting.width,painting.height);
+  ctx.resetTransform();ctx.drawImage(canvas,0,0);
+  // Compare against the actual painting: transparent changes or pale effects on pale water do not count.
+  const pixels=ctx.getImageData(0,0,canvas.width,canvas.height).data;
+  const painted=room.el.querySelector('image[href$="wide.jpg"]').closest('.layer');
+  const above=Boolean(painted.compareDocumentPosition(canvas)&Node.DOCUMENT_POSITION_FOLLOWING);
+  const lights=[...room.el.querySelectorAll('[id^="lamp-"],[id^="fire-"]')].map(n=>n.getAttribute('opacity')).join(',');
+  return {pixels,above,lights};
+}
+function frame(now){
+  room?.tick(now/1000,Math.min(.05,(now-last)/1000));last=now;
+  if(room&&!sampled){
+    if(!baseline&&now-started>900&&picture.complete&&picture.naturalWidth)baseline=capture();
+    else if(baseline&&now-started>2800){
+      const current=capture();let changed=0;
+      for(let i=0;i<current.pixels.length;i+=4)if(Math.max(...[0,1,2].map(c=>Math.abs(current.pixels[i+c]-baseline.pixels[i+c])))>=10)changed++;
+      const percent=100*changed/(current.pixels.length/4),lights=current.lights!==baseline.lights;
+      const pass=current.above&&(changed>=100||lights);
+      const result=`${pass?'PASS':'FAIL'} ${picker.value}: ${changed} pixels (${percent.toFixed(2)}%) visibly change in 1.9s; canvas ${current.above?'above':'BELOW'} painting; lamp/fire motion ${lights}.`;
+      results.push(result);output.textContent=result;history.textContent=results.join('\n');sampled=true;
+      if(queue.length)open(queue.shift());
+      else if(results.length===Object.keys(TURKEY_SCENES).length)output.textContent=`${results.filter(r=>r.startsWith('PASS')).length}/${results.length} rooms passed automatic motion at ${innerWidth}×${innerHeight}.`;
+    }
+  }
+  requestAnimationFrame(frame);
+}
+open(new URLSearchParams(location.search).get('room')||'tr_tea_hill');requestAnimationFrame(frame);
+</script></body></html>

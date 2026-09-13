@@ -10,6 +10,7 @@ import { buildItaly } from "./world-italy";
 import { buildKorea } from "./world-korea";
 import { buildMexico } from "./world-mexico";
 import { buildMideast } from "./world-mideast";
+import { worldZoomLimit } from './world-camera';
 import { buildMed } from "./world-med";
 import { buildIndia } from "./world-india";
 import { buildSeasia } from "./world-seasia";
@@ -86,12 +87,24 @@ function resize() {
   camera.aspect = w / h; camera.updateProjectionMatrix();
 }
 resize();
-window.addEventListener("resize", resize);
+window.addEventListener("resize", () => {
+  resize();
+  if (level === 'world') {
+    configureControls('world');
+    // Rotating a desktop-sized view into portrait must also constrain a pending overview flight.
+    if (flight) {
+      const offset = flight.to.clone().sub(flight.tt).clampLength(controls.minDistance, controls.maxDistance);
+      flight.to.copy(flight.tt).add(offset);
+    }
+    controls.update();
+  }
+});
 
 // ---------- camera flights ----------
 const easeInOut = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
 let flight: { from: THREE.Vector3; to: THREE.Vector3; tf: THREE.Vector3; tt: THREE.Vector3; t: number; dur: number; done?: () => void } | null = null;
 function fly(to: THREE.Vector3, target: THREE.Vector3, dur = 1.4, done?: () => void) {
+  if (level === 'world') to = target.clone().add(to.clone().sub(target).clampLength(controls.minDistance, controls.maxDistance));
   flight = { from: camera.position.clone(), to, tf: controls.target.clone(), tt: target, t: 0, dur, done };
 }
 /** Move the target and keep the current viewing offset (a glide, not a cut). `bias` shifts the subject left so the card doesn't cover it. */
@@ -186,7 +199,7 @@ function configureControls(l: Level) {
     controls.minPolarAngle = 0.45; controls.maxPolarAngle = 1.15;
     controls.minAzimuthAngle = -0.6; controls.maxAzimuthAngle = 0.6;
   } else {
-    controls.minDistance = 10; controls.maxDistance = world === 'middle-east' ? 500 : 90;
+    controls.minDistance = 10; controls.maxDistance = worldZoomLimit(world, window.innerWidth, window.innerHeight);
     worldScene.fog = new THREE.Fog('#e9e0cd', world === 'middle-east' ? 500 : 90, world === 'middle-east' ? 600 : 200);
     controls.minPolarAngle = 0.5; controls.maxPolarAngle = 1.12;
     controls.minAzimuthAngle = -0.75; controls.maxAzimuthAngle = 0.75;

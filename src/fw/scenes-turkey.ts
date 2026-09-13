@@ -2,7 +2,7 @@
 import { paintedScene, pAt, type PaintedCfg } from './scene-painted';
 import type { SceneDef, SceneHotspot } from './scene';
 import type { RoomEffect } from './scene-props';
-import { withTurkeyAmbience } from './turkey-ambience';
+import { TURKEY_AMBIENCE } from './turkey-ambience';
 
 type Point = [number, number];
 type Touch = [label: string, text: string, effect: RoomEffect, wide: Point, phone: Point, food?: string];
@@ -169,7 +169,7 @@ function makeRoom(id: string, room: Room): SceneDef {
     interaction: { effect, icon: icons[effect], wide, phone, extent: effect === 'tea' ? [.045,.10] : [.10,.22], folder: id, food },
   }));
   const cfg: PaintedCfg = { id, folder: id, title: room.title, zh: room.zh, caption: room.caption,
-    painting: true, night: room.night, hotspots, motes: 6,
+    painting: true, night: room.night, hotspots, motes: 6, ambience: TURKEY_AMBIENCE[id],
     light: { x: 750, y: 280, color: 'rgba(255,210,150,0.16)' }, portrait: {} };
   if (room.ambience.steam) {
     cfg.steam = room.ambience.steam.map(({ at: [wide], width = 92, rate = 9, alpha = .28 }) =>
@@ -183,6 +183,6 @@ function makeRoom(id: string, room: Room): SceneDef {
     cfg.portrait!.fire = room.ambience.fire.map(({ at: [, phone], radius = [55, 30] }) =>
       ({ ...pAt(id, ...phone), rx: radius[0] * .55, ry: radius[1] * .55 }));
   }
-  return withTurkeyAmbience(paintedScene(cfg));
+  return paintedScene(cfg);
 }
 export const TURKEY_SCENES: Record<string, () => SceneDef> = Object.fromEntries(Object.entries(rooms).map(([id, room]) => [id, () => makeRoom(id, room)]));

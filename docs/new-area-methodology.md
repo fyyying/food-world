@@ -2,6 +2,8 @@
 
 This is the author's method, documented on 2026-09-13. Use it for a new country, region, or neighbourhood. ChatGPT researches the area and generates its visual assets. Codex uses those assets to build the explorable world and its living rooms.
 
+The main design principle is **Make each area feel like a place people live in, with food as the way to explore it.** Apply the design lessons below throughout the four stages, from the first composition to the final live review.
+
 The sequence is **Research and concept image → room paintings and useful props → 3D community → gentle animation and food discoveries**.
 
 The visitor experience follows **Place → food → story**. The place draws the visitor in, a visible food detail invites interaction, and a short story rewards curiosity. Keep deeper reading optional.
@@ -20,9 +22,9 @@ Create a brief that identifies:
 - The period or mix of periods being represented
 - The supplied style-reference images
 
-Ask ChatGPT to generate an overall concept image that Codex can use as a spatial blueprint. Show how the community fits together: Building clusters, streets, squares, food places, farms or gardens, water, bridges, and landmarks. Make the connections readable enough to guide construction.
+Design the whole composition before adding detail. Ask ChatGPT to generate an overall concept image that Codex can use as a spatial blueprint. Cluster related places into recognisable neighbourhoods, establish clear country boundaries, and leave space for future areas. Use winding streets, irregular groupings, layered heights, and framed views. Show how buildings, squares, food places, farms or gardens, water, bridges, and landmarks connect.
 
-Attach the chosen style references. They define the illustration's colour, texture, lighting, proportions, and level of detail. Adapt the subjects to the new area; give its people distinct faces, clothing, and activities.
+Attach the chosen references. Use them to guide spatial composition as well as colour, texture, lighting, proportions, and detail. Adapt the subjects to the new area; give its people distinct faces, clothing, and activities.
 
 **Handoff:** The concept image, the research brief and sources, and an annotated list of the places visible in the concept. Identify any connections that the image leaves unclear before building them.
 
@@ -34,7 +36,7 @@ Use the [original UK scene-generation prompt](examples/uk-scene-generation-promp
 
 Attach reference images to the generation request. Add this instruction to the area-specific prompt:
 
-> Use the attached images as the style reference for colour, brushwork, texture, lighting, proportions, and detail. Keep that style consistent across the concept, rooms, and props. Create people, architecture, food, and objects appropriate to the new area. Each full room must feel complete on its own. Separate props are only for animation, interaction, or scene layering.
+> Use the attached images to guide spatial composition as well as colour, brushwork, texture, lighting, proportions, and detail. Keep that style consistent across the concept, rooms, and props. Create people, architecture, food, and objects appropriate to the new area. Each full room must feel complete on its own. Separate props are only for animation, interaction, or scene layering.
 
 For each room, record its purpose, foods and ingredients, people and activities, atmosphere, possible discoveries, and useful motion. Generate one room at a time and inspect it against the references before continuing.
 
@@ -60,6 +62,8 @@ Give Codex the concept image, research brief, room paintings, props, and asset i
 
 ### Build a believable community
 
+Balance busy places with landscape. Concentrate bustle around markets, workshops, and shared courtyards, then let the settlement open into countryside. Establish a regionally believable mix of coast, farmland, woodland, dry ground, and mountains. Make the relationships visible: A Black Sea tea terrace should visibly relate to the sea.
+
 - Keep geography, buildings, routes, and everyday activity close to reality, within the miniature world's scale
 - Cluster houses and food places into a busy community with shared streets, courtyards, squares, and gathering places
 - Vary building footprints, heights, roofs, materials, entrances, and orientation while keeping the area's architectural identity
@@ -67,16 +71,25 @@ Give Codex the concept image, research brief, room paintings, props, and asset i
 - Connect doors and gathering places to usable roads, paths, stairs, and bridges
 - Give food venues the dishes and ingredients that belong there
 
-People must vary in age, height, build, clothing, and activity. Use locally grounded ancient, historical, and traditional clothing styles, as specified in the area brief. If the world combines periods, record that choice; do not describe it as an exact reconstruction of one era.
+Show everyday culture alongside landmarks: What locals grow, prepare, eat, sell, and share. Create life through purposeful activity and relationships between places, such as produce moving from a garden to a market or cooks serving neighbours in a courtyard.
 
-Give people varied and natural movement: Different routes and speeds, pauses to browse or talk, gradual turns, carrying food, preparing ingredients, sitting, serving, and other local activities. Walking steps must match travel; feet must meet the ground and carried objects must stay in the hands. Avoid synchronized crowds and repeated identical motion.
+People must vary in age, height, build, appearance, occupation, clothing, and behaviour. Use locally grounded ancient, historical, and traditional clothing styles appropriate to the period specified in the area brief. If the world combines periods, record that choice; do not describe it as an exact reconstruction of one era.
+
+Give people varied and natural movement: Different routes and speeds, pauses to browse or talk, gradual turns, carrying food, preparing ingredients, sitting, serving, and other local activities. Walking steps must match travel, and stopped people must stop stepping. Feet must meet the ground and carried objects must stay in the hands. Avoid synchronized crowds and repeated identical motion.
+
+### Make the world react first
+
+Give each object an action suited to what it is. Fruit trees shake and drop fruit, dough is kneaded, skewers turn, and people gesture or speak. Keep boards, pots, and furniture grounded while the relevant food or body part moves. Let the action reward a click before showing information.
+
+Include occasional surprises and keep chatter restrained and non-overlapping. Use a mix of living illustrations, simple animated objects, and cards so that different discoveries offer variety.
 
 ### Mark clickable items with a diamond
 
 Use a small diamond signal to identify clickable items, following the existing Turkey design. Turkey's explorable buildings use a steady ivory-and-brass diamond above the destination; decorative houses have no marker. See the [Turkey world reference](turkey-world.md#historical-stories-and-quiet-discovery).
 
 - Apply the same diamond convention to clickable places, objects, and food discoveries in new areas
-- Keep the marker small, steady, and clearly associated with its target, without flashing or flickering
+- Position the marker precisely on or above its subject, and make sure it opens that subject's relevant content
+- Keep the marker small and steady, without flashing or flickering
 - Make it visible on desktop and phones without covering the pictured food or important scene details
 - Leave non-interactive decoration unmarked, and ensure every marked item responds to selection
 
@@ -88,8 +101,10 @@ Use a small diamond signal to identify clickable items, following the existing T
 | Broken roads or disconnected paths | Continuous visible routes, including diagonal joins, stairs, and bridge approaches |
 | Cut-off rivers | A continuous watercourse with a plausible source and destination or a clean continuation beyond the scene |
 | Unnatural river merges | Connected banks and water surfaces, plausible flow, and a smooth meeting with other water or the sea |
+| Abrupt or artificial terrain endings | Natural transitions and credible edges to the landscape |
 | People crossing walls, water, or each other | Clear routes with appropriate crossings and enough space for bodies and carried objects |
 | Floating buildings, people, or props | Visible contact with the ground or the surface that supports them |
+| Unsupported seating | Seated people visibly supported by their chair, bench, or other seat |
 
 Use the supplied concept as the composition guide, but resolve roads, banks, supports, and movement as a coherent 3D space. Do not reproduce a drawing artifact as a broken connection in the world.
 
@@ -97,11 +112,11 @@ Use the supplied concept as the composition guide, but resolve roads, banks, sup
 
 ## 4. Make the paintings live and add small food discoveries
 
-Add gentle motion where it fits the painting: Rising smoke or steam, swaying leaves, moving water and small waves, light rain, soft oven glow, or a small food-preparation action. Motion should make the scene feel alive while leaving its food and atmosphere easy to see.
+Make each living illustration visibly alive from the moment it opens, without requiring a click. Add gentle motion where it fits the painting: Rising smoke or steam, drifting leaves, birds crossing, swaying lanterns, moving water and small waves, light rain, soft oven glow, or a small food-preparation action. Movement must be noticeable, crisp, and attached to something plausible in the picture, while leaving its food and atmosphere easy to see.
 
 Keep effects attached to their source. Steam comes from the pictured hot food, leaves move around their stems, and waves stay inside the water. Tune their positions separately for wide and portrait paintings. Vary timing so the whole room does not pulse together.
 
-The UK example mentions fire flicker. Implement this as gentle flame movement or a soft glow, subject to the strict rule against visible flashing or rendering flicker. Complete paintings must not receive duplicate people, furniture, or food overlays.
+Use gentle flame movement and small variations in lamplight for natural light flicker. Rendering surfaces must remain stable, without flashing or competing geometry. Avoid blurry image patches, excessive swaying, and whole-scene motion that causes dizziness. Complete paintings must not receive duplicate people, furniture, or food overlays.
 
 Focus room interactions on a few small food or ingredient details that are actually visible in the image. Choose details that can reveal a surprising, well-supported story.
 
@@ -120,10 +135,11 @@ The initial discovery is short. The story card provides substantive content abou
 
 A story card should connect:
 
-- The food's historical setting and how its preparation or role changed over time
+- When a tradition emerged or became established, what evidence supports that timing, and how its preparation or role changed over time
 - Its key ingredients, where they come from, and why they matter to the dish
+- Why local geography matters to the ingredients, preparation, or food customs
 - The dishes and techniques associated with it, including meaningful regional or household differences
-- The people, work, trade, migration, or everyday customs that shaped it, where relevant
+- How the food spread, and the people, work, trade, migration, or everyday customs that shaped it, where relevant
 - How it is prepared, served, or enjoyed today
 - Related discoveries, places, or recipes that the visitor can explore next
 
@@ -133,24 +149,39 @@ As more worlds become available, connect relevant stories across them through in
 
 **Handoff:** Living rooms with restrained motion, accurate interaction positions, short discoveries, substantive sourced story cards, and a return path to the visitor's previous place.
 
+## Compose for phones as carefully as for desktop
+
+Review portrait framing, hotspot placement, visible animation, diamond readability, and zoom limits separately from desktop. Do this while designing and integrating each room, so the phone experience informs the composition. Keep important subjects and their markers readable within the portrait view.
+
+Keep navigation behaviour consistent across regions and the interface quiet. Verify room entry, discoveries, zoom, and return navigation at phone sizes. A zoom gesture must keep the visitor in the current place.
+
 ## Review the area in use
 
-Inspect the complete area in a running browser, both on desktop and at phone sizes. Check the overview and close views while panning, zooming, and letting movement run. Still images alone cannot establish that roads, water, or animation behave correctly.
+Compare the design with the strongest existing areas early, while the composition and first interactions are still easy to revise. Inspect the area in a running browser throughout the build and again when complete, both on desktop and at phone sizes. Check overview and close views from several camera angles while panning, zooming, and letting movement run.
+
+Judge the experience by watching and exploring it. Watch rooms without clicking, try different object types, and follow routes. An animation that passes a technical check still needs to feel natural and noticeable. Still images alone cannot establish that roads, water, or animation behave correctly.
 
 - Compare the overall composition, room paintings, and props with the concept and style references
+- Check neighbourhoods, country boundaries, room for expansion, and the transition from busy settlement to landscape
 - Follow the roads, bridges, river, banks, and river mouths through the full scene
 - Watch people through walking, pausing, turning, and interacting, including crowded places
-- Confirm that no rendering flicker, broken connections, collisions, or floating objects appear
+- Confirm that no rendering flicker, broken connections, collisions, floating objects, or unsupported seating appear
 - Check that clickable items have clear diamond markers, decorative items remain unmarked, and every marked target responds on desktop and phones
+- Try different object types and check that their actions fit the object, keep supports grounded, and avoid overlapping chatter
 - Open every room and try each food discovery in its wide and portrait composition
-- Check that effects stay on their pictured source and do not hide important details
-- Verify that zooming and returning from a room preserve the visitor's place
+- Watch each room before clicking and confirm that motion is visible, crisp, plausible, and comfortable
+- Check that effects stay on their pictured source and do not hide important details or move the entire scene
+- Check portrait framing, hotspots, markers, animation, and zoom limits separately, and verify that zooming and returning from a room preserve the visitor's place
 - Check discoveries against the pictured details, and read full story cards for historical depth, ingredient and dish connections, and source support
 
 Record what was checked and what remains unresolved. Treat mobile viewport checks and physical-phone checks as separate evidence. Save the final assets, prompts, inventory, and review notes with the area's documentation so the method can be repeated and the area can be revised.
 
 ## Reusable Codex handoff
 
-> Create the new Food World area described in the attached brief. Use the concept image as the blueprint for the 3D community and use the room paintings for the scenes opened from its places. Follow `docs/new-area-methodology.md`. Preserve the supplied reference style. Build a believable, busy community with varied houses, food places, ingredients, local landmarks, and distinct people in the area's ancient and traditional styles. Give people natural, varied movement. Mark clickable items with small, steady diamond signals matching Turkey. Strictly prohibit flickering, broken roads, cut-off rivers, and unnatural river merges. Add gentle motion to the paintings and a few interactions tied to visible food or ingredient details with surprising, sourced discoveries. Give the full story cards depth through food history, ingredients, and related dishes, with meaningful connections to other worlds where available. Verify the world and all rooms in the running application at desktop and phone sizes, and record the results.
+> Create the new Food World area described in the attached brief. Follow `docs/new-area-methodology.md`. Make it feel like a place people live in, with food as the way to explore it. Use the concept image as the spatial blueprint and the room paintings for the scenes opened from its places. Let references guide composition as well as style. Plan recognisable neighbourhoods, clear country boundaries, future expansion, winding streets, irregular clusters, layered heights, and framed views before adding detail. Balance busy markets and courtyards with believable countryside. Include everyday food culture alongside landmarks, varied houses, and distinct people in historically appropriate clothing with purposeful, natural movement.
+>
+> Make the world react first through actions suited to each object, occasional surprises, and restrained, non-overlapping chatter. Keep furniture and supports grounded. Use small, precisely placed diamond markers matching Turkey, each opening relevant content. Combine illustrated rooms, simple animated objects, and cards. Make rooms visibly alive as soon as they open, with crisp, gentle motion attached to plausible subjects. Avoid blurry patches, excessive swaying, and whole-scene motion. Strictly prohibit flickering surfaces, broken roads, cut-off rivers, unnatural river merges, floating objects, unsupported seating, and people crossing walls. Walking steps must match travel and stop when people stop.
+>
+> Follow place → food → story. Start with short discoveries, then offer sourced stories with historical and cultural depth, ingredients, dishes, geography, how traditions spread, and how people practise them today. Distinguish documented history from legends. Connect relevant foods across available worlds and offer suitable practical recipes. Compose and check phone framing, hotspots, markers, animation, and zoom limits separately. Keep navigation consistent and the interface quiet. Compare against the strongest existing areas early, watch rooms before clicking, try different object types, and inspect routes from several angles in the running application. Record both technical checks and what the experience looks and feels like in use.
 
 Attach the area brief, concept image, style references, room paintings, useful props, inventory, and story sources to that handoff.

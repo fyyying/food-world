@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { add, mat, tree, bubble, type P } from './props';
 import { bazaar, mosque } from './props-mideast';
 import { TR, arch, block, dome, tilePanel, masonry, kilim, ottomanHouse, type HouseStyle } from './turkey-architecture';
-import { surface, terrace } from './turkey-landscape';
+import { surface, terrace, terraceStairs } from './turkey-landscape';
 import { turkeyTeaCorner } from './props-turkey';
 import { turkeyResident } from './turkey-people';
 import type { LayoutCtx } from './worldkit';
@@ -12,19 +12,25 @@ export function turkeyBazaar():P {
   let resident=40;
   const g=bazaar((_shirt,opts)=>turkeyResident(resident++,!!opts?.apron));
   // Retain the working stalls and shoppers; replace the single shed with open stone arcades.
-  for(const o of [...g.children])if(o instanceof THREE.Mesh && o.position.y>3.35){g.remove(o);o.geometry.dispose();}
+  for(const o of [...g.children])if(o instanceof THREE.Mesh && o.position.y>.1){g.remove(o);o.geometry.dispose();}
   const stone=new THREE.Group();
-  for(const x of [-5,0,5])for(const z of [-4.5,4.5])add(stone,arch(4.5,2.75,.48),x,0,z);
+  for(const x of [-5,0,5])for(const z of [-4.5,4.5]){
+    // The central entrance replaces this bay; two identical arch rings z-fight along their curves.
+    if(x===0&&z===4.5)continue;
+    add(stone,arch(4.5,2.75,.48),x,0,z);
+  }
   for(const x of [-6,-2,2,6]){
     add(stone,block(3.95,.18,4.2,TR.stone),x,3.5,-2.2);
     add(stone,dome(1.92,'#b49d7e'),x,3.59,-2.2).scale.set(1,.63,1.07);
   }
   for(const x of [-7.5,7.5])add(stone,block(.45,3.6,9,TR.stone),x,1.8,0);
+  // The side walls carry a timber lintel below the dome platforms, above the shoppers' aisle.
+  add(stone,block(15.5,.24,.24,TR.wood),0,3.40,-.10);
   // A raised central entrance and tiled inscription panel anchor the market in the square.
-  add(stone,arch(4.5,2.75,.65,TR.cream),0,0,4.8);
-  add(stone,tilePanel(2.6,.56),0,5.25,5.05);
-  add(stone,block(3.0,.17,.65,TR.stone),0,5.65,4.8);
-  g.add(masonry(stone));
+  add(stone,arch(4.5,2.75,.65,TR.cream),0,0,4.5);
+  add(stone,tilePanel(2.6,.56),0,5.25,4.86);
+  add(stone,block(3.0,.17,.65,TR.stone),0,5.55,4.5);
+  const arcades=masonry(stone);arcades.name='market-arcades';g.add(arcades);
   for(const [x,z] of [[-6.6,4.84],[6.6,4.84],[-7.22,1.9]]){
     const rug=add(g,kilim(.90,1.65),x,2.6,z);if(x<-7)rug.rotation.y=Math.PI/2;
   }
@@ -119,7 +125,7 @@ export const TOWN_HOUSES: [number,number,number,HouseStyle,number,number?][] = [
   [-49.5,6.3,1,'stone',.21],[-44.7,6.5,2,'timber',-.10],[-40.9,2.7,2,'narrow',.16],
   [-39.8,7.4,1,'stone',-.18],
   // The bath square is enclosed on two sides; workshops share its eastern lane.
-  [-21.4,1.9,3,'narrow',.21],[-22.8,5.5,1,'courtyard',-.14],[-17.2,5.4,2,'narrow',.10],
+  [-21.4,1.9,3,'narrow',.21],[-22.8,5.5,1,'courtyard',-.14],
   [-2.2,2.4,3,'narrow',-.16],[1.3,6.1,1,'stone',.18],
   [13.0,5.9,2,'narrow',-.1],[27.3,6.1,2,'corner',.18],
   [50.8,5.8,1,'courtyard',.25],
@@ -171,7 +177,7 @@ export function townStreets(ctx:LayoutCtx) {
       floweringCorner(group,c.x-s.x*.33,b.max.z+.15,Math.min(4,floors*1.8),i);
     }
   });
-  for(const [x,z,h,w] of [[18,-20.5,1.2,1.9],[12.8,-22,1.2,1.1],[11.6,-31,2.6,1.1]])for(let i=0;i<h/.2;i++)add(group,block(w,h-i*.2,.38,TR.stone),x,(h-i*.2)/2,z+i*.30);
+  for(const [x,z,h,w] of [[18,-20.5,1.2,1.9],[12.8,-22,1.2,1.1],[11.6,-31,2.6,1.1]])add(group,terraceStairs(h,w),x,0,z-.19);
   // Plane trees and planted corners frame activity, instead of filling the walking surface.
   for(const [x,z,s] of [[-29,-35.7,1.3],[-31.5,-2,1.15],[-16,1.5,1.05],[2,-23,1],[32,-2,1.2],[-42,-2.6,1.0]]){
     add(group,block(1.4,.22,1.4,TR.stone),x,.11,z);place(tree('round',s),x,z);

@@ -4,25 +4,56 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { build } from 'rolldown';
+import { coplanarOverlaps } from './coplanar-surfaces.mjs';
 const ctx=new Proxy({}, {get:(_,key)=>key==='createLinearGradient'||key==='createRadialGradient'?()=>({addColorStop(){}}):key==='measureText'?()=>({width:20}):()=>{},set:()=>true});
 globalThis.document={visibilityState:'hidden',defaultView:{Element:class {}},createElement:()=>({ownerDocument:document,getContext:()=>ctx,style:{},setAttribute(){},classList:{add(){},remove(){},toggle(){}},addEventListener(){}})};
 globalThis.Image=class { complete=true;naturalWidth=24;naturalHeight=14;set src(_){} };
 const sampleMotion=(scene,portrait)=>{
-  const count={gradients:0,ellipses:0,images:0,svg:scene.layers.some(layer=>/class="sway"|id="(?:fire|lamp)-/.test(layer.svg))?1:0};
-  const fxCtx=new Proxy({}, {get:(_,key)=>key==='createRadialGradient'?()=>{count.gradients++;return {addColorStop(){}}}:key==='ellipse'?()=>{count.ellipses++}:key==='drawImage'?()=>{count.images++}:()=>{},set:()=>true});
+  const count={gradients:0,ellipses:0,images:0,arcs:0,strokes:0,svg:scene.layers.some(layer=>/class="sway"|id="(?:fire|lamp)-/.test(layer.svg))?1:0};
+  const fxCtx=new Proxy({canvas:{width:portrait?506:1600},getTransform:()=>({a:1})}, {get:(target,key)=>key in target?target[key]:key==='createRadialGradient'?()=>{count.gradients++;return {addColorStop(){}}}:key==='ellipse'?()=>{count.ellipses++}:key==='drawImage'?()=>{count.images++}:key==='arc'?()=>{count.arcs++}:key==='stroke'?()=>{count.strokes++}:()=>{},set:()=>true});
   for(let frame=0;frame<60;frame++)scene.fx(fxCtx,frame*.2,.2,portrait);
   return count;
 };
 const temp=await mkdtemp(join(tmpdir(),'turkey-world-'));
 try {
-  await build({input:{world:'src/fw/world-mideast.ts',rooms:'src/fw/scenes-turkey.ts',objects:'src/fw/turkey-objects.ts',landscape:'src/fw/turkey-landscape.ts'},platform:'node',output:{banner:'import.meta.env={VITE_STATIC:"1",BASE_URL:"/"};',dir:temp,format:'esm',entryFileNames:'[name].mjs',chunkFileNames:'[name].mjs'}});
+  await build({input:{world:'src/fw/world-mideast.ts',rooms:'src/fw/scenes-turkey.ts',objects:'src/fw/turkey-objects.ts',ambience:'src/fw/turkey-ambience.ts',landscape:'src/fw/turkey-landscape.ts'},platform:'node',output:{banner:'import.meta.env={VITE_STATIC:"1",BASE_URL:"/"};',dir:temp,format:'esm',entryFileNames:'[name].mjs',chunkFileNames:'[name].mjs'}});
   const {buildMideast,MIDEAST_LANES}=await import(pathToFileURL(join(temp,'world.mjs')));
   const {TURKEY_SCENES}=await import(pathToFileURL(join(temp,'rooms.mjs')));
+  const {TURKEY_AMBIENCE,drawTurkeyAmbience,paintingFrame}=await import(pathToFileURL(join(temp,'ambience.mjs')));
   const {TURKEY_NEXT}=await import(pathToFileURL(join(temp,'objects.mjs')));
   const {LAND_SHORE,waterOutline}=await import(pathToFileURL(join(temp,'landscape.mjs')));
   const inPoly=(x,z,poly)=>{let yes=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const [ax,az]=poly[i],[bx,bz]=poly[j];if((az>z)!==(bz>z)&&x<(bx-ax)*(z-az)/(bz-az)+ax)yes=!yes;}return yes;};
   const river=waterOutline();
   const world=buildMideast([]);world.group.updateMatrixWorld(true);
+  // The old flights used overlapping boxes: their coplanar side faces fought for the same pixels.
+  const stairBlocks=world.group.children.filter(o=>o.isMesh&&o.geometry.parameters?.width===1.25&&o.geometry.parameters?.depth===.32);
+  for(let i=0;i<stairBlocks.length;i++)for(const b of stairBlocks.slice(i+1)){
+    const a=stairBlocks[i];
+    assert.ok(a.position.x!==b.position.x||Math.abs(a.position.z-b.position.z)>=.32-1e-6,'stair blocks have overlapping coplanar side faces');
+  }
+  const flights=world.group.children.filter(o=>o.name==='terrace-stairs');
+  assert.equal(flights.length,6,'all terrace stairways must be continuous flights');
+  for(const flight of flights){
+    assert.equal(coplanarOverlaps(flight).length,0,'stair faces overlap on the same plane');
+    const geometry=flight.geometry;geometry.computeBoundingBox();
+    assert.equal(geometry.boundingBox.min.y,0,'stairs must reach the ground');
+    assert.ok(Math.abs(geometry.boundingBox.max.y-flight.userData.rise-.024)<1e-6,'top tread must clear the terrace');
+    assert.ok(Array.from(geometry.attributes.position.array).every(Number.isFinite));
+  }
+  const bazaar=world.placed.find(p=>p.obj.id==='bazaar');
+  const arcades=bazaar.group.getObjectByName('market-arcades');
+  assert.ok(arcades);assert.deepEqual(coplanarOverlaps(arcades),[],'market arch faces overlap on the same plane');
+  const nuts=world.placed.find(p=>p.obj.id==='stall-nuts').obj;
+  assert.equal(nuts.alias,undefined,'nuts and fruit must open their own card');
+  assert.ok(nuts.blurb.includes('Kuruyemiş'));
+  const orchard=world.placed.find(p=>p.obj.id==='citrusTr').group;
+  assert.ok(orchard.children.filter(o=>o.name==='orchard-orange').length>=6);
+  assert.ok(orchard.children.filter(o=>o.name==='orchard-lemon').length>=4);
+  const cues=world.group.children.filter(o=>o.name==='explore-cue');
+  for(const p of world.placed.filter(p=>/^turkey/.test(p.obj.prop)&&['place','landmark','dish'].includes(p.obj.kind))){
+    const cue=cues.find(o=>o.userData.objectId===p.obj.id);assert.ok(cue,`${p.obj.id}: missing discovery cue`);
+    assert.ok(cue.position.y>p.top,'cue must be above its own roof');
+  }
   // At a route turn the old cosine movement almost stopped, while the legs kept marching.
   const quayWalker=world.group.children.find(o=>o.name==='lane-walker'&&o.userData.lane==='quay');
   const thigh=quayWalker.userData.legs.left.thigh;
@@ -43,18 +74,20 @@ try {
     assert.ok(p.obj.blurb.length>180,`${id}: missing cultural context`);
     assert.ok(p.hit.geometry && p.anchor.toArray().every(Number.isFinite));
   }
-  let fallingLeafRooms=0,driftingFlakeRooms=0;
+  let fallingLeafRooms=0;
   for(const [from,links] of Object.entries(TURKEY_NEXT)){
     assert.ok(world.placed.some(p=>p.obj.id===from));
     for(const id of links)assert.ok(rooms.some(p=>p.obj.id===id),`${from}: unknown next destination ${id}`);
   }
   for(const {obj} of rooms){
+    assert.ok(obj.blurb.split(/\s+/).length>=170,`${obj.id}: story needs historical depth`);
+    assert.ok(/\d{3,4}/.test(obj.blurb),`${obj.id}: story needs a dated historical milestone`);
     assert.ok(TURKEY_SCENES[obj.scene],`${obj.id}: missing room`);
     const room=TURKEY_SCENES[obj.scene]();assert.ok(room.hotspots.length>=3);
     for(const portrait of [false,true]){
       const motion=sampleMotion(TURKEY_SCENES[obj.scene](),portrait);
       assert.ok(Object.values(motion).some(Boolean),`${obj.scene}: painting has no visible ${portrait?'phone':'wide'} ambient motion`);
-      if(!portrait){fallingLeafRooms+=Number(motion.images>0);driftingFlakeRooms+=Number(motion.ellipses>0);}
+      if(!portrait){fallingLeafRooms+=Number(motion.ellipses>0);}
     }
     for(const h of room.hotspots){
       for(const p of [h.interaction.wide,h.interaction.phone]) assert.ok(p.every(n=>n>0&&n<1));
@@ -63,7 +96,26 @@ try {
     for(const layer of room.layers)for(const m of layer.svg.matchAll(/<image[^>]*href="([^"]+)"/g))await access(join('public',m[1]));
   }
   assert.ok(fallingLeafRooms>=2,'Turkey needs falling leaves as well as smoke and steam');
-  assert.ok(driftingFlakeRooms>=5,'Turkey needs subtle drifting foliage and flour in its painted scenes');
+  for(const [id,patches] of Object.entries(TURKEY_AMBIENCE))for(const portrait of [false,true])for(const width of portrait?[390,720]:[1280]){
+    const capture=t=>{
+      const calls=[];let saves=0,clips=0;
+      const painter=new Proxy({canvas:{width},getTransform:()=>({a:1})},{get:(target,k)=>k in target?target[k]:k==='createRadialGradient'?()=>({addColorStop(){}}):(...args)=>{
+        if(k==='save')saves++;if(k==='restore')saves--;if(k==='clip')clips++;
+        for(const n of args)if(typeof n==='number')assert.ok(Number.isFinite(n),`${id}: invalid ${k} coordinate`);
+        if(['rect','moveTo','quadraticCurveTo','translate','arc','ellipse'].includes(k))calls.push([k,...args]);
+      },set:()=>true});
+      drawTurkeyAmbience(painter,t,portrait,patches);
+      assert.equal(saves,0,'effects must restore their clip and opacity');
+      assert.equal(clips,patches.filter(p=>portrait?p.phone:p.wide).length,'every local effect must be clipped');
+      return calls;
+    };
+    assert.notDeepEqual(capture(1),capture(5),`${id}: ${portrait?'phone':'wide'} ambient features must move over time`);
+    const frame=paintingFrame(portrait,width);
+    for(const p of patches){const r=portrait?p.phone:p.wide;if(!r)continue;
+      assert.ok(r.every(n=>n>=0&&n<=1)&&r[2]>r[0]&&r[3]>r[1]);
+    }
+    if(portrait)assert.ok(frame.width>=width,'portrait effects must follow the expanded tablet painting');
+  }
   const manifest=JSON.parse(await readFile('public/scenes/turkey-assets.json','utf8'));
   assert.equal(manifest.length,57);for(const a of manifest)await access(join('public',a.path));
   const lanes=world.group.children.filter(o=>o.name==='walking-lane');

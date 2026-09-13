@@ -1,7 +1,7 @@
 /** Turkish streets and kitchens: supported furniture, open workspaces and quiet daily activity. */
 import * as THREE from 'three';
 import { add, mat, person, tree, bubble, ambientChat, type P } from './props';
-import { oliveTree } from './props-italy';
+import { oliveTree, citrusTree } from './props-italy';
 import { local, ME } from './props-mideast';
 import { TR, block, tilePanel, masonry, bathhouse, iznikFountain, kilim, ottomanHouse, hipRoof } from './turkey-architecture';
 
@@ -284,14 +284,25 @@ export function turkeyHammam(): P {
 }
 export function turkeyCitrus(): P {
   const g=group();
-  for(const x of [-4,0,4])for(const z of [-2,2]){
-    add(g,tree('round',1.1),x,0,z);
-    for(let i=0;i<5;i++)add(g,ball(.10,'#de9334'),x+Math.sin(i*2.4)*.62,1.65+(i%3)*.2,z+Math.cos(i*2.4)*.62);
+  for(const [col,x] of [-5,-1.7,1.7,5].entries())for(const [row,z] of [-3,0,3].entries()){
+    const kind=(col+row)%3===0?'lemon':'orange';
+    const scale=1.4+(col+row)%3*.13;
+    const fruitTree=add(g,citrusTree(kind,scale),x,0,z);
+    fruitTree.name=`orchard-${kind}`;
+    // Larger fruit sits on the outside of the canopy, visible from the street.
+    for(const [i,f] of (fruitTree.userData.fruits as THREE.Mesh[]).entries()){
+      const dy=(i%3-1)*.33,angle=i*2.4+col+row,radius=(.7*Math.sqrt(1-(dy/.665)**2)+.035)*scale;
+      f.position.set(Math.cos(angle)*radius,(1.15+dy)*scale,Math.sin(angle)*radius);
+      f.scale.multiplyScalar(1.25);
+    }
   }
-  const picker=add(g,local('#a97853'),0,0,.1);add(g,cyl(.42,.35,'#a37c52'),1,.175,0);
-  const fruit=add(g,group(),1,.39,0);fruit.userData.foodReaction=true;
-  for(let i=0;i<6;i++)add(fruit,ball(.11,'#de9334'),Math.sin(i)*.24,0,Math.cos(i)*.24);
-  return life(g,[picker],'Portakal zamanı! Orange season!');
+  const picker=add(g,local('#a97853'),0,0,1.5);
+  for(const [i,x] of [-.55,.55].entries()){
+    add(g,cyl(.40,.35,'#a37c52'),x,.175,3.8);
+    const fruit=add(g,group(),x,.39,3.8);fruit.userData.foodReaction=true;
+    for(let j=0;j<7;j++)add(fruit,ball(.13,i?'#e6c94f':'#e49330'),Math.sin(j)*.24,0,Math.cos(j)*.24);
+  }
+  return life(g,[picker],'Portakal ve limon! Oranges and lemons!');
 }
 Object.assign(TURKEY_PROPS,{turkeyHammam,turkeyCitrus});
 

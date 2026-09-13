@@ -43,6 +43,24 @@ export function terrace(ctx:LayoutCtx,x:number,z:number,rx:number,rz:number,h:nu
   const mesh=new THREE.Mesh(geo,mat(color,{side:THREE.DoubleSide}));mesh.name='raised-terrain';mesh.receiveShadow=true;ctx.group.add(mesh);
 }
 
+/** One continuous flight, with adjacent treads instead of overlapping box sides. */
+export function terraceStairs(height:number,width=1.25) {
+  const count=Math.ceil(height/.25),run=.28,half=width/2,positions:number[]=[];
+  const quad=(a:number[],b:number[],c:number[],d:number[])=>positions.push(...a,...b,...c,...a,...c,...d);
+  for(let i=0;i<count;i++){
+    const z=i*run,next=z+run,y=height*(1-i/count)+.024,lower=i===count-1?0:height*(1-(i+1)/count)+.024;
+    quad([-half,y,z],[-half,y,next],[half,y,next],[half,y,z]);
+    quad([-half,lower,next],[half,lower,next],[half,y,next],[-half,y,next]);
+    quad([-half,0,z],[-half,0,next],[-half,y,next],[-half,y,z]);
+    quad([half,0,next],[half,0,z],[half,y,z],[half,y,next]);
+  }
+  quad([-half,0,0],[-half,height+.024,0],[half,height+.024,0],[half,0,0]);
+  const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geometry.computeVertexNormals();
+  const stairs=new THREE.Mesh(geometry,mat('#c7b999'));stairs.name='terrace-stairs';stairs.receiveShadow=true;
+  stairs.userData.rise=height;stairs.userData.steps=count;
+  return stairs;
+}
+
 /** The two carriages follow the same curved track at different arc distances. */
 export const TRAM_ROUTE = new THREE.CatmullRomCurve3([
   [-52,-43],[-39,-43],[-22,-43],[-13,-43],[-9,-39],[-9,-29],[-9,-19],[-10,-11],

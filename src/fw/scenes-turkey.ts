@@ -2,6 +2,7 @@
 import { paintedScene, pAt, type PaintedCfg } from './scene-painted';
 import type { SceneDef, SceneHotspot } from './scene';
 import type { RoomEffect } from './scene-props';
+import { withTurkeyAmbience } from './turkey-ambience';
 
 type Point = [number, number];
 type Touch = [label: string, text: string, effect: RoomEffect, wide: Point, phone: Point, food?: string];
@@ -9,8 +10,6 @@ type PairedPoint = [wide: Point, phone: Point];
 type Ambience = {
   steam?: { at: PairedPoint; width?: number; rate?: number; alpha?: number }[];
   fire?: { at: PairedPoint; radius?: [number, number] }[];
-  leaves?: number;
-  petals?: { color: string; rate: number; size?: number };
 };
 type Room = { title: string; zh: string; caption: string; touches: Touch[]; ambience: Ambience; night?: boolean };
 const rooms: Record<string, Room> = {
@@ -25,7 +24,7 @@ const rooms: Record<string, Room> = {
   },
   tr_tea: {
     title: 'Tea under the plane tree', zh: 'Çay bahçesi', caption: 'A tray of tulip glasses, backgammon on the table, and the water just beyond the shade.',
-    ambience: { steam: [{ at: [[.325,.686],[.54,.858]], width: 84, rate: 9, alpha: .28 }], leaves: 3.8 },
+    ambience: { steam: [{ at: [[.325,.686],[.54,.858]], width: 84, rate: 9, alpha: .28 }] },
     touches: [
       ['Pour another çay', 'The tea sends up a fresh curl of steam. Strong tea from the upper pot is diluted with hot water to taste.', 'tea', [.325,.686], [.54,.858]],
       ['A tray for company', 'The waiter carries several tulip glasses together. Offering tea welcomes a guest; another round gives the conversation more time.', 'detail', [.60,.44], [.40,.345]],
@@ -43,7 +42,7 @@ const rooms: Record<string, Room> = {
   },
   tr_market: {
     title: 'The neighbourhood market', zh: 'Semt pazarı', caption: 'Tomatoes, peppers, olives and herbs go home in baskets for the evening meal.',
-    ambience: { leaves: 2.8 },
+    ambience: {},
     touches: [
       ['What is good today?', 'A neighbourhood market follows the season. Look for tomatoes, peppers, aubergines and herbs, then follow them into the dolma kitchen.', 'detail', [0.31,0.49], [0.25,0.53], 'dolma'],
       ['Choose the olives', 'Green and dark olives bring different flavours to breakfast and small plates. Oil from the grove travels into vegetable dishes as well.', 'detail', [0.25,0.735], [0.39,0.61], 'olive-oil'],
@@ -73,7 +72,7 @@ const rooms: Record<string, Room> = {
   },
   tr_baklava: {
     title: 'The baklava workshop', zh: 'Baklavacı', caption: 'Thin pastry, butter and pistachios, with trays cut before they enter the oven.',
-    ambience: { petals: { color: '#e8d7ad', rate: .22, size: 3.5 } },
+    ambience: {},
     touches: [
       ['Dust the pastry board', 'A small puff of flour lifts from the work surface as the dough is rolled thin.', 'flour', [0.35,0.68], [0.48,0.59]],
       ['Look between the layers', 'Baklava layers thin pastry with butter and nuts, then receives syrup after baking. Gaziantep is especially associated with pistachio baklava.', 'detail', [0.72,0.79], [0.44,0.68], 'baklava'],
@@ -117,7 +116,6 @@ const rooms: Record<string, Room> = {
     title: 'A long breakfast', zh: 'Kahvaltı', caption: 'Bread, cheese, olives, eggs and tea spread across the table, with time to share.',
     ambience: {
       steam: [{ at: [[.78,.72],[.808,.532]], width: 78, rate: 8, alpha: .27 }],
-      petals: { color: '#b9a56b', rate: .12, size: 5 },
     },
     touches: [
       ['Refill the breakfast tea', 'Another curl of steam rises from the tea glass. Breakfast can last as long as the conversation.', 'tea', [0.78,0.72], [0.808,0.532]],
@@ -127,7 +125,7 @@ const rooms: Record<string, Room> = {
   },
   tr_meze: {
     title: 'Small plates by the water', zh: 'Meze sofrası', caption: 'Cool yogurt, vegetables and herbs arrive before the next warm dish.', night: true,
-    ambience: { petals: { color: '#83965f', rate: .16, size: 6 } },
+    ambience: {},
     touches: [
       ['Make room for another plate', 'Meze invites a little of several dishes. Yogurt with herbs, aubergine, olives and vegetable preparations bring different tastes to a shared table.', 'detail', [.48,.77], [.51,.73], 'meze'],
       ['Olive oil meets vegetables', 'Olive oil carries flavour through many vegetable dishes. A plate can be served cool as part of the same meal as a hot grill.', 'detail', [0.7,0.723], [0.75,0.672], 'meze-bowls'],
@@ -136,7 +134,7 @@ const rooms: Record<string, Room> = {
   },
   tr_olive: {
     title: 'The Aegean olive grove', zh: 'Zeytinlik', caption: 'Silver-green leaves, baskets at the trees, and oil on the kitchen table.',
-    ambience: { petals: { color: '#7f8d59', rate: .24, size: 7 } },
+    ambience: {},
     touches: [
       ['Stir the olive leaves', 'The leaves shift in the breeze above the harvest baskets.', 'leaves', [0.075,0.13], [0.56,0.07]],
       ['From olive to oil', 'Harvested olives are crushed and their oil is separated. That oil becomes part of everyday cooking, from breakfast bread to vegetables and fish.', 'detail', [0.9,0.57], [0.91,0.545], 'olive-oil'],
@@ -145,7 +143,7 @@ const rooms: Record<string, Room> = {
   },
   tr_tea_hill: {
     title: 'The Black Sea tea hills', zh: 'Karadeniz çaylıkları', caption: 'Green rows climb the wet hills, and baskets follow the pickers along the terraces.',
-    ambience: { petals: { color: '#78965b', rate: .18, size: 5 } },
+    ambience: {},
     touches: [
       ['Brush the tea leaves', 'Young leaves stir above the rows. The path stays between the bushes.', 'leaves', [0.32,0.75], [0.32,0.716]],
       ['From green leaf to black tea', 'The leaf is withered, rolled, oxidised and dried to make black tea. The green plant and the dark drink belong to the same journey.', 'detail', [0.525,0.735], [0.83,0.78], 'tea-leaves'],
@@ -171,7 +169,7 @@ function makeRoom(id: string, room: Room): SceneDef {
     interaction: { effect, icon: icons[effect], wide, phone, extent: effect === 'tea' ? [.045,.10] : [.10,.22], folder: id, food },
   }));
   const cfg: PaintedCfg = { id, folder: id, title: room.title, zh: room.zh, caption: room.caption,
-    painting: true, night: room.night, hotspots, motes: 18, leaves: room.ambience.leaves, petals: room.ambience.petals,
+    painting: true, night: room.night, hotspots, motes: 6,
     light: { x: 750, y: 280, color: 'rgba(255,210,150,0.16)' }, portrait: {} };
   if (room.ambience.steam) {
     cfg.steam = room.ambience.steam.map(({ at: [wide], width = 92, rate = 9, alpha = .28 }) =>
@@ -185,6 +183,6 @@ function makeRoom(id: string, room: Room): SceneDef {
     cfg.portrait!.fire = room.ambience.fire.map(({ at: [, phone], radius = [55, 30] }) =>
       ({ ...pAt(id, ...phone), rx: radius[0] * .55, ry: radius[1] * .55 }));
   }
-  return paintedScene(cfg);
+  return withTurkeyAmbience(paintedScene(cfg));
 }
 export const TURKEY_SCENES: Record<string, () => SceneDef> = Object.fromEntries(Object.entries(rooms).map(([id, room]) => [id, () => makeRoom(id, room)]));

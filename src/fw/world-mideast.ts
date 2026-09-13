@@ -7,7 +7,7 @@ import { TURKEY_PROPS, turkishCat } from "./props-turkey";
 import { TR, ottomanHouse } from './turkey-architecture';
 import { townStreets, turkeyBazaar, turkeyMosque } from './turkey-town';
 import { turkeyResident, turkeyWalk } from './turkey-people';
-import { seaSurface, RIVER_COURSE, waterOutline, surface, terrace, tramway } from './turkey-landscape';
+import { seaSurface, RIVER_COURSE, waterOutline, surface, terrace, terraceStairs, tramway } from './turkey-landscape';
 import { buildWorld, seaWater, estuaryWater, addFish, type Diorama, type LayoutCtx } from "./worldkit";
 
 type Point = [number,number];
@@ -47,11 +47,28 @@ export const MIDEAST_LANES: Lane[] = [
   {id:'oasis-link',from:[-54,59],to:[-32,59],walkers:0},
 ];
 export function buildMideast(recipes: EnrichedRecipe[]): Diorama {
-  return buildWorld({
+  const world=buildWorld({
     id:"middle-east", W:124, D:132, cz:10, ground:"#c5b69a",plinth:"#71533c",recipes,objects:MIDEAST_OBJECTS,
     props:{...MIDEAST_PROPS,...TURKEY_PROPS,turkeyBazaar,turkeyMosque,turkeyOttoman:()=>ottomanHouse(TR.cream,2)},
     small:/^turkishCat$/,fallbackPlace:"mezze",layout:layoutMideast,
   });
+  // A quiet interface cue sits above explorable buildings; decorative houses keep their plain roofs.
+  const canvas=document.createElement('canvas');canvas.width=canvas.height=48;
+  const c=canvas.getContext('2d')!;
+  c.beginPath();c.moveTo(24,9);c.lineTo(39,24);c.lineTo(24,39);c.lineTo(9,24);c.closePath();
+  c.fillStyle='#f9ecd0';c.fill();c.strokeStyle='#9e7546';c.lineWidth=3;c.stroke();
+  c.beginPath();c.arc(24,24,3,0,Math.PI*2);c.fillStyle='#9e7546';c.fill();
+  const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;
+  const material=new THREE.SpriteMaterial({map:texture,transparent:true,depthWrite:false,opacity:.78});
+  for(const p of world.placed){
+    if(p.obj.hitOnly||!/^turkey/.test(p.obj.prop)||!['place','landmark','dish'].includes(p.obj.kind))continue;
+    const cue=new THREE.Sprite(material);cue.name='explore-cue';cue.userData.objectId=p.obj.id;
+    cue.position.set(p.anchor.x,p.top+.65,p.anchor.z);cue.scale.set(.95,.95,1);world.group.add(cue);
+    // Clicking the cue uses the building's existing interaction and accessible name.
+    const height=(p.hit.geometry as THREE.BoxGeometry).parameters.height;
+    p.hit.scale.y=(height+1.1)/height;p.hit.position.y+=.55;
+  }
+  return world;
 }
 function layoutMideast(ctx:LayoutCtx) {
   const {group,tickers,place,tint,TOP}=ctx;
@@ -81,8 +98,8 @@ function layoutMideast(ctx:LayoutCtx) {
   terrace(ctx,7,-12,5.4,4.7,1,'#b9a277');
   terrace(ctx,31,-12,6,5.2,1.2,'#bca982');
   for(const [x,z,h] of [[7,-12,1],[31,-12,1.2],[38,-34,4.5]]){
-    const steps=Math.ceil(h/.25),edge=z+(h>2?5.4:4.0);
-    for(let i=0;i<steps;i++) add(group,new THREE.Mesh(new THREE.BoxGeometry(1.25,h*(1-i/steps),.32),mat('#c7b999')),x,h*(1-i/steps)/2,edge+i*.28);
+    const edge=z+(h>2?5.4:4.0);
+    add(group,terraceStairs(h),x,0,edge-.16);
   }
   // A solid island supports the little tower; ferries use the other side of the channel.
   add(group,new THREE.Mesh(new THREE.CylinderGeometry(.75,.85,.6,14),mat(ME.stoneDark)),-27,.3,-46.7);
@@ -102,9 +119,14 @@ function layoutMideast(ctx:LayoutCtx) {
   place(galataTower(),-49,-38.5,0,.85).name='galata';
   for(const [x,z] of [[-51,-21],[-33,-20],[15,-35],[49,-30],[-38,-3]]) place(tulips(10),x,z);
   // Small wheat plots link the Anatolian ovens with their flour.
-  for(const x of [13,21,36]){
-    const soil=add(group,new THREE.Mesh(new THREE.PlaneGeometry(6,3.2),mat('#b4a373')),x,.019,0);soil.rotation.x=-Math.PI/2;
-    for(let i=0;i<45;i++){const stalk=add(group,new THREE.Mesh(new THREE.CylinderGeometry(.015,.015,.6,4),mat('#c9b56c')),x-2.5+(i%9)*.6,.3,-1.2+Math.floor(i/9)*.6);stalk.name='wheat';}
+  for(const x of [13,21]){
+    const soil=add(group,new THREE.Mesh(new THREE.PlaneGeometry(4.6,2.5),mat('#b4a373')),x,.019,0);soil.rotation.x=-Math.PI/2;
+    for(let i=0;i<40;i++){
+      const px=x-2+(i%8)*.56,pz=-1+Math.floor(i/8)*.48;
+      const stalk=add(group,new THREE.Mesh(new THREE.CylinderGeometry(.018,.024,.65,4),mat('#b59b51')),px,.325,pz);stalk.name='wheat';
+      const ear=add(group,new THREE.Mesh(new THREE.SphereGeometry(.105,6,4),mat('#d8b95e')),px,.73,pz);ear.scale.set(.75,2.5,.75);ear.rotation.z=Math.sin(i)*.14;ear.name='wheat-ear';
+      const leaf=add(group,new THREE.Mesh(new THREE.SphereGeometry(.11,5,3),mat('#ad9e55')),px+.07,.40,pz);leaf.scale.set(.38,2.1,.28);leaf.rotation.z=-.5;
+    }
   }
   tramway(ctx);
   // Mountains sit inland of the tea slopes so the sea remains visible behind the terraces.
@@ -130,14 +152,14 @@ function layoutMideast(ctx:LayoutCtx) {
   place(mountain(4.2,5.8,false),43,22);place(mountain(3.0,8.1,true),51,25);
   for(const [x,z] of [[-37,17],[-32,16],[-27,18],[-22,20],[-17,18],[15,20],[24,21],[30,19],[40,18]])place(tree('round',.9),x,z);
   // Low walled garden beds and orchard rows fill the working landscape south of the kitchens.
-  for(const [x,z] of [[-34,6],[31,1]]){
+  for(const [x,z] of [[-34,6]]){
     add(group,new THREE.Mesh(new THREE.BoxGeometry(5,.12,3),mat('#998466')),x,.06,z);
     for(let row=0;row<3;row++)for(let col=0;col<8;col++){
       const plant=add(group,new THREE.Mesh(new THREE.SphereGeometry(.21,7,5),mat(row%2?'#6c8849':'#7d984c')),x-2.1+col*.6,.28,z-.9+row*.9);plant.scale.y=.65;
     }
     for(const dx of [-2.7,2.7])add(group,new THREE.Mesh(new THREE.BoxGeometry(.20,.36,3.4),mat('#c2b496')),x+dx,.18,z);
   }
-  place(tree('round',1.1),-18,9);
+  // The döner counter faces the bath square through an open foreground.
   for(const [i,[x,z]] of [[-23,19],[-18.2,20.5],[16,23],[20.7,21.3]].entries()){
     const h=x<0?.65:1.3,house=place(ottomanHouse('#d7cbb4',i%2?2:1,i%2?'narrow':'stone'),x,z,i%2?-.16:.19);house.position.y=h;
     const b=new THREE.Box3().setFromObject(house),s=b.getSize(new THREE.Vector3()),c=b.getCenter(new THREE.Vector3());add(group,new THREE.Mesh(new THREE.BoxGeometry(s.x+.15,h,s.z+.15),mat('#b1a184')),c.x,h/2,c.z);

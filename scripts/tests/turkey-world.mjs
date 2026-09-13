@@ -10,7 +10,7 @@ globalThis.document={visibilityState:'hidden',defaultView:{Element:class {}},cre
 globalThis.Image=class { complete=true;naturalWidth=24;naturalHeight=14;set src(_){} };
 const sampleMotion=(scene,portrait)=>{
   const count={gradients:0,ellipses:0,images:0,arcs:0,strokes:0,svg:scene.layers.some(layer=>/class="sway"|id="(?:fire|lamp)-/.test(layer.svg))?1:0};
-  const fxCtx=new Proxy({canvas:{width:portrait?506:1600},getTransform:()=>({a:1})}, {get:(target,key)=>key in target?target[key]:key==='createRadialGradient'?()=>{count.gradients++;return {addColorStop(){}}}:key==='ellipse'?()=>{count.ellipses++}:key==='drawImage'?()=>{count.images++}:key==='arc'?()=>{count.arcs++}:key==='stroke'?()=>{count.strokes++}:()=>{},set:()=>true});
+  const fxCtx=new Proxy({canvas:{width:portrait?506:1600},getTransform:()=>({a:1})}, {get:(target,key)=>key in target?target[key]:key==='createRadialGradient'||key==='createLinearGradient'?()=>{count.gradients++;return {addColorStop(){}}}:key==='ellipse'?()=>{count.ellipses++}:key==='drawImage'?()=>{count.images++}:key==='arc'?()=>{count.arcs++}:key==='stroke'?()=>{count.strokes++}:()=>{},set:()=>true});
   for(let frame=0;frame<60;frame++)scene.fx(fxCtx,frame*.2,.2,portrait);
   return count;
 };
@@ -57,6 +57,7 @@ try {
   assert.ok(orchard.children.filter(o=>o.name==='orchard-orange').length>=6);
   assert.ok(orchard.children.filter(o=>o.name==='orchard-lemon').length>=4);
   const cues=world.group.children.filter(o=>o.name==='explore-cue');
+  assert.ok(cues.some(o=>o.userData.objectId==='citrusTr'),'the citrus orchard is clickable and needs its diamond');
   for(const p of world.placed.filter(p=>/^turkey/.test(p.obj.prop)&&['place','landmark','dish'].includes(p.obj.kind))){
     const cue=cues.find(o=>o.userData.objectId===p.obj.id);assert.ok(cue,`${p.obj.id}: missing discovery cue`);
     assert.ok(cue.position.y>p.top,'cue must be above its own roof');
@@ -94,7 +95,7 @@ try {
     for(const portrait of [false,true]){
       const motion=sampleMotion(TURKEY_SCENES[obj.scene](),portrait);
       assert.ok(Object.values(motion).some(Boolean),`${obj.scene}: painting has no visible ${portrait?'phone':'wide'} ambient motion`);
-      if(!portrait){fallingLeafRooms+=Number(motion.ellipses>0);}
+      if(!portrait){fallingLeafRooms+=Number(TURKEY_AMBIENCE[obj.scene].some(p=>p.kind==='leaves')&&motion.images+motion.strokes>0);}
     }
     for(const h of room.hotspots){
       for(const p of [h.interaction.wide,h.interaction.phone]) assert.ok(p.every(n=>n>0&&n<1));
@@ -106,7 +107,7 @@ try {
   for(const [id,patches] of Object.entries(TURKEY_AMBIENCE))for(const portrait of [false,true])for(const width of portrait?[390,720]:[1280]){
     const capture=t=>{
       const calls=[];let saves=0,clips=0;
-      const painter=new Proxy({canvas:{width},getTransform:()=>({a:1})},{get:(target,k)=>k in target?target[k]:k==='createRadialGradient'?()=>({addColorStop(){}}):(...args)=>{
+      const painter=new Proxy({canvas:{width},getTransform:()=>({a:1})},{get:(target,k)=>k in target?target[k]:k==='createRadialGradient'||k==='createLinearGradient'?()=>({addColorStop(){}}):(...args)=>{
         if(k==='save')saves++;if(k==='restore')saves--;if(k==='clip')clips++;
         for(const n of args)if(typeof n==='number')assert.ok(Number.isFinite(n),`${id}: invalid ${k} coordinate`);
         if(['rect','moveTo','quadraticCurveTo','translate','arc','ellipse'].includes(k))calls.push([k,...args]);
@@ -154,6 +155,10 @@ try {
   }
   const collisions=new Set();
   const houses=world.group.children.filter(o=>o.name==='turkish-lane-house');
+  assert.ok(houses.length<=32,'the countryside must not fill back up with repeated houses');
+  for(const name of ['aegean-terrace-olive','turkish-kitchen-garden','inland-grove-tree','terrace-vine','anatolian-threshing-floor','black-sea-woodland','cappadocia-rock-spire']){
+    assert.ok(world.group.getObjectByName(name),`${name}: missing countryside variety`);
+  }
   assert.ok(new Set(houses.map(h=>h.userData.houseStyle)).size>=5,'the town needs different house forms');
   assert.ok(houses.some(h=>h.userData.storeys===3)&&houses.some(h=>h.userData.storeys===1),'roof heights must vary');
   // Denser streets must not strand a stationary neighbour inside the new buildings.

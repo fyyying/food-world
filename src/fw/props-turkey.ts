@@ -78,26 +78,82 @@ function roomShell(g: P, color = '#e5ceab', w = 5.4, roofStyle:'gable'|'hip'|'pe
   }
   g.add(masonry(details));
 }
-function life(g: P, people: Figure[], phrase: string, work?: (t:number,k:number)=>void) {
+function life(g: P, people: Figure[], phrase: string, work?: (t:number,k:number,dt:number)=>void, onPoke?:()=>void) {
   g.userData.ownReaction=true;
   let reaction = 0;
-  const food: {object:THREE.Object3D;y:number;rotation:THREE.Euler;scale:THREE.Vector3}[]=[];
-  g.traverse(object=>{if(object.userData.foodReaction) food.push({object,y:object.position.y,rotation:object.rotation.clone(),scale:object.scale.clone()});});
+  const food: {object:THREE.Object3D;position:THREE.Vector3;rotation:THREE.Euler;scale:THREE.Vector3}[]=[];
+  g.traverse(object=>{if(object.userData.foodReaction) food.push({object,position:object.position.clone(),rotation:object.rotation.clone(),scale:object.scale.clone()});});
   const chat = ambientChat(people[0] ?? g,[phrase]);
-  g.userData.poke=()=>{reaction=1; bubble(people[0] ?? g,phrase,1.45,1800);};
+  g.userData.poke=()=>{reaction=1; onPoke?.(); bubble(people[0] ?? g,phrase,1.45,1800);};
   g.userData.tick=(t,dt)=>{
     reaction=Math.max(0,reaction-dt*.6);
     people.forEach((p,i)=>{upper(p).rotation.y=Math.sin(t*.45+i)*.09;upper(p).rotation.z=Math.sin(t*.7+i)*.025;});
-    work?.(t,reaction);
-    food.forEach(({object,y,rotation,scale},i)=>{
-      const lift=Math.sin(Math.PI*reaction);
-      object.position.y=y+lift*.34;object.rotation.y=rotation.y+t*(object.userData.spinRate??0)+(reaction?Math.PI*2*(1-reaction):0);
-      object.scale.copy(scale).multiplyScalar(1+lift*.12);
+    food.forEach(({object,position,rotation,scale},i)=>{
+      const phase=Math.min(1,Math.max(0,(1-reaction-(i%3)*.09)/.73));
+      const pulse=reaction>0?Math.sin(Math.PI*phase):0;
+      object.position.copy(position);object.rotation.copy(rotation);object.scale.copy(scale);
+      switch(object.userData.foodReaction){
+        case 'simit': // A few rings tip towards the customer, then settle on their stack.
+          object.position.y+=pulse*.16;object.rotation.x+=pulse*.65;break;
+        case 'knead':
+          object.scale.set(scale.x*(1+pulse*.10),scale.y*(1-pulse*.28),scale.z*(1+pulse*.12));
+          object.position.y-=pulse*.01;break;
+        case 'roll': // Folded vine leaves roll a little on the board; pots and boards stay put.
+          object.position.z+=pulse*.09;object.rotation.x+=pulse*.30;break;
+        case 'grill':
+          object.rotation.z+=pulse*.55;break;
+        case 'flip':
+          object.position.y+=Math.sin(pulse*Math.PI)*.62+pulse*.32;object.rotation.z+=pulse*Math.PI;break;
+        case 'carve':
+          object.rotation.y+=t*.25;break;
+        default: // Serving dishes slide slightly across their supporting table, never float.
+          object.position.x+=pulse*(i%2?-.10:.10);
+      }
     });
-    if(reaction)people.forEach(p=>{const arms=p.userData.arms as {right:THREE.Group};arms.right.rotation.z=-Math.sin(reaction*Math.PI)*.45;});
+    if(people[0]) (people[0].userData.arms as {right:THREE.Group}).right.rotation.z=-Math.sin(reaction*Math.PI)*.35;
+    work?.(t,reaction,dt);
     chat(dt);
   };
   return g;
+}
+
+/** Reuse fruit geometry, hide the picked fruit, and let a bounded handful fall and settle. */
+function harvest(g:P, trees:THREE.Object3D[]) {
+  const falling:{mesh:THREE.Mesh;source:THREE.Mesh;start:THREE.Vector3;scale:THREE.Vector3;age:number;floor:number;drift:number}[]=[];
+  let pick=0;
+  return {
+    poke:()=>{
+      g.updateWorldMatrix(true,true);
+      for(const [i,tr] of trees.entries()){
+        if(falling.length>=24)break;
+        const fruit=(tr.userData.fruits??tr.userData.olives??[]) as THREE.Mesh[];
+        const available=fruit.filter(f=>f.visible);if(!available.length)continue;
+        const source=available[(pick+i)%available.length],mesh=source.clone();
+        mesh.name='harvest-fruit';g.add(mesh);g.worldToLocal(source.getWorldPosition(mesh.position));
+        source.visible=false;
+        const radius=(source.geometry as THREE.SphereGeometry).parameters.radius??.07;
+        falling.push({mesh,source,start:mesh.position.clone(),scale:mesh.scale.clone(),age:0,
+          floor:(tr.userData.harvestFloor??0)+radius*Math.max(...mesh.scale.toArray()),drift:(i%2?1:-1)*.16});
+      }
+      pick++;
+    },
+    tick:(t:number,k:number,dt:number)=>{
+      trees.forEach((tr,i)=>{
+        const crown=(tr.userData.crown??tr) as THREE.Object3D;
+        crown.rotation.z=Math.sin(t*1.3+i)*.012+Math.sin(t*19+i)*.10*k;
+        crown.rotation.x=Math.cos(t*16+i)*.055*k;
+      });
+      for(let i=falling.length-1;i>=0;i--){
+        const f=falling[i];f.age+=dt;
+        const landing=Math.sqrt(Math.max(0,f.start.y-f.floor)/3.5),after=f.age-landing;
+        const bounce=after>0&&after<.38?Math.sin(after/.38*Math.PI)*.10:0;
+        f.mesh.position.set(f.start.x+f.drift*Math.min(f.age,landing+.38),Math.max(f.floor,f.start.y-3.5*f.age*f.age)+bounce,f.start.z);
+        f.mesh.rotation.z+=dt*.9;
+        f.mesh.scale.copy(f.scale).multiplyScalar(Math.min(1,Math.max(0,(3.6-f.age)/.5)));
+        if(f.age>=3.6){g.remove(f.mesh);f.source.visible=true;falling.splice(i,1);}
+      }
+    },
+  };
 }
 
 export function turkishCat(): P {
@@ -151,7 +207,7 @@ export function turkeySimitCart(): P {
   add(g,box(1.9,.13,1.4,'#b84136'),0,2.06,0);
   for(let i=0;i<5;i++)add(g,box(.18,.02,1.4,'#f0dcc0'),-.8+i*.4,2.135,0);
   for(let i=0;i<12;i++) add(g,new THREE.Mesh(new THREE.TorusGeometry(.12,.04,7,14),mat('#cb8d3d')),-.5+(i%4)*.33,1.08+Math.floor(i/4)*.075,(i%2-.5)*.35).rotation.x=Math.PI/2;
-  g.children.filter(o=>o instanceof THREE.Mesh && o.geometry instanceof THREE.TorusGeometry).forEach(o=>o.userData.foodReaction=true);
+  g.children.filter(o=>o instanceof THREE.Mesh && o.geometry instanceof THREE.TorusGeometry).forEach(o=>o.userData.foodReaction='simit');
   const seller=add(g,local('#46718a',{apron:true}),0,0,-1.1);
   return life(g,[seller],'Sıcak simit! Warm sesame bread!');
 }
@@ -165,7 +221,7 @@ function foodHouse(kind: 'kebab'|'fish'|'pide'|'baklava'|'coffee'|'yufka'|'dolma
     add(g,box(2.6,.2,.8,'#45413b'),0,y+.10,1);
     for(let i=0;i<10;i++) add(g,ball(.075,i%2?'#b5582b':'#723c27'),-1.1+i*.24,y+.24,1+(i%2-.5)*.25);
     for(let i=0;i<5;i++) {
-      const sk=add(g,group(),-1+i*.50,y+.30,1);moving.push(sk);sk.userData.foodReaction=true;
+      const sk=add(g,group(),-1+i*.50,y+.30,1);sk.userData.foodReaction='grill';
       if(kind==='fish') add(sk,ball(.20,'#a9bac0'),0,0,0).scale.set(.65,.35,1.8);
       else {add(sk,box(.035,.035,1.05,'#d0c7ae'),0,0,0);for(let j=0;j<4;j++) add(sk,box(.17,.13,.17,foodColours[j%3]),0,.06,-.3+j*.20);}
     }
@@ -174,20 +230,24 @@ function foodHouse(kind: 'kebab'|'fish'|'pide'|'baklava'|'coffee'|'yufka'|'dolma
     add(g,box(1.5,.55,1.3,'#8e694e'),1.45,.38,-1.35);
     add(g,new THREE.Mesh(new THREE.SphereGeometry(.75,14,7,0,Math.PI*2,0,Math.PI/2),mat('#b69062')),1.45,.65,-1.35);
     add(g,box(.75,.45,.05,'#352b26'),1.45,.56,-.68);add(g,box(.5,.09,.07,'#c76628'),1.45,.38,-.64);
-    for(let i=0;i<4;i++){const dough=add(g,ball(.34,'#e5bb74'),-1.2+i*.78,y+.04,1);dough.scale.set(kind==='pide'?.7:1.0,.12,1);dough.userData.foodReaction=true;}
+    for(let i=0;i<4;i++){const dough=add(g,ball(.34,'#e5bb74'),-1.2+i*.78,y+.04,1);dough.scale.set(kind==='pide'?.7:1.0,.12,1);dough.userData.foodReaction='knead';}
     const pin=add(g,cyl(.045,.80,ME.wood),-.8,y+.13,.85);pin.rotation.z=Math.PI/2;moving.push(pin);
   } else if(kind==='baklava') {
-    for(let i=0;i<3;i++){add(g,box(.95,.04,.8,'#bdac8d'),-1.15+i*1.15,y+.02,1);for(let j=0;j<9;j++){add(g,box(.22,.12,.20,'#d8ab50'),-1.43+i*1.15+(j%3)*.27,y+.10,.73+Math.floor(j/3)*.27);add(g,ball(.035,'#6e8745'),-1.43+i*1.15+(j%3)*.27,y+.17,.73+Math.floor(j/3)*.27);}}
+    for(let i=0;i<3;i++){
+      const tray=add(g,group(),-1.15+i*1.15,y,1);tray.userData.foodReaction='serve';
+      add(tray,box(.95,.04,.8,'#bdac8d'),0,.02,0);
+      for(let j=0;j<9;j++){add(tray,box(.22,.12,.20,'#d8ab50'),-.28+(j%3)*.27,.10,-.27+Math.floor(j/3)*.27);add(tray,ball(.035,'#6e8745'),-.28+(j%3)*.27,.17,-.27+Math.floor(j/3)*.27);}
+    }
   } else if(kind==='coffee') {
     for(let i=0;i<3;i++){const x=-.8+i*.8;add(g,cyl(.12,.23,ME.copper),x,y+.115,1);add(g,box(.32,.025,.035,ME.copper),x+.21,y+.22,1);bowl(g,x,y,1.3,'#54382a',.08);}
     g.userData.steam=new THREE.Vector3(0,1.1,1);
   } else {
-    for(let i=0;i<7;i++){add(g,ball(.15,foodColours[i%3]),-1.1+(i%4)*.7,y+.15,.78+Math.floor(i/4)*.4);}
-    add(g,cyl(.34,.27,ME.copper),1.8,y+.135,1.3);g.userData.steam=new THREE.Vector3(1.8,1.2,1.3);
-  }
-  if(kind==='baklava'||kind==='dolma'){
-    const morsels=g.children.filter(o=>o.position.y>y+.035&&o.position.y<y+.3);
-    const food=add(g,group(),0,y,1);g.updateMatrixWorld(true);morsels.forEach(o=>food.attach(o));food.userData.foodReaction=true;
+    add(g,box(2.4,.045,.75,'#ba905c'),-.3,y+.0225,1).name='dolma-board';
+    for(let i=0;i<7;i++){
+      const filled=add(g,ball(.15,foodColours[i%3]),-1.1+(i%4)*.57,y+.12,.78+Math.floor(i/4)*.4);
+      filled.scale.set(.75,.5,1);filled.userData.foodReaction='roll';
+    }
+    add(g,cyl(.34,.27,ME.copper),1.8,y+.135,1.3).name='dolma-pot';g.userData.steam=new THREE.Vector3(1.8,1.2,1.3);
   }
   const customer=add(g,local('#5d7884'),-1.8,0,2.4);customer.rotation.y=Math.PI;
   const phrases={kebab:'Afiyet olsun! Enjoy your meal!',fish:'Balık ekmek! Fish in fresh bread!',pide:'Fırından yeni çıktı! Fresh from the oven!',baklava:'Fıstıklı baklava! Pistachio baklava!',coffee:'Kahve hazır. Coffee is ready.',yufka:'Hamur dinlensin. Let the dough rest.',dolma:'Birlikte yapalım. Let’s make them together.'};
@@ -203,9 +263,8 @@ function foodHouse(kind: 'kebab'|'fish'|'pide'|'baklava'|'coffee'|'yufka'|'dolma
   }
   return life(g,[cook,customer],phrases[kind],(t,k)=>{
     const arms=cook.userData.arms as {left:THREE.Group;right:THREE.Group};
-    arms.right.rotation.x=-.75+Math.sin(t*1.2)*.12;arms.left.rotation.x=-.5;
-    if(kind==='kebab'||kind==='fish') moving.forEach((sk,i)=>sk.rotation.z=Math.sin(t*.55+i)*(.12+k*.25));
-    else moving.forEach(pin=>pin.position.z=.85+Math.sin(t*1.1)*.12);
+    arms.right.rotation.x=-.75+Math.sin(t*(1.2+k*3))*(.12+k*.15);arms.left.rotation.x=-.5;
+    moving.forEach(pin=>{pin.position.z=.85+Math.sin(t*(1.1+k*2))*(.12+k*.14);pin.rotation.x=t*(.4+k*2);});
   });
 }
 
@@ -225,25 +284,33 @@ function familyTable(kind: 'breakfast'|'meze'|'supper'): P {
 }
 
 export function turkeyOliveGrove(): P {
-  const g=group();
-  for(const [x,z] of [[-2,-1],[1.5,-1.6],[2.3,1.3]]) add(g,oliveTree(1.2),x,0,z);
+  const g=group(),trees:THREE.Object3D[]=[];
+  for(const [x,z] of [[-2,-1],[1.5,-1.6],[2.3,1.3]]) trees.push(add(g,oliveTree(1.2),x,0,z));
   for(const x of [-1,0,1]){add(g,cyl(.30,.3,'#a37c4f'),x,.15,1.3);for(let i=0;i<8;i++) add(g,ball(.045,'#526b3e'),x+Math.cos(i)*.18,.31,1.3+Math.sin(i)*.18);}
   const picker=add(g,local('#927656'),-2.5,0,.25);picker.rotation.y=.6;
-  return life(g,[picker],'Zeytin zamanı. Time for the olives.',t=>{(picker.userData.arms as {right:THREE.Group}).right.rotation.x=-1.8+Math.sin(t)*.12;});
+  const crop=harvest(g,trees);
+  return life(g,[picker],'Zeytin zamanı. Time for the olives.',(t,k,dt)=>{crop.tick(t,k,dt);(picker.userData.arms as {right:THREE.Group}).right.rotation.x=-1.8+Math.sin(t*(1+k*3))*(.12+k*.15);},crop.poke);
 }
 
 export function turkeyTeaHill(): P {
   const g=group();
   // Each row has a terrace beneath it; pickers stand on its surface.
-  const pickers:Figure[]=[];
+  const pickers:Figure[]=[],bushes:THREE.Object3D[]=[];
   for(let row=0;row<5;row++) {
     const y=row*.30,z=2.4-row*1.3;
     add(g,box(8,y+.18,1.25,'#81985a'),0,(y+.18)/2,z);
-    for(let i=0;i<10;i++) add(g,ball(.36,(row+i)%2?'#43804b':'#568c4f'),-3.6+i*.8,y+.38,z-.25).scale.set(1.25,.85,.8);
+    for(let i=0;i<10;i++){
+      const bush=add(g,ball(.36,(row+i)%2?'#43804b':'#568c4f'),-3.6+i*.8,y+.38,z-.25);bush.scale.set(1.25,.85,.8);bush.name='tea-bush';
+      // A few young leaves separate from the brushed row; the terrace itself never moves.
+      const leaf=add(bush,ball(.085,'#92af5f'),.1,.34,.12);leaf.scale.set(.5,1,.18);
+      bush.userData.fruits=[leaf];bush.userData.harvestFloor=y+.18;
+      bushes.push(bush);
+    }
     if(row%2===0){const p=add(g,local(row?'#9b6274':'#b09057'),-1.4+row*.65,y+.18,z+.36);p.rotation.y=Math.PI;pickers.push(p);add(g,cyl(.22,.34,'#b69663'),p.position.x+.45,y+.35,z+.32);}
   }
   add(g,tree('pine',1.2),5,0,-2.5);
-  return life(g,pickers,'Taze yapraklar. Fresh tea leaves.',t=>pickers.forEach((p,i)=>upper(p).rotation.x=.15+Math.sin(t*.8+i)*.06));
+  const crop=harvest(g,bushes);
+  return life(g,pickers,'Taze yapraklar. Fresh tea leaves.',(t,k,dt)=>{crop.tick(t,k,dt);pickers.forEach((p,i)=>upper(p).rotation.x=.15+Math.sin(t*(.8+k)+i)*(.06+k*.05));},crop.poke);
 }
 
 export const TURKEY_PROPS: Record<string,()=>P> = {
@@ -283,12 +350,13 @@ export function turkeyHammam(): P {
   return life(g,[visitor],'Hoş geldiniz. Welcome to the hammam.');
 }
 export function turkeyCitrus(): P {
-  const g=group();
+  const g=group(),trees:THREE.Object3D[]=[];
   for(const [col,x] of [-5,-1.7,1.7,5].entries())for(const [row,z] of [-3,0,3].entries()){
     const kind=(col+row)%3===0?'lemon':'orange';
     const scale=1.4+(col+row)%3*.13;
     const fruitTree=add(g,citrusTree(kind,scale),x,0,z);
     fruitTree.name=`orchard-${kind}`;
+    trees.push(fruitTree);
     // Larger fruit sits on the outside of the canopy, visible from the street.
     for(const [i,f] of (fruitTree.userData.fruits as THREE.Mesh[]).entries()){
       const dy=(i%3-1)*.33,angle=i*2.4+col+row,radius=(.7*Math.sqrt(1-(dy/.665)**2)+.035)*scale;
@@ -299,10 +367,11 @@ export function turkeyCitrus(): P {
   const picker=add(g,local('#a97853'),0,0,1.5);
   for(const [i,x] of [-.55,.55].entries()){
     add(g,cyl(.40,.35,'#a37c52'),x,.175,3.8);
-    const fruit=add(g,group(),x,.39,3.8);fruit.userData.foodReaction=true;
+    const fruit=add(g,group(),x,.39,3.8);
     for(let j=0;j<7;j++)add(fruit,ball(.13,i?'#e6c94f':'#e49330'),Math.sin(j)*.24,0,Math.cos(j)*.24);
   }
-  return life(g,[picker],'Portakal ve limon! Oranges and lemons!');
+  const crop=harvest(g,trees);
+  return life(g,[picker],'Portakal ve limon! Oranges and lemons!',crop.tick,crop.poke);
 }
 Object.assign(TURKEY_PROPS,{turkeyHammam,turkeyCitrus});
 
@@ -315,11 +384,10 @@ function streetKitchen(kind:'doner'|'gozleme'):P {
   for(let i=0;i<8;i+=2)add(g,box(.40,.025,2.8,'#e4d4b8'),-1.45+i*.42,2.84,-.05);
   const y=table(g,0,.75,2.8,.8);
   const cook=add(g,local('#dfcfb1',{apron:true}),-1,.1,-.55);
-  const food=add(g,group(),.5,y,.75);food.userData.foodReaction=true;
+  const food=add(g,group(),.5,y,.75);food.userData.foodReaction=kind==='doner'?'carve':'flip';
   if(kind==='doner'){
     add(g,box(.75,1.7,.18,'#716c60'),.5,1.5,.35);
     add(g,cyl(.06,1.8,ME.copper),.5,y+.9,.75);
-    food.userData.spinRate=.25;
     food.name='doner-meat';
     for(let i=0;i<12;i++)add(food,new THREE.Mesh(new THREE.CylinderGeometry(.26+i*.009,.25+i*.009,.10,12),mat(i%2?'#a66543':'#bd8053')),0,.23+i*.1,0);
     bowl(g,-.6,y,.8,'#7b954d');bowl(g,-1.12,y,.8,'#b6553a');
@@ -330,7 +398,7 @@ function streetKitchen(kind:'doner'|'gozleme'):P {
     const pin=add(g,cyl(.045,.72,TR.wood),-.72,y+.11,.55);pin.rotation.z=Math.PI/2;
   }
   return life(g,[cook],kind==='doner'?'Döner hazır! Thin slices, warm bread.':'Gözleme sıcak! Hot from the griddle.',(t,k)=>{
-    (cook.userData.arms as {right:THREE.Group}).right.rotation.x=-.85+Math.sin(t*1.5)*.13;
+    (cook.userData.arms as {right:THREE.Group}).right.rotation.x=-.85+Math.sin(t*(1.5+k*4))*(.13+k*.24);
   });
 }
 Object.assign(TURKEY_PROPS,{turkeyDoner:()=>streetKitchen('doner'),turkeyGozleme:()=>streetKitchen('gozleme')});

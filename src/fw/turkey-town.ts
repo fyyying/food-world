@@ -119,16 +119,14 @@ export const TOWN_HOUSES: [number,number,number,HouseStyle,number,number?][] = [
   // Anatolian courtyard cluster sits above the oven lane.
   [16.3,-27.3,3,'narrow',-.16,1.2],[17.6,-22.4,2,'timber',-.07,1.2],
   [21.2,-26.9,2,'narrow',.13,1.2],
-  [28.6,-22.6,1,'courtyard',.16],[35.5,-23.1,2,'timber',-.12],[40,-21.8,1,'stone',.28],
-  [41.2,-12.3,2,'corner',-.18],[45.6,-13.5,1,'stone',.16],[51,-12.1,1,'courtyard',-.15],
-  // Low Aegean homes gather around planted yards.
-  [-49.5,6.3,1,'stone',.21],[-44.7,6.5,2,'timber',-.10],[-40.9,2.7,2,'narrow',.16],
-  [-39.8,7.4,1,'stone',-.18],
+  // Beyond this cluster the roofs give way to dry orchards and rocky, wooded ground.
+  [28.6,-22.6,1,'courtyard',.16],
+  // A single Aegean home overlooks the olive terraces and planted yards.
+  [-40.9,2.7,2,'narrow',.16],
   // The bath square is enclosed on two sides; workshops share its eastern lane.
   [-21.4,1.9,3,'narrow',.21],[-22.8,5.5,1,'courtyard',-.14],
-  [-2.2,2.4,3,'narrow',-.16],[1.3,6.1,1,'stone',.18],
-  [13.0,5.9,2,'narrow',-.1],[27.3,6.1,2,'corner',.18],
-  [50.8,5.8,1,'courtyard',.25],
+  [-2.2,2.4,3,'narrow',-.16],
+  [27.3,6.1,2,'corner',.18],
 ];
 
 function floweringCorner(g:THREE.Group,x:number,z:number,h:number,seed:number) {

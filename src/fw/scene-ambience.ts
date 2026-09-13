@@ -1,10 +1,14 @@
 /** Continuous, painting-aligned motion. Coordinates belong to each supplied composition. */
 export type PaintingRect = [left: number, top: number, right: number, bottom: number];
 export type AmbientPatch = {
-  kind: 'water' | 'leaves' | 'dust' | 'rain' | 'mist' | 'light' | 'breeze';
+  kind: 'water' | 'leaves' | 'birds' | 'oil' | 'dust' | 'rain' | 'mist' | 'light';
   wide?: PaintingRect;
   phone?: PaintingRect;
   color?: string;
+  leaf?: 'olive';
+};
+type AmbientArt = {
+  leaves: HTMLImageElement[];
 };
 
 /** Match scene.ts's portrait-image expansion, including portrait tablets. */
@@ -16,40 +20,16 @@ export function paintingFrame(portrait: boolean, visibleWidth: number) {
 }
 const fraction = (n: number) => n - Math.floor(n);
 
-/** Cache only the small foliage cutouts, with feathered edges, from the existing JPEG. */
-export function ambientPainter(folder: string, patches: AmbientPatch[]) {
-  const sources = new Map<boolean, HTMLImageElement>();
-  const tiles = new Map<string, HTMLCanvasElement>();
-  const tile = (portrait: boolean, index: number, r: PaintingRect) => {
-    const key = `${portrait}-${index}`;
-    if (tiles.has(key)) return tiles.get(key);
-    let source = sources.get(portrait);
-    if (!source) {
-      source = new Image();
-      source.src = `${import.meta.env.BASE_URL}scenes/${folder}/${portrait ? 'portrait' : 'wide'}.jpg`;
-      sources.set(portrait, source);
-    }
-    if (!source.complete || !source.naturalWidth) return;
-    const canvas = document.createElement('canvas');
-    canvas.width = Math.ceil((r[2] - r[0]) * source.naturalWidth);
-    canvas.height = Math.ceil((r[3] - r[1]) * source.naturalHeight);
-    const ctx = canvas.getContext('2d')!;
-    ctx.drawImage(source, r[0] * source.naturalWidth, r[1] * source.naturalHeight,
-      canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
-    ctx.globalCompositeOperation = 'destination-in';
-    ctx.translate(canvas.width / 2, canvas.height / 2);
-    ctx.scale(canvas.width / 2, canvas.height / 2);
-    const mask = ctx.createRadialGradient(0, 0, .45, 0, 0, 1);
-    mask.addColorStop(0, '#fff'); mask.addColorStop(1, 'transparent');
-    ctx.fillStyle = mask; ctx.fillRect(-1, -1, 2, 2);
-    tiles.set(key, canvas);
-    return canvas;
-  };
-  return (ctx: CanvasRenderingContext2D, t: number, portrait: boolean) => drawAmbience(ctx, t, portrait, patches, tile);
+/** Moving elements have their own silhouettes; never slide a duplicate of the painting over itself. */
+export function ambientPainter(patches: AmbientPatch[]) {
+  const leaves = patches.some(p => p.kind === 'leaves' && !p.leaf) ? [2, 3, 5, 6, 7].map(i => {
+    const image = new Image(); image.src = `${import.meta.env.BASE_URL}scenes/hotpot/leaf-${i}.png`; return image;
+  }) : [];
+  return (ctx: CanvasRenderingContext2D, t: number, portrait: boolean) => drawAmbience(ctx, t, portrait, patches, { leaves });
 }
 
 export function drawAmbience(ctx: CanvasRenderingContext2D, t: number, portrait: boolean, patches: AmbientPatch[],
-  tile?: (portrait: boolean, index: number, rect: PaintingRect) => CanvasImageSource | undefined) {
+  art?: AmbientArt) {
   if (!patches.length) return;
   const frame = paintingFrame(portrait, ctx.canvas.width / ctx.getTransform().a);
   for (const [index, patch] of patches.entries()) {
@@ -58,14 +38,7 @@ export function drawAmbience(ctx: CanvasRenderingContext2D, t: number, portrait:
     const x = frame.x + r[0] * frame.width, y = frame.y + r[1] * frame.height;
     const w = (r[2] - r[0]) * frame.width, h = (r[3] - r[1]) * frame.height;
     ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
-    if (patch.kind === 'breeze') {
-      const foliage = tile?.(portrait, index, r);
-      // Move the painted leaves themselves, leaving people, masonry and the touch points fixed.
-      const wind = Math.sin(t * 1.05 + index) + Math.sin(t * .43 + index) * .35;
-      ctx.translate(x + w / 2 + wind * (portrait ? 2.5 : 4), y + h / 2 + Math.sin(t * .8 + index) * 1.3);
-      ctx.rotate(wind * .008);
-      if (foliage) ctx.drawImage(foliage, -w / 2, -h / 2, w, h);
-    } else if (patch.kind === 'light') {
+    if (patch.kind === 'light') {
       // A slow, warm lamp shimmer, never a whole-image flash.
       const glow = .32 + Math.sin(t * 1.5 + index) * .10 + Math.sin(t * 3.7 + index * 2) * .035;
       ctx.translate(x + w / 2, y + h / 2); ctx.scale(w / 2, h / 2);
@@ -84,14 +57,55 @@ export function drawAmbience(ctx: CanvasRenderingContext2D, t: number, portrait:
         ctx.globalAlpha = .66 * fade; ctx.beginPath();
         ctx.moveTo(px - len, py); ctx.quadraticCurveTo(px, py + Math.sin(t + i) * 1.8, px + len, py); ctx.stroke();
       }
+    } else if (patch.kind === 'oil') {
+      // The portrait press has two visible golden streams. Highlights travel down each ribbon.
+      ctx.lineCap = 'round';
+      for (let i = 0; i < 3; i++) {
+        const px = x + w * (.38 + i * .12), flow = fraction(t * 1.7 + i * .31);
+        ctx.strokeStyle = i === 1 ? '#fff0a1' : '#b89524';
+        ctx.lineWidth = Math.max(1, w * .16); ctx.globalAlpha = .75;
+        ctx.beginPath(); ctx.moveTo(px, y); ctx.quadraticCurveTo(px + Math.sin(t * 2 + i) * .6, y + h * .5, px - .5, y + h); ctx.stroke();
+        ctx.strokeStyle = '#fff7ba'; ctx.globalAlpha = .8 * Math.sin(flow * Math.PI);
+        ctx.beginPath(); ctx.moveTo(px, y + h * flow); ctx.lineTo(px, y + h * Math.min(1, flow + .14)); ctx.stroke();
+      }
     } else if (patch.kind === 'leaves') {
-      for (let i = 0; i < 5; i++) {
-        const phase = fraction(t / (9 + i * 1.5) + i * .373 + index * .21);
-        const px = x + w * (.20 + i * .14 + Math.sin(t * .85 + i * 2) * .12), py = y + phase * h;
-        ctx.save(); ctx.translate(px, py); ctx.rotate(Math.sin(t * 1.1 + i) * .8 + i);
-        ctx.globalAlpha = .85 * Math.sin(Math.PI * phase) ** .6; ctx.fillStyle = patch.color ?? '#bda064';
-        ctx.beginPath(); ctx.ellipse(0, 0, (portrait ? 4.5 : 6) * (.3 + Math.abs(Math.cos(t + i)) * .7), portrait ? 2 : 2.8, 0, 0, Math.PI * 2); ctx.fill();
+      for (let i = 0; i < 4; i++) {
+        // Already in flight on entry. Different speeds and flutter phases prevent a repeated curtain.
+        const phase = fraction(t / (7.5 + i * 1.7) + i * .271 + .13);
+        const flutter = Math.sin(t * (1.3 + i * .17) + i * 2.3);
+        const px = x + w * (.24 + i * .16 + flutter * .12 + (phase - .5) * .12);
+        const py = y + h * (.04 + phase * .92);
+        const size = (portrait ? 25 : 35) * (.78 + i * .12);
+        ctx.save(); ctx.translate(px, py); ctx.rotate(i + t * (i % 2 ? .65 : -.48) + flutter * .55);
+        ctx.scale(.28 + .72 * Math.abs(Math.cos(t * .95 + i)), 1);
+        ctx.globalAlpha = .94 * Math.min(1, phase * 9, (1 - phase) * 9);
+        const image = art?.leaves[i % art.leaves.length];
+        if (!patch.leaf && image?.complete && image.naturalWidth) {
+          const leafWidth = size * image.naturalWidth / image.naturalHeight;
+          ctx.drawImage(image, -leafWidth / 2, -size / 2, leafWidth, size);
+        } else {
+          // Narrow, silver-backed olive leaves rather than autumn foliage in the evergreen grove.
+          const width = size * (patch.leaf === 'olive' ? .20 : .35);
+          const shade = ctx.createLinearGradient(-width, 0, width, 0);
+          shade.addColorStop(0, patch.color ?? '#7c873f'); shade.addColorStop(.5, '#d0ce92'); shade.addColorStop(1, '#657b45');
+          ctx.fillStyle = shade; ctx.beginPath(); ctx.moveTo(0, -size / 2);
+          ctx.quadraticCurveTo(width, 0, 0, size / 2); ctx.quadraticCurveTo(-width, 0, 0, -size / 2); ctx.fill();
+          ctx.strokeStyle = '#ddd7ac'; ctx.lineWidth = .7; ctx.beginPath(); ctx.moveTo(0, -size * .37); ctx.lineTo(0, size * .38); ctx.stroke();
+        }
         ctx.restore();
+      }
+    } else if (patch.kind === 'birds') {
+      // Small distant silhouettes cross the open sky, with a pause between each pair.
+      for (let i = 0; i < 2; i++) {
+        const phase = fraction((t + 2 - i * 1.5) / 23) * 3;
+        if (phase > 1) continue;
+        const span = (portrait ? 8 : 11) * (i ? .7 : 1);
+        ctx.save(); ctx.translate(x + w * (.08 + phase * .84), y + h * (.45 + i * .22) + Math.sin(t * 1.4 + i) * 3);
+        ctx.globalAlpha = .72 * Math.min(1, phase * 8, (1 - phase) * 8);
+        ctx.strokeStyle = '#4d5147'; ctx.lineWidth = portrait ? 1.4 : 1.8; ctx.lineCap = 'round';
+        const wing = -span * (.3 + Math.sin(t * 5 + i) * .6);
+        ctx.beginPath(); ctx.moveTo(-span, wing); ctx.quadraticCurveTo(-span * .4, -span * .25, 0, 1);
+        ctx.quadraticCurveTo(span * .4, -span * .25, span, wing); ctx.stroke(); ctx.restore();
       }
     } else if (patch.kind === 'rain') {
       ctx.strokeStyle = '#d3e2e1'; ctx.lineWidth = 1;

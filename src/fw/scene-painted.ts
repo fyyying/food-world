@@ -208,7 +208,7 @@ type Bubble = { x: number; y: number; r: number; age: number; life: number };
 type Petal = { x: number; y: number; vy: number; sway: number; rot: number; vr: number; s: number; age: number; life: number };
 
 function makeFx(cfg: PaintedCfg, reaction: { boil: number }) {
-  const ambience = ambientPainter(cfg.folder, cfg.ambience ?? []);
+  const ambience = ambientPainter(cfg.ambience ?? []);
   const steam: Steam[] = [], leaves: Leaf[] = [], lanterns: Lantern[] = [], bubbles: Bubble[] = [], petals: Petal[] = [];
   const leafImgs = [2, 3, 5, 6, 7, 8].map((i) => { const im = new Image(); im.src = `${import.meta.env.BASE_URL}scenes/hotpot/leaf-${i}.png`; return im; });
   const motes = Array.from({ length: cfg.motes ?? 0 }, () => ({ x: rnd(0, STAGE_W), y: rnd(-20, 720), vy: rnd(4, 11), r: rnd(1, 2.4), a: rnd(0.25, 0.6), f: rnd(0.4, 1.1), ph: rnd(0, 6.28) }));

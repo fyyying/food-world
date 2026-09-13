@@ -71,6 +71,15 @@ People must vary in age, height, build, clothing, and activity. Use locally grou
 
 Give people varied and natural movement: Different routes and speeds, pauses to browse or talk, gradual turns, carrying food, preparing ingredients, sitting, serving, and other local activities. Walking steps must match travel; feet must meet the ground and carried objects must stay in the hands. Avoid synchronized crowds and repeated identical motion.
 
+### Mark clickable items with a diamond
+
+Use a small diamond signal to identify clickable items, following the existing Turkey design. Turkey's explorable buildings use a steady ivory-and-brass diamond above the destination; decorative houses have no marker. See the [Turkey world reference](turkey-world.md#historical-stories-and-quiet-discovery).
+
+- Apply the same diamond convention to clickable places, objects, and food discoveries in new areas
+- Keep the marker small, steady, and clearly associated with its target, without flashing or flickering
+- Make it visible on desktop and phones without covering the pictured food or important scene details
+- Leave non-interactive decoration unmarked, and ensure every marked item responds to selection
+
 ### Strict visual and spatial rules
 
 | Prohibited defect | Required result |
@@ -98,7 +107,7 @@ Focus room interactions on a few small food or ingredient details that are actua
 
 Use this interaction sequence:
 
-1. The visitor notices and selects a pictured food, ingredient, or tool
+1. The visitor notices the diamond marker and selects its pictured food, ingredient, or tool
 2. The scene gives a small local reaction, such as steam, a pour, or a gentle highlight
 3. A concise discovery explains one interesting fact tied to that exact detail
 4. A story card with depth, a related place, or a suitable recipe lets the visitor continue
@@ -132,6 +141,7 @@ Inspect the complete area in a running browser, both on desktop and at phone siz
 - Follow the roads, bridges, river, banks, and river mouths through the full scene
 - Watch people through walking, pausing, turning, and interacting, including crowded places
 - Confirm that no rendering flicker, broken connections, collisions, or floating objects appear
+- Check that clickable items have clear diamond markers, decorative items remain unmarked, and every marked target responds on desktop and phones
 - Open every room and try each food discovery in its wide and portrait composition
 - Check that effects stay on their pictured source and do not hide important details
 - Verify that zooming and returning from a room preserve the visitor's place
@@ -141,6 +151,6 @@ Record what was checked and what remains unresolved. Treat mobile viewport check
 
 ## Reusable Codex handoff
 
-> Create the new Food World area described in the attached brief. Use the concept image as the blueprint for the 3D community and use the room paintings for the scenes opened from its places. Follow `docs/new-area-methodology.md`. Preserve the supplied reference style. Build a believable, busy community with varied houses, food places, ingredients, local landmarks, and distinct people in the area's ancient and traditional styles. Give people natural, varied movement. Strictly prohibit flickering, broken roads, cut-off rivers, and unnatural river merges. Add gentle motion to the paintings and a few interactions tied to visible food or ingredient details with surprising, sourced discoveries. Give the full story cards depth through food history, ingredients, and related dishes, with meaningful connections to other worlds where available. Verify the world and all rooms in the running application at desktop and phone sizes, and record the results.
+> Create the new Food World area described in the attached brief. Use the concept image as the blueprint for the 3D community and use the room paintings for the scenes opened from its places. Follow `docs/new-area-methodology.md`. Preserve the supplied reference style. Build a believable, busy community with varied houses, food places, ingredients, local landmarks, and distinct people in the area's ancient and traditional styles. Give people natural, varied movement. Mark clickable items with small, steady diamond signals matching Turkey. Strictly prohibit flickering, broken roads, cut-off rivers, and unnatural river merges. Add gentle motion to the paintings and a few interactions tied to visible food or ingredient details with surprising, sourced discoveries. Give the full story cards depth through food history, ingredients, and related dishes, with meaningful connections to other worlds where available. Verify the world and all rooms in the running application at desktop and phone sizes, and record the results.
 
 Attach the area brief, concept image, style references, room paintings, useful props, inventory, and story sources to that handoff.

@@ -12,6 +12,8 @@ The [product roadmap](docs/product-roadmap.md) tracks product directions, open d
 
 The [new-area methodology](docs/new-area-methodology.md) documents the workflow from ChatGPT research and image generation to Codex's 3D worlds, living rooms, and food discoveries.
 
+The [Spain image-generation prompt](docs/examples/spain-scene-generation-prompt.md) applies it to ten food rooms with a fixed, minimal prop list.
+
 ## Run
 
 ```bash

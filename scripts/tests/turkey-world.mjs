@@ -26,7 +26,7 @@ try {
     assert.equal(worldZoomLimit('middle-east',w,h),worldZoomLimit('china',w,h),'phone worlds must have the same zoom-out limit');
     assert.equal(worldZoomLimit('middle-east',w,h),90);
   }
-  assert.equal(worldZoomLimit('middle-east',1280,720),500,'desktop keeps the regional overview');
+  assert.equal(worldZoomLimit('middle-east',1280,720),215,'desktop stops at the composed regional overview');
   const {TURKEY_NEXT}=await import(pathToFileURL(join(temp,'objects.mjs')));
   const {LAND_SHORE,waterOutline}=await import(pathToFileURL(join(temp,'landscape.mjs')));
   const inPoly=(x,z,poly)=>{let yes=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const [ax,az]=poly[i],[bx,bz]=poly[j];if((az>z)!==(bz>z)&&x<(bx-ax)*(z-az)/(bz-az)+ax)yes=!yes;}return yes;};

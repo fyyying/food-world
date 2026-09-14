@@ -17,6 +17,7 @@ import { bigBen, parliamentHu, chalet } from "./props-ceurope";
 
 export type PlacedRegion = {
   region: MapRegion;
+  available: boolean;
   group: THREE.Group;
   hit: THREE.Mesh;
   labelEl: HTMLElement;
@@ -25,7 +26,7 @@ export type PlacedRegion = {
   awake: boolean;
 };
 
-export type MapWorld = { group: THREE.Group; regions: PlacedRegion[]; tick: (t: number, dt: number) => void; wake: (r: PlacedRegion | null) => void };
+export type MapWorld = { group: THREE.Group; regions: PlacedRegion[]; hits: THREE.Mesh[]; tick: (t: number, dt: number) => void; wake: (r: PlacedRegion | null) => void };
 
 function blob(radius: number, seed: number, amp = 0.22, segments = 26): THREE.Shape {
   const s = new THREE.Shape();
@@ -39,7 +40,24 @@ function blob(radius: number, seed: number, amp = 0.22, segments = 26): THREE.Sh
   return s;
 }
 
-export function buildMap(counts: Map<string, number>): MapWorld {
+function mute(root: THREE.Object3D) {
+  root.traverse((object) => {
+    if (!(object instanceof THREE.Mesh)) return;
+    const source = Array.isArray(object.material) ? object.material : [object.material];
+    const muted = source.map((material) => {
+      const copy = material.clone();
+      const colored = copy as THREE.Material & { color?: THREE.Color };
+      if (colored.color) {
+        const hsl = colored.color.getHSL({ h: 0, s: 0, l: 0 });
+        colored.color.setHSL(0, 0, THREE.MathUtils.clamp(hsl.l * 0.72 + 0.22, 0.28, 0.72));
+      }
+      return copy;
+    });
+    object.material = Array.isArray(object.material) ? muted : muted[0];
+  });
+}
+
+export function buildMap(counts: Map<string, number>, isAvailable: (region: MapRegion) => boolean = () => true): MapWorld {
   const group = new THREE.Group();
 
   // paper ocean
@@ -61,6 +79,7 @@ export function buildMap(counts: Map<string, number>): MapWorld {
   const regions: PlacedRegion[] = MAP_REGIONS.map((region) => {
     const g = new THREE.Group();
     g.position.set(region.pos[0], 0, region.pos[1]);
+    const available = isAvailable(region);
     const count = counts.get(region.id) ?? 0;
     const h = region.built ? 1.4 : 0.8;
     const geo = new THREE.ExtrudeGeometry(blob(region.size, region.seed), { depth: h, bevelEnabled: true, bevelThickness: 0.4, bevelSize: 0.45, bevelSegments: 2, curveSegments: 4 });
@@ -196,19 +215,22 @@ export function buildMap(counts: Map<string, number>): MapWorld {
       if (count > 0) { const tr = tree("round", region.size / 9); tr.position.set(region.size * 0.5, h, region.size * 0.3); g.add(tr); }
     }
 
+    if (!available) mute(g);
+
     const hit = new THREE.Mesh(new THREE.CylinderGeometry(region.size * 1.15, region.size * 1.15, region.built ? 16 : 9, 12), new THREE.MeshBasicMaterial({ visible: false }));
     hit.position.y = region.built ? 6 : 3;
     g.add(hit);
 
     const labelEl = document.createElement("div");
-    labelEl.className = `region-label${region.built ? "" : " unbuilt"}`;
-    labelEl.innerHTML = `<div class="n">${region.name}</div>${region.built ? "" : '<div class="c">Coming soon</div>'}`;
+    labelEl.className = `region-label${region.built ? "" : " unbuilt"}${available ? "" : " unavailable"}`;
+    labelEl.innerHTML = `<div class="n">${region.name}</div>${available && region.built ? "" : '<div class="c">Coming soon</div>'}`;
+    if (!available) labelEl.setAttribute('aria-disabled', 'true');
     const label = new CSS2DObject(labelEl);
     label.position.set(0, h + (region.built ? 6.5 : 4.6), region.size * 0.15);
     g.add(label);
 
     group.add(g);
-    const placed: PlacedRegion = { region, group: g, hit, labelEl, count, clouds, awake: false };
+    const placed: PlacedRegion = { region, available, group: g, hit, labelEl, count, clouds, awake: false };
     hit.userData.region = placed;
     land.userData.region = placed;
     return placed;
@@ -216,7 +238,7 @@ export function buildMap(counts: Map<string, number>): MapWorld {
 
   function wake(r: PlacedRegion | null) {
     for (const p of regions) {
-      const on = p === r;
+      const on = p.available && p === r;
       if (p.awake === on) continue;
       p.awake = on;
       p.labelEl.classList.toggle("awake", on);
@@ -227,7 +249,7 @@ export function buildMap(counts: Map<string, number>): MapWorld {
     for (const p of regions) {
       const targetY = p.awake ? 0.6 : 0;
       p.group.position.y += (targetY - p.group.position.y) * Math.min(1, dt * 6);
-      p.group.userData.tick?.(t, dt);
+      if (p.available) p.group.userData.tick?.(t, dt);
       if (p.clouds) {
         const lift = p.awake ? 1.8 : 0;
         p.clouds.position.y += (lift - p.clouds.position.y) * Math.min(1, dt * 4);
@@ -239,5 +261,5 @@ export function buildMap(counts: Map<string, number>): MapWorld {
     }
   }
 
-  return { group, regions, tick, wake };
+  return { group, regions, hits: regions.filter((region) => region.available).map((region) => region.hit), tick, wake };
 }

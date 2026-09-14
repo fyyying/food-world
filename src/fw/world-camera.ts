@@ -1,5 +1,5 @@
-/** Keep phone villages at a readable scale; desktop can still survey the expanded Middle East. */
+/** Keep villages readable while retaining the composed full-region view on desktop. */
 export function worldZoomLimit(world: string, width: number, height: number) {
   const phone = width < height || width < 720;
-  return world === 'middle-east' && !phone ? 500 : 90;
+  return world === 'middle-east' && !phone ? 215 : 90;
 }

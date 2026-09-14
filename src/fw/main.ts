@@ -2,7 +2,7 @@ import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { CSS2DObject, CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer.js";
-import { fetchRecipes } from "../data";
+import { fetchRecipes, STATIC } from "../data";
 import { MAP_REGIONS, AREAS, WORLDS, areasOf, objectsOf, worldRecipes, enrich, isChinaRecipe, isItalyRecipe, isKoreaRecipe, isMexicoRecipe, isMideastRecipe, isMedRecipe, isIndiaRecipe, isSeasiaRecipe, isNamericaRecipe, isJapanRecipe, isCeuropeRecipe, objectById, type Area, type EnrichedRecipe, type MapRegion, type WorldId, type WorldObject } from "./graph";
 import { buildMap, type MapWorld, type PlacedRegion } from "./map";
 import { buildChina } from "./world-china";
@@ -11,6 +11,7 @@ import { buildKorea } from "./world-korea";
 import { buildMexico } from "./world-mexico";
 import { buildMideast } from "./world-mideast";
 import { worldZoomLimit } from './world-camera';
+import { isWorldAvailable } from './world-availability';
 import { buildMed } from "./world-med";
 import { buildIndia } from "./world-india";
 import { buildSeasia } from "./world-seasia";
@@ -181,9 +182,9 @@ async function boot() {
     counts.set("north-america", recipes.filter(isNamericaRecipe).length);
     counts.set("japan", recipes.filter(isJapanRecipe).length);
     counts.set("central-europe", recipes.filter(isCeuropeRecipe).length);
-    mapWorld = buildMap(counts);
+    mapWorld = buildMap(counts, (region) => isWorldAvailable(region.id, STATIC));
     mapScene.add(mapWorld.group);
-    for (const r of mapWorld.regions) r.labelEl.addEventListener("click", () => { if (level !== "map" || flight) return; if (r.region.built) enterRegion(r.region); else ui.showRegion(r.region); });
+    for (const r of mapWorld.regions) if (r.available) r.labelEl.addEventListener("click", () => { if (level !== "map" || flight) return; if (r.region.built) enterRegion(r.region); else ui.showRegion(r.region); });
     status.textContent = "";
     status.hidden = true;
   } catch (e) {
@@ -472,7 +473,7 @@ function getWorld(id: WorldId): Diorama {
 }
 
 function enterRegion(region: MapRegion) {
-  if (!region.built) return;
+  if (!region.built || !isWorldAvailable(region.id, STATIC)) return;
   ui.hide(); storiesBtn.hidden = true;
   const id = region.id as WorldId;
   if (diorama) worldScene.remove(diorama.group);
@@ -664,7 +665,7 @@ function castMap(x: number, y: number): PlacedRegion | null {
   const r = canvas.getBoundingClientRect();
   pointer.set(((x - r.left) / r.width) * 2 - 1, -((y - r.top) / r.height) * 2 + 1);
   raycaster.setFromCamera(pointer, camera);
-  const hits = raycaster.intersectObjects(mapWorld.regions.map((p) => p.hit), false);
+  const hits = raycaster.intersectObjects(mapWorld.hits, false);
   return (hits[0]?.object.userData.region as PlacedRegion) ?? null;
 }
 function castWorld(x: number, y: number): Placed | DishMarker | null {

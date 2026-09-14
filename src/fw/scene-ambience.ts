@@ -1,47 +1,42 @@
 /** Continuous, painting-aligned motion. Coordinates belong to each supplied composition. */
 export type PaintingRect = [left: number, top: number, right: number, bottom: number];
 export type AmbientPatch = {
-  kind: 'leaves' | 'birds' | 'stream-glint' | 'waterfall-glint' | 'dust' | 'rain' | 'mist' | 'light' | 'sunray' | 'breeze' | ProcessVerb;
+  kind: 'leaves' | 'birds' | 'stream-glint' | 'waterfall-glint' | 'dust' | 'rain' | 'mist' | 'light' | 'sunray' | 'breeze' | 'snow' | 'embers';
   wide?: PaintingRect;
   phone?: PaintingRect;
   color?: string;
-  leaf?: 'olive';
+  leaf?: 'olive' | 'yellow';
   angles?: [wide: number, phone: number];
   /** Orientation-specific paths traced inside the patch rectangle, in local 0..1 coordinates. */
   paths?: [wide: Point[][] | undefined, phone: Point[][] | undefined];
   /** Maximum top-pivot rotation for a tightly cropped source layer. */
   sway?: [wide: number, phone: number];
-  /** Painted subject isolated by a source-layer breeze. Chilli remains the default. */
-  source?: 'chilli' | 'grape';
-  /** Process accents can remain still between cycles, or be reserved for touch. */
+  /** Painted subject isolated by a source-layer breeze. Red hanging details use the same conservative colour key. */
+  source?: 'chilli' | 'red-tassel' | 'garlic' | 'bell' | 'grape' | 'leaves';
+  /** A restrained ambient accent can be reserved for touch. */
   clickOnly?: boolean;
   period?: number;
 };
-export type ProcessVerb = 'pour' | 'pull' | 'toss' | 'puff' | 'lid' | 'stir' | 'turn' | 'flip' | 'roll' | 'sway' | 'harvest' | 'wake' | 'rings' | 'flow' | 'snow' | 'embers' | 'glaze';
 type Point = [number, number];
-/** Independent composition anchors, expressed around the visible process rather than the room centre. */
-function signature(kind: ProcessVerb, wide: Point, phone: Point, color = '#f1d39a', width = .12, height = .12): AmbientPatch {
-  const rect = ([x,y]: Point, w: number): PaintingRect => [Math.max(0,x-w/2), Math.max(0,y-height), Math.min(1,x+w/2), Math.min(1,y+.015)];
-  return { kind, wide: rect(wide,width), phone: rect(phone,width*1.65), color };
-}
-// 53 signatures + the existing hotpot boil. No painting is sampled or duplicated by these effects.
+// 53 signatures + the existing hotpot boil. Effects may move an isolated painted detail or add a
+// natural cue anchored to visible scenery; they never draw replacement food, people or processes.
 export const PAINTED_SIGNATURES: Record<string, AmbientPatch> = {
-  noodle_shop: signature('pull',[.20,.43],[.30,.38]),
-  teahouse: signature('pour',[.52,.89],[.57,.85],'#c58a32',.045,.09),
-  market: signature('sway',[.44,.12],[.83,.18],'#b75639',.14,.07),
-  home_kitchen: signature('toss',[.20,.49],[.22,.49],'#e1a346'),
-  tower: signature('wake',[.69,.59],[.69,.56],'#eee4bb',.19,.065),
-  bao_shop: signature('lid',[.62,.60],[.72,.50],'#c49d6a',.13,.055),
-  stone_bridge: signature('wake',[.67,.69],[.63,.62],'#daeae1',.20,.09),
-  crab_pond: signature('rings',[.78,.49],[.80,.40],'#d9ecda',.16,.065),
-  jiangnan_home: signature('lid',[.36,.60],[.35,.50],'#bc9a67',.12,.055),
-  lotus_garden: signature('rings',[.66,.65],[.67,.50],'#d5e8b8',.22,.09),
-  rice_wine: signature('pour',[.74,.51],[.66,.47],'#ce9c38',.05,.10),
-  river_market: signature('wake',[.88,.75],[.88,.46],'#d9eadb',.15,.08),
-  riverside_restaurant: signature('wake',[.85,.57],[.68,.405],'#eee0ad',.18,.06),
-  tea_hill: signature('harvest',[.20,.79],[.77,.75],'#638b40',.13,.13),
+  noodle_shop: {kind:'sunray',wide:[.38,0,.93,.72],phone:[.42,.02,.94,.62],angles:[-.42,.36]},
+  teahouse: {kind:'breeze',wide:[.445,.16,.465,.24],phone:[.435,.17,.46,.22],source:'red-tassel',period:7.8,sway:[.045,.045]},
+  market: {kind:'breeze',wide:[.952,.025,.998,.31],phone:[.03,.10,.15,.33],source:'chilli',period:7.4,sway:[.045,.060]},
+  home_kitchen: {kind:'breeze',wide:[.015,0,.09,.31],phone:[.105,.035,.215,.34],source:'chilli',period:7.0,sway:[.040,.045]},
+  tower: {kind:'birds',wide:[.60,.02,.95,.24],phone:[.55,.08,.94,.25],period:12},
+  bao_shop: {kind:'dust',wide:[.08,.52,.32,.67],phone:[.08,.55,.45,.68]},
+  stone_bridge: {kind:'mist',wide:[.35,.40,.82,.66],phone:[.35,.37,.78,.57]},
+  crab_pond: {kind:'leaves',wide:[.45,.02,.88,.55],phone:[.25,.02,.78,.48],color:'#b96d42'},
+  jiangnan_home: {kind:'birds',wide:[.40,.02,.72,.20],phone:[.38,.05,.70,.22],period:13},
+  lotus_garden: {kind:'sunray',wide:[.06,0,.66,.68],phone:[0,.05,.58,.65],angles:[-.45,.38]},
+  rice_wine: {kind:'sunray',wide:[.35,0,.88,.72],phone:[.28,0,.82,.65],angles:[-.42,.38]},
+  river_market: {kind:'sunray',wide:[.40,0,.92,.66],phone:[.35,0,.95,.60],angles:[-.40,.36]},
+  riverside_restaurant: {kind:'birds',wide:[.48,.04,.84,.22],phone:[.42,.09,.77,.27],period:13},
+  tea_hill: {kind:'birds',wide:[.48,.02,.82,.18],phone:[.35,.06,.75,.21],period:13},
   kebab_grill: {kind:'light',wide:[.30,.63,.78,.78],phone:[.12,.59,.45,.65],color:'#f3a34b'},
-  naan_bakery: {kind:'light',wide:[.40,.55,.60,.66],phone:[.08,.33,.20,.36],color:'#e79b4c'},
+  naan_bakery: {kind:'sunray',wide:[.50,0,.98,.70],phone:[.42,0,.96,.66],angles:[-.42,.36]},
   polo_kitchen: {kind:'light',wide:[.20,.53,.54,.64],phone:[.08,.47,.64,.54],color:'#e6b452'},
   laghman_shop: {kind:'dust',wide:[.25,.59,.51,.65],phone:[.18,.51,.53,.56]},
   oasis_bazaar: {kind:'sunray',wide:[.15,0,.75,.75],phone:[.12,0,.72,.65],angles:[-.36,.34]},
@@ -49,21 +44,21 @@ export const PAINTED_SIGNATURES: Record<string, AmbientPatch> = {
   oasis_field: {kind:'sunray',wide:[.43,0,.96,.62],phone:[.40,0,.98,.52],angles:[-.45,.38],sway:[.018,.018]},
   chaikhana: {kind:'sunray',wide:[.10,0,.80,.70],phone:[.10,0,.85,.65],angles:[-.42,.36]},
   xj_home: {kind:'dust',wide:[.18,.60,.34,.65],phone:[.21,.44,.39,.47]},
-  caravan_stop: {kind:'embers',wide:[.62,.52,.71,.67],phone:[.80,.27,.88,.41],color:'#ffd479'},
+  caravan_stop: {kind:'leaves',wide:[.70,.22,.93,.43],phone:[.39,0,.68,.18],leaf:'olive',color:'#6f8f4e'},
   tianshan: {kind:'mist',wide:[.50,.15,.85,.55],phone:[.45,.20,.90,.60]},
   evening_feast: {kind:'light',wide:[.11,.10,.18,.20],phone:[.02,.04,.09,.14],color:'#ffc47a'},
-  skewer_courtyard: signature('turn',[.32,.66],[.36,.58],'#eeaa57',.22,.09),
-  mantou_kitchen: signature('lid',[.57,.67],[.31,.73],'#e4cea0',.13,.06),
-  dumpling_house: signature('toss',[.71,.64],[.75,.54],'#f4dfaf',.09,.12),
-  winter_table: signature('snow',[.48,.30],[.49,.31],'#fff9e9',.21,.25),
-  courtyard_kitchen: signature('toss',[.23,.57],[.26,.44],'#e5b754',.13,.13),
-  hutong: signature('sway',[.51,.24],[.48,.24],'#b8c6b0',.20,.09),
-  bing_stall: signature('flip',[.43,.51],[.58,.42],'#e3b56d',.105,.12),
-  north_market: signature('sway',[.47,.18],[.50,.21],'#b77951',.19,.09),
-  noodle_workshop: signature('pull',[.29,.61],[.44,.54]),
-  roast_duck: signature('glaze',[.54,.39],[.49,.38],'#ffd18b',.10,.20),
-  vinegar_workshop: signature('pour',[.31,.64],[.49,.57],'#39291d',.06,.13),
-  wheat_harvest: signature('harvest',[.50,.66],[.51,.60],'#e5c06f',.21,.18),
+  skewer_courtyard: {kind:'leaves',wide:[.38,0,.88,.34],phone:[.45,0,.98,.30],color:'#b64b35'},
+  mantou_kitchen: {kind:'dust',wide:[.10,.42,.36,.66],phone:[.26,.44,.72,.59]},
+  dumpling_house: {kind:'dust',wide:[.18,.51,.48,.69],phone:[.20,.49,.55,.65]},
+  winter_table: {kind:'snow',wide:[.66,.03,.86,.18],phone:[.62,.14,.88,.29],color:'#fff9e9'},
+  courtyard_kitchen: {kind:'snow',wide:[.61,.015,.73,.30],phone:[.60,.02,.84,.20],color:'#fff9e9'},
+  hutong: {kind:'leaves',wide:[.45,0,.92,.64],phone:[.44,0,.93,.62],color:'#a76543'},
+  bing_stall: {kind:'dust',wide:[.08,.40,.34,.57],phone:[.05,.43,.49,.58]},
+  north_market: {kind:'sunray',wide:[.38,0,.88,.72],phone:[.35,0,.88,.68],angles:[-.42,.38]},
+  noodle_workshop: {kind:'leaves',wide:[.64,0,.98,.31],phone:[.42,.06,.82,.27],leaf:'yellow',color:'#cc7f2f'},
+  roast_duck: {kind:'light',wide:[.27,.18,.51,.48],phone:[.77,.32,1,.54],color:'#f2a34b'},
+  vinegar_workshop: {kind:'sunray',wide:[.55,.08,.92,.72],phone:[.42,.04,.88,.54],angles:[-.42,.38]},
+  wheat_harvest: {kind:'sunray',wide:[.25,0,.90,.75],phone:[.10,0,.90,.68],angles:[-.45,.38]},
   tr_simit: {kind:'birds',wide:[.75,.02,.96,.20],phone:[.59,.045,.95,.18]},
   tr_tea: {kind:'birds',wide:[.66,.02,.94,.18],phone:[.66,.04,.98,.20],period:14},
   tr_coffee: {kind:'rain',wide:[.808,.09,.923,.30],phone:[.903,.164,.991,.306]},
@@ -84,7 +79,10 @@ export const PAINTED_SIGNATURES: Record<string, AmbientPatch> = {
 /** Extra source-observed motion for Xinjiang rooms whose signature alone is too quiet. */
 export const XINJIANG_AMBIENCE: Record<string, AmbientPatch[]> = {
   kebab_grill: [
-    {kind:'breeze',wide:[.315,0,.365,.15],phone:[.755,.035,.825,.145],period:5.8,sway:[.110,.150],source:'grape'},
+    {kind:'breeze',wide:[.322,.018,.357,.132],phone:[.755,.035,.825,.145],period:5.8,sway:[.140,.150],source:'grape'},
+  ],
+  naan_bakery: [
+    {kind:'leaves',wide:[.70,.02,.94,.30],phone:[.63,.035,.92,.20],leaf:'yellow',color:'#c99235'},
   ],
   oasis_field: [
     {kind:'birds',wide:[.58,.025,.95,.18],phone:[.56,.025,.98,.15],period:11.5},
@@ -97,9 +95,15 @@ export const XINJIANG_AMBIENCE: Record<string, AmbientPatch[]> = {
   ],
   chaikhana: [
     {kind:'breeze',wide:[.355,0,.405,.115],phone:[.445,.075,.505,.185],period:5.7,sway:[.140,.150],source:'grape'},
+    {kind:'leaves',wide:[.06,.04,.28,.24],phone:[.55,.14,.87,.30],leaf:'yellow',color:'#c99235'},
+  ],
+  xj_home: [
+    // Keep the small autumn leaves inside the open courtyard, above and away from the family.
+    {kind:'leaves',wide:[.41,.015,.57,.30],phone:[.10,.015,.55,.19],leaf:'yellow',color:'#c99235'},
   ],
   evening_feast: [
-    {kind:'breeze',wide:[.225,0,.275,.14],phone:[.265,0,.335,.115],period:5.6,sway:[.120,.140],source:'grape'},
+    {kind:'breeze',wide:[.235,.007,.263,.112],phone:[.27,.018,.335,.104],period:5.6,sway:[.155,.180],source:'grape'},
+    {kind:'sunray',wide:[.44,0,.96,.72],phone:[.46,.015,.96,.68],angles:[-.40,.34]},
   ],
 };
 type AmbientArt = {
@@ -117,6 +121,18 @@ export function paintingFrame(portrait: boolean, visibleWidth: number) {
 }
 const fraction = (n: number) => n - Math.floor(n);
 
+/** A deliberately narrow colour key for a source-observed hanging subject. */
+export function isBreezePixel(subject: AmbientPatch['source']='chilli', r: number, g: number, b: number) {
+  const chilli=r>55&&r-g>24&&r>g*1.38&&r>b*1.16;
+  const max=Math.max(r,g,b),min=Math.min(r,g,b),chroma=max-min;
+  const hue=chroma===0?0:max===r?60*((g-b)/chroma%6):max===g?60*((b-r)/chroma+2):60*((r-g)/chroma+4);
+  const grape=max>35&&max<215&&chroma/max>.165&&(hue<25||hue>310);
+  const garlic=r>145&&g>120&&b>82&&r-g<58&&g-b<58;
+  const bell=max<155&&r>g*.9&&g>b*.85;
+  const leaves=g>55&&g-r>10&&g>b*1.08;
+  return subject==='grape'?grape:subject==='garlic'?garlic:subject==='bell'?bell:subject==='leaves'?leaves:chilli;
+}
+
 /** Separate one hanging painted subject, then reconstruct the few pixels behind it. */
 function prepareBreezeLayer(image: HTMLImageElement, rect: PaintingRect, subject: AmbientPatch['source']='chilli'): BreezeLayer | undefined {
   if (typeof document === 'undefined') return;
@@ -129,23 +145,18 @@ function prepareBreezeLayer(image: HTMLImageElement, rect: PaintingRect, subject
   for(let i=0;i<mask.length;i++) {
     const p=i*4,r=original.data[p],g=original.data[p+1],b=original.data[p+2];
     // Conservative colour keys keep trellis, leaves, walls and people in the static painting.
-    const chilli=r>55&&r-g>24&&r>g*1.38&&r>b*1.16;
-    const max=Math.max(r,g,b),min=Math.min(r,g,b),chroma=max-min;
-    const hue=chroma===0?0:max===r?60*((g-b)/chroma%6):max===g?60*((b-r)/chroma+2):60*((r-g)/chroma+4);
-    const grape=max>35&&max<215&&chroma/max>.165&&(hue<25||hue>310);
-    if(subject==='grape'?grape:chilli)mask[i]=1;
+    if(isBreezePixel(subject,r,g,b))mask[i]=1;
   }
   // Carry darker painted edges that touch each colour core, without spreading into the surroundings.
-  for(let pass=0;pass<3;pass++) {
+  for(let pass=0;pass<(subject==='grape'?3:subject==='leaves'?2:1);pass++) {
     const next=mask.slice();
     for(let y=1;y<height-1;y++)for(let x=1;x<width-1;x++)if(!mask[y*width+x]) {
       for(let yy=-1;yy<=1&&!next[y*width+x];yy++)for(let xx=-1;xx<=1;xx++)if(mask[(y+yy)*width+x+xx]){next[y*width+x]=1;break;}
     }
     mask.set(next);
   }
-  if(subject==='grape') {
-    // Warm grading pushes purple grapes toward red. Keep only the largest connected berry cluster so similarly
-    // coloured wood, leaves and neighbouring bunches remain part of the static painting.
+  if(subject==='grape'||subject==='bell'||subject==='leaves') {
+    // Keep only the main connected subject so similarly coloured scenery remains part of the static painting.
     const seen=new Uint8Array(mask.length),queue=new Int32Array(mask.length);let best=new Int32Array(0);
     for(let start=0;start<mask.length;start++)if(mask[start]&&!seen[start]) {
       let head=0,tail=0;queue[tail++]=start;seen[start]=1;
@@ -183,67 +194,6 @@ function prepareBreezeLayer(image: HTMLImageElement, rect: PaintingRect, subject
   return {background,foreground};
 }
 
-/** A bounded choreography: all geometry is regenerated from time, so rotation has no stale particles. */
-function drawProcess(ctx: CanvasRenderingContext2D, patch: AmbientPatch, t: number, x: number, y: number, w: number, h: number) {
-  const phase = fraction(t / (patch.period ?? 7.6));
-  const beat = Math.min(1, phase / .64), lift = Math.sin(beat * Math.PI);
-  ctx.translate(x,y); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-  ctx.strokeStyle = patch.color ?? '#edd7a2'; ctx.fillStyle = patch.color ?? '#edd7a2';
-  ctx.lineWidth = Math.max(2.3,w*.025);
-  const ellipse = (cx: number,cy: number,rx: number,ry: number,fill=false) => {
-    ctx.beginPath(); ctx.ellipse(cx,cy,Math.max(.1,rx),Math.max(.1,ry),0,0,Math.PI*2); if(fill)ctx.fill();else ctx.stroke();
-  };
-  if(patch.kind === 'wake' || patch.kind === 'rings') {
-    for(let i=0;i<2;i++) {
-      const q = fraction(t/(5.8+i*.9)+i*.48);
-      ctx.globalAlpha *= .85;
-      ctx.save(); ctx.globalAlpha *= Math.sin(q*Math.PI);
-      if(patch.kind==='rings') ellipse(w*.50,h*.55,w*(.08+q*.39),h*(.08+q*.31));
-      else {const cx=w*(.10+q*.80);ctx.beginPath();ctx.moveTo(cx-w*.20,h*.75);ctx.quadraticCurveTo(cx-w*.09,h*.52,cx,h*.42);ctx.quadraticCurveTo(cx-w*.02,h*.64,cx-w*.13,h*.9);ctx.stroke();}
-      ctx.restore();
-    }
-  } else if(patch.kind==='pour' || patch.kind==='flow') {
-    const active = patch.kind==='flow'?1:Math.sin(Math.PI*beat);
-    ctx.globalAlpha *= active;
-    ctx.lineWidth = Math.max(3.5,w*.115);
-    ctx.beginPath();ctx.moveTo(w*.23,h*.08);ctx.bezierCurveTo(w*.22,h*.37,w*.68,h*.40,w*.59,h*.80);ctx.stroke();
-    ctx.strokeStyle = patch.color==='#39291d'?'#c19f6d':'#fff0b0';ctx.lineWidth *= .30;
-    for(let i=0;i<3;i++){const q=fraction(t*1.4+i/3);ellipse(w*(.24+q*.35),h*(.13+q*.63),Math.max(1.3,w*.038),h*.06);}
-    ellipse(w*.59,h*.85,w*(.13+.12*lift),h*.07);
-  } else if(patch.kind==='pull') {
-    ctx.globalAlpha *= .9;
-    for(let i=0;i<3;i++) {ctx.beginPath();ctx.moveTo(w*(.22-.12*lift),h*.18+i*3);ctx.bezierCurveTo(w*.28,h*(.35+.6*lift),w*.72,h*(.35+.6*lift),w*(.78+.12*lift),h*.18+i*3);ctx.stroke();}
-  } else if(patch.kind==='stir') {
-    for(let i=0;i<7;i++){const a=t*1.4+i*.8;ctx.beginPath();ctx.ellipse(w*.5+Math.cos(a)*w*.24,h*.57+Math.sin(a)*h*.24,w*.045,h*.025,a,0,Math.PI*2);ctx.fill();}
-    ctx.beginPath();ctx.moveTo(w*.82,h*.07);ctx.lineTo(w*.5+Math.cos(t*1.4)*w*.2,h*.57+Math.sin(t*1.4)*h*.2);ctx.stroke();
-  } else if(patch.kind==='lid' || patch.kind==='puff' || patch.kind==='roll' || patch.kind==='flip') {
-    const cy=h*(.72-(patch.kind==='flip'?.47:.20)*lift);
-    const rx=w*(patch.kind==='roll'?.25+.13*lift:.35);
-    const ry=patch.kind==='flip'?h*(.035+.13*Math.abs(Math.cos(beat*Math.PI*2))):h*(.08+.15*lift);
-    ctx.save();ctx.globalAlpha *= .22;ellipse(w*.5,h*.87,w*.32,h*.055,true);ctx.restore();
-    // A thin contour follows the food's edge; no copied rectangular image patch.
-    ellipse(w*.5,cy,rx,ry);
-    if(patch.kind==='lid'){ellipse(w*.5,cy-ry,w*.045,h*.06);for(let i=0;i<2;i++){ctx.save();ctx.globalAlpha*=lift*.55;ctx.beginPath();ctx.moveTo(w*(.28+i*.43),cy);ctx.quadraticCurveTo(w*(.2+i*.43),h*.27,w*(.30+i*.43),h*.1);ctx.stroke();ctx.restore();}}
-    if(patch.kind==='roll'){ctx.beginPath();ctx.moveTo(w*.12,h*(.36+lift*.28));ctx.lineTo(w*.88,h*(.36+lift*.28));ctx.stroke();}
-  } else if(patch.kind==='sway') {
-    ctx.beginPath();ctx.moveTo(w*.06,h*.22);ctx.quadraticCurveTo(w*.5,h*(.45+.18*Math.sin(t)),w*.94,h*.22);ctx.stroke();
-    for(let i=0;i<4;i++){const px=w*(.23+i*.18);ctx.beginPath();ctx.moveTo(px,h*.36);ctx.quadraticCurveTo(px+w*.04*Math.sin(t+i*.3),h*.67,px+w*.08*Math.sin(t+i*.3),h*.78);ctx.stroke();}
-  } else if(patch.kind==='turn' || patch.kind==='glaze') {
-    if(patch.kind==='glaze'){ctx.save();ctx.globalAlpha*=.65*Math.sin(beat*Math.PI);ctx.lineWidth=w*.06;ctx.beginPath();ctx.moveTo(w*(.15+.65*beat),h*.14);ctx.lineTo(w*(.25+.65*beat),h*.85);ctx.stroke();ctx.restore();}
-    else for(let i=0;i<3;i++){const cy=h*(.35+i*.17);ctx.beginPath();ctx.moveTo(w*.10,cy);ctx.lineTo(w*.90,cy+h*.04*lift);ctx.stroke();for(let j=0;j<4;j++)ellipse(w*(.24+j*.16),cy,w*.05,h*(.035+.055*Math.abs(Math.cos(beat*Math.PI))));}
-  } else {
-    // Food toss, picked leaves, snow and sparks use at most six discrete silhouettes.
-    const count=patch.kind==='snow'?6:patch.kind==='harvest'?3:3;
-    for(let i=0;i<count;i++){
-      const q=patch.kind==='snow'?fraction(t/(5+i*.3)+i*.173):fraction(t/(patch.period??7.6)+i*.08)/.66;
-      if(q>1)continue;
-      const px=patch.kind==='snow'?w*(.12+i*.145)+Math.sin(t+i)*3:w*(.17+q*.64);
-      const py=patch.kind==='snow'?h*q:patch.kind==='embers'?h*(.88-q*.76):h*(.83-Math.sin(q*Math.PI)*.68);
-      ctx.save();ctx.globalAlpha*=Math.min(1,q*9,(1-q)*9);ellipse(px,py,patch.kind==='snow'?2:Math.max(3,w*.04),patch.kind==='harvest'?h*.035:3.5,true);ctx.restore();
-    }
-  }
-}
-
 /** Source layers are allowed only for tightly cropped hanging details that pivot in place. */
 export function ambientPainter(patches: AmbientPatch[], folder?: string) {
   const leaves = patches.some(p => p.kind === 'leaves' && !p.leaf) ? [2, 3, 5, 6, 7].map(i => {
@@ -271,9 +221,7 @@ export function drawAmbience(ctx: CanvasRenderingContext2D, t: number, portrait:
     const x = frame.x + r[0] * frame.width, y = frame.y + r[1] * frame.height;
     const w = (r[2] - r[0]) * frame.width, h = (r[3] - r[1]) * frame.height;
     ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
-    if (!['leaves','birds','stream-glint','waterfall-glint','dust','rain','mist','light','sunray','breeze'].includes(patch.kind)) {
-      drawProcess(ctx, patch, t + index * 1.83, x,y,w,h);
-    } else if (patch.kind === 'breeze') {
+    if (patch.kind === 'breeze') {
       const layer=art?.breeze?.[index]?.[portrait?1:0];
       if(layer) {
         // Paint out the original hanging subject, then move its exact pixels from the pictured tie point.
@@ -327,7 +275,7 @@ export function drawAmbience(ctx: CanvasRenderingContext2D, t: number, portrait:
         const flutter = Math.sin(t * (1.3 + i * .17) + i * 2.3);
         const px = x + w * (.24 + i * .16 + flutter * .12 + (phase - .5) * .12);
         const py = y + h * (.04 + phase * .92);
-        const size = (portrait ? 25 : 35) * (.78 + i * .12);
+        const size = (patch.leaf === 'yellow' ? (portrait ? 16 : 20) : (portrait ? 25 : 35)) * (.78 + i * .12);
         ctx.save(); ctx.translate(px, py); ctx.rotate(i + t * (i % 2 ? .65 : -.48) + flutter * .55);
         ctx.scale(.28 + .72 * Math.abs(Math.cos(t * .95 + i)), 1);
         ctx.globalAlpha = opacity * .94 * Math.min(1, phase * 9, (1 - phase) * 9);
@@ -336,13 +284,15 @@ export function drawAmbience(ctx: CanvasRenderingContext2D, t: number, portrait:
           const leafWidth = size * image.naturalWidth / image.naturalHeight;
           ctx.drawImage(image, -leafWidth / 2, -size / 2, leafWidth, size);
         } else {
-          // Narrow, silver-backed olive leaves rather than autumn foliage in the evergreen grove.
+          // Procedural leaves are reserved for small yellow autumn leaves and narrow evergreen olive leaves.
           const width = size * (patch.leaf === 'olive' ? .20 : .35);
           const shade = ctx.createLinearGradient(-width, 0, width, 0);
-          shade.addColorStop(0, patch.color ?? '#7c873f'); shade.addColorStop(.5, '#d0ce92'); shade.addColorStop(1, '#657b45');
+          const edge=patch.leaf==='yellow'?(patch.color??'#d7a632'):(patch.color??'#7c873f');
+          shade.addColorStop(0, edge); shade.addColorStop(.5, patch.leaf==='yellow'?'#f0c95a':'#d0ce92');
+          shade.addColorStop(1, patch.leaf==='yellow'?'#aa7025':'#657b45');
           ctx.fillStyle = shade; ctx.beginPath(); ctx.moveTo(0, -size / 2);
           ctx.quadraticCurveTo(width, 0, 0, size / 2); ctx.quadraticCurveTo(-width, 0, 0, -size / 2); ctx.fill();
-          ctx.strokeStyle = '#ddd7ac'; ctx.lineWidth = .7; ctx.beginPath(); ctx.moveTo(0, -size * .37); ctx.lineTo(0, size * .38); ctx.stroke();
+          ctx.strokeStyle = patch.leaf==='yellow'?'#e2ad48':'#ddd7ac'; ctx.lineWidth = .7; ctx.beginPath(); ctx.moveTo(0, -size * .37); ctx.lineTo(0, size * .38); ctx.stroke();
         }
         ctx.restore();
       }
@@ -380,7 +330,32 @@ export function drawAmbience(ctx: CanvasRenderingContext2D, t: number, portrait:
         fog.addColorStop(0, 'rgba(237,243,232,.30)'); fog.addColorStop(.45, 'rgba(237,243,232,.16)'); fog.addColorStop(1, 'rgba(237,243,232,0)');
         ctx.fillStyle = fog; ctx.beginPath(); ctx.arc(0, 0, 1, 0, Math.PI * 2); ctx.fill(); ctx.restore();
       }
-    } else {
+    } else if (patch.kind === 'snow') {
+      // Snow belongs to the outdoor opening only. The patch rectangle is the architectural boundary.
+      ctx.fillStyle = patch.color ?? '#fff9e9';
+      ctx.shadowColor = 'rgba(92,116,132,.30)'; ctx.shadowBlur = portrait ? 1.5 : 1.2;
+      for (let i = 0; i < 16; i++) {
+        const phase = fraction(t / (4.2 + i * .19) + i * .173);
+        const px = x + w * (.05 + .90 * fraction(i * .417)) + Math.sin(t * (.55 + i % 3 * .11) + i) * (2 + i % 3);
+        const py = y + h * phase;
+        const radius=(portrait?1.35:1.05)+(i%5)*.27;
+        ctx.globalAlpha = opacity * (.55 + (i % 4) * .10) * Math.min(1, phase * 8, (1 - phase) * 8);
+        ctx.beginPath();
+        if(i%4===0)ctx.ellipse(px,py,radius*.58,radius*1.55,t*.18+i,0,Math.PI*2);
+        else ctx.arc(px,py,radius,0,Math.PI*2);
+        ctx.fill();
+      }
+    } else if (patch.kind === 'embers') {
+      // A few sparks rise from a pictured flame; no invented fuel or cookware is added.
+      ctx.fillStyle = patch.color ?? '#ffd479';
+      for (let i = 0; i < 5; i++) {
+        const phase = fraction(t / (2.8 + i * .18) + i * .219);
+        const px = x + w * (.26 + .48 * fraction(i * .371)) + Math.sin(t * 1.5 + i) * 3;
+        const py = y + h * (.92 - phase * .78);
+        ctx.globalAlpha = opacity * .88 * Math.sin(Math.PI * phase);
+        ctx.beginPath(); ctx.arc(px, py, 2.1 + (i % 2) * .7, 0, Math.PI * 2); ctx.fill();
+      }
+    } else if (patch.kind === 'dust') {
       // Flour lives close to the pictured work surface: a readable soft puff, not faint full-room noise.
       ctx.fillStyle = '#f7ead0';
       for (let i = 0; i < 24; i++) {
@@ -389,6 +364,9 @@ export function drawAmbience(ctx: CanvasRenderingContext2D, t: number, portrait:
         const py = y + h * (.96 - phase*.82);
         ctx.globalAlpha = opacity * .78 * Math.sin(Math.PI * phase); ctx.beginPath(); ctx.arc(px, py, 1.5 + (i % 4) * .48, 0, Math.PI * 2); ctx.fill();
       }
+    } else {
+      const exhaustiveKind: never = patch.kind;
+      throw new Error(`Unsupported ambient patch: ${exhaustiveKind}`);
     }
     ctx.restore();
   }

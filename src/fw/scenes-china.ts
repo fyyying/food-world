@@ -107,6 +107,10 @@ const market = (): SceneDef => {
       { name: "stand-sign", prop: true, x: 1300, w: 320 },
     ],
     steam: [{ x: 1550, y: 450, w: 60, rate: 6, a: 0.3 }],
+    ambience: [
+      { kind: 'sunray', wide: [.43,0,.78,.72], phone: [.32,0,.72,.72], angles: [-.42,.36] },
+      { kind: 'mist', wide: [.53,.05,.82,.32], phone: [.40,.10,.78,.28] },
+    ],
     lamps: [{ x: 1359, y: 67, r: 80 }, { x: 1273, y: 143, r: 60 }, { x: 713, y: 206, r: 45 }, { x: 1411, y: 230, r: 60 }],
     leaves: 3.5, motes: 40,
     portrait: {
@@ -131,12 +135,14 @@ const homeKitchen = (): SceneDef => {
       { name: "veggie-basket-2", prop: true, x: -80, w: 380 },
     ],
     steam: [{ x: 191, y: 440, w: 110, rate: 16, a: 0.4 }],
-    fire: [{ x: 287, y: 655, rx: 110, ry: 70 }],
+    ambience: [
+      { kind: 'breeze', wide: [.09,0,.145,.31], phone: [.21,.09,.32,.34], source: 'garlic', period: 7.4, sway: [.035,.040] },
+      { kind: 'mist', wide: [.58,.16,.76,.33], phone: [.68,.14,.86,.31] },
+    ],
     lamps: [{ x: 450, y: 40, r: 90 }],
     motes: 50,
     portrait: {
       steam: [{ ...pAt(f, 0.27, 0.48), w: 80, rate: 16, a: 0.4 }],
-      fire: [{ ...pAt(f, 0.3, 0.58), rx: 70, ry: 50 }],
       lamps: [{ ...pAt(f, 0.4, 0.09), r: 70 }],
     },
     light: { x: 300, y: 380, color: "rgba(255,180,100,0.3)" },
@@ -159,6 +165,10 @@ const tower = (): SceneDef => {
     ],
     lamps: [{ x: 235, y: 150, r: 90 }],
     leaves: 2.5, motes: 30,
+    ambience: [
+      { kind: 'breeze', wide: [.095,.035,.17,.36], phone: [0,.11,.13,.34], source: 'red-tassel', period: 7.8, sway: [.035,.040] },
+      { kind: 'breeze', wide: [.485,.04,.535,.19], phone: [.355,.09,.48,.28], source: 'bell', period: 8.2, sway: [.030,.035] },
+    ],
     portrait: {
       lamps: [{ ...pAt(f, 0.07, 0.2), r: 70 }, { ...pAt(f, 0.22, 0.25), r: 50 }, { ...pAt(f, 0.35, 0.4), r: 22 }],
     },
@@ -173,21 +183,35 @@ const baoShop = (): SceneDef => { const f = "bao_shop"; return paintedScene({
   id: "bao_shop", folder: f, title: "Bao shop", zh: "包子铺", caption: "Steamers breathing on the corner since before dawn; the skins rolled, the pleats pinched, the soup inside.",
   painting: true,
   hang: [{ name: "lantern-2", prop: true, x: 1180, y: -10, w: 84, sway: 3, halo: 1.2 }],
-  steam: [{ x: wx(0.62), y: wy(0.6), w: 220, rate: 22, a: 0.42 }, { x: wx(0.86), y: wy(0.68), w: 130, rate: 10, a: 0.36 }, { x: wx(0.41), y: wy(0.22), w: 90, rate: 8, a: 0.3 }, { x: wx(0.3), y: wy(0.58), w: 60, rate: 4, a: 0.25 }],
+  steam: [
+    { x: wx(.40), y: wy(.30), w: 120, rate: 8, a: .27 },
+    { x: wx(.72), y: wy(.68), w: 130, rate: 8, a: .27 },
+    { x: wx(.87), y: wy(.76), w: 120, rate: 8, a: .26 },
+  ],
+  ambience: [{ kind: 'birds', wide: [.54,.06,.82,.25], phone: [.08,.10,.52,.31], period: 13 }],
   lamps: [{ x: wx(0.47), y: wy(0.06), r: 55 }],
   motes: 40,
-  portrait: { steam: [{ ...pAt(f, 0.72, 0.5), w: 150, rate: 16, a: 0.4 }, { ...pAt(f, 0.45, 0.62), w: 70, rate: 6, a: 0.3 }, { ...pAt(f, 0.15, 0.7), w: 60, rate: 5, a: 0.26 }], lamps: [] },
+  portrait: { steam: [
+    { ...pAt(f,.83,.53), w: 90, rate: 8, a: .27 },
+    { ...pAt(f,.84,.64), w: 110, rate: 8, a: .27 },
+    { ...pAt(f,.92,.87), w: 100, rate: 8, a: .26 },
+  ], lamps: [] },
   light: { x: wx(0.5), y: 260, color: "rgba(255,225,180,0.26)" },
 }); };
 
 const stoneBridge = (): SceneDef => { const f = "stone_bridge"; return paintedScene({
   id: "stone_bridge", folder: f, title: "The stone bridge", zh: "石拱桥", caption: "Willows over the canal, boats under the arch, the whole water town visible at once.",
   painting: true,
-  mist: { x: wx(0.3), y: wy(0.62), w: 1000, h: 130 },
+  steam: [{ x: wx(.33), y: wy(.84), w: 90, rate: 12, a: .28 }],
+  ambience: [{ kind: 'breeze', wide: [.39,0,.435,.18], phone: [.31,.08,.47,.22], source: 'leaves', period: 8.2, sway: [.025,.030] }],
   walkers: [{ name: "swallow", w: 54, y: 150, from: 560, to: 1150, dur: 9, every: 30, fly: true }],
   petals: { color: "rgba(180,215,120,0.9)", rate: 0.5, size: 5 },
   motes: 25,
-  portrait: { walkers: [{ name: "swallow", w: 38, y: 200, from: pAt(f, 0.35, 0).x, to: pAt(f, 0.9, 0).x, dur: 8, every: 30, fly: true }], lamps: [] },
+  portrait: {
+    steam: [{ ...pAt(f, .54, .80), w: 80, rate: 12, a: .28 }],
+    walkers: [{ name: "swallow", w: 38, y: 200, from: pAt(f, 0.35, 0).x, to: pAt(f, 0.9, 0).x, dur: 8, every: 30, fly: true }],
+    lamps: [],
+  },
   light: { x: wx(0.55), y: 200, color: "rgba(255,240,210,0.18)" },
 }); };
 
@@ -206,10 +230,17 @@ const jiangnanHome = (): SceneDef => { const f = "jiangnan_home"; return painted
   id: "jiangnan_home", folder: f, title: "Jiangnan home kitchen", zh: "江南人家", caption: "A fish in the steamer, pork in the pot, greens on the board, and everyone in the kitchen at once.",
   painting: true,
   hang: [{ name: "bamboo-blind", prop: true, x: 560, y: -14, w: 300, sway: 1 }],
-  steam: [{ x: wx(0.36), y: wy(0.6), w: 150, rate: 14, a: 0.38 }, { x: wx(0.86), y: wy(0.5), w: 110, rate: 12, a: 0.36 }, { x: wx(0.84), y: wy(0.72), w: 90, rate: 8, a: 0.3 }, { x: wx(0.55), y: wy(0.63), w: 70, rate: 5, a: 0.26 }],
-  fire: [{ x: wx(0.9), y: wy(0.9), rx: 80, ry: 50 }],
+  steam: [
+    { x: wx(.47), y: wy(.74), w: 140, rate: 8, a: .26 },
+    { x: wx(.64), y: wy(.61), w: 110, rate: 7, a: .25 },
+    { x: wx(.84), y: wy(.63), w: 90, rate: 6, a: .24 },
+  ],
   motes: 45,
-  portrait: { steam: [{ ...pAt(f, 0.35, 0.5), w: 110, rate: 12, a: 0.36 }, { ...pAt(f, 0.55, 0.55), w: 80, rate: 8, a: 0.3 }, { ...pAt(f, 0.6, 0.72), w: 70, rate: 6, a: 0.28 }], fire: [{ ...pAt(f, 0.5, 0.9), rx: 60, ry: 40 }], lamps: [] },
+  portrait: { steam: [
+    { ...pAt(f,.67,.54), w: 120, rate: 8, a: .26 },
+    { ...pAt(f,.27,.65), w: 110, rate: 7, a: .25 },
+    { ...pAt(f,.10,.57), w: 80, rate: 6, a: .24 },
+  ], lamps: [] },
   light: { x: wx(0.5), y: 300, color: "rgba(255,225,180,0.24)" },
 }); };
 
@@ -229,10 +260,17 @@ const riceWine = (): SceneDef => { const f = "rice_wine"; return paintedScene({
   id: "rice_wine", folder: f, title: "Rice wine cellar", zh: "酒坊", caption: "Steamed rice cooling in the baskets, urns under red cloth, and the master pouring the amber out.",
   painting: true,
   hang: [{ name: "lantern", prop: true, x: 1110, y: -10, w: 100, sway: 3, halo: 1.2 }],
-  steam: [{ x: wx(0.13), y: wy(0.36), w: 170, rate: 18, a: 0.4 }, { x: wx(0.3), y: wy(0.47), w: 80, rate: 6, a: 0.28 }],
+  steam: [
+    { x: wx(.13), y: wy(.38), w: 150, rate: 10, a: .27 },
+    { x: wx(.18), y: wy(.66), w: 130, rate: 7, a: .25 },
+  ],
+  ambience: [{ kind: 'birds', wide: [.48,.05,.76,.22], phone: [.53,.10,.83,.28], period: 13 }],
   lamps: [{ x: wx(0.28), y: wy(0.06), r: 60 }],
   motes: 45,
-  portrait: { steam: [{ ...pAt(f, 0.1, 0.42), w: 120, rate: 14, a: 0.38 }, { ...pAt(f, 0.22, 0.62), w: 70, rate: 6, a: 0.28 }], lamps: [] },
+  portrait: { steam: [
+    { ...pAt(f,.10,.62), w: 120, rate: 10, a: .27 },
+    { ...pAt(f,.24,.80), w: 110, rate: 7, a: .25 },
+  ], lamps: [] },
   light: { x: wx(0.45), y: 300, color: "rgba(255,215,160,0.26)" },
 }); };
 
@@ -275,17 +313,24 @@ const kebabGrill = (): SceneDef => { const f = "kebab_grill"; return paintedScen
   id: "kebab_grill", folder: f, title: "The skewer stall", zh: "Kawap", caption: "Lamb and tail fat on iron skewers over charcoal, cumin and chilli thrown on as they turn, the smoke drifting into the vines at dusk.",
   painting: true,
   ambience: XINJIANG_AMBIENCE.kebab_grill,
-  steam: [{ x: wx(0.52), y: wy(0.70), w: 260, rate: 22, a: 0.34 }],
+  steam: [
+    { x: wx(0.52), y: wy(0.70), w: 260, rate: 10, a: 0.28 },
+    { x: wx(0.51), y: wy(0.53), w: 180, rate: 7, a: 0.20 },
+  ],
   fire: [{ x: wx(0.52), y: wy(0.74), rx: 110, ry: 20 }],
   lamps: [{ x: wx(0.4), y: wy(0.3), r: 34 }],
   motes: 30,
-  portrait: { steam: [{ ...pAt(f, 0.30, 0.62), w: 180, rate: 18, a: 0.34 }], fire: [{ ...pAt(f, 0.28, 0.63), rx: 80, ry: 16 }], lamps: [{ ...pAt(f, 0.45, 0.19), r: 30 }] },
+  portrait: { steam: [
+    { ...pAt(f, 0.30, 0.62), w: 180, rate: 10, a: 0.28 },
+    { ...pAt(f, 0.52, 0.43), w: 120, rate: 6, a: 0.18 },
+  ], fire: [{ ...pAt(f, 0.28, 0.63), rx: 80, ry: 16 }], lamps: [{ ...pAt(f, 0.45, 0.19), r: 30 }] },
   light: { x: wx(0.62), y: 420, color: "rgba(255,170,90,0.28)" },
 }); };
 
 const naanBakery = (): SceneDef => { const f = "naan_bakery"; return paintedScene({
   id: "naan_bakery", folder: f, title: "The nan bakery", zh: "Nan", caption: "Rounds stamped in the centre and slapped onto the wall of the tonur; a minute later they come out crisp on the paddle.",
   painting: true,
+  ambience: XINJIANG_AMBIENCE.naan_bakery,
   steam: [{ x: wx(0.50), y: wy(0.62), w: 120, rate: 7, a: 0.24 }],
   motes: 40,
   portrait: { fire: [{ ...pAt(f, 0.14, 0.35), rx: 40, ry: 30 }], steam: [{ ...pAt(f, 0.14, 0.35), w: 110, rate: 6, a: 0.24 }] },
@@ -295,10 +340,20 @@ const naanBakery = (): SceneDef => { const f = "naan_bakery"; return paintedScen
 const poloKitchen = (): SceneDef => { const f = "polo_kitchen"; return paintedScene({
   id: "polo_kitchen", folder: f, title: "The polo kitchen", zh: "Polo", caption: "One kazan for the whole street: lamb, onion and a great deal of carrot under the rice, the fire kept low until the rice has taken the fat.",
   painting: true,
-  steam: [{ x: wx(0.28), y: wy(0.56), w: 300, rate: 26, a: 0.4 }, { x: wx(0.46), y: wy(0.62), w: 90, rate: 6, a: 0.22 }],
+  steam: [
+    { x: wx(0.40), y: wy(0.60), w: 500, rate: 14, a: 0.28 },
+    { x: wx(0.59), y: wy(0.49), w: 40, rate: 4, a: 0.22 },
+    { x: wx(0.70), y: wy(0.59), w: 40, rate: 4, a: 0.22 },
+    { x: wx(0.87), y: wy(0.59), w: 40, rate: 4, a: 0.22 },
+  ],
   fire: [{ x: wx(0.39), y: wy(0.85), rx: 80, ry: 22 }],
   motes: 40,
-  portrait: { steam: [{ ...pAt(f, 0.36, 0.52), w: 240, rate: 22, a: 0.4 }], fire: [{ ...pAt(f, 0.34, 0.66), rx: 70, ry: 20 }] },
+  portrait: { steam: [
+    { ...pAt(f, 0.35, 0.53), w: 440, rate: 14, a: 0.28 },
+    { ...pAt(f, 0.53, 0.405), w: 36, rate: 4, a: 0.22 },
+    { ...pAt(f, 0.65, 0.435), w: 36, rate: 4, a: 0.22 },
+    { ...pAt(f, 0.86, 0.444), w: 36, rate: 4, a: 0.22 },
+  ], fire: [{ ...pAt(f, 0.34, 0.66), rx: 70, ry: 20 }] },
   light: { x: wx(0.3), y: 380, color: "rgba(255,190,110,0.26)" },
 }); };
 
@@ -327,7 +382,7 @@ const grapeCourtyard = (): SceneDef => { const f = "grape_courtyard"; return pai
   steam: [{ x: wx(0.367), y: wy(0.588), w: 30, rate: 4, a: 0.22 }],
   petals: { color: "rgba(176,205,110,0.9)", rate: 0.6, size: 6 },
   motes: 40,
-  portrait: { steam: [{ ...pAt(f, 0.285, 0.512), w: 28, rate: 3, a: 0.2 }] },
+  portrait: { steam: [{ ...pAt(f, 0.285, 0.512), w: 46, rate: 7, a: 0.28 }] },
   light: { x: wx(0.5), y: 260, color: "rgba(255,240,200,0.2)" },
 }); };
 
@@ -342,27 +397,55 @@ const chaikhanaScene = (): SceneDef => { const f = "chaikhana"; return paintedSc
   id: "chaikhana", folder: f, title: "The chaikhana", zh: "Chayxana", caption: "Black tea from a copper pot into bowls, nan and dried fruit on the cloth, and the old men settling in for the afternoon.",
   painting: true,
   ambience: XINJIANG_AMBIENCE.chaikhana,
-  steam: [{ x: wx(0.59), y: wy(0.58), w: 90, rate: 6, a: 0.26 }],
+  steam: [
+    { x: wx(0.212), y: wy(0.568), w: 38, rate: 4, a: 0.22 },
+    { x: wx(0.244), y: wy(0.654), w: 38, rate: 4, a: 0.22 },
+    { x: wx(0.518), y: wy(0.589), w: 36, rate: 4, a: 0.22 },
+    { x: wx(0.595), y: wy(0.586), w: 40, rate: 4, a: 0.22 },
+    { x: wx(0.706), y: wy(0.600), w: 38, rate: 4, a: 0.22 },
+  ],
   motes: 40,
-  portrait: { steam: [{ ...pAt(f, 0.68, 0.46), w: 70, rate: 5, a: 0.24 }] },
+  portrait: { steam: [
+    { ...pAt(f, 0.188, 0.49), w: 34, rate: 4, a: 0.22 },
+    { ...pAt(f, 0.352, 0.537), w: 34, rate: 4, a: 0.22 },
+    { ...pAt(f, 0.432, 0.626), w: 34, rate: 4, a: 0.22 },
+    { ...pAt(f, 0.704, 0.532), w: 34, rate: 4, a: 0.22 },
+    { ...pAt(f, 0.794, 0.555), w: 34, rate: 4, a: 0.22 },
+  ] },
   light: { x: wx(0.5), y: 280, color: "rgba(255,230,190,0.22)" },
 }); };
 
 const xjHome = (): SceneDef => { const f = "xj_home"; return paintedScene({
   id: "xj_home", folder: f, title: "The oasis home kitchen", zh: "Ashxana", caption: "Dough rolled on the board, the kazan going on the hearth, onions and tomatoes waiting, and the tonur lit by the door.",
   painting: true,
-  steam: [{ x: wx(0.70), y: wy(0.54), w: 180, rate: 14, a: 0.32 }],
+  ambience: XINJIANG_AMBIENCE.xj_home,
+  steam: [
+    { x: wx(0.70), y: wy(0.54), w: 180, rate: 10, a: 0.28 },
+    { x: wx(0.82), y: wy(0.81), w: 38, rate: 5, a: 0.23 },
+    { x: wx(0.89), y: wy(0.82), w: 38, rate: 5, a: 0.23 },
+  ],
   fire: [{ x: wx(0.70), y: wy(0.63), rx: 34, ry: 26 }],
   motes: 40,
-  portrait: { steam: [{ ...pAt(f, 0.84, 0.50), w: 150, rate: 12, a: 0.32 }], fire: [{ ...pAt(f, 0.84, 0.67), rx: 30, ry: 24 }] },
+  portrait: { steam: [
+    { ...pAt(f, 0.84, 0.50), w: 150, rate: 10, a: 0.28 },
+    { ...pAt(f, 0.70, 0.79), w: 34, rate: 5, a: 0.23 },
+    { ...pAt(f, 0.79, 0.81), w: 34, rate: 5, a: 0.23 },
+  ], fire: [{ ...pAt(f, 0.84, 0.67), rx: 30, ry: 24 }] },
   light: { x: wx(0.6), y: 300, color: "rgba(255,215,160,0.24)" },
 }); };
 
 const caravanStopScene = (): SceneDef => { const f = "caravan_stop"; return paintedScene({
   id: "caravan_stop", folder: f, title: "The caravan stop", zh: "Karwan", caption: "Travellers at a low table below the mountains at sunset, tea poured, the camels unloaded: where food changed hands for two thousand years.",
   painting: true,
+  steam: [
+    { x: wx(0.65), y: wy(0.63), w: 64, rate: 6, a: 0.24 },
+    { x: wx(0.20), y: wy(0.61), w: 36, rate: 6, a: 0.24 },
+  ],
   motes: 30,
-  portrait: {},
+  portrait: { steam: [
+    { ...pAt(f, 0.83, 0.39), w: 58, rate: 6, a: 0.24 },
+    { ...pAt(f, 0.738, 0.525), w: 34, rate: 6, a: 0.24 },
+  ] },
   light: { x: wx(0.75), y: 200, color: "rgba(255,190,120,0.24)" },
 }); };
 
@@ -393,6 +476,7 @@ const skewerCourtyard = (): SceneDef => { const f = "skewer_courtyard"; return p
   painting: true,
   steam: [{ x: wx(0.25), y: wy(0.5), w: 220, rate: 20, a: 0.32 }],
   fire: [{ x: wx(0.27), y: wy(0.62), rx: 90, ry: 16 }],
+  ambience: [{ kind: 'light', wide: [.58,.10,.95,.38], phone: [.53,.20,.88,.40], color: '#f2a34b' }],
   lamps: [{ x: wx(0.34), y: wy(0.2), r: 22 }, { x: wx(0.7), y: wy(0.22), r: 22 }],
   motes: 30,
   portrait: { steam: [{ ...pAt(f, 0.3, 0.5), w: 170, rate: 16, a: 0.32 }], fire: [{ ...pAt(f, 0.3, 0.58), rx: 70, ry: 14 }], lamps: [] },
@@ -402,9 +486,9 @@ const skewerCourtyard = (): SceneDef => { const f = "skewer_courtyard"; return p
 const mantouKitchen = (): SceneDef => { const f = "mantou_kitchen"; return paintedScene({
   id: "mantou_kitchen", folder: f, title: "The steamed-bread workshop", zh: "馒头坊", caption: "Dough kneaded until it squeaks, shaped into mantou and huajuan, and the stacked steamers breathing all morning.",
   painting: true,
-  steam: [{ x: wx(0.55), y: wy(0.34), w: 300, rate: 28, a: 0.42 }, { x: wx(0.8), y: wy(0.46), w: 200, rate: 16, a: 0.34 }, { x: wx(0.3), y: wy(0.6), w: 80, rate: 5, a: 0.22 }],
+  steam: [{ x: wx(.55), y: wy(.34), w: 240, rate: 10, a: .32 }, { x: wx(.78), y: wy(.51), w: 160, rate: 8, a: .28 }, { x: wx(.91), y: wy(.69), w: 120, rate: 6, a: .24 }],
   motes: 40,
-  portrait: { steam: [{ ...pAt(f, 0.45, 0.3), w: 240, rate: 24, a: 0.42 }, { ...pAt(f, 0.75, 0.32), w: 140, rate: 12, a: 0.32 }] },
+  portrait: { steam: [{ ...pAt(f,.36,.22), w: 180, rate: 10, a: .32 }, { ...pAt(f,.43,.34), w: 140, rate: 8, a: .28 }, { ...pAt(f,.25,.60), w: 160, rate: 8, a: .26 }] },
   light: { x: wx(0.55), y: 260, color: "rgba(255,240,215,0.24)" },
 }); };
 
@@ -429,10 +513,9 @@ const winterTable = (): SceneDef => { const f = "winter_table"; return paintedSc
 const courtyardKitchen = (): SceneDef => { const f = "courtyard_kitchen"; return paintedScene({
   id: "courtyard_kitchen", folder: f, title: "The courtyard kitchen", zh: "院子里的厨房", caption: "A wok on the brick stove, the steamer beside it, noodles pulled on the board, cabbage and garlic in from the yard.",
   painting: true,
-  steam: [{ x: wx(0.15), y: wy(0.4), w: 160, rate: 14, a: 0.34 }, { x: wx(0.28), y: wy(0.3), w: 120, rate: 10, a: 0.3 }],
-  fire: [{ x: wx(0.12), y: wy(0.72), rx: 40, ry: 30 }],
+  steam: [{ x: wx(.10), y: wy(.48), w: 150, rate: 12, a: .34 }, { x: wx(.24), y: wy(.34), w: 120, rate: 10, a: .30 }],
   motes: 40,
-  portrait: { steam: [{ ...pAt(f, 0.2, 0.2), w: 140, rate: 12, a: 0.34 }], fire: [{ ...pAt(f, 0.1, 0.36), rx: 30, ry: 24 }] },
+  portrait: { steam: [{ ...pAt(f,.19,.37), w: 120, rate: 12, a: .34 }, { ...pAt(f,.12,.55), w: 100, rate: 10, a: .30 }] },
   light: { x: wx(0.3), y: 300, color: "rgba(255,225,190,0.24)" },
 }); };
 
@@ -440,6 +523,7 @@ const hutongLaneScene = (): SceneDef => { const f = "hutong"; return paintedScen
   id: "hutong", folder: f, title: "The hutong", zh: "胡同", caption: "Grey walls, a red door, laundry across the lane, a bao stall steaming on the corner and the ginkgo leaves coming down.",
   painting: true,
   steam: [{ x: wx(0.15), y: wy(0.45), w: 90, rate: 6, a: 0.26 }],
+  ambience: [{ kind: 'breeze', wide: [.065,0,.12,.31], phone: [.16,.11,.27,.35], source: 'chilli', period: 7.6, sway: [.040,.045] }],
   petals: { color: "rgba(232,184,72,0.95)", rate: 1.6, size: 6 },
   motes: 30,
   portrait: { steam: [{ ...pAt(f, 0.2, 0.42), w: 70, rate: 5, a: 0.24 }] },
@@ -449,39 +533,53 @@ const hutongLaneScene = (): SceneDef => { const f = "hutong"; return paintedScen
 const bingStall = (): SceneDef => { const f = "bing_stall"; return paintedScene({
   id: "bing_stall", folder: f, title: "The bing stall", zh: "饼摊", caption: "Scallion pancakes and shaobing on the iron griddle by the city gate, turned with a spatula, stacked in the basket.",
   painting: true,
-  steam: [{ x: wx(0.35), y: wy(0.45), w: 180, rate: 14, a: 0.32 }, { x: wx(0.6), y: wy(0.4), w: 80, rate: 5, a: 0.22 }],
-  fire: [{ x: wx(0.35), y: wy(0.62), rx: 50, ry: 14 }],
+  steam: [{ x: wx(.55), y: wy(.43), w: 150, rate: 14, a: .32 }],
+  ambience: [
+    { kind: 'breeze', wide: [.09,0,.16,.20], phone: [.37,.10,.44,.29], source: 'chilli', period: 7.4, sway: [.040,.045] },
+    { kind: 'leaves', wide: [.55,0,.98,.25], phone: [.45,0,.98,.23], leaf: 'yellow', color: '#d7a632' },
+  ],
   motes: 40,
-  portrait: { steam: [{ ...pAt(f, 0.3, 0.5), w: 140, rate: 12, a: 0.32 }], fire: [{ ...pAt(f, 0.3, 0.6), rx: 44, ry: 12 }] },
+  portrait: { steam: [{ ...pAt(f,.57,.38), w: 140, rate: 12, a: .32 }] },
   light: { x: wx(0.4), y: 300, color: "rgba(255,225,185,0.24)" },
 }); };
 
 const northMarket = (): SceneDef => { const f = "north_market"; return paintedScene({
   id: "north_market", folder: f, title: "The northern market", zh: "北方集市", caption: "Winter cabbages and radishes by the cartload, flour and grain in sacks, pork on the block, pickles from the crock.",
   painting: true,
-  steam: [{ x: wx(0.3), y: wy(0.4), w: 70, rate: 4, a: 0.22 }],
+  steam: [{ x: wx(.07), y: wy(.30), w: 70, rate: 5, a: .26 }],
   walkers: [{ name: "swallow", w: 40, y: wy(0.12), from: wx(0.4), to: wx(0.72), dur: 9, every: 28, fly: true }],
   motes: 50,
-  portrait: { walkers: [{ name: "swallow", w: 34, y: pAt(f, 0, 0.1).y, from: pAt(f, 0.45, 0).x, to: pAt(f, 0.9, 0).x, dur: 8, every: 28, fly: true }] },
+  portrait: {
+    steam: [{ ...pAt(f,.34,.23), w: 65, rate: 6, a: .28 }],
+    walkers: [{ name: "swallow", w: 34, y: pAt(f, 0, 0.1).y, from: pAt(f, 0.45, 0).x, to: pAt(f, 0.9, 0).x, dur: 8, every: 28, fly: true }],
+  },
   light: { x: wx(0.5), y: 240, color: "rgba(255,240,215,0.2)" },
 }); };
 
 const noodleWorkshop = (): SceneDef => { const f = "noodle_workshop"; return paintedScene({
   id: "noodle_workshop", folder: f, title: "The noodle workshop", zh: "面坊", caption: "Dough stretched into ropes, shaved off the block into the pot, rolled and cut wide: the north's wheat in every shape.",
   painting: true,
-  steam: [{ x: wx(0.3), y: wy(0.5), w: 220, rate: 18, a: 0.34 }, { x: wx(0.5), y: wy(0.45), w: 120, rate: 8, a: 0.26 }],
+  steam: [{ x: wx(.36), y: wy(.43), w: 280, rate: 14, a: .28 }],
+  ambience: [{ kind: 'breeze', wide: [.545,.07,.59,.25], phone: [.03,.08,.15,.28], source: 'garlic', period: 7.6, sway: [.035,.040] }],
   motes: 40,
-  portrait: { steam: [{ ...pAt(f, 0.25, 0.45), w: 160, rate: 14, a: 0.34 }] },
+  portrait: { steam: [{ ...pAt(f,.18,.55), w: 250, rate: 14, a: .28 }] },
   light: { x: wx(0.4), y: 280, color: "rgba(255,240,215,0.22)" },
 }); };
 
 const roastDuck = (): SceneDef => { const f = "roast_duck"; return paintedScene({
   id: "roast_duck", folder: f, title: "The roast duck shop", zh: "烤鸭店", caption: "Ducks hanging lacquered over the fruit-wood fire, carved at the table into a hundred slices with pancakes, scallion and sauce.",
   painting: true,
-  fire: [{ x: wx(0.4), y: wy(0.42), rx: 60, ry: 50 }],
-  steam: [{ x: wx(0.55), y: wy(0.6), w: 80, rate: 5, a: 0.22 }],
+  steam: [
+    { x: wx(.12), y: wy(.68), w: 100, rate: 8, a: .26 },
+    { x: wx(.31), y: wy(.79), w: 120, rate: 8, a: .28 },
+    { x: wx(.65), y: wy(.69), w: 100, rate: 8, a: .26 },
+  ],
   motes: 40,
-  portrait: { fire: [{ ...pAt(f, 0.52, 0.43), rx: 52, ry: 44 }], steam: [{ ...pAt(f, 0.4, 0.62), w: 70, rate: 4, a: 0.2 }] },
+  portrait: { steam: [
+    { ...pAt(f,.10,.56), w: 80, rate: 8, a: .26 },
+    { ...pAt(f,.15,.66), w: 100, rate: 8, a: .28 },
+    { ...pAt(f,.12,.84), w: 110, rate: 8, a: .26 },
+  ] },
   light: { x: wx(0.4), y: 300, color: "rgba(255,190,120,0.28)" },
 }); };
 

@@ -14,6 +14,7 @@ import { wat, karst, longtail } from "./props-seasia";
 import { liberty, skyscraper, barn, goldenGate } from "./props-namerica";
 import { fuji, floatingTorii, tokyoTower, pagodaJp, sakura } from "./props-japan";
 import { bigBen, parliamentHu, chalet } from "./props-ceurope";
+import { unavailableMaterialHsl } from "./world-availability";
 
 export type PlacedRegion = {
   region: MapRegion;
@@ -42,18 +43,27 @@ function blob(radius: number, seed: number, amp = 0.22, segments = 26): THREE.Sh
 
 function mute(root: THREE.Object3D) {
   root.traverse((object) => {
-    if (!(object instanceof THREE.Mesh)) return;
-    const source = Array.isArray(object.material) ? object.material : [object.material];
+    const renderable = object as THREE.Object3D & { material?: THREE.Material | THREE.Material[] };
+    if (!renderable.material) return;
+    const source = Array.isArray(renderable.material) ? renderable.material : [renderable.material];
     const muted = source.map((material) => {
       const copy = material.clone();
-      const colored = copy as THREE.Material & { color?: THREE.Color };
+      const colored = copy as THREE.Material & { color?: THREE.Color; emissive?: THREE.Color; emissiveIntensity?: number; vertexColors?: boolean };
       if (colored.color) {
         const hsl = colored.color.getHSL({ h: 0, s: 0, l: 0 });
-        colored.color.setHSL(0, 0, THREE.MathUtils.clamp(hsl.l * 0.72 + 0.22, 0.28, 0.72));
+        const target = unavailableMaterialHsl(hsl.h, hsl.s, hsl.l);
+        colored.color.setHSL(target.h, target.s, target.l);
       }
+      if (colored.emissive) {
+        const hsl = colored.emissive.getHSL({ h: 0, s: 0, l: 0 });
+        const target = unavailableMaterialHsl(hsl.h, hsl.s, hsl.l);
+        colored.emissive.setHSL(target.h, target.s, target.l * 0.45);
+        colored.emissiveIntensity = Math.min(colored.emissiveIntensity ?? 0, 0.12);
+      }
+      if ('vertexColors' in colored) colored.vertexColors = false;
       return copy;
     });
-    object.material = Array.isArray(object.material) ? muted : muted[0];
+    renderable.material = Array.isArray(renderable.material) ? muted : muted[0];
   });
 }
 

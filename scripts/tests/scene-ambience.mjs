@@ -8,9 +8,27 @@ import {build} from 'rolldown';
 const temp=await mkdtemp(join(tmpdir(),'room-ambience-'));
 try {
   await build({input:{painted:'src/fw/scene-painted.ts',ambience:'src/fw/scene-ambience.ts',config:'src/fw/turkey-ambience.ts'},platform:'node',output:{dir:temp,entryFileNames:'[name].mjs',chunkFileNames:'[name].mjs',format:'esm',banner:'import.meta.env={BASE_URL:"/"};'}});
+  globalThis.ImageData=class {constructor(data,width,height){this.data=data;this.width=width;this.height=height}};
+  let partialMaskWrites=0;
+  globalThis.document={createElement(){
+    const canvas={width:0,height:0};
+    canvas.getContext=()=>({
+      drawImage(){},putImageData(imageData){
+        let opaque=0;for(let i=3;i<imageData.data.length;i+=4)if(imageData.data[i])opaque++;
+        if(opaque>0&&opaque<imageData.data.length/4)partialMaskWrites++;
+      },
+      getImageData(){
+        const data=new Uint8ClampedArray(canvas.width*canvas.height*4);
+        const samples=[[160,24,30],[210,180,140],[100,85,65],[40,100,50]];
+        for(let i=0;i<data.length;i+=4){const c=samples[(i/4)%samples.length];data[i]=c[0];data[i+1]=c[1];data[i+2]=c[2];data[i+3]=255}
+        return {data,width:canvas.width,height:canvas.height};
+      },
+    });
+    return canvas;
+  }};
   globalThis.Image=class {
-    complete=true;naturalWidth=1792;naturalHeight=1024;
-    set src(url){if(url.includes('/portrait.jpg')){this.naturalWidth=1024;this.naturalHeight=1792}}
+    complete=true;naturalWidth=320;naturalHeight=180;
+    set src(url){if(url.includes('/portrait.jpg')){this.naturalWidth=180;this.naturalHeight=320}this.onload?.()}
   };
   const {paintedScene}=await import(pathToFileURL(join(temp,'painted.mjs')));
   const scene=paintedScene({id:'ambience_test',folder:'tr_coffee',title:'Test',zh:'',caption:'',painting:true,hotspots:[],
@@ -29,7 +47,13 @@ try {
   tick(0,0);const first=[lamp.opacity,fire.opacity];tick(1,.016);
   assert.notDeepEqual([lamp.opacity,fire.opacity],first,'lamp and fire must move without an interaction');
   assert.ok([lamp.opacity,fire.opacity].every(n=>Number(n)>0&&Number(n)<=1));
-  const {ambientPainter, PAINTED_SIGNATURES, XINJIANG_AMBIENCE}=await import(pathToFileURL(join(temp,'ambience.mjs')));
+  const {ambientPainter, isBreezePixel, PAINTED_SIGNATURES, XINJIANG_AMBIENCE}=await import(pathToFileURL(join(temp,'ambience.mjs')));
+  assert.equal(isBreezePixel('chilli',160,24,30),true);
+  assert.equal(isBreezePixel('garlic',210,180,140),true);
+  assert.equal(isBreezePixel('bell',100,85,65),true);
+  assert.equal(isBreezePixel('grape',160,24,30),true);
+  assert.equal(isBreezePixel('leaves',40,100,50),true);
+  assert.equal(isBreezePixel('chilli',40,100,50),false,'green wall and foliage pixels stay in the static painting');
   assert.equal(Object.keys(PAINTED_SIGNATURES ?? {}).length,53,'all rooms except the preserved hotpot benchmark need an authored signature');
   for(const [id,patch] of Object.entries(PAINTED_SIGNATURES)) {
     for(const orientation of ['wide','phone']) {
@@ -48,22 +72,70 @@ try {
   assert.equal(PAINTED_SIGNATURES.tr_tea.kind,'birds','the tea painting must leave the boat-filled Bosphorus static and use its open sky');
   assert.equal(PAINTED_SIGNATURES.tr_fish.kind,'light','the fish room must keep motion on its pictured grill, away from boats and people');
   assert.equal(PAINTED_SIGNATURES.tr_baklava.kind,'sunray','baklava needs a clearly readable doorway sun ray above its quieter flour effect');
+  const chinaNaturalSignatures={
+    noodle_shop:'sunray',teahouse:'breeze',market:'breeze',home_kitchen:'breeze',tower:'birds',
+    bao_shop:'dust',stone_bridge:'mist',crab_pond:'leaves',jiangnan_home:'birds',lotus_garden:'sunray',
+    rice_wine:'sunray',river_market:'sunray',riverside_restaurant:'birds',tea_hill:'birds',
+    skewer_courtyard:'leaves',mantou_kitchen:'dust',dumpling_house:'dust',winter_table:'snow',
+    courtyard_kitchen:'snow',hutong:'leaves',bing_stall:'dust',north_market:'sunray',
+    noodle_workshop:'leaves',roast_duck:'light',vinegar_workshop:'sunray',wheat_harvest:'sunray',
+  };
+  for(const [id,kind] of Object.entries(chinaNaturalSignatures)) {
+    assert.equal(PAINTED_SIGNATURES[id].kind,kind,
+      `${id} must move a pictured detail or a natural environmental cue, never draw substitute food or scenery`);
+  }
+  assert.ok(PAINTED_SIGNATURES.winter_table.wide[0]>=.66&&PAINTED_SIGNATURES.winter_table.wide[3]<=.20,
+    'winter table wide snow must stay outside in the upper doorway, away from the family and table');
+  assert.ok(PAINTED_SIGNATURES.winter_table.phone[0]>=.62&&PAINTED_SIGNATURES.winter_table.phone[1]>=.12&&PAINTED_SIGNATURES.winter_table.phone[3]<=.30,
+    'winter table phone snow must stay outside within the doorway');
+  for(const id of ['market','home_kitchen']) {
+    const breeze=PAINTED_SIGNATURES[id];
+    assert.equal(breeze.source,'chilli',`${id} must isolate pictured chilli rather than draw hanging lines`);
+  }
+  assert.ok(PAINTED_SIGNATURES.market.wide[0]>=.95&&PAINTED_SIGNATURES.market.wide[1]<=.03&&PAINTED_SIGNATURES.market.wide[2]<=1,
+    'Sichuan market wide must include the far-right chilli tie point while excluding the vendor and canopy');
+  assert.ok(PAINTED_SIGNATURES.market.phone[2]<=.15&&PAINTED_SIGNATURES.market.phone[3]<=.33,
+    'Sichuan market phone must keep its left-edge chilli crop above the vendor');
+  assert.ok(PAINTED_SIGNATURES.home_kitchen.wide[0]<=.02&&PAINTED_SIGNATURES.home_kitchen.wide[2]<=.10,
+    'home kitchen wide must isolate the left chilli braid, away from the garlic and shelves');
+  assert.ok(PAINTED_SIGNATURES.home_kitchen.phone[0]>=.10&&PAINTED_SIGNATURES.home_kitchen.phone[2]<=.22,
+    'home kitchen phone must isolate the actual chilli braid rather than the left shelf');
+  assert.ok(PAINTED_SIGNATURES.courtyard_kitchen.wide[0]>=.61&&PAINTED_SIGNATURES.courtyard_kitchen.phone[0]>=.60,
+    'courtyard kitchen snow must stay in the right-side exterior opening in both compositions');
+  assert.equal(PAINTED_SIGNATURES.noodle_workshop.leaf,'yellow',
+    'noodle workshop uses small outdoor autumn leaves instead of dough dust');
+  assert.equal(PAINTED_SIGNATURES.teahouse.source,'red-tassel',
+    'teahouse must sway a small painted red tassel rather than replace it with generic light');
   const xinjiangSignatures={
-    kebab_grill:'light',naan_bakery:'light',polo_kitchen:'light',laghman_shop:'dust',oasis_bazaar:'sunray',
+    kebab_grill:'light',naan_bakery:'sunray',polo_kitchen:'light',laghman_shop:'dust',oasis_bazaar:'sunray',
     grape_courtyard:'sunray',oasis_field:'sunray',chaikhana:'sunray',xj_home:'dust',
-    caravan_stop:'embers',tianshan:'mist',evening_feast:'light',
+    caravan_stop:'leaves',tianshan:'mist',evening_feast:'light',
   };
   for(const [id,kind] of Object.entries(xinjiangSignatures))
     assert.equal(PAINTED_SIGNATURES[id].kind,kind,`${id} must use a source-observed material cue instead of invented process geometry`);
   for(const id of Object.keys(xinjiangSignatures))
     assert.ok(!['turn','puff','stir','pull','sway','pour','flow','roll'].includes(PAINTED_SIGNATURES[id].kind),
       `${id} must not draw replacement skewers, bread, spoons, noodles, canopies, liquid or dough over a painting`);
+  assert.equal(PAINTED_SIGNATURES.caravan_stop.leaf,'olive',
+    'caravan stop replaces the red ember overlay with small green leaves');
   assert.deepEqual(XINJIANG_AMBIENCE.oasis_field.map(p=>p.kind),['birds','breeze'],
     'oasis field must keep its detailed water static and use sky and hanging-grape motion');
   assert.ok(![PAINTED_SIGNATURES.oasis_field,...XINJIANG_AMBIENCE.oasis_field].some(p=>p.kind==='stream-glint'||p.kind==='waterfall-glint'),
     'oasis field must not draw synthetic strokes over its detailed channel or falls');
   assert.ok(![PAINTED_SIGNATURES.grape_courtyard,...XINJIANG_AMBIENCE.grape_courtyard].some(p=>p.kind==='stream-glint'||p.kind==='waterfall-glint'),
     'grape courtyard must leave its already-painted tea stream untouched');
+  assert.deepEqual(XINJIANG_AMBIENCE.xj_home.map(p=>p.kind),['leaves'],
+    'oasis home kitchen keeps its added motion in the outdoor courtyard');
+  assert.equal(XINJIANG_AMBIENCE.xj_home[0].leaf,'yellow',
+    'oasis home kitchen uses small yellow leaves rather than oversized foreground foliage');
+  assert.ok(XINJIANG_AMBIENCE.xj_home[0].wide[2]<=.57&&XINJIANG_AMBIENCE.xj_home[0].phone[3]<=.19,
+    'oasis home leaves stay above and outside, away from the family and food');
+  assert.deepEqual(XINJIANG_AMBIENCE.chaikhana.map(p=>p.kind),['breeze','leaves'],
+    'Xinjiang tea house combines a painted grape sway with slow outdoor leaf fall');
+  assert.deepEqual(XINJIANG_AMBIENCE.naan_bakery.map(p=>p.kind),['leaves'],
+    'nan bakery combines its broad sunlight with sparse outdoor leaf fall');
+  assert.deepEqual(XINJIANG_AMBIENCE.evening_feast.map(p=>p.kind),['breeze','sunray'],
+    'evening feast combines one isolated grape bunch with a broad coherent sunset ray');
   const hangingGrapeRooms=['kebab_grill','grape_courtyard','oasis_field','chaikhana','evening_feast'];
   for(const id of hangingGrapeRooms) {
     const grapeBreezes=XINJIANG_AMBIENCE[id]?.filter(p=>p.kind==='breeze'&&p.source==='grape')??[];
@@ -91,8 +163,16 @@ try {
     assert.ok(arc>=18&&arc<=24,
       `grape courtyard ${orientation} bunch should use a readable but gentle 18-24px arc`);
   }
+  const feastGrape=XINJIANG_AMBIENCE.evening_feast.find(p=>p.kind==='breeze'&&p.source==='grape');
+  assert.ok(feastGrape.wide[2]-feastGrape.wide[0]<=.03&&feastGrape.phone[3]-feastGrape.phone[1]<=.09,
+    'evening feast grape crops remain tight in both compositions so the background never sways');
+  const grillGrape=XINJIANG_AMBIENCE.kebab_grill.find(p=>p.kind==='breeze'&&p.source==='grape');
+  assert.ok(grillGrape.wide[2]-grillGrape.wide[0]<=.04&&grillGrape.wide[0]>=.32,
+    'skewer stall horizontal grape crop excludes the trellis and sky around its chosen bunch');
   const turkeyRooms=['tr_simit','tr_tea','tr_coffee','tr_market','tr_fish','tr_kebab','tr_baklava','tr_pide','tr_yufka','tr_dolma','tr_breakfast','tr_meze','tr_olive','tr_tea_hill','tr_supper'];
-  const paintingNative=new Set(['leaves','birds','stream-glint','dust','rain','mist','light','sunray','breeze']);
+  const paintingNative=new Set(['leaves','birds','stream-glint','dust','rain','mist','light','sunray','breeze','snow','embers']);
+  for(const [id] of Object.entries(chinaNaturalSignatures))
+    assert.ok(paintingNative.has(PAINTED_SIGNATURES[id].kind),`${id} must use the painting-native effect vocabulary`);
   for(const id of turkeyRooms)assert.ok(paintingNative.has(PAINTED_SIGNATURES[id].kind),`${id} must move painted scenery or a natural effect, never draw invented food geometry`);
   const recordCanvas = (width=1600) => {
     const operations=[], stack=[];
@@ -112,14 +192,18 @@ try {
     assert.equal(operations.filter(([op])=>op==='lineTo').length,0,`oasis ${portrait?'phone':'wide'} leaves the detailed water untouched`);
   }
   for(const [id,patch] of Object.entries(PAINTED_SIGNATURES))for(const portrait of [false,true]){
-    const {context,operations}=recordCanvas(portrait?506:1600),paint=ambientPainter([patch],id);
+    const {context,operations}=recordCanvas(portrait?506:1600),maskWritesBefore=partialMaskWrites,paint=ambientPainter([patch],id);
     paint(context,1.6,portrait);const first=JSON.stringify(operations);
-    if(patch.kind!=='breeze')assert.ok(operations.some(([op])=>op==='stroke'||op==='fill'||op==='fillRect'),`${id} draws visible geometry`);
-    else assert.ok(operations.every(([op])=>!['stroke','fill','ellipse'].includes(op)),`${id} must not fall back to invented hanging-food geometry`);
+    if(patch.kind!=='breeze')assert.ok(operations.some(([op])=>op==='stroke'||op==='fill'||op==='fillRect'||op==='drawImage'),`${id} draws visible geometry`);
+    else {
+      assert.ok(partialMaskWrites>maskWritesBefore,`${id} must isolate a non-empty, bounded painted foreground mask`);
+      assert.equal(operations.filter(([op])=>op==='drawImage').length,2,`${id} must paint its repaired background and isolated hanging subject`);
+      assert.ok(operations.every(([op])=>!['stroke','fill','ellipse'].includes(op)),`${id} must not fall back to invented hanging-food geometry`);
+    }
     assert.ok(operations.flat().filter(v=>typeof v==='number').every(Number.isFinite),`${id} has finite canvas coordinates`);
     assert.ok(operations.length<150,`${id} has a bounded drawing budget`);
     operations.length=0;paint(context,3,portrait);
-    if(patch.kind!=='breeze')assert.notEqual(JSON.stringify(operations),first,`${id} signature changes with time in ${portrait?'phone':'wide'}`);
+    assert.notEqual(JSON.stringify(operations),first,`${id} signature changes with time in ${portrait?'phone':'wide'}`);
     assert.equal(context.globalAlpha,1,'each signature restores canvas state');
   }
   const meze=paintedScene({id:'tr_meze',folder:'tr_meze',title:'',zh:'',caption:'',painting:true,
@@ -152,7 +236,7 @@ try {
   assert.ok(TURKEY_AMBIENCE.tr_baklava.some(p=>p.kind==='light'&&p.wide&&!p.phone),'baklava wide uses pastry sheen because it has no depicted syrup stream');
   assert.ok(TURKEY_AMBIENCE.tr_pide.some(p=>p.kind==='dust'&&p.wide&&p.phone),'pide must retain local flour movement beside smoke, fire and tied chillies');
   const loaded=[];
-  globalThis.Image=class {complete=true;naturalWidth=20;naturalHeight=32;set src(url){loaded.push(url)}};
+  globalThis.Image=class {complete=true;naturalWidth=20;naturalHeight=32;set src(url){loaded.push(url);this.onload?.()}};
   for(const portrait of [false,true]){
     const leaf=TURKEY_AMBIENCE.tr_meze.find(p=>p.kind==='leaves');assert.ok(leaf?.[portrait?'phone':'wide']);
     const paint=ambientPainter([leaf]);let draws=[],positions=[];
@@ -202,5 +286,5 @@ try {
     'coffee phone prioritises the exposed lower-right window pane');
   assert.ok(portraitRain.operations.filter(([op])=>op==='lineTo').length>=8,
     'coffee window rain needs enough readable beads to remain visible over the painted rain');
-  console.log('PASS: 53 paired signatures, painting-native Turkey/Xinjiang motion, tight hanging layers, bounded geometry, reduced motion, orientation reset, and readable ambience.');
+  console.log('PASS: 53 paired signatures, painting-native China/Turkey/Xinjiang motion, tight hanging layers, bounded geometry, reduced motion, orientation reset, and readable ambience.');
 } finally {await rm(temp,{recursive:true,force:true})}

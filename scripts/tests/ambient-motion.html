@@ -7,11 +7,13 @@ import {SCENES as CHINA_SCENES} from '/src/fw/scenes-china.ts';
 import {openLivingScene} from '/src/fw/scene.ts';
 import {paintingFrame} from '/src/fw/scene-ambience.ts';
 const scenes={...TURKEY_SCENES,...CHINA_SCENES},picker=document.querySelector('select'),output=document.querySelector('output'),history=document.querySelector('pre');
+const forcedPortrait=new URLSearchParams(location.search).get('portrait')==='1';
 for(const id of Object.keys(scenes))picker.add(new Option(id,id));
 let room,picture,started=0,baseline,queue=[],results=[],last=performance.now(),sampled=false;
 function open(id){
   room?.destroy();picker.value=id;baseline=null;sampled=false;started=performance.now();
   room=openLivingScene(scenes[id](),{dishes:[],onDish(){},onStory(){},onClose(){room?.destroy();room=null}});
+  if(forcedPortrait){room.el.style.width='390px';room.el.style.height='844px';room.el.style.inset='0 auto auto 0';window.dispatchEvent(new Event('resize'));}
   picture=new Image();picture.src=room.el.querySelector(`image[href$="${room.el.classList.contains('portrait')?'portrait':'wide'}.jpg"]`).getAttribute('href');
   output.textContent=`${id}: observing automatic motion; no room touches.`;
 }

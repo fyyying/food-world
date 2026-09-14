@@ -107,14 +107,17 @@ export function paintedScene(cfg: PaintedCfg): SceneDef {
   // The full paintings already contain their furniture, animals and hanging objects.
   // Keep the established hotpot composition; avoid duplicate cutouts in other rooms.
   const signature = cfg.painting ? PAINTED_SIGNATURES[cfg.id] : undefined;
-  const flyersAllowed = ['noodle_shop','stone_bridge','lotus_garden','oasis_bazaar','tianshan','wheat_harvest'].includes(cfg.id);
+  const flyersAllowed = ['noodle_shop','teahouse','stone_bridge','lotus_garden','oasis_bazaar','tianshan','wheat_harvest'].includes(cfg.id);
   const safeFlyers = (walkers: Walker[] = []) => flyersAllowed ? walkers.filter(w => w.fly).slice(0,1).map(w => ({...w, every: Math.max(36,w.every)})) : [];
   if (cfg.painting && cfg.id !== 'hotpot') {
     // Full furniture cutouts would duplicate the painting. Small sky silhouettes are independent art.
     cfg = { ...cfg, hang: [], front: [], walkers: safeFlyers(cfg.walkers), portrait: { ...cfg.portrait, walkers: safeFlyers(cfg.portrait?.walkers) } };
   }
   if (signature) {
-    const steam = (sources: PaintedCfg['steam']) => sources?.slice(0,1).map(s => ({...s,rate:Math.min(10,s.rate),a:Math.min(.24,s.a??.24)}));
+    const steamLimit=cfg.id==='chaikhana'?5:cfg.id==='polo_kitchen'?4:['mantou_kitchen','roast_duck','jiangnan_home','bao_shop','xj_home'].includes(cfg.id)?3:['courtyard_kitchen','rice_wine','kebab_grill','caravan_stop'].includes(cfg.id)?2:1;
+    const maxSteamRate=['noodle_workshop','polo_kitchen'].includes(cfg.id)?14:cfg.id==='stone_bridge'?12:10;
+    const maxSteamAlpha=['noodle_workshop','stone_bridge','roast_duck','jiangnan_home','bao_shop','rice_wine','grape_courtyard'].includes(cfg.id)?.28:.24;
+    const steam = (sources: PaintedCfg['steam']) => sources?.slice(0,steamLimit).map(s => ({...s,rate:Math.min(maxSteamRate,s.rate),a:Math.min(maxSteamAlpha,s.a??.24)}));
     const sameRect=(a?:AmbientPatch['wide'],b?:AmbientPatch['wide'])=>Boolean(a&&b&&a.every((n,i)=>n===b[i]));
     const candidates = (cfg.ambience ?? []).filter(p =>
       !(p.kind===signature.kind&&(sameRect(p.wide,signature.wide)||sameRect(p.phone,signature.phone))));

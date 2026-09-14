@@ -41,6 +41,10 @@ try {
   }
   assert.equal(PAINTED_SIGNATURES.tr_simit.kind,'birds','Simit must animate the open sky, not invent moving food or a wake over people');
   assert.equal(PAINTED_SIGNATURES.tr_market.kind,'breeze','the market must move an existing tied chilli string, not fabricate a canopy');
+  assert.ok(PAINTED_SIGNATURES.tr_kebab.wide[0]>=.285&&PAINTED_SIGNATURES.tr_kebab.wide[2]<=.34,
+    'charcoal counter wide chilli crop must exclude both wall lanterns and the garlic braid');
+  assert.ok(PAINTED_SIGNATURES.tr_kebab.phone[0]>=.12&&PAINTED_SIGNATURES.tr_kebab.phone[2]<=.22,
+    'charcoal counter phone chilli crop must exclude the wall, lamp and neighbouring hanging produce');
   assert.equal(PAINTED_SIGNATURES.tr_tea.kind,'birds','the tea painting must leave the boat-filled Bosphorus static and use its open sky');
   assert.equal(PAINTED_SIGNATURES.tr_fish.kind,'light','the fish room must keep motion on its pictured grill, away from boats and people');
   assert.equal(PAINTED_SIGNATURES.tr_baklava.kind,'sunray','baklava needs a clearly readable doorway sun ray above its quieter flour effect');

@@ -69,7 +69,7 @@ export const PAINTED_SIGNATURES: Record<string, AmbientPatch> = {
   tr_coffee: {kind:'rain',wide:[.808,.09,.923,.30],phone:[.903,.164,.991,.306]},
   tr_market: {kind:'breeze',wide:[0,0,.075,.275],phone:[0,0,.06,.18],period:7.2,sway:[.048,.065]},
   tr_fish: {kind:'light',wide:[.40,.72,.50,.88],phone:[.70,.58,.82,.72],color:'#f3a34b'},
-  tr_kebab: {kind:'breeze',wide:[.255,.0,.372,.24],phone:[.115,.0,.32,.16],period:6.8,sway:[.052,.072]},
+  tr_kebab: {kind:'breeze',wide:[.292,.0,.335,.235],phone:[.13,.0,.22,.18],period:6.8,sway:[.052,.072]},
   tr_baklava: {kind:'sunray',wide:[.36,.0,.98,.92],phone:[.36,.0,.99,.90],angles:[.55,.42],sway:[.026,.065]},
   tr_pide: {kind:'breeze',wide:[.57,.0,.74,.20],phone:[.065,.0,.19,.17],period:7.4,sway:[.052,.072]},
   tr_yufka: {kind:'dust',wide:[.19,.60,.36,.75],phone:[.24,.58,.46,.74]},

@@ -154,7 +154,9 @@ Last updated: 2026-09-13 — added the new-area methodology and connections betw
 - Apply public availability consistently across the map, location menus, and direct entry links.
 - Exclude unpublished content from visitors' exploration-pass completion requirements.
 
-**Open:** Which worlds are currently ready for visitors, how the owner accesses the preview, and how a world is marked ready for publication.
+**Current implementation:** The GitHub Pages build publishes China and the Middle East. Other worlds remain visible as grey, static "Coming soon" models and cannot be entered through labels, terrain clicks, stories, or direct code paths. Local development remains the owner preview and keeps every world explorable.
+
+**Open:** Whether a future authenticated remote owner-preview mode is needed, and how a world should be promoted from in progress to published.
 
 ## 11. Connect foods across worlds
 

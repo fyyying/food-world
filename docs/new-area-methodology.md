@@ -81,6 +81,18 @@ Give people varied and natural movement: Different routes and speeds, pauses to 
 
 Give each object an action suited to what it is. Fruit trees shake and drop fruit, dough is kneaded, skewers turn, and people gesture or speak. Keep boards, pots, and furniture grounded while the relevant food or body part moves. Let the action reward a click before showing information.
 
+Give every interactive place one **signature verb** that explains what happens there: pour, pull, puff, knead, roll, turn, stir, harvest, serve, carve, hammer, or flow. Reuse a small vocabulary of motion patterns, but tune the subject, amplitude, timing, and supporting details to the place. Do not fall back to generic food hopping, dish sliding, or whole-building bouncing when a preparation or craft action can tell the story.
+
+Use a short three-beat reaction when a stand has people around it:
+
+1. The food, ingredient, tool, water, or material reacts first
+2. The worker completes or follows the action
+3. At most one nearby person acknowledges it
+
+Speech can follow the physical response, but it must not be the first or strongest feedback. Scale the reaction for the actual world-camera distance so that it is visibly readable without zooming. Repeated clicks must remain bounded: food returns to its support, falling items land or reset, and no clones, particles, or transforms accumulate indefinitely. Passive architecture stays still; animate a grounded detail such as shutters, light, water, birds, a balloon, or foliage instead.
+
+Time the reaction against navigation, not only against a close-up test harness. If the camera takes 1.6 seconds to approach a stand, the signature food or tool response must still be clearly visible when that approach finishes and remain readable for a short beat afterwards. Test the actual arrival camera from the directions in which the stand can be selected. Roofs, awnings, walls, neighbouring buildings, and people must not block the reacting subject. Aim the approach at the working surface rather than the building's bounding-box centre when those differ.
+
 Include occasional surprises and keep chatter restrained and non-overlapping. Use a mix of living illustrations, simple animated objects, and cards so that different discoveries offer variety.
 
 ### Mark clickable items with a diamond
@@ -112,11 +124,33 @@ Use the supplied concept as the composition guide, but resolve roads, banks, sup
 
 ## 4. Make the paintings live and add small food discoveries
 
-Make each living illustration visibly alive from the moment it opens, without requiring a click. Add gentle motion where it fits the painting: Rising smoke or steam, drifting leaves, birds crossing, swaying lanterns, moving water and small waves, light rain, soft oven glow, or a small food-preparation action. Movement must be noticeable, crisp, and attached to something plausible in the picture, while leaving its food and atmosphere easy to see.
+Make each living illustration visibly alive from the moment it opens, without requiring a click. Add gentle motion where it fits the painting: Rising smoke or steam, drifting leaves, birds crossing, swaying lanterns, light rain, soft oven glow, or a small food-preparation action backed by a real movable layer. Water may move only through a separately verified reflection, mask, or traced painted stream. Movement must be noticeable, crisp, and attached to something plausible in the picture, while leaving its food and atmosphere easy to see.
+
+Give each room one **signature food, craft, or landscape motion** that distinguishes it from the other rooms. Prefer an action named by the room itself only when the supplied art includes a separate movable layer or a clean source detail that can actually support it: Noodles stretch and slap, bread puffs, a steamer lid breathes, skewers turn, tea or wine pours, syrup or oil flows, grain is winnowed, or a boat leaves a wake. Otherwise choose a strong painting-native cue such as a sun ray, birds, rain, mist, flame, steam, or a hanging ingredient moving in the wind. Water is not a safe generic cue: use it only when an existing reflection or stream can be traced without crossing another subject. Never draw an approximate food, utensil, hand, wake, shadow, or liquid shape over a finished painting just to satisfy the signature-action requirement.
+
+Use Sichuan hotpot as the upper bound for animation density. At rest, show no more than four readable continuous loops: one dominant signature action and up to three subordinate environmental, heat, light, or atmospheric cues. Most rooms should use fewer. A click may add one short accent or temporarily make the signature action stronger. Stagger the loops so that they do not peak together, and quiet background motion briefly when a click reaction needs visual priority.
 
 Keep effects attached to their source. Steam comes from the pictured hot food, leaves move around their stems, and waves stay inside the water. Tune their positions separately for wide and portrait paintings. Vary timing so the whole room does not pulse together.
 
+Treat the finished painting as the source of truth. A live-image effect may use one of three methods:
+
+1. Animate a supplied transparent layer, as with the Sichuan lanterns
+2. Add a natural emitted effect whose source and boundary are visible, such as steam, rain, water glints, mist, light, birds, sparks, or a narrow oil stream from a pictured spout
+3. Reuse a very tight crop of the painting only for a clearly isolated hanging detail such as chilli, garlic, herbs, a grape cluster, cloth, or a lantern; anchor it at the pictured tie point and move it by only a few visible pixels
+
+Do not use a broad rectangular crop, move a crop that includes a face or body, or invent a replacement silhouette with canvas lines and ellipses. If a clean layer cannot be obtained, keep the food still and animate a natural part of the environment instead. A world stand's signature verb and a finished room painting are different systems: the 3D stand can move its modeled food and tools, but the painting cannot depict a new physical action without suitable source art.
+
+A rectangular coordinate box is a clip, not proof that an effect belongs inside it. Never scatter generic wave strokes across a water box: boats, faces, posts, banks, and distant land can all occupy the same rectangle. Water in a finished painting may move only through isolated authored reflections or a source-derived mask that excludes every other subject. If those marks cannot be isolated, leave the water still and animate steam, light, weather, birds, or foliage instead.
+
+Treat painted liquid streams even more strictly. The stream's bounding box is not its path. A real painted syrup, tea, or oil stream may receive a short travelling highlight inside its exact silhouette, but the code must not redraw the stream from the box's top to bottom. Configure wide and portrait independently; when one composition has no stream, it gets no liquid effect.
+
+Before coding, make a wide-and-portrait motion matrix for every room. For each planned effect, record the pictured source, its exact boundary, its anchor, and forbidden overlap zones such as faces, hands, flowers, signs, roofs, and unrelated objects of a similar colour. A colour-based mask is only a starting point: inspect the isolated foreground and reconstructed background themselves. Reject a mask if it contains any part of a person or another object, even when a pixel-difference test passes.
+
 Use gentle flame movement and small variations in lamplight for natural light flicker. Rendering surfaces must remain stable, without flashing or competing geometry. Avoid blurry image patches, excessive swaying, and whole-scene motion that causes dizziness. Complete paintings must not receive duplicate people, furniture, or food overlays.
+
+Choose environmental motion because it belongs to the place, not because an effect is available. Canal ripples, irrigation flow, or a ferry wake are valid only when their exact painted surface is isolated and free of people, boats, banks, posts, and reflections that must remain still. Otherwise use a safer place-specific cue such as snow at a winter table, chaff at harvest, vine leaves under a trellis, changing light, or birds in genuine open sky. Birds should be occasional, crisp, and large enough to read; do not add them to every outdoor room.
+
+Support the existing reduced-motion preference. Remove or simplify non-essential travel, swaying, falling, and parallax motion while keeping the scene understandable through stable light, opacity, or a restrained local state change. Do not create a separate motion setting for one area.
 
 Focus room interactions on a few small food or ingredient details that are actually visible in the image. Choose details that can reveal a surprising, well-supported story.
 
@@ -161,6 +195,8 @@ Compare the design with the strongest existing areas early, while the compositio
 
 Judge the experience by watching and exploring it. Watch rooms without clicking, try different object types, and follow routes. An animation that passes a technical check still needs to feel natural and noticeable. Still images alone cannot establish that roads, water, or animation behave correctly.
 
+Do not approve ambience from a total changed-pixel count. That measurement can be satisfied by a different effect while the intended rain, stream, or moving detail is absent or misplaced. Give each important effect a semantic check of its own: the correct orientation survives the motion budget, the source and forbidden zones are respected, invented full-path geometry is absent, and the effect reaches a readable size or displacement. Then watch that exact effect over the real painting at desktop, large-screen desktop, and phone sizes.
+
 - Compare the overall composition, room paintings, and props with the concept and style references
 - Check neighbourhoods, country boundaries, room for expansion, and the transition from busy settlement to landscape
 - Follow the roads, bridges, river, banks, and river mouths through the full scene
@@ -168,9 +204,16 @@ Judge the experience by watching and exploring it. Watch rooms without clicking,
 - Confirm that no rendering flicker, broken connections, collisions, floating objects, or unsupported seating appear
 - Check that clickable items have clear diamond markers, decorative items remain unmarked, and every marked target responds on desktop and phones
 - Try different object types and check that their actions fit the object, keep supports grounded, and avoid overlapping chatter
+- Confirm that each interactive stand has a readable signature verb and that its food or material responds before speech or crowd movement
+- Confirm that the signature reaction remains visible at camera arrival and is not hidden by a roof, awning, wall, neighbour, or the stand's own facade
+- Repeat clicks and confirm that clones, particles, falling items, and transforms stay bounded and return to a stable state
 - Open every room and try each food discovery in its wide and portrait composition
 - Watch each room before clicking and confirm that motion is visible, crisp, plausible, and comfortable
+- Confirm that each room has one recognisable signature motion, no more than four readable continuous loops, one clear visual hierarchy, and no generic effect added only to make the frame busier
 - Check that effects stay on their pictured source and do not hide important details or move the entire scene
+- Confirm that every moving object already exists in the supplied art, every source crop is tight and top-anchored, its isolated mask contains only the intended object, and no invented canvas geometry imitates food, hands, utensils, shadows, wakes, or pouring liquid
+- Inspect wide and portrait animations independently at their actual display size, then repeat the wide check on a large screen where thick lines, seams, and misplaced layers are easier to see
+- Check the area's reduced-motion state and confirm that non-essential movement is removed or simplified without hiding interaction feedback
 - Check portrait framing, hotspots, markers, animation, and zoom limits separately, and verify that zooming and returning from a room preserve the visitor's place
 - Check discoveries against the pictured details, and read full story cards for historical depth, ingredient and dish connections, and source support
 
@@ -180,7 +223,7 @@ Record what was checked and what remains unresolved. Treat mobile viewport check
 
 > Create the new Food World area described in the attached brief. Follow `docs/new-area-methodology.md`. Make it feel like a place people live in, with food as the way to explore it. Use the concept image as the spatial blueprint and the room paintings for the scenes opened from its places. Let references guide composition as well as style. Plan recognisable neighbourhoods, clear country boundaries, future expansion, winding streets, irregular clusters, layered heights, and framed views before adding detail. Balance busy markets and courtyards with believable countryside. Include everyday food culture alongside landmarks, varied houses, and distinct people in historically appropriate clothing with purposeful, natural movement.
 >
-> Make the world react first through actions suited to each object, occasional surprises, and restrained, non-overlapping chatter. Keep furniture and supports grounded. Use small, precisely placed diamond markers matching Turkey, each opening relevant content. Combine illustrated rooms, simple animated objects, and cards. Make rooms visibly alive as soon as they open, with crisp, gentle motion attached to plausible subjects. Avoid blurry patches, excessive swaying, and whole-scene motion. Strictly prohibit flickering surfaces, broken roads, cut-off rivers, unnatural river merges, floating objects, unsupported seating, and people crossing walls. Walking steps must match travel and stop when people stop.
+> Make the world react first through actions suited to each object, occasional surprises, and restrained, non-overlapping chatter. Give each interactive place one signature verb. On click, let the food, tool, material, or water respond first, the worker follow, and at most one nearby person acknowledge it; speech comes after the physical response. Keep reactions visible through the full camera approach, bounded under repeated clicks, grounded on their supports, and unobscured at arrival. Use small, precisely placed diamond markers matching Turkey, each opening relevant content. Combine illustrated rooms, simple animated objects, and cards. Make rooms visibly alive as soon as they open, with one recognisable signature motion and no more than four readable continuous loops, one dominant and the rest subordinate. In finished paintings, animate only supplied transparent layers, tightly cropped isolated hanging details, or natural emitted effects attached to a visible source; never draw approximate food, hands, utensils, wakes, shadows, or liquid over the image. Inventory the source and forbidden overlap zones separately for wide and portrait, and inspect every isolated mask so a person or unrelated object can never move with it. If the painting cannot support a food action, use a strong place-specific environmental cue instead. Keep wide and portrait coordinates separate and respect the existing reduced-motion preference. Avoid blurry patches, generic hopping or dish sliding, excessive swaying, and whole-scene motion. Strictly prohibit flickering surfaces, broken roads, cut-off rivers, unnatural river merges, floating objects, unsupported seating, and people crossing walls. Walking steps must match travel and stop when people stop.
 >
 > Follow place → food → story. Start with short discoveries, then offer sourced stories with historical and cultural depth, ingredients, dishes, geography, how traditions spread, and how people practise them today. Distinguish documented history from legends. Connect relevant foods across available worlds and offer suitable practical recipes. Compose and check phone framing, hotspots, markers, animation, and zoom limits separately. Keep navigation consistent and the interface quiet. Compare against the strongest existing areas early, watch rooms before clicking, try different object types, and inspect routes from several angles in the running application. Record both technical checks and what the experience looks and feels like in use.
 

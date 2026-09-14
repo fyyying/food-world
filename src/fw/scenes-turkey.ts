@@ -19,14 +19,14 @@ const rooms: Record<string, Room> = {
     touches: [
       ['Break a sesame ring', 'A simit gets its glossy crust from a molasses dip before it is rolled in sesame. Pick up a ring for the ferry, or sit down with cheese and tea.', 'detail', [.28,.70], [.34,.54], 'simit'],
       ['Tea before the crossing', 'Steam curls from the tea glass. There is time for a sip before the ferry leaves.', 'tea', [.23,.58], [.12,.51]],
-      ['Follow the ferry wake', 'A small ripple spreads across the water beyond the quay.', 'water', [0.84,0.372], [0.58,0.341]],
+      ['Watch the Bosphorus', 'The ferry crossing sets the rhythm of the quay while the simit seller keeps serving the next customer.', 'detail', [.82,.385], [.75,.325]],
     ],
   },
   tr_tea: {
     title: 'Tea under the plane tree', zh: 'Çay bahçesi', caption: 'A tray of tulip glasses, backgammon on the table, and the water just beyond the shade.',
     ambience: { steam: [{ at: [[.325,.686],[.54,.858]], width: 84, rate: 9, alpha: .28 }] },
     touches: [
-      ['Pour another çay', 'The tea sends up a fresh curl of steam. Strong tea from the upper pot is diluted with hot water to taste.', 'tea', [.325,.686], [.54,.858]],
+      ['Fresh çay on the tray', 'The tea sends up a fresh curl of steam. Strong tea is traditionally diluted with hot water to taste before the glasses are carried out.', 'tea', [.60,.44], [.40,.345]],
       ['A tray for company', 'The waiter carries several tulip glasses together. Offering tea welcomes a guest; another round gives the conversation more time.', 'detail', [.60,.44], [.40,.345]],
       ['An afternoon game', 'Tavla is backgammon: two players, dice and a board. In a tea garden the game shares the table with tea and conversation.', 'detail', [.24,.76], [.51,.71]],
     ],
@@ -51,7 +51,10 @@ const rooms: Record<string, Room> = {
   },
   tr_fish: {
     title: 'Fish at the Bosphorus quay', zh: 'Balık ekmek', caption: 'A hot grill, lemon and a fish sandwich beside the ferry landing.',
-    ambience: { steam: [{ at: [[.87,.73],[.76,.74]], width: 68, rate: 7, alpha: .24 }] },
+    ambience: {
+      steam: [{ at: [[.44,.82],[.75,.66]], width: 68, rate: 7, alpha: .24 }],
+      fire: [{ at: [[.44,.82],[.75,.66]], radius: [46, 19] }],
+    },
     touches: [
       ['Choose a fish', 'Fish are laid out at the counter. The next stop is the grill, then bread, greens and a squeeze of lemon.', 'detail', [0.25,0.63], [0.28,0.574]],
       ['Build a balık ekmek', 'Grilled fish goes into bread with onion and greens. The sandwich belongs to Istanbul’s waterfront rhythm: order, eat and watch the boats.', 'detail', [0.84,0.592], [0.73,0.79], 'balik-ekmek'],
@@ -82,7 +85,7 @@ const rooms: Record<string, Room> = {
   tr_pide: {
     title: 'The pide oven', zh: 'Pide fırını', caption: 'Long loaves and thin rounds wait beside the hot stone oven.',
     ambience: {
-      steam: [{ at: [[.91,.34],[.40,.33]], width: 132, rate: 12, alpha: .30 }],
+      steam: [{ at: [[.91,.34],[.40,.33]], width: 88, rate: 8, alpha: .22 }],
       fire: [{ at: [[.91,.34],[.40,.33]], radius: [68, 36] }],
     },
     touches: [
@@ -94,8 +97,8 @@ const rooms: Record<string, Room> = {
   tr_yufka: {
     title: 'Bread in the village courtyard', zh: 'Yufka ve gözleme', caption: 'Dough is rolled at a shared table while flatbreads cook nearby.',
     ambience: {
-      steam: [{ at: [[.87,.42],[.87,.25]], width: 128, rate: 11, alpha: .28 }],
-      fire: [{ at: [[.87,.42],[.87,.25]], radius: [62, 34] }],
+      steam: [{ at: [[.87,.42],[.84,.35]], width: 86, rate: 8, alpha: .22 }],
+      fire: [{ at: [[.87,.42],[.84,.35]], radius: [62, 34] }],
     },
     touches: [
       ['Flour the rolling board', 'A light cloud rises from the board. A little flour helps the thin dough release without tearing.', 'flour', [.27,.654], [.36,.653]],
@@ -105,7 +108,7 @@ const rooms: Record<string, Room> = {
   },
   tr_dolma: {
     title: 'The family dolma kitchen', zh: 'Dolma ve sarma', caption: 'Peppers to fill, leaves to roll, and several hands around one table.',
-    ambience: { steam: [{ at: [[.69,.45],[.68,.44]], width: 108, rate: 10, alpha: .30 }] },
+    ambience: { steam: [{ at: [[.69,.45],[.68,.39]], width: 108, rate: 10, alpha: .30 }] },
     touches: [
       ['Let the pot simmer', 'Steam rises gently from the pot as the filled vegetables cook together.', 'tea', [.69,.45], [.68,.44]],
       ['Fill or wrap?', 'Dolma describes something filled, such as a pepper. Sarma describes something wrapped, such as a vine leaf rolled around its filling.', 'detail', [0.25,0.715], [0.75,0.585], 'sarma'],

@@ -21,6 +21,28 @@ try {
     for (let i = 0; i < 120; i++) scene.fx(ctx, i / 60, 1 / 60, portrait);
     return draws;
   }
+  function sampleSteam(factory, portrait) {
+    let seed = 1;
+    Math.random = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
+    const points = [];
+    const target = {
+      canvas: { width: portrait ? 506 : 1600 }, globalAlpha: 1, getTransform: () => ({ a: 1 }),
+      createRadialGradient(...args) { points.push([args[0], args[1]]); return { addColorStop() {} }; },
+      createLinearGradient: () => ({ addColorStop() {} }),
+    };
+    const context = new Proxy(target, { get: (object, key) => key in object ? object[key] : () => {}, set: (object, key, value) => (object[key] = value, true) });
+    factory().fx(context, 0, .016, portrait);
+    return {
+      averageX: points.reduce((sum, point) => sum + point[0], 0) / points.length,
+      lowestY: Math.max(...points.map(point => point[1])),
+    };
+  }
+  const grapeTeaWide = sampleSteam(SCENES.grape_courtyard, false);
+  assert.ok(grapeTeaWide.averageX >= 580 && grapeTeaWide.averageX <= 590 && grapeTeaWide.lowestY >= 510 && grapeTeaWide.lowestY <= 525,
+    'grape courtyard wide steam must begin at the painted tea stream, not below it on the table');
+  const grapeTeaPhone = sampleSteam(SCENES.grape_courtyard, true);
+  assert.ok(grapeTeaPhone.averageX >= 682 && grapeTeaPhone.averageX <= 694 && grapeTeaPhone.lowestY >= 442 && grapeTeaPhone.lowestY <= 455,
+    'grape courtyard phone steam must begin at the painted tea stream, not below it on the table');
   for (const [id, factory] of Object.entries(SCENES)) {
     const room = factory();
     assert.ok(room.hotspots.length >= 1, `${id}: missing controls`);
@@ -40,7 +62,10 @@ try {
         await access(`public/scenes/${h.interaction.folder}/wide.jpg`);
         await access(`public/scenes/${h.interaction.folder}/portrait.jpg`);
       }
-      assert.ok(room.layers.every(l => !l.svg.includes('/scenes/props/')), `${id}: no inserted furniture, animals or prop duplicates`);
+      const propRefs=room.layers.flatMap(l=>[...l.svg.matchAll(/href="([^"]*\/scenes\/props\/[^"]+)"/g)].map(m=>m[1]));
+      const skyRooms=new Set(['noodle_shop','stone_bridge','lotus_garden','oasis_bazaar','tianshan','wheat_harvest']);
+      assert.ok(propRefs.every(ref=>skyRooms.has(id)&&/(?:bird|swallow)\.webp$/.test(ref))&&propRefs.length<=2,
+        `${id}: only one authored sky bird per composition may accompany the complete painting (${propRefs.join(', ')})`);
     }
     for (const layer of room.layers) {
       for (const match of layer.svg.matchAll(/<image[^>]*href="([^"]+)"/g)) await access(join('public', match[1]));

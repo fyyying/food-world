@@ -7,7 +7,7 @@ import { flickerNoise, STAGE_W, STAGE_H, type SceneDef } from "./scene";
 import { roomProps } from "./scene-props";
 import sizes from "./scenes.json";
 import propSizes from "./scenes-props.json";
-import { ambientPainter, type AmbientPatch } from './scene-ambience';
+import { ambientPainter, PAINTED_SIGNATURES, type AmbientPatch } from './scene-ambience';
 
 const SIZES = sizes as unknown as Record<string, Record<string, [number, number]>>;
 const PROPS = (propSizes as unknown as { rooms: Record<string, Record<string, [number, number]>>; props: Record<string, [number, number]> });
@@ -106,7 +106,32 @@ const HALO = `<defs><radialGradient id="haloQ"><stop offset="0" stop-color="#ffc
 export function paintedScene(cfg: PaintedCfg): SceneDef {
   // The full paintings already contain their furniture, animals and hanging objects.
   // Keep the established hotpot composition; avoid duplicate cutouts in other rooms.
-  if (cfg.painting && cfg.id !== 'hotpot') cfg = { ...cfg, hang: [], front: [], walkers: [], portrait: { ...cfg.portrait, walkers: [] } };
+  const signature = cfg.painting ? PAINTED_SIGNATURES[cfg.id] : undefined;
+  const flyersAllowed = ['noodle_shop','stone_bridge','lotus_garden','oasis_bazaar','tianshan','wheat_harvest'].includes(cfg.id);
+  const safeFlyers = (walkers: Walker[] = []) => flyersAllowed ? walkers.filter(w => w.fly).slice(0,1).map(w => ({...w, every: Math.max(36,w.every)})) : [];
+  if (cfg.painting && cfg.id !== 'hotpot') {
+    // Full furniture cutouts would duplicate the painting. Small sky silhouettes are independent art.
+    cfg = { ...cfg, hang: [], front: [], walkers: safeFlyers(cfg.walkers), portrait: { ...cfg.portrait, walkers: safeFlyers(cfg.portrait?.walkers) } };
+  }
+  if (signature) {
+    const steam = (sources: PaintedCfg['steam']) => sources?.slice(0,1).map(s => ({...s,rate:Math.min(10,s.rate),a:Math.min(.24,s.a??.24)}));
+    const sameRect=(a?:AmbientPatch['wide'],b?:AmbientPatch['wide'])=>Boolean(a&&b&&a.every((n,i)=>n===b[i]));
+    const candidates = (cfg.ambience ?? []).filter(p =>
+      !(p.kind===signature.kind&&(sameRect(p.wide,signature.wide)||sameRect(p.phone,signature.phone))));
+    // Hotpot's benchmark is four simultaneous, legible loops. Keep each painted room at or below that ceiling,
+    // while allowing a working oven to retain one material cue (for example flour) beside smoke and fire.
+    const choose = (orientation: 'wide'|'phone', heatLoops: number, walkers: Walker[] = []) =>
+      candidates.filter(p => p[orientation]).slice(0,Math.max(0,3-heatLoops-Number(Boolean(walkers.length))));
+    const wide = new Set(choose('wide',Number(Boolean(cfg.steam?.length))+Number(Boolean(cfg.fire?.length)),safeFlyers(cfg.walkers)));
+    const phone = new Set(choose('phone',Number(Boolean(cfg.portrait?.steam?.length))+Number(Boolean(cfg.portrait?.fire?.length)),safeFlyers(cfg.portrait?.walkers)));
+    const ambience = candidates.flatMap(p => {
+      const kept = {...p,wide:wide.has(p)?p.wide:undefined,phone:phone.has(p)?p.phone:undefined};
+      return kept.wide || kept.phone ? [kept] : [];
+    });
+    cfg = {...cfg, steam:steam(cfg.steam), fire:cfg.fire?.slice(0,1), lamps:[],
+      motes:0, leaves:0, petals:undefined, mist:undefined, ambience,
+      portrait:{...cfg.portrait,steam:steam(cfg.portrait?.steam),fire:cfg.portrait?.fire?.slice(0,1),lamps:[]}};
+  }
   const f = cfg.folder;
   const cb = cfg.painting ? { x: 0, y: 0, w: STAGE_W, h: STAGE_H } : coverBox(f);
   const dim = cfg.night ? 0.5 : 0.42;
@@ -151,12 +176,13 @@ export function paintedScene(cfg: PaintedCfg): SceneDef {
 
   const frontLayer = `${HALO}${(cfg.front ?? []).map((s, i) => sprite(f, s, `front-${i}`, "front")).join("")}${walkers}`;
 
-  const reaction = { boil: 0 };
+  const reaction = { boil: 0, clock: 0, started: -100, until: -100 };
   const hotspots = cfg.hotspots ?? roomProps(cfg.id, (x, y) => pAt(f, x, y));
   return {
     hotspots,
     react: (id) => {
       if (id === "pot") { reaction.boil = reaction.boil ? 0 : 1; return Boolean(reaction.boil); }
+      if (signature && hotspots.some(spot => spot.id===id)) { reaction.started=reaction.clock; reaction.until=reaction.clock+3.2; }
     },
     id: cfg.id, title: cfg.title, zh: cfg.zh, caption: cfg.caption,
     // with a full painting the hanging pieces must sit in front of it; with a cut sheet they hang behind the cover
@@ -164,7 +190,7 @@ export function paintedScene(cfg: PaintedCfg): SceneDef {
       ? [{ svg: backLayer, depth: 0.15 }, { svg: coverLayer, depth: 0.5 }, { svg: hangLayer, depth: 0.62 }, { svg: frontLayer, depth: 1, blur: 0.5 }]
       : [{ svg: backLayer, depth: 0.15 }, { svg: hangLayer, depth: 0.42 }, { svg: coverLayer, depth: 0.5 }, { svg: frontLayer, depth: 1, blur: 0.5 }],
     fxDepth: 0.5,
-    fx: makeFx(cfg, reaction),
+    fx: makeFx(cfg, reaction, signature),
     light: cfg.light,
     animate: (root) => {
       const q = (s: string) => Array.from(root.querySelectorAll<SVGGraphicsElement>(s));
@@ -173,6 +199,13 @@ export function paintedScene(cfg: PaintedCfg): SceneDef {
       const staticHalos = q("g:not(.sway) > .halo");
       const walks = allWalkers.map(({ wk }, i) => ({ el: q(`#walk-${i}`)[0], wk, next: 3 + i * 7, start: -1 }));
       return (t: number) => {
+        if (typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          for(const w of walks)w.el?.setAttribute('opacity','0');
+          for(const s of sways)s.el.removeAttribute('transform');
+          for(const el of [...fires,...lamps,...staticHalos])el.setAttribute('opacity','.65');
+          return;
+        }
+        const quiet = reaction.until > t ? .22 : 1;
         for (const w of walks) {
           if (!w.el) continue;
           if (w.start < 0 && t > w.next) w.start = t;
@@ -183,7 +216,7 @@ export function paintedScene(cfg: PaintedCfg): SceneDef {
             const x = w.wk.from + (w.wk.to - w.wk.from) * k;
             const bob = w.wk.fly ? Math.sin(t * 1.6) * 9 : Math.abs(Math.sin(t * 5.5)) * 4;   // a glide, or footsteps
             const tilt = w.wk.fly ? Math.sin(t * 1.6 + 1) * 2 : Math.sin(t * 5.5) * 1.2;
-            w.el.setAttribute("opacity", String(Math.min(1, k * 8, (1 - k) * 8)));
+            w.el.setAttribute("opacity", String(quiet*Math.min(1, k * 8, (1 - k) * 8)));
             w.el.setAttribute("transform", `translate(${x.toFixed(1)} ${(-bob).toFixed(1)}) rotate(${tilt.toFixed(2)} ${(w.wk.w / 2).toFixed(0)} ${w.wk.y})`);
           }
         }
@@ -192,7 +225,7 @@ export function paintedScene(cfg: PaintedCfg): SceneDef {
           s.halo?.setAttribute("opacity", (0.35 + flickerNoise(t, s.ph) * 0.65).toFixed(3));
         });
         staticHalos.forEach((h, i) => h.setAttribute("opacity", (0.35 + flickerNoise(t, i * 2.3 + 1) * 0.65).toFixed(3)));
-        fires.forEach((el, i) => el.setAttribute("opacity", (0.45 + flickerNoise(t, i + 2) * 0.55).toFixed(3)));
+        fires.forEach((el, i) => el.setAttribute("opacity", (quiet*(0.45 + flickerNoise(t, i + 2) * 0.55)).toFixed(3)));
         lamps.forEach((el, i) => el.setAttribute("opacity", (0.60 + Math.sin(t * 1.5 + i * 1.9) * .25 + Math.sin(t * 3.7 + i) * .08).toFixed(3)));
       };
     },
@@ -207,8 +240,9 @@ type Lantern = { x: number; y: number; vy: number; sway: number; age: number; li
 type Bubble = { x: number; y: number; r: number; age: number; life: number };
 type Petal = { x: number; y: number; vy: number; sway: number; rot: number; vr: number; s: number; age: number; life: number };
 
-function makeFx(cfg: PaintedCfg, reaction: { boil: number }) {
-  const ambience = ambientPainter(cfg.folder, cfg.ambience ?? []);
+function makeFx(cfg: PaintedCfg, reaction: { boil: number; clock:number; started:number; until:number }, signature?: AmbientPatch) {
+  const ambience = ambientPainter(cfg.ambience ?? [],cfg.folder);
+  const process = ambientPainter(signature ? [signature] : [],cfg.folder);
   const steam: Steam[] = [], leaves: Leaf[] = [], lanterns: Lantern[] = [], bubbles: Bubble[] = [], petals: Petal[] = [];
   const leafImgs = [2, 3, 5, 6, 7, 8].map((i) => { const im = new Image(); im.src = `${import.meta.env.BASE_URL}scenes/hotpot/leaf-${i}.png`; return im; });
   const motes = Array.from({ length: cfg.motes ?? 0 }, () => ({ x: rnd(0, STAGE_W), y: rnd(-20, 720), vy: rnd(4, 11), r: rnd(1, 2.4), a: rnd(0.25, 0.6), f: rnd(0.4, 1.1), ph: rnd(0, 6.28) }));
@@ -217,10 +251,16 @@ function makeFx(cfg: PaintedCfg, reaction: { boil: number }) {
   let previousPortrait: boolean | undefined;
   let leafAt = 1.5, lanternAt = 1, bacc = 0, pacc = 0;
   return (ctx: CanvasRenderingContext2D, t: number, dt: number, portrait: boolean) => {
+    reaction.clock=t;
+    // Same system preference used by animateRoomTouch; static painting is the fallback.
+    if(typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+    dt=Math.max(0,Math.min(.05,dt));
+    const active = reaction.until>t;
+    ctx.save(); if(active)ctx.globalAlpha*=.22;
     const emitters = (portrait && cfg.portrait?.steam) || cfg.steam || [];
     // Enter with an established plume. Re-seed on rotation so steam cannot linger at old coordinates.
     if (portrait !== previousPortrait) {
-      steam.length = 0; accs.fill(0);
+      steam.length = 0; bubbles.length=0; leaves.length=0; petals.length=0; accs.fill(0); bacc=0; pacc=0;
       emitters.forEach(e => {
         for (let i = 0; i < Math.ceil(e.rate * 2); i++) {
           const age = rnd(.25, 2.2);
@@ -340,5 +380,11 @@ function makeFx(cfg: PaintedCfg, reaction: { boil: number }) {
       }
     }
     ambience(ctx, t, portrait);
+    ctx.restore();
+    if(signature && (!signature.clickOnly || active)) {
+      // Touch restarts one finite process; background effects yield while it completes.
+      const processTime=active?(t-reaction.started+.12)*1.45:t+cfg.id.length*.73;
+      process(ctx,processTime,portrait);
+    }
   };
 }

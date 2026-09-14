@@ -541,7 +541,16 @@ function enterLivingScene(p: Placed, obj: WorldObject, recipes: EnrichedRecipe[]
   sceneReturn = { pos: camera.position.clone(), target: controls.target.clone() };
   const fade = document.getElementById("fade")!;
   // walk up to the door, then the paper closes over the world and the room opens behind it
-  glideTo(p.anchor.clone().add(new THREE.Vector3(0, 1.2, 0)), 9, 1.6, () => {
+  const approachTarget=p.anchor.clone().add(new THREE.Vector3(0,1.2,0));
+  // Keep the visitor's compass direction, but lower the overview pitch so roofs and awnings cannot hide
+  // the stand's food-first reaction during the approach.
+  const approachHorizontal=camera.position.clone().sub(controls.target).setY(0);
+  if(approachHorizontal.lengthSq()<.01)approachHorizontal.set(0,0,1);
+  const hitSize=(p.hit.geometry as THREE.BoxGeometry).parameters;
+  const approachDistance=Math.max(8.8,Math.min(18,Math.max(hitSize.width,hitSize.depth)*1.05));
+  approachHorizontal.setLength(approachDistance);
+  const approachOffset=approachHorizontal.add(new THREE.Vector3(0,1.4,0));
+  fly(approachTarget.clone().add(approachOffset),approachTarget,1.6,() => {
     fade.classList.add("on");
     later(() => {
       controls.enabled = false;

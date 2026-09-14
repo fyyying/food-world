@@ -261,20 +261,27 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
     if (!alive) return;
     if (t0 < 0) t0 = t;
     now = t; const age = t - t0;
-    // idle drift takes over a moment after the pointer stops
-    if (now - lastMove > 1.6) { tx = Math.sin(age * 0.21) * 0.45; ty = Math.cos(age * 0.16) * 0.3; }
-    px += (tx - px) * Math.min(1, dt * 2.2); py += (ty - py) * Math.min(1, dt * 2.2);
-    // gentle camera push: ease in over ~40 s, then breathe
-    const arrive = 1 + 0.05 * Math.pow(1 - Math.min(1, age / 2.4), 2);   // settle in from slightly too close
-    const push = 1 + 0.07 * (1 - Math.pow(1 - Math.min(1, age / 42), 2)) + Math.sin(age * 0.35) * 0.004;
-    stage.style.transform = anchoredRoom ? "none" : `scale(${(arrive * push).toFixed(4)})`;
-    for (const l of layers) {
-      const d = Number(l.dataset.depth);
-      const ax = px * d * 26, ay = py * d * 16;
-      l.style.transform = anchoredRoom ? "none" : `translate3d(${ax.toFixed(1)}px, ${ay.toFixed(1)}px, 0) scale(${(1 + d * 0.05).toFixed(3)})`;
+    const reduced = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) {
+      tx=ty=px=py=0; stage.style.transform='none';
+      for(const l of layers)l.style.transform='none';
+      light.style.opacity='.65';
+    } else {
+      // idle drift takes over a moment after the pointer stops
+      if (now - lastMove > 1.6) { tx = Math.sin(age * 0.21) * 0.45; ty = Math.cos(age * 0.16) * 0.3; }
+      px += (tx - px) * Math.min(1, dt * 2.2); py += (ty - py) * Math.min(1, dt * 2.2);
+      // gentle camera push: ease in over ~40 s, then breathe
+      const arrive = 1 + 0.05 * Math.pow(1 - Math.min(1, age / 2.4), 2);   // settle in from slightly too close
+      const push = 1 + 0.07 * (1 - Math.pow(1 - Math.min(1, age / 42), 2)) + Math.sin(age * 0.35) * 0.004;
+      stage.style.transform = anchoredRoom ? "none" : `scale(${(arrive * push).toFixed(4)})`;
+      for (const l of layers) {
+        const d = Number(l.dataset.depth);
+        const ax = px * d * 26, ay = py * d * 16;
+        l.style.transform = anchoredRoom ? "none" : `translate3d(${ax.toFixed(1)}px, ${ay.toFixed(1)}px, 0) scale(${(1 + d * 0.05).toFixed(3)})`;
+      }
+      light.style.opacity = (0.35 + flickerNoise(age) * 0.55).toFixed(3);   // the room breathes with the lanterns
     }
     positionFeedback();
-    light.style.opacity = (0.35 + flickerNoise(age) * 0.55).toFixed(3);   // the room breathes with the lanterns
     animate(age, dt);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);

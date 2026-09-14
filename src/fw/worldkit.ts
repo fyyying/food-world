@@ -43,6 +43,8 @@ export type WorldSpec = {
   /** props that hop on hover (animals, small trees, jars) */
   small: RegExp;
   fallbackPlace: string;
+  /** Quiet markers distinguish explorable objects from decorative scenery. */
+  discoveryCues?: boolean;
   layout: (ctx: LayoutCtx) => void;
 };
 
@@ -302,6 +304,25 @@ export function buildWorld(spec: WorldSpec): Diorama {
       if (glowing) { const pulse = 0.5 + Math.sin(t * 4 + d.base.x) * 0.5; (d.ring.material as THREE.MeshBasicMaterial).opacity = 0.25 + pulse * 0.45; const rs = 1 + pulse * 0.25; d.ring.scale.set(rs, rs, 1); }
     }
   });
+
+  if(spec.discoveryCues){
+    const canvas=document.createElement('canvas');canvas.width=canvas.height=48;
+    const c=canvas.getContext('2d')!;
+    c.beginPath();c.moveTo(24,9);c.lineTo(39,24);c.lineTo(24,39);c.lineTo(9,24);c.closePath();
+    c.fillStyle='#f9ecd0';c.fill();c.strokeStyle='#9e7546';c.lineWidth=3;c.stroke();
+    c.beginPath();c.arc(24,24,3,0,Math.PI*2);c.fillStyle='#9e7546';c.fill();
+    const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;
+    const material=new THREE.SpriteMaterial({map:texture,transparent:true,depthWrite:false,opacity:.78});
+    for(const p of placed){
+      // Child stalls share their parent's marker; decoration never enters the placed-object list.
+      if(p.obj.parent||p.obj.alias)continue;
+      const cue=new THREE.Sprite(material);cue.name='explore-cue';cue.userData.objectId=p.obj.id;
+      cue.position.set(p.anchor.x,p.top+.65,p.anchor.z);cue.scale.set(.95,.95,1);group.add(cue);
+      // The marker uses the object's normal click target and card/room interaction.
+      const height=(p.hit.geometry as THREE.BoxGeometry).parameters.height;
+      p.hit.scale.y=(height+1.1)/height;p.hit.position.y+=.55;
+    }
+  }
 
   return {
     group, placed, dishes,

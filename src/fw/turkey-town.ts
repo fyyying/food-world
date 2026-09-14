@@ -11,6 +11,7 @@ import type { LayoutCtx } from './worldkit';
 export function turkeyBazaar():P {
   let resident=40;
   const g=bazaar((_shirt,opts)=>turkeyResident(resident++,!!opts?.apron));
+  const inheritedTick=g.userData.tick;
   // Retain the working stalls and shoppers; replace the single shed with open stone arcades.
   for(const o of [...g.children])if(o instanceof THREE.Mesh && o.position.y>.1){g.remove(o);o.geometry.dispose();}
   const stone=new THREE.Group();
@@ -35,7 +36,8 @@ export function turkeyBazaar():P {
     const rug=add(g,kilim(.90,1.65),x,2.6,z);if(x<-7)rug.rotation.y=Math.PI/2;
   }
   // Goods spill out beside the gateways, leaving the central passage open.
-  const vendors:THREE.Group[]=[];
+  const vendors:THREE.Group[]= [];
+  let offeredGoods:THREE.Group|undefined;
   for(const [i,x] of [-6,6].entries()){
     const stall=new THREE.Group();stall.position.set(x,0,5.95);stall.rotation.y=i?-.12:.14;
     add(stall,block(2.1,.78,.88,TR.wood),0,.39,0);
@@ -43,13 +45,25 @@ export function turkeyBazaar():P {
     for(const sx of [-1,1])add(stall,block(.065,2.35,.065,TR.wood),sx,1.175,-.35);
     const awning=add(stall,block(2.4,.07,1.25,i?TR.turquoise:TR.red),0,2.30,.10);awning.rotation.x=.12;
     for(let j=0;j<6;j++){
-      const bowl=add(stall,new THREE.Mesh(new THREE.CylinderGeometry(.19,.14,.16,9),mat('#a97e50')),-.72+j%3*.72,.94,-.22+Math.floor(j/3)*.48);
-      add(bowl,new THREE.Mesh(new THREE.ConeGeometry(.17,.20,8),mat(['#ac493c','#d1a657','#708149'][j%3])),0,.16,0);
+      const pile=add(stall,new THREE.Group(),-.72+j%3*.72,.94,-.22+Math.floor(j/3)*.48);
+      pile.name='market-produce-pile';
+      add(pile,new THREE.Mesh(new THREE.CylinderGeometry(.19,.14,.16,9),mat('#a97e50')),0,0,0);
+      add(pile,new THREE.Mesh(new THREE.ConeGeometry(.17,.20,8),mat(['#ac493c','#d1a657','#708149'][j%3])),0,.16,0);
     }
     const vendor=add(stall,turkeyResident(resident++,true),.1,0,-.86);vendors.push(vendor);g.add(stall);
   }
   for(const [x,z] of [[-4.0,5.7],[3.5,6.5],[1.4,5.8]]){
     const p=add(g,turkeyResident(resident++),x,0,z);p.rotation.y=x>0?.7:-.8;vendors.push(p);
+  }
+  // One prominent basket beside the central passage provides a readable food-first response even
+  // when the wide arcade is fitted into a phone approach view.
+  offeredGoods=add(g,new THREE.Group(),1.15,.20,5.15);offeredGoods.name='market-offered-produce';
+  add(offeredGoods,new THREE.Mesh(new THREE.CylinderGeometry(.42,.34,.24,10),mat('#9a7148')),0,0,0);
+  const offeredPieces:THREE.Mesh[]=[];
+  for(let i=0;i<8;i++){
+    const piece=add(offeredGoods,new THREE.Mesh(new THREE.SphereGeometry(.105,8,6),mat(i%3===0?'#6f874c':'#b64e3e')),
+      Math.cos(i*2.4)*.27,.17+(i%2)*.06,Math.sin(i*2.4)*.22);
+    if(i<3){piece.name='market-reacting-produce';offeredPieces.push(piece);}
   }
   // Supported strings of mosaic lamps draw the eye into the market alley.
   for(const z of [-.5,3.8]){
@@ -60,8 +74,19 @@ export function turkeyBazaar():P {
       const lamp=add(g,new THREE.Mesh(new THREE.SphereGeometry(.14,9,7),mat(i%2?'#dda757':'#59a1a5',{emissive:'#8b5418',emissiveIntensity:.35})),p.x,p.y-.37,z);lamp.scale.y=1.35;
     }
   }
-  const tick=g.userData.tick;
-  g.userData.tick=(t,dt)=>{tick?.(t,dt);vendors.forEach((p,i)=>{const torso=p.userData.upper as THREE.Group;torso.rotation.y=Math.sin(t*.65+i)*.14;});};
+  const goodsBase=offeredGoods!.position.clone(),pieceBases=offeredPieces.map(piece=>piece.position.clone());
+  let reaction=0,speechDelay=-1;
+  g.userData.poke=()=>{reaction=1;speechDelay=.28;};
+  g.userData.tick=(t,dt)=>{
+    inheritedTick?.(t,dt);
+    reaction=Math.max(0,reaction-dt*.285);
+    const phase=reaction>0?Math.sin(Math.PI*Math.min(1,(1-reaction)/.73)):0;
+    offeredGoods!.position.copy(goodsBase);offeredGoods!.rotation.z=0;
+    offeredPieces.forEach((piece,i)=>{piece.position.copy(pieceBases[i]);piece.position.y+=phase*(.46+i*.035);piece.rotation.z=phase*(i%2?-.8:.8);});
+    const responder=vendors[3]??vendors[0];
+    vendors.forEach((p,i)=>{const torso=p.userData.upper as THREE.Group;torso.rotation.y=Math.sin(t*.65+i)*.14+(p===responder?phase*.18:0);});
+    if(speechDelay>=0){speechDelay-=dt;if(speechDelay<=0){speechDelay=-1;bubble(responder??g,'Buyurun! Welcome!',1.55,1400);}}
+  };
   return g;
 }
 
@@ -119,16 +144,14 @@ export const TOWN_HOUSES: [number,number,number,HouseStyle,number,number?][] = [
   // Anatolian courtyard cluster sits above the oven lane.
   [16.3,-27.3,3,'narrow',-.16,1.2],[17.6,-22.4,2,'timber',-.07,1.2],
   [21.2,-26.9,2,'narrow',.13,1.2],
-  [28.6,-22.6,1,'courtyard',.16],[35.5,-23.1,2,'timber',-.12],[40,-21.8,1,'stone',.28],
-  [41.2,-12.3,2,'corner',-.18],[45.6,-13.5,1,'stone',.16],[51,-12.1,1,'courtyard',-.15],
-  // Low Aegean homes gather around planted yards.
-  [-49.5,6.3,1,'stone',.21],[-44.7,6.5,2,'timber',-.10],[-40.9,2.7,2,'narrow',.16],
-  [-39.8,7.4,1,'stone',-.18],
+  // Beyond this cluster the roofs give way to dry orchards and rocky, wooded ground.
+  [28.6,-22.6,1,'courtyard',.16],
+  // A single Aegean home overlooks the olive terraces and planted yards.
+  [-40.9,2.7,2,'narrow',.16],
   // The bath square is enclosed on two sides; workshops share its eastern lane.
   [-21.4,1.9,3,'narrow',.21],[-22.8,5.5,1,'courtyard',-.14],
-  [-2.2,2.4,3,'narrow',-.16],[1.3,6.1,1,'stone',.18],
-  [13.0,5.9,2,'narrow',-.1],[27.3,6.1,2,'corner',.18],
-  [50.8,5.8,1,'courtyard',.25],
+  [-2.2,2.4,3,'narrow',-.16],
+  [27.3,6.1,2,'corner',.18],
 ];
 
 function floweringCorner(g:THREE.Group,x:number,z:number,h:number,seed:number) {

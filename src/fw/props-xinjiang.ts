@@ -2,13 +2,26 @@
 // a long grill and a cauldron of polo. Uyghur-influenced food culture in this first version, with room for more.
 import * as THREE from "three";
 import { camelLeg, CAMEL_CYCLE, CAMEL_HIP_HEIGHT, CAMEL_LEG_LENGTH } from "./camel-gait";
-import { C, add, box, cyl, cone, ball, stem, group, reaction, pick, tickChildren, smooth, mat, person, bubble, rnd, hopFood, ambientChat, type P } from "./props";
+import { C, add, box, cyl, cone, ball, stem, group, reaction, pick, tickChildren, smooth, mat, person, bubble, rnd, ambientChat, type P } from "./props";
 
 const XJ_LINES = ["Yaxshimusiz? · How are you?", "Qeni, olturung! · Please sit!", "Tatliq! · Sweet!", "Chay iching · Have some tea", "Nan issiq · The bread is hot", "Zira! · Cumin!"];
 type Fig = P & { userData: { upper?: THREE.Group; arms?: { left: THREE.Group; right: THREE.Group }; sit?: () => void } };
 const upper = (p: THREE.Object3D) => (p.userData as { upper?: THREE.Group }).upper;
 const arms = (p: THREE.Object3D) => (p.userData as { arms?: { left: THREE.Group; right: THREE.Group } }).arms;
 const OCHRE = "#d2a86a", SAND = "#e0c894", TERRA = "#b8674a", TURQ = "#3f9aa3", BLUE = "#2f5f9a", CREAM = "#f3e9d2", WOOD = "#5a3a22", BREAD = "#d9a05a";
+const beat = (k:number, start=0, end=1) => k>0 ? Math.sin(Math.PI*Math.min(1,Math.max(0,((1-k)-start)/(end-start)))) : 0;
+/** Fixed beads describe a pour or a bounded ingredient arc; no click-time allocation. */
+function transfer(g:P,name:string,color:string,from:THREE.Vector3,to:THREE.Vector3,count=7){
+  const beads=Array.from({length:count},()=>{const m=add(g,ball(.035,color,5),from.x,from.y,from.z);m.name=name;m.visible=false;return m;});
+  return (k:number)=>beads.forEach((m,i)=>{const p=((1-k)-i*.025)/.5,q=Math.max(0,Math.min(1,p));m.visible=k>0&&p>0&&p<1;m.position.lerpVectors(from,to,q);m.position.y+=Math.sin(q*Math.PI)*.15;});
+}
+function deferredBubble(target:THREE.Object3D,text:string,y:number,ms:number){
+  let delay=-1;
+  return {
+    schedule(){delay=.28;},
+    tick(dt:number){if(delay<0)return;delay-=dt;if(delay<=0){delay=-1;bubble(target,text,y,ms);}},
+  };
+}
 
 /** an oasis house: thick ochre walls, a flat roof with a low parapet, a carved wooden door painted turquoise, a shaded porch on wooden posts */
 export function oasisHouse(w = 3.6, d = 2.8, h = 2.2, porch = true): P {
@@ -66,7 +79,7 @@ export function kebabGrill(): P {
   trellis(g, 0.6, 0.4, 4.6, 3.0);
   add(g, box(3.4, 0.7, 0.5, "#4a4a50"), -0.6, 0.6, -1.5); add(g, box(3.2, 0.06, 0.4, "#ff6a2a"), -0.6, 0.98, -1.5);
   const embers = add(g, box(3.0, 0.04, 0.3, "#ffb060"), -0.6, 1.0, -1.5);
-  const skewers = Array.from({ length: 10 }, (_, i) => { const s = new THREE.Group(); s.position.set(-2.0 + i * 0.32, 1.1, -1.5); g.add(s); add(s, cyl(0.012, 0.012, 0.8, "#6a5a4a", 3), 0, 0, 0).rotation.x = Math.PI / 2; for (let k = 0; k < 4; k++) add(s, box(0.09, 0.08, 0.1, k === 1 ? "#e8c9a0" : "#a54a30"), 0, 0, -0.28 + k * 0.16); return s; });
+  const skewers = Array.from({ length: 10 }, (_, i) => { const s = new THREE.Group(); s.position.set(-2.0 + i * 0.32, 1.1, -1.5);if(i===4||i===5)s.name='kebab-skewer'; g.add(s); add(s, cyl(0.012, 0.012, 0.8, "#6a5a4a", 3), 0, 0, 0).rotation.x = Math.PI / 2; for (let k = 0; k < 4; k++) add(s, box(0.09, 0.08, 0.1, k === 1 ? "#e8c9a0" : "#a54a30"), 0, 0, -0.28 + k * 0.16); return s; });
   const griller = add(g, person("#3f4a5a", { apron: true }), -0.6, 0, -1.95) as Fig;
   const fan = add(arms(griller)!.right, box(0.24, 0.02, 0.2, C.straw), 0.05, -0.34, 0.08);
   add(g, cyl(0.16, 0.14, 0.1, "#c9a86a", 9), 1.4, 0.65, -1.5); add(g, cyl(0.12, 0.1, 0.1, "#b8462a", 8), 1.75, 0.65, -1.45);   // cumin, chilli
@@ -80,15 +93,17 @@ export function kebabGrill(): P {
     for (let i = 0; i < 2; i++) { const p = person(pick(["#c0392b", "#2f5f9a", "#e0a52c", "#3f9aa3"])); (p.userData as { sit?: () => void }).sit?.(); const q = add(g, p, x, -0.03, z + (i ? 0.85 : -0.85)); q.rotation.y = i ? Math.PI : 0; add(g, box(1.2, 0.06, 0.3, WOOD), x, 0.38, z + (i ? 0.85 : -0.85)); for (const dx of [-0.45, 0.45]) add(g, box(0.08, 0.35, 0.25, WOOD), x + dx, 0.175, z + (i ? 0.85 : -0.85)); guests.push(q as Fig); }
   }
   g.userData.smoke = new THREE.Vector3(-0.6, 1.3, -1.5);
-  const re = reaction(0.6);
-  g.userData.poke = () => { re.poke(); bubble(griller, "Kawap! · Lamb skewers!", 1.6, 1500); };
+  g.userData.ownReaction = true; const re = reaction(0.285);
+  const speech=deferredBubble(griller,"Kawap! · Lamb skewers!",1.6,1500);
+  g.userData.poke = () => { re.poke(); speech.schedule(); };
   const chat = ambientChat(g, XJ_LINES);
   g.userData.tick = (t, dt) => {
-    const k = re.step(dt); hopFood(g, k, t, dt); chat(dt);
-    skewers.forEach((s, i) => { s.rotation.z = Math.floor(t * 0.4 + i * 0.25) * Math.PI + k * Math.sin(t * 8 + i) * 0.6; s.position.y = 1.1 + k * Math.abs(Math.sin(t * 10 + i)) * 0.08; });
+    const k = re.step(dt); chat(dt);
+    skewers.forEach((s,i) => { const active=i===4||i===5,pulse=active?beat(k,0,.78):0;s.rotation.z=pulse*Math.PI/2;s.position.y=1.1+pulse*.38; });
     (embers.material as THREE.MeshStandardMaterial).emissive = new THREE.Color(k > 0.05 ? "#ff8a40" : "#552200");
-    fan.rotation.x = Math.sin(t * (2 + k * 12)) * 0.5; const ug = upper(griller); if (ug) ug.rotation.x = 0.2 + k * Math.abs(Math.sin(t * 10)) * 0.1;
-    guests.forEach((p, i) => { const u = upper(p); if (u) { u.rotation.z = Math.sin(t * 0.8 + i * 1.7) * 0.06; u.rotation.x = 0.05 - k * 0.2; } });
+    fan.rotation.x = Math.sin(t*2)*.1+beat(k,.2,.8)*Math.sin(t*12)*.6; const ug = upper(griller); if (ug) ug.rotation.x = .2+beat(k,.2,.8)*.1;
+    guests.forEach((p, i) => { const u = upper(p); if (u) { u.rotation.z = Math.sin(t * 0.8 + i * 1.7) * 0.06; u.rotation.x = .05-(i===0?beat(k,.55,1)*.2:0); } });
+    speech.tick(dt);
     tickChildren(g)(t, dt);
   };
   return g;
@@ -104,6 +119,8 @@ export function naanBakery(): P {
   add(g, box(2.4, 0.85, 1.0, WOOD), -0.6, 0.42, 1.2); add(g, box(2.2, 0.03, 0.8, "#f7f1e3"), -0.6, 0.86, 1.2);
   for (let i = 0; i < 4; i++) add(g, ball(0.11, "#f0e2c4", 7), -1.5 + i * 0.28, 0.96, 1.0).scale.y = 0.8;   // dough balls
   const round = add(g, cyl(0.24, 0.24, 0.02, "#f0e2c4", 14), -0.3, 0.88, 1.35);          // a shaped nan with its stamped centre
+  const hotBread=add(g,cyl(.25,.25,.045,BREAD,14),1.9,1.19,.9);hotBread.name='tonur-bread';
+  const breadPaddle=add(g,box(.55,.035,.5,WOOD),1.9,1.15,.9);add(breadPaddle,box(.85,.025,.06,WOOD),-.65,0,0);
   add(round, cyl(0.1, 0.1, 0.005, "#e0c894", 12), 0, 0.012, 0);
   const breads = Array.from({ length: 7 }, (_, i) => add(g, cyl(0.26, 0.26, 0.05, i % 2 ? BREAD : "#c98a4a", 14), 0.7, 0.9 + i * 0.05, 1.5));   // the stack for sale
   for (let i = 0; i < 4; i++) { const b = add(g, cyl(0.24, 0.24, 0.05, BREAD, 14), -1.6 + i * 0.5, 1.9, -0.05); b.rotation.x = Math.PI / 2 + 0.2; }   // breads on the wall shelf
@@ -113,16 +130,20 @@ export function naanBakery(): P {
   const buyers = [person("#c0392b"), person("#e0a52c")].map((p, i) => { const q = add(g, p, 0.2 + i * 1.0, 0, 2.3); q.rotation.y = Math.PI; if (i) q.scale.setScalar(0.65); return q as Fig; });
   add(g, box(0.5, 0.7, 0.05, CREAM), -1.7, 1.6, 0.5);
   g.userData.smoke = new THREE.Vector3(1.9, 1.4, 0.9);
-  const re = reaction(0.6);
-  g.userData.poke = () => { re.poke(); bubble(baker, "Nan! · Fresh bread!", 1.6, 1500); };
+  g.userData.ownReaction = true; const re = reaction(0.285);
+  const speech=deferredBubble(baker,"Nan! · Fresh bread!",1.6,1500);
+  g.userData.poke = () => { re.poke(); speech.schedule(); };
   const chat = ambientChat(g, XJ_LINES);
   g.userData.tick = (t, dt) => {
-    const k = re.step(dt); hopFood(g, k, t, dt); chat(dt);
+    const k = re.step(dt); chat(dt);
     glow.scale.setScalar((0.9 + Math.sin(t * 8) * 0.1) * (1 + k * 0.3));
     const ub = upper(baker); if (ub) { ub.rotation.x = 0.3 * k * Math.sin(Math.min(1, k * 2) * Math.PI) + 0.1; } paddle.rotation.x = 1.0 - k * 1.2 * Math.sin(Math.min(1, k * 2) * Math.PI);
     const us = upper(shaper); if (us) us.rotation.x = 0.3 + Math.sin(t * (2 + k * 6)) * 0.1 * (1 + k); round.rotation.y = t * 0.5 * (1 + k * 6);
-    breads.forEach((b, i) => { b.position.y = 0.9 + i * 0.05 + k * Math.abs(Math.sin(t * 9 + i)) * 0.02; });
-    buyers.forEach((p, i) => { const u = upper(p); if (u) u.rotation.z = Math.sin(t * 1.1 + i) * 0.05 + k * Math.sin(t * 6 + i) * 0.12; });
+    hotBread.scale.y=1+beat(k,0,.45)*1.6;hotBread.position.set(1.9-beat(k,.2,.85)*.55,1.19+beat(k,.2,.85)*.45,.9);
+    breadPaddle.position.copy(hotBread.position);breadPaddle.position.y-=.04;
+    breads.forEach((b, i) => { b.position.y = 0.9 + i * 0.05; });
+    buyers.forEach((p, i) => { const a=arms(p);if(a&&i===0)a.right.rotation.x=-beat(k,.6,1)*.9; });
+    speech.tick(dt);
     tickChildren(g)(t, dt);
   };
   return g;
@@ -136,7 +157,9 @@ export function poloKitchen(): P {
   for (const x of [-2.2, 2.2]) add(g, cyl(0.07, 0.08, 2.4, WOOD, 6), x, 1.2, 1.6); add(g, box(5.2, 0.08, 4.0, WOOD), 0, 2.45, 0); for (let i = 0; i < 8; i++) add(g, box(5.0, 0.03, 0.08, "#7a5a3a"), 0, 2.5, -1.8 + i * 0.5);
   add(g, box(1.6, 0.8, 1.6, "#a5713f"), -1.2, 0.4, -0.6); add(g, cone(0.14, 0.18, "#ff7a3c", 6), -1.2, 0.35, 0.22);
   const kazan = add(g, ball(0.7, "#3a3a3f", 12), -1.2, 1.05, -0.6); kazan.scale.y = 0.6;
-  add(g, cyl(0.58, 0.58, 0.06, "#e6b455", 14), -1.2, 1.3, -0.6);                   // rice with carrot showing
+  const rice=add(g,group(),-1.2,1.3,-.6);rice.name='polo-rice';add(rice,cyl(.58,.58,.06,'#e6b455',14),0,0,0);
+  const toppings:THREE.Mesh[]=[];
+  for(let i=0;i<7;i++){const topping=add(rice,box(.16,.035,.04,'#e8823f'),Math.cos(i)*.34,.045,Math.sin(i)*.34);topping.rotation.y=i;if(i<3){topping.name='polo-topping';toppings.push(topping);}}
   for (let i = 0; i < 8; i++) add(g, box(0.12, 0.04, 0.04, "#e8823f"), -1.2 + (rnd() - 0.5) * 0.8, 1.34, -0.6 + (rnd() - 0.5) * 0.8).rotation.y = rnd() * 3;
   for (let i = 0; i < 3; i++) add(g, ball(0.09, "#8a4a30", 6), -1.2 + (rnd() - 0.5) * 0.6, 1.36, -0.6 + (rnd() - 0.5) * 0.6);
   const cook = add(g, person("#3f4a5a", { apron: true }), -1.2, 0, 0.7) as Fig; cook.rotation.y = Math.PI;
@@ -147,14 +170,16 @@ export function poloKitchen(): P {
   add(g, cyl(0.24, 0.28, 0.5, "#e6dcc4", 9), 1.4, 0.25, 0.6);                        // sack of rice
   const waiting = [person("#c0392b"), person("#2f5f9a"), person("#e0a52c")].map((p, i) => { const q = add(g, p, 0.4 + i * 0.8, 0, 1.4 + (i % 2) * 0.4); q.rotation.y = Math.PI + 0.4; q.scale.setScalar(i === 1 ? 0.65 : 0.95); return q as Fig; });
   g.userData.steam = new THREE.Vector3(-1.2, 1.5, -0.6);
-  const re = reaction(0.6);
-  g.userData.poke = () => { re.poke(); bubble(cook, "Polo! · Pilaf is ready!", 1.6, 1500); };
+  g.userData.ownReaction = true; const re = reaction(0.285);
+  const speech=deferredBubble(cook,"Polo! · Pilaf is ready!",1.6,1500);
+  g.userData.poke = () => { re.poke(); speech.schedule(); };
   const chat = ambientChat(g, XJ_LINES);
   g.userData.tick = (t, dt) => {
-    const k = re.step(dt); hopFood(g, k, t, dt); chat(dt);
+    const k = re.step(dt); chat(dt);
     paddle.rotation.z = Math.sin(t * (1.2 + k * 6)) * 0.4 * (0.4 + k); const uc = upper(cook); if (uc) uc.rotation.z = Math.sin(t * (1.2 + k * 6)) * 0.08 * (1 + k);
-    kazan.rotation.y = t * 0.1;
-    waiting.forEach((p, i) => { const u = upper(p); if (u) u.rotation.z = Math.sin(t * 1.1 + i) * 0.05 + k * Math.sin(t * 6 + i) * 0.15; p.position.y = k * Math.abs(Math.sin(t * 9 + i)) * 0.06; });
+    kazan.rotation.y = 0;rice.rotation.y=beat(k)*.35;toppings.forEach((piece,i)=>{piece.position.y=.045+beat(k,i*.06,.82)*(.28+i*.025);});
+    waiting.forEach((p, i) => { const a=arms(p);if(a&&i===0)a.right.rotation.x=-beat(k,.55,1)*.8; });
+    speech.tick(dt);
     tickChildren(g)(t, dt);
   };
   return g;
@@ -167,7 +192,7 @@ export function laghmanShop(): P {
   add(g, box(3.0, 0.85, 1.0, WOOD), -0.4, 0.42, 1.2); add(g, box(2.8, 0.03, 0.8, "#f7f1e3"), -0.4, 0.86, 1.2);
   for (let i = 0; i < 4; i++) add(g, cyl(0.03, 0.03, 0.6, "#f0e2c4", 5), -1.6 + i * 0.12, 0.9, 1.0 + (i % 2) * 0.15).rotation.z = Math.PI / 2;   // oiled ropes resting
   const puller = add(g, person("#3f4a5a", { apron: true }), -0.3, 0, 0.3) as Fig;
-  const rope = new THREE.Group(); rope.position.set(-0.3, 1.25, 0.7); g.add(rope);
+  const rope = new THREE.Group(); rope.name='laghman-rope';rope.position.set(-0.3, 1.25, 0.7); g.add(rope);
   const strands = Array.from({ length: 6 }, (_, i) => add(rope, cyl(0.012, 0.012, 1.1, "#f0e2c4", 4), (i - 2.5) * 0.035, 0, (i % 2) * 0.03)); strands.forEach((s) => { s.rotation.z = Math.PI / 2; });
   add(g, box(1.0, 0.8, 1.0, "#a5713f"), 1.9, 0.4, 0.3); add(g, cone(0.12, 0.16, "#ff7a3c", 6), 1.9, 0.35, 0.85);
   add(g, cyl(0.42, 0.36, 0.42, C.iron, 12), 1.9, 1.0, 0.3); add(g, cyl(0.38, 0.38, 0.03, "#e9dcb8", 12), 1.9, 1.2, 0.3);
@@ -177,16 +202,18 @@ export function laghmanShop(): P {
   for (const x of [-1.85, -0.95]) { add(g, cyl(0.2, 0.15, 0.12, TURQ, 10), x, 0.82, 3.0); add(g, cyl(0.17, 0.17, 0.02, "#e9dcb8", 10), x, 0.89, 3.0); for (let i = 0; i < 4; i++) add(g, ball(0.035, i % 2 ? "#d94f3a" : "#6f9b57", 4), x + (rnd() - 0.5) * 0.2, 0.92, 3.0 + (rnd() - 0.5) * 0.2); }
   [-2.3, -0.5].forEach((x, i) => { const p = person(i ? "#e0a52c" : "#2f5f9a"); (p.userData as { sit?: () => void }).sit?.(); add(g, box(0.4, 0.3, 0.4, WOOD), x, 0.15, 3.0); const q = add(g, p, x, -0.14, 3.0); q.rotation.y = i ? -Math.PI / 2 : Math.PI / 2; diners.push(q as Fig); });
   g.userData.steam = new THREE.Vector3(1.9, 1.45, 0.3);
-  const re = reaction(0.5);
-  g.userData.poke = () => { re.poke(); bubble(puller, "Leghmen! · Hand-pulled noodles!", 1.6, 1500); };
+  g.userData.ownReaction = true; const re = reaction(0.285);
+  const speech=deferredBubble(puller,"Leghmen! · Hand-pulled noodles!",1.6,1500);
+  g.userData.poke = () => { re.poke(); speech.schedule(); };
   const chat = ambientChat(g, XJ_LINES);
   g.userData.tick = (t, dt) => {
-    const k = re.step(dt); hopFood(g, k, t, dt); chat(dt);
-    rope.scale.x = 1 + k * (0.6 + Math.abs(Math.sin(t * 3)) * 0.9); rope.rotation.z = Math.sin(t * (1.5 + k * 4)) * 0.18 * (1 + k);
-    strands.forEach((s, i) => { s.position.y = Math.sin(t * 6 + i) * 0.03 * (1 + k * 3); });
+    const k = re.step(dt); chat(dt);
+    const slap=beat(k,.2,.88);rope.scale.x = 1 + beat(k,0,.75)*.9; rope.rotation.z = 0;rope.position.y=1.25-slap*.30;rope.position.z=.7+slap*.50;
+    strands.forEach((s, i) => { s.position.y = Math.max(-.045,Math.sin(t * 6 + i) * .045); });
     const up = upper(puller); if (up) up.rotation.z = Math.sin(t * (1.5 + k * 4)) * 0.12 * (1 + k);
     const a = arms(puller); if (a) { a.left.rotation.x = -1.2; a.right.rotation.x = -1.2; a.left.rotation.z = 0.4 + k * 0.5; a.right.rotation.z = -0.4 - k * 0.5; }
     diners.forEach((p, i) => { const u = upper(p); if (u) u.rotation.x = 0.15 + Math.sin(t * 1.3 + i) * 0.05; });
+    speech.tick(dt);
     tickChildren(g)(t, dt);
   };
   return g;
@@ -207,13 +234,19 @@ export function oasisBazaar(): P {
   const sellers = [person("#2f5f9a", { apron: true }), person("#c0392b", { apron: true }), person("#e9d7b8", { apron: true })].map((p, i) => add(g, p, -2.2 + i * 2.6, 0, -1.3)) as Fig[];
   const shoppers = [person("#e0a52c"), person("#3f9aa3"), person("#7a4a3a")].map((p, i) => { const q = add(g, p, -1.4 + i * 1.6, 0, 1.2 + (i % 2) * 0.5); q.rotation.y = Math.PI + (i - 1) * 0.3; q.scale.setScalar(i === 1 ? 0.65 : 0.95); return q as Fig; });
   for (let i = 0; i < 3; i++) add(g, cyl(0.24, 0.2, 0.3, C.straw, 9), -3.2 + i * 0.5, 0.15, 1.5);
-  const re = reaction(0.6);
-  g.userData.poke = () => { re.poke(); bubble(sellers[0], "Tatliq qoghun! · Sweet melon!", 1.6, 1600); };
+  add(g,box(.06,.4,.06,WOOD),-2.2,1,-.2);
+  const pan=add(g,cyl(.32,.25,.055,'#b87333',12),-2.2,.98,-.2);pan.name='melon-scale-pan';
+  const melon=add(g,ball(.20,'#b8c981',8),-2.6,1.03,-.2);melon.name='weighed-melon';
+  g.userData.ownReaction = true; const re = reaction(0.285);
+  const speech=deferredBubble(sellers[0],"Tatliq qoghun! · Sweet melon!",1.6,1600);
+  g.userData.poke = () => { re.poke(); speech.schedule(); };
   const chat = ambientChat(g, XJ_LINES);
   g.userData.tick = (t, dt) => {
-    const k = re.step(dt); hopFood(g, k, t, dt); chat(dt);
-    sellers.forEach((p, i) => { const u = upper(p); if (u) u.rotation.z = Math.sin(t * 1.1 + i) * 0.05 + k * Math.sin(t * 6 + i) * 0.2; const a = arms(p); if (a && i === 0) a.right.rotation.x = -0.4 - k * 1.6; });
-    shoppers.forEach((p, i) => { const u = upper(p); if (u) u.rotation.z = Math.sin(t * 0.9 + i * 1.7) * 0.05 + k * Math.sin(t * 5 + i) * 0.1; });
+    const k = re.step(dt); chat(dt);
+    const land=beat(k,0,.75);pan.position.y=.98-land*.06;melon.position.set(-2.6+land*.4,1.0+land*.14+Math.sin(land*Math.PI)*.18,-.2);
+    sellers.forEach((p, i) => { const a = arms(p); if (a && i === 0) a.right.rotation.x = -.4-beat(k,.25,.8)*1.2; });
+    shoppers.forEach((p, i) => { const u = upper(p); if(u&&i===0)u.rotation.x=beat(k,.6,1)*.14; });
+    speech.tick(dt);
     tickChildren(g)(t, dt);
   };
   return g;
@@ -228,19 +261,23 @@ export function grapeCourtyard(): P {
   add(g, box(2.2, 0.06, 1.4, WOOD), 0, 0.42, 0.2); for (const [dx, dz] of [[-1.0, -0.6], [1.0, -0.6], [-1.0, 0.6], [1.0, 0.6]]) add(g, box(0.08, 0.4, 0.08, WOOD), dx, 0.2, 0.2 + dz);
   add(g, box(2.0, 0.02, 1.2, "#b8462a"), 0, 0.46, 0.2);
   add(g, cyl(0.14, 0.11, 0.24, TURQ, 10), -0.6, 0.58, 0.0); add(g, cyl(0.03, 0.03, 0.18, TURQ, 5), -0.42, 0.66, 0.0).rotation.z = -0.8;   // teapot
-  for (let i = 0; i < 4; i++) add(g, cyl(0.06, 0.05, 0.06, CREAM, 8), -0.2 + (i % 2) * 0.35, 0.49, -0.2 + Math.floor(i / 2) * 0.5);
+  let courtyardBowl:THREE.Mesh|undefined;
+  for (let i = 0; i < 4; i++){const bowl=add(g, cyl(0.06, 0.05, 0.06, CREAM, 8), -0.2 + (i % 2) * 0.35, 0.49, -0.2 + Math.floor(i / 2) * 0.5);if(i===0){bowl.name='courtyard-tea-bowl';courtyardBowl=bowl;}}
   add(g, cyl(0.24, 0.24, 0.04, BREAD, 14), 0.5, 0.48, 0.2); add(g, ball(0.14, "#a9c87a", 8), 0.2, 0.55, 0.55).scale.y = 0.7;
   for (let i = 0; i < 6; i++) add(g, ball(0.03, i % 2 ? "#e8a53f" : "#8a4a30", 4), 0.8 + (i % 3) * 0.08, 0.5, 0.55 + Math.floor(i / 3) * 0.08);   // dried apricots and raisins
   const family: Fig[] = [];
   for (const [x, z, col, s] of [[-1.5, 0.3, "#c0392b", 1], [1.5, 0.2, "#2f5f9a", 1], [0, 1.5, "#e0a52c", 0.65], [-0.7, 1.4, "#3f9aa3", 0.6]] as [number, number, string, number][]) { const p = person(col); (p.userData as { sit?: () => void }).sit?.(); const q = add(g, p, x, 0.25 - 0.44 * s, z); q.scale.setScalar(s); q.rotation.y = Math.atan2(0 - x, 0.2 - z); add(g, box(0.5, 0.06, 0.5, i2c(col)), x, 0.03, z); family.push(q as Fig); }
   add(g, poplar(0.8), 2.8, 0, -1.6);
-  const re = reaction(0.5);
-  g.userData.poke = () => { re.poke(); bubble(g, "Qeni, chay iching! · Please have some tea!", 2.6, 1600); };
+  const pour=transfer(g,'courtyard-tea','#9c5928',new THREE.Vector3(-.35,.74,0),new THREE.Vector3(-.2,.52,-.2));
+  g.userData.ownReaction = true; const re = reaction(0.285);
+  const speech=deferredBubble(g,"Qeni, chay iching! · Please have some tea!",2.6,1600);
+  g.userData.poke = () => { re.poke(); speech.schedule(); };
   const chat = ambientChat(g, XJ_LINES);
   g.userData.tick = (t, dt) => {
-    const k = re.step(dt); hopFood(g, k, t, dt); chat(dt);
-    grapes.forEach((c, i) => { c.rotation.z = Math.sin(t * 1.1 + i) * 0.05 + k * Math.sin(t * 6 + i) * 0.25; c.rotation.x = Math.cos(t * 0.9 + i) * 0.04 + k * Math.cos(t * 5 + i) * 0.2; });
-    family.forEach((p, i) => { const u = upper(p); if (u) { u.rotation.z = Math.sin(t * 0.8 + i * 1.7) * 0.06; u.rotation.x = 0.05 - k * 0.15; } const a = arms(p); if (a && i === 0) a.right.rotation.x = -0.8 - k * Math.sin(Math.min(1, k * 2) * Math.PI) * 1.2; });
+    const k = re.step(dt); chat(dt);
+    pour(k);if(courtyardBowl)courtyardBowl.position.y=.49+beat(k,.22,.86)*.26;grapes.forEach((c, i) => { c.rotation.z = Math.sin(t * 1.1 + i) * 0.05 + (i===0?beat(k)*Math.sin(t*6)*.25:0); });
+    family.forEach((p, i) => {const a=arms(p);if(a&&(i===0||i===2))a.right.rotation.x=-.6-beat(k,i===0?.25:.6,1)*.8;});
+    speech.tick(dt);
     tickChildren(g)(t, dt);
   };
   return g;
@@ -260,14 +297,18 @@ export function oasisField(): P {
   const farmers = [add(g, person("#2f5f9a", { hat: true }), -0.4, 0.2, 0.2), add(g, person("#e9d7b8", { hat: true }), -2.4, 0.2, 1.6)] as Fig[];
   add(g, cyl(0.3, 0.24, 0.3, C.straw, 9), 0.4, 0.15, 1.8); for (let i = 0; i < 3; i++) add(g, ball(0.16, "#a9c87a", 7), 0.4 + (rnd() - 0.5) * 0.3, 0.42 + (i % 2) * 0.1, 1.8 + (rnd() - 0.5) * 0.3).scale.set(1.3, 0.9, 1);
   add(g, box(1.0, 0.2, 0.1, "#b39a6a"), -3.4, 0.28, -1.8); const gateBoard = add(g, box(0.1, 0.5, 0.5, WOOD), -3.4, 0.4, -1.8);   // the sluice gate
-  const re = reaction(0.5);
-  g.userData.poke = () => { re.poke(); bubble(g, "Su! · Water! The channel is open", 2.0, 1600); };
+  const flow=Array.from({length:5},()=>{const m=add(g,box(.36,.018,.34,'#d6f0e8'),-3.2,.28,-1.8);m.name='sluice-water';m.visible=false;return m;});
+  g.userData.ownReaction = true; const re = reaction(0.285);
+  const speech=deferredBubble(g,"Su! · Water! The channel is open",2.0,1600);
+  g.userData.poke = () => { re.poke(); speech.schedule(); };
   const chat = ambientChat(g, XJ_LINES);
   g.userData.tick = (t, dt) => {
-    const k = re.step(dt); hopFood(g, k, t, dt); chat(dt);
-    gateBoard.position.y = 0.4 + k * 0.4;
-    farmers.forEach((p, i) => { const u = upper(p); if (u) u.rotation.x = 0.4 + Math.sin(t * (1.2 + k * 4) + i) * 0.12 * (1 + k); });
-    melons.forEach((m, i) => { m.position.y = 0.38 + k * Math.abs(Math.sin(t * 8 + i)) * 0.05; });
+    const k = re.step(dt); chat(dt);
+    gateBoard.position.y = 0.4 + beat(k,0,.76) * 0.4;
+    flow.forEach((m,i)=>{const p=(1-k)-i*.06;m.visible=k>0&&p>0&&p<.8;m.position.x=-3.2+Math.max(0,p)*8;});
+    farmers.forEach((p, i) => { const u = upper(p); if (u) u.rotation.x = .4+(i===0?beat(k,.25,1)*.22:0); });
+    melons.forEach(m=>{m.position.y=.38;});
+    speech.tick(dt);
     tickChildren(g)(t, dt);
   };
   return g;
@@ -281,18 +322,22 @@ export function chaikhana(): P {
   for (const x of [-1.9, 1.9]) add(g, cyl(0.07, 0.08, 2.2, WOOD, 6), x, 1.1, 2.2); add(g, box(4.4, 0.08, 2.8, WOOD), 0, 2.25, 1.0); for (let i = 0; i < 5; i++) add(g, box(4.2, 0.03, 0.08, "#7a5a3a"), 0, 2.3, -0.2 + i * 0.6);
   add(g, box(1.2, 0.06, 0.8, WOOD), 0, 0.72, 1.0); for (const [dx, dz] of [[-0.5, -0.3], [0.5, -0.3], [-0.5, 0.3], [0.5, 0.3]]) add(g, box(0.06, 0.24, 0.06, WOOD), dx, 0.6, 1.0 + dz);
   add(g, cyl(0.13, 0.1, 0.22, TURQ, 10), -0.3, 0.86, 1.0); add(g, cyl(0.13, 0.1, 0.22, CREAM, 10), 0.3, 0.86, 0.85);
-  for (let i = 0; i < 4; i++) add(g, cyl(0.06, 0.05, 0.05, i % 2 ? TURQ : CREAM, 8), -0.4 + i * 0.27, 0.78, 1.3);
+  let teaBowl:THREE.Mesh|undefined;
+  for (let i = 0; i < 4; i++){const bowl=add(g, cyl(0.06, 0.05, 0.05, i % 2 ? TURQ : CREAM, 8), -0.4 + i * 0.27, 0.78, 1.3);if(i===1){bowl.name='chaikhana-tea-bowl';teaBowl=bowl;}}
   add(g, cyl(0.2, 0.2, 0.04, BREAD, 14), 0.4, 0.77, 0.7); for (let i = 0; i < 6; i++) add(g, ball(0.03, i % 2 ? "#e8a53f" : "#c9a86a", 4), -0.5 + (i % 3) * 0.08, 0.78, 0.7 + Math.floor(i / 3) * 0.08);
   const guests: Fig[] = [];
   for (const [x, z, col] of [[-1.3, 0.6, "#c0392b"], [1.3, 0.6, "#2f5f9a"], [-1.2, 1.6, "#e0a52c"], [1.2, 1.6, "#3f9aa3"]] as [number, number, string][]) { const p = person(col); (p.userData as { sit?: () => void }).sit?.(); const q = add(g, p, x, 0.2, z); q.rotation.y = Math.atan2(0 - x, 1.0 - z); guests.push(q as Fig); }
   add(g, cyl(0.2, 0.22, 0.5, "#b87333", 10), 2.4, 0.7, 0.2); add(g, cyl(0.06, 0.06, 0.4, "#b87333", 6), 2.4, 1.1, 0.2);   // the samovar
   g.userData.steam = new THREE.Vector3(2.4, 1.35, 0.2);
-  const re = reaction(0.5);
-  g.userData.poke = () => { re.poke(); bubble(g, "Chay! · Tea! Stay for a chat", 2.5, 1600); };
+  const pour=transfer(g,'chaikhana-tea','#9c5928',new THREE.Vector3(-.3,1.03,1),new THREE.Vector3(-.13,.82,1.3));
+  g.userData.ownReaction = true; const re = reaction(0.285);
+  const speech=deferredBubble(g,"Chay! · Tea! Stay for a chat",2.5,1600);
+  g.userData.poke = () => { re.poke(); speech.schedule(); };
   const chat = ambientChat(g, XJ_LINES);
   g.userData.tick = (t, dt) => {
-    const k = re.step(dt); hopFood(g, k, t, dt); chat(dt);
-    guests.forEach((p, i) => { const u = upper(p); if (u) { u.rotation.z = Math.sin(t * 0.8 + i * 1.7) * 0.06; u.rotation.y = Math.sin(t * 0.5 + i) * 0.15 + k * 0.3; u.rotation.x = 0.05 - k * 0.15; } const a = arms(p); if (a && i % 2 === 0) a.right.rotation.x = -0.8 - k * Math.sin(Math.min(1, k * 2) * Math.PI) * 1.0; });
+    const k = re.step(dt); chat(dt);
+    pour(k);if(teaBowl)teaBowl.position.y=.78+beat(k,.22,.86)*.26;guests.forEach((p,i)=>{const a=arms(p);if(a&&i<2)a.right.rotation.x=-.8-beat(k,i===0?.5:.72,.95)*.35;});
+    speech.tick(dt);
     tickChildren(g)(t, dt);
   };
   return g;
@@ -314,15 +359,17 @@ export function caravanStop(): P {
   for (let i = 0; i < 3; i++) add(g, cyl(0.2, 0.2, 0.04, BREAD, 12), -0.2 + i * 0.05, 0.14 + i * 0.045, 1.6);
   add(g, poplar(0.9), 3.2, 0, -1.9); add(g, poplar(0.7), -3.3, 0, 1.9);
   g.userData.smoke = new THREE.Vector3(-0.6, 0.9, 0.6);
-  const re = reaction(0.5);
-  g.userData.poke = () => { re.poke(); bubble(trader, "Yaxshimusiz? · Hello, traveller!", 1.6, 1800); };
+  g.userData.ownReaction = true; const re = reaction(0.285);
+  const speech=deferredBubble(trader,"Yaxshimusiz? · Hello, traveller!",1.6,1800);
+  g.userData.poke = () => { re.poke(); speech.schedule(); };
   const chat = ambientChat(g, XJ_LINES);
   g.userData.tick = (t, dt) => {
-    const k = re.step(dt); hopFood(g, k, t, dt); chat(dt);
+    const k = re.step(dt); chat(dt);
     fire.scale.setScalar((0.85 + Math.sin(t * 9) * 0.15) * (1 + k * 0.5));
     camels.forEach((c, i) => { c.children[3].rotation.z = -0.6 + Math.sin(t * 0.7 + i) * 0.05 + k * Math.sin(t * 3 + i) * 0.15; });
-    travellers.forEach((p, i) => { const u = upper(p); if (u) { u.rotation.z = Math.sin(t * 0.8 + i * 1.7) * 0.06; u.rotation.x = 0.05 - k * 0.15; } });
+    travellers.forEach((p, i) => { const u = upper(p); if (u) { u.rotation.z = Math.sin(t * 0.8 + i * 1.7) * 0.06; u.rotation.x = .05-(i===0?beat(k,.6,1)*.15:0); } });
     const ut = upper(trader); if (ut) { ut.rotation.z = k * Math.sin(t * 5) * 0.2; } const a = arms(trader); if (a) a.right.rotation.x = -0.5 - k * 1.4;
+    speech.tick(dt);
     tickChildren(g)(t, dt);
   };
   return g;
@@ -341,8 +388,8 @@ export function xjHomeKitchen(): P {
   add(g, oasisHouse(4.2, 3.0, 2.2, true), 0, 0, -1.2);
   add(g, box(2.0, 0.7, 1.0, WOOD), -1.0, 0.35, 1.2); add(g, box(1.9, 0.04, 0.9, CREAM), -1.0, 0.72, 1.2);   // the board table
   for (let i = 0; i < 3; i++) add(g, ball(0.11, "#f0e2c4", 7), -1.6 + i * 0.3, 0.82, 1.0).scale.y = 0.75;   // dough balls
-  add(g, cyl(0.03, 0.03, 0.5, "#c9a86a", 6), -0.7, 0.76, 1.35).rotation.z = Math.PI / 2;                    // the rolling pin
-  add(g, cyl(0.22, 0.22, 0.02, "#f0e2c4", 14), -0.4, 0.75, 1.1);                                              // a rolled round
+  const pin=add(g, cyl(0.03, 0.03, 0.5, "#c9a86a", 6), -.4,.79,1.1);pin.rotation.z = Math.PI / 2;
+  const dough=add(g, cyl(0.22, 0.22, 0.02, "#f0e2c4", 14), -.4,.75,1.1);dough.name='home-dough';
   add(g, box(1.1, 0.9, 1.1, TERRA), 1.4, 0.45, 1.0); const kazan = add(g, ball(0.5, "#3a3a3f", 12), 1.4, 0.95, 1.0); kazan.scale.y = 0.55;
   const fire = add(g, cone(0.14, 0.3, "#ff7a3c", 6), 1.4, 0.2, 1.62);
   for (let i = 0; i < 4; i++) add(g, ball(0.09, i % 2 ? "#d94f3a" : "#e6d2f0", 6), 0.3 + (i % 2) * 0.22, 0.09, 1.9 + Math.floor(i / 2) * 0.22);   // tomatoes and onions in a heap
@@ -350,15 +397,18 @@ export function xjHomeKitchen(): P {
   const cook = add(g, person("#c0392b", { apron: true }), -1.0, 0, 2.0) as Fig; cook.rotation.y = Math.PI;
   const child = add(g, person("#e0a52c"), 0.4, 0, 2.3) as Fig; child.scale.setScalar(0.7); child.rotation.y = 2.6;
   g.userData.steam = new THREE.Vector3(1.4, 1.25, 1.0);
-  const re = reaction(0.5);
-  g.userData.poke = () => { re.poke(); bubble(cook, "Nan · Bread starts with dough", 1.9, 1700); };
+  g.userData.ownReaction = true; const re = reaction(0.285);
+  const speech=deferredBubble(cook,"Nan · Bread starts with dough",1.9,1700);
+  g.userData.poke = () => { re.poke(); speech.schedule(); };
   const chat = ambientChat(g, XJ_LINES);
   g.userData.tick = (t, dt) => {
-    const k = re.step(dt); hopFood(g, k, t, dt); chat(dt);
+    const k = re.step(dt); chat(dt);
     fire.scale.setScalar(0.85 + Math.sin(t * 9) * 0.15 + k * 0.4);
+    dough.position.y=.75+beat(k,0,.78)*.30;dough.scale.set(1+beat(k)*.35,1-beat(k)*.4,1+beat(k)*.35);pin.position.z=1.1+beat(k,.45,.9)*.18;
     const a = arms(cook); if (a) { a.left.rotation.x = -1.0 + Math.sin(t * 2.2) * 0.25 * (1 + k); a.right.rotation.x = -1.0 - Math.sin(t * 2.2) * 0.25 * (1 + k); }
     const u = upper(cook); if (u) u.rotation.x = 0.25 + Math.sin(t * 2.2) * 0.05;
     const uc = upper(child); if (uc) uc.rotation.z = Math.sin(t * 1.5) * 0.08 + k * Math.sin(t * 6) * 0.2;
+    speech.tick(dt);
     tickChildren(g)(t, dt);
   };
   return g;
@@ -371,7 +421,7 @@ export function eveningFeast(): P {
   trellis(g, 0, 0, 6.6, 4.4, 2.5);
   add(g, box(4.4, 0.4, 1.2, WOOD), 0, 0.3, 0); add(g, box(4.3, 0.03, 1.1, "#e9dcb8"), 0, 0.52, 0);   // the low table and its cloth
   for (let i = 0; i < 4; i++) add(g, cyl(0.2, 0.2, 0.04, BREAD, 14), -1.6 + i * 1.05, 0.56, -0.3);     // nan
-  add(g, cyl(0.34, 0.28, 0.1, TURQ, 12), 0.2, 0.58, 0.25); for (let i = 0; i < 5; i++) add(g, ball(0.07, i % 2 ? "#e8a53f" : "#d9a05a", 5), 0.2 + (rnd() - 0.5) * 0.4, 0.66, 0.25 + (rnd() - 0.5) * 0.3);   // the polo dish
+  const platter=add(g,group(),.2,.58,.25);platter.name='feast-platter';add(platter,cyl(.34,.28,.1,TURQ,12),0,0,0);const feastFood:THREE.Mesh[]=[];for(let i=0;i<5;i++){const food=add(platter,ball(.07,i%2?'#e8a53f':'#d9a05a',5),(rnd()-.5)*.4,.08,(rnd()-.5)*.3);if(i<3){food.name='feast-food';feastFood.push(food);}}
   for (let i = 0; i < 5; i++) { const sk = add(g, cyl(0.012, 0.012, 0.7, "#6a5a4a", 3), -1.4 + i * 0.12, 0.6, 0.3); sk.rotation.z = Math.PI / 2; sk.rotation.y = 0.3; for (let k = 0; k < 3; k++) add(g, box(0.08, 0.07, 0.09, "#8a4a30"), -1.6 + i * 0.12 + k * 0.18, 0.6, 0.3 - k * 0.06); }   // skewers
   for (let i = 0; i < 3; i++) add(g, ball(0.16, i % 2 ? "#a9c87a" : "#e6d27a", 8), 1.4 + i * 0.3, 0.62, -0.25).scale.set(1.3, 0.9, 1);   // melon
   const guests: Fig[] = [];
@@ -381,13 +431,16 @@ export function eveningFeast(): P {
   for (const c of [guests[2], guests[4]]) { c.scale.setScalar(0.75); c.position.y = -0.03; }   // two children, feet still on the carpet
   const lamps = [-2.4, 2.4].map((x) => { const l = new THREE.Group(); l.position.set(x, 2.4, 0); g.add(l); add(l, cyl(0.02, 0.02, 0.3, WOOD, 4), 0, -0.15, 0); const b = add(l, ball(0.16, "#ffb35a", 8), 0, -0.42, 0); b.scale.y = 1.3; return l; });
   add(g, poplar(0.8), 3.9, 0, -2.2);
-  const re = reaction(0.5);
-  g.userData.poke = () => { re.poke(); bubble(guests[1], "Qeni, olturung! · Please sit and join us!", 1.7, 1800); };
+  g.userData.ownReaction = true; const re = reaction(0.285);
+  const speech=deferredBubble(guests[1],"Qeni, olturung! · Please sit and join us!",1.7,1800);
+  g.userData.poke = () => { re.poke(); speech.schedule(); };
   const chat = ambientChat(g, XJ_LINES);
   g.userData.tick = (t, dt) => {
-    const k = re.step(dt); hopFood(g, k, t, dt); chat(dt);
-    guests.forEach((p, i) => { const u = upper(p); if (u) { u.rotation.z = Math.sin(t * 0.8 + i * 1.7) * 0.06; u.rotation.y = Math.sin(t * 0.5 + i) * 0.12 + k * 0.25; u.rotation.x = 0.05 - k * 0.18; } const a = arms(p); if (a && i % 2 === 0) a.right.rotation.x = -0.7 - k * Math.sin(Math.min(1, k * 2) * Math.PI) * 1.0; });
+    const k = re.step(dt); chat(dt);
+    platter.rotation.y=0;feastFood.forEach((food,i)=>{food.position.y=.08+beat(k,i*.06,.82)*(.30+i*.025);});
+    guests.forEach((p,i)=>{const a=arms(p);if(a&&i<2)a.right.rotation.x=-.7-beat(k,i===0?.25:.6,1)*.9;});
     lamps.forEach((l, i) => { l.rotation.z = Math.sin(t * 1.1 + i) * 0.06 * (1 + k * 2); });
+    speech.tick(dt);
     tickChildren(g)(t, dt);
   };
   return g;
@@ -418,10 +471,11 @@ export function fatTailSheep(): P {
     add(sh, ball(0.15, "#5a4a3a", 7), 0.5, 0.6, 0); for (const dz of [-0.13, 0.13]) add(sh, ball(0.06, "#5a4a3a", 5), 0.55, 0.7, dz).scale.set(0.6, 1, 1.5); for (const [dx, dz] of [[-0.22, -0.14], [0.22, -0.14], [-0.22, 0.14], [0.22, 0.14]]) add(sh, cyl(0.04, 0.04, 0.3, "#5a4a3a", 5), dx, 0.15, dz); return sh; });
   const shepherd = add(g, person("#8a4a30", { hat: true }), 2.5, 0, 0.9) as Fig; shepherd.rotation.y = -Math.PI / 2;
   add(g, cyl(0.02, 0.025, 1.6, "#c9a86a", 4), 2.7, 0.8, 0.7);
-  const re = reaction(0.5);
-  g.userData.poke = () => { re.poke(); bubble(shepherd, "Qoy · Sheep! The tail fat goes on the skewer", 1.7, 1600); };
+  g.userData.ownReaction = true; const re = reaction(0.285);
+  const speech=deferredBubble(shepherd,"Qoy · Sheep! The tail fat goes on the skewer",1.7,1600);
+  g.userData.poke = () => { re.poke(); speech.schedule(); };
   const chat = ambientChat(g, XJ_LINES);
-  g.userData.tick = (t, dt) => { const k = re.step(dt); hopFood(g, k, t, dt); chat(dt); sheep.forEach((sh, i) => { sh.position.y = k * Math.abs(Math.sin(t * 6 + i)) * 0.25; sh.children[2].rotation.z = Math.sin(t * 1.2 + i) * 0.15 - 0.2; }); tickChildren(g)(t, dt); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); chat(dt); sheep.forEach((sh, i) => { sh.position.y = 0;sh.children[1].rotation.x=(i===0?beat(k)*Math.sin(t*14)*.35:0);sh.children[2].rotation.y=(i===0?beat(k)*.4:0);sh.children.slice(5).forEach((leg,j)=>{leg.rotation.z=i===0?beat(k)*Math.sin(t*8+j*Math.PI)*.22:0;}); }); speech.tick(dt);tickChildren(g)(t, dt); };
   return g;
 }
 
@@ -431,12 +485,15 @@ export function cuminStall(): P {
   add(g, box(3.2, 0.1, 2.2, SAND), 0, 0.05, 0);
   add(g, xjDetail("spiceSacks"), -0.6, 0.1, 0.1); add(g, xjDetail("spiceSacks"), 0.9, 0.1, -0.3).rotation.y = 0.7;
   add(g, cyl(0.3, 0.34, 0.5, "#e6dcc4", 9), -1.2, 0.35, -0.6); add(g, cyl(0.26, 0.02, 0.12, "#8a7a4a", 9), -1.2, 0.62, -0.6);   // the big cumin sack
-  add(g, cyl(0.02, 0.02, 0.6, "#b87333", 4), -1.1, 0.75, -0.55).rotation.z = 0.5; add(g, cyl(0.06, 0.04, 0.05, "#b87333", 8), -0.9, 0.66, -0.4);   // brass scoop
+  add(g, cyl(0.02, 0.02, 0.6, "#b87333", 4), -1.1, 0.75, -0.55).rotation.z = 0.5; const scoop=add(g, cyl(0.06, 0.04, 0.05, "#b87333", 8), -0.9, 0.66, -0.4);scoop.name='cumin-scoop';   // brass scoop
   const seller = add(g, person("#3f9aa3", { hat: true }), 0.2, 0, -1.4) as Fig;
-  const re = reaction(0.5);
-  g.userData.poke = () => { re.poke(); bubble(seller, "Zira · Cumin! The smell of every grill", 1.7, 1600); };
+  const dust=transfer(g,'cumin-dust','#b79756',new THREE.Vector3(-.9,.72,-.4),new THREE.Vector3(.4,.42,.3),9);
+  add(g,cyl(.22,.18,.12,'#b87333',10),.4,.32,.3);
+  g.userData.ownReaction = true; const re = reaction(0.285);
+  const speech=deferredBubble(seller,"Zira · Cumin! The smell of every grill",1.7,1600);
+  g.userData.poke = () => { re.poke(); speech.schedule(); };
   const chat = ambientChat(g, XJ_LINES);
-  g.userData.tick = (t, dt) => { const k = re.step(dt); hopFood(g, k, t, dt); chat(dt); const a = arms(seller); if (a) a.right.rotation.x = -0.6 - k * Math.sin(Math.min(1, k * 2) * Math.PI) * 1.2; tickChildren(g)(t, dt); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt),pulse=beat(k,.12,.82); chat(dt);dust(k);scoop.position.y=.66+pulse*.30;scoop.rotation.z=pulse*.85; const a = arms(seller); if (a) a.right.rotation.x = -.6-beat(k,.52,.92)*.35; speech.tick(dt);tickChildren(g)(t, dt); };
   return g;
 }
 
@@ -447,10 +504,14 @@ export function carrotPatch(): P {
   const tops: THREE.Object3D[] = [];
   for (let r = 0; r < 4; r++) for (let i = 0; i < 8; i++) { const x = -1.4 + i * 0.4, z = -0.8 + r * 0.5; add(g, cyl(0.05, 0.02, 0.14, r % 2 ? "#e8a53f" : "#e6d27a", 6), x, 0.14, z); for (let k = 0; k < 3; k++) { const l = add(g, cyl(0.012, 0.02, 0.3, "#5f9a3c", 4), x, 0.34, z); l.rotation.set((k - 1) * 0.3, k * 2.1, 0); tops.push(l); } }
   add(g, cyl(0.3, 0.24, 0.3, C.straw, 9), 2.0, 0.15, 0.4); for (let i = 0; i < 6; i++) add(g, cyl(0.04, 0.02, 0.5, i % 2 ? "#e8a53f" : "#e6d27a", 6), 2.0 + (rnd() - 0.5) * 0.3, 0.4, 0.4 + (rnd() - 0.5) * 0.3).rotation.z = 0.5 + rnd();
-  const re = reaction(0.5);
-  g.userData.poke = () => { re.poke(); bubble(g, "Sewze · Carrots first, then the rice", 1.6, 1600); };
+  const pulled=add(g,group(),-1.4,.1,-.8);pulled.name='pulled-carrot';add(pulled,cone(.065,.3,'#e6d27a',6),0,-.07,0).rotation.z=Math.PI;
+  add(pulled,box(.12,.23,.035,'#5f9a3c'),0,.18,0);
+  const crumbs=transfer(g,'carrot-soil','#8a6a4a',new THREE.Vector3(-1.4,.46,-.8),new THREE.Vector3(-1.2,.13,-.65),5);
+  g.userData.ownReaction = true; const re = reaction(0.285);
+  const speech=deferredBubble(g,"Sewze · Carrots first, then the rice",1.6,1600);
+  g.userData.poke = () => { re.poke(); speech.schedule(); };
   const chat = ambientChat(g, XJ_LINES);
-  g.userData.tick = (t, dt) => { const k = re.step(dt); hopFood(g, k, t, dt); chat(dt); tops.forEach((l, i) => { l.rotation.z = Math.sin(t * 1.5 + i) * 0.1 * (1 + k * 3); }); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); chat(dt);pulled.position.y=.1+beat(k)*.52;crumbs(k); tops.forEach((l, i) => { l.rotation.z = Math.sin(t * 1.5 + i) * .1+(i<3?beat(k)*Math.sin(t*12)*.2:0); }); speech.tick(dt);};
   return g;
 }
 
@@ -464,10 +525,12 @@ export function apricotWalnut(): P {
   add(g, cyl(0.7, 0.7, 0.04, "#d9c28a", 14), 0.2, 0.02, 1.4); for (let i = 0; i < 20; i++) { const a = rnd() * Math.PI * 2, r = rnd() * 0.55; add(g, ball(0.05, i % 2 ? "#e8823f" : "#c9a86a", 5), 0.2 + Math.cos(a) * r, 0.07, 1.4 + Math.sin(a) * r).scale.y = 0.7; }   // apricots and walnuts drying
   const girl = add(g, person("#c0392b"), -0.2, 0, 0.9) as Fig; girl.scale.setScalar(0.8); girl.rotation.y = Math.PI * 0.9;
   const falling: { m: THREE.Mesh; t: number }[] = [];
-  const re = reaction(0.5);
-  g.userData.poke = () => { re.poke(); for (let i = 0; i < 6; i++) falling.push({ m: add(g, ball(0.11, "#e8a53f", 6), -1.0 + (rnd() - 0.5) * 1.2, 1.7, (rnd() - 0.5) * 1.0), t: 0 }); bubble(girl, "Örük · Apricots! Summer fruit for the winter table", 1.5, 1600); };
+  add(g,cyl(.45,.35,.3,C.straw,12),-1,.15,0);
+  g.userData.ownReaction = true; const re = reaction(0.285);
+  const speech=deferredBubble(girl,"Örük · Apricots! Summer fruit for the winter table",1.5,1600);
+  g.userData.poke = () => { re.poke(); for (let i = 0; i < 6&&falling.length<24; i++) { const m=add(g, ball(0.11, "#e8a53f", 6), -1.0 + (rnd() - 0.5) * .5, 1.7, (rnd() - 0.5) * .5); m.name='falling-apricot'; falling.push({m,t:0}); } speech.schedule(); };
   const chat = ambientChat(g, XJ_LINES);
-  g.userData.tick = (t, dt) => { const k = re.step(dt); hopFood(g, k, t, dt); chat(dt); ac.rotation.z = Math.sin(t * 0.9) * 0.02 + k * Math.sin(t * 9) * 0.06; fruit.forEach((f, i) => { f.position.y += Math.sin(t * 2 + i) * 0.0008; }); for (let i = falling.length - 1; i >= 0; i--) { const f = falling[i]; f.t += dt; f.m.position.y = Math.max(0.11, 1.7 - f.t * f.t * 4); if (f.t > 3) { g.remove(f.m); f.m.geometry.dispose(); falling.splice(i, 1); } } const a = arms(girl); if (a) a.right.rotation.x = -2.2 + k * Math.sin(t * 8) * 0.3; tickChildren(g)(t, dt); };
+  g.userData.tick = (t, dt) => { const k = re.step(dt); chat(dt); ac.rotation.z = Math.sin(t * 0.9) * 0.02 + k * Math.sin(t * 9) * 0.06; for (let i = falling.length - 1; i >= 0; i--) { const f = falling[i]; f.t += dt; const fall = Math.max(0, f.t - .65), p = Math.min(1, fall / 1.05); const settle = fall > 1.05 && fall < 1.3 ? Math.sin((fall - 1.05) / .25 * Math.PI) * .12 : 0; f.m.position.y = 1.7 + (.31 - 1.7) * p * p + settle; if (f.t > 3) { g.remove(f.m); f.m.geometry.dispose(); falling.splice(i, 1); } } const u=upper(girl);if(u)u.rotation.x=beat(k,.3,1)*.25;const a = arms(girl); if (a) a.right.rotation.x = -2.2 + k * Math.sin(t * 8) * 0.3; speech.tick(dt);tickChildren(g)(t, dt); };
   return g;
 }
 

@@ -16,7 +16,7 @@ export function buildChina(recipes: EnrichedRecipe[]): Diorama {
   return buildWorld({
     id: "china", W: 112, cx: -6, D: 84, ground: "#8cb86b", plinth: "#6e4a2c", recipes, objects: OBJECTS, props: { ...PROPS, ...JN_PROPS, ...NORTH_PROPS, ...XJ_PROPS },
     small: /^(cow|pig|chicken|pepperTree|jars)$/, fallbackPlace: "wok",
-    layout: layoutChina,
+    layout: layoutChina, discoveryCues: true,
   });
 }
 

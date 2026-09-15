@@ -170,35 +170,35 @@ Verification record:
 
 Match the model to the kind of judgement the step needs. Visual and spatial judgement and cross-file integration go to the strongest tier. Sourced prose and configuration go to the middle tier. Mechanical steps go to the fast tier. The Claude column is the default; the OpenAI column is the equivalent when the team runs on Codex.
 
-Model names change. Before a kick-off, check each provider's current list and take the newest model in the same tier. Model ids in this table are current on 2026-09-15.
+Model names change. Before a kick-off, check each provider's current list and take the newest model in the same tier. Model ids in this table were checked against the providers' model pages on 2026-09-15. GPT-6 Astra was released on 2026-09-04 and is rolling out; when an organisation does not have it yet, GPT-5.6 Sol takes its rows.
 
 | Step | Role | Claude | OpenAI | Reason |
 | --- | --- | --- | --- | --- |
-| Area research, brief, object list, image brief | Researcher | Claude Opus 5 (`claude-opus-5`) with web search | GPT-5.1 with web search, reasoning high | Long sourced writing; must separate records from legends |
-| Image generation | Outside the repository | Gemini through the `ce-gemini-imagegen` skill | GPT Image (`gpt-image-1`) in ChatGPT with the reference images attached | The methodology and the Spain prompt were written for ChatGPT image generation; both tools accept reference images |
-| Picture acceptance against the art direction | Room maker, then lead | Claude Fable 5.1 (`claude-fable-5-1`) | GPT-5.1 with image input, reasoning high | Judging style, clothing period, food accuracy and vessel orientation from the image itself |
-| Layout blueprint: clusters, roads, water, landmarks | Lead | Claude Fable 5.1 | GPT-5.1-Codex-Max, reasoning xhigh | Spatial reasoning over the whole table; road joins and river edges were the most-corrected defects in China |
-| Landscape, water, roads, town clusters | Builder | Claude Fable 5.1 | GPT-5.1-Codex-Max, reasoning high | Flicker, broken ribbons and wall crossings come from geometry mistakes that need careful spatial checking |
-| Architecture builders, resident clothing profiles, countryside | Builder | Claude Opus 5 | GPT-5.1-Codex, reasoning medium | Pattern work from `turkey-architecture.ts` and `turkey-people.ts` with a fixed palette |
-| Stands with the China click chain | Stand maker | Claude Fable 5.1 | GPT-5.1-Codex-Max, reasoning xhigh | The stand is where China was corrected most: people in walls, shaking chefs, floating boards, seats. Supports, timing and reaction order need the strongest tier |
-| Details that sway and small ingredient stops | Stand maker | Claude Opus 5 | GPT-5.1-Codex, reasoning medium | Copies of `northDetail`, `jujubeTree` and `chilliField` with new shapes |
-| Room configs: coordinates, touches, steam, fire | Room maker | Claude Opus 5 with vision | GPT-5.1-Codex with image input, reasoning medium | Measuring points on the actual paintings and writing data |
-| Ambience masks and signature motion | Room maker, approved by lead | Claude Fable 5.1 | GPT-5.1-Codex-Max with image input, reasoning high | A mask that moves a face or wall passed pixel tests before; only careful visual inspection catches it |
-| Blurbs, story depth, discoveries, speech lines, world intro | Researcher | Claude Opus 5 with web search | GPT-5.1 with web search, reasoning high | Sourced, dated prose to the China blurb standard |
-| Import scripts, cutter runs, registration checklist, `docs/<id>-world.md` draft | Any role | Claude Sonnet 5 (`claude-sonnet-5`) | GPT-5.1-Codex-Mini, or GPT-5 mini | Mechanical, well-specified steps with a checklist |
-| Running `npm test`, `npm run typecheck`, screenshots at both sizes, status posts | Any role | Claude Haiku 4.5 (`claude-haiku-4-5-20251001`) or Sonnet 5 | GPT-5 mini or GPT-5 nano | Execution and reporting, no judgement |
-| Integration and merge | Lead | Claude Fable 5.1 | GPT-5.1-Codex-Max, reasoning high | Conflicts across `graph.ts`, `main.ts`, `ui.ts` and the world file |
-| Review against the definition of done | Lead and one other agent | Claude Fable 5.1 | GPT-5.1-Codex-Max, reasoning xhigh | The review must be stronger than the author. Never the same agent that wrote the file |
-| Publish and live check | Lead | Claude Sonnet 5 | GPT-5.1-Codex-Mini | Build, push, watch the run, verify the URL on a phone viewport |
+| Area research, brief, object list, image brief | Researcher | Claude Opus 5 (`claude-opus-5`) with web search | GPT-5.6 Sol (`gpt-5.6-sol`) with web search | Long sourced writing; must separate records from legends |
+| Image generation | Outside the repository | Gemini through the `ce-gemini-imagegen` skill | GPT-Image-2.5 Sunburst (`gpt-image-2.5-sunburst`) in ChatGPT with the reference images attached | The methodology and the Spain prompt were written for ChatGPT image generation; both tools accept reference images |
+| Picture acceptance against the art direction | Room maker, then lead | Claude Fable 5.1 (`claude-fable-5-1`) | GPT-6 Astra (`gpt-6-astra`) with image input | Judging style, clothing period, food accuracy and vessel orientation from the image itself |
+| Layout blueprint: clusters, roads, water, landmarks | Lead | Claude Fable 5.1 | GPT-6 Astra in Codex, reasoning high | Spatial reasoning over the whole table; road joins and river edges were the most-corrected defects in China |
+| Landscape, water, roads, town clusters | Builder | Claude Fable 5.1 | GPT-6 Astra in Codex | Flicker, broken ribbons and wall crossings come from geometry mistakes that need careful spatial checking |
+| Architecture builders, resident clothing profiles, countryside | Builder | Claude Opus 5 | GPT-5.6 Sol in Codex | Pattern work from `turkey-architecture.ts` and `turkey-people.ts` with a fixed palette |
+| Stands with the China click chain | Stand maker | Claude Fable 5.1 | GPT-6 Astra in Codex, reasoning high | The stand is where China was corrected most: people in walls, shaking chefs, floating boards, seats. Supports, timing and reaction order need the strongest tier |
+| Details that sway and small ingredient stops | Stand maker | Claude Opus 5 | GPT-5.6 Sol in Codex | Copies of `northDetail`, `jujubeTree` and `chilliField` with new shapes |
+| Room configs: coordinates, touches, steam, fire | Room maker | Claude Opus 5 with vision | GPT-5.6 Sol with image input | Measuring points on the actual paintings and writing data |
+| Ambience masks and signature motion | Room maker, approved by lead | Claude Fable 5.1 | GPT-6 Astra with image input | A mask that moves a face or wall passed pixel tests before; only careful visual inspection catches it |
+| Blurbs, story depth, discoveries, speech lines, world intro | Researcher | Claude Opus 5 with web search | GPT-5.6 Sol with web search | Sourced, dated prose to the China blurb standard |
+| Import scripts, cutter runs, registration checklist, `docs/<id>-world.md` draft | Any role | Claude Sonnet 5 (`claude-sonnet-5`) | GPT-5.6 Terra (`gpt-5.6-terra`) | Mechanical, well-specified steps with a checklist |
+| Running `npm test`, `npm run typecheck`, screenshots at both sizes, status posts | Any role | Claude Haiku 4.5 (`claude-haiku-4-5-20251001`) or Sonnet 5 | GPT-5.6 Luna (`gpt-5.6-luna`) | Execution and reporting, no judgement |
+| Integration and merge | Lead | Claude Fable 5.1 | GPT-6 Astra in Codex | Conflicts across `graph.ts`, `main.ts`, `ui.ts` and the world file |
+| Review against the definition of done | Lead and one other agent | Claude Fable 5.1 | GPT-6 Astra in Codex, reasoning high | The review must be stronger than the author. Never the same agent that wrote the file |
+| Publish and live check | Lead | Claude Sonnet 5 | GPT-5.6 Terra | Build, push, watch the run, verify the URL on a phone viewport |
 
 Tier equivalents:
 
 | Tier | Claude | OpenAI |
 | --- | --- | --- |
-| Strongest: space, motion, review | Claude Fable 5.1 | GPT-5.1-Codex-Max at high or xhigh reasoning |
-| Middle: prose, configuration, pattern code | Claude Opus 5 | GPT-5.1 for prose, GPT-5.1-Codex for code |
-| Fast: mechanical steps | Claude Sonnet 5 | GPT-5.1-Codex-Mini or GPT-5 mini |
-| Execution and reporting | Claude Haiku 4.5 | GPT-5 mini or GPT-5 nano |
+| Strongest: space, motion, review | Claude Fable 5.1 | GPT-6 Astra (`gpt-6-astra`). Codex uses it directly; there is no separate Codex variant |
+| Middle: prose, configuration, pattern code | Claude Opus 5 | GPT-5.6 Sol (`gpt-5.6-sol`) |
+| Fast: mechanical steps | Claude Sonnet 5 | GPT-5.6 Terra (`gpt-5.6-terra`) |
+| Execution and reporting | Claude Haiku 4.5 | GPT-5.6 Luna (`gpt-5.6-luna`) |
 
 Rules:
 

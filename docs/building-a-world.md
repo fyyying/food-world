@@ -267,9 +267,12 @@ const paellaCourtyard = (): SceneDef => paintedScene({
 Rules the engine applies to every `painting: true` room except hotpot:
 
 - `hang`, `front` and `walkers` are cleared. Sprites would duplicate the painting. Only one sky flyer survives in rooms listed in `flyersAllowed`
-- Steam sources are limited to one per room unless the room id is listed in `paintedScene` (`steamLimit`). Add the id there when a room has more than one hot source
+- Every configured steam source draws, up to four per room. Give every pictured hot dish, pot, kettle and tea glass a source in both orientations. The engine caps rate and opacity
 - Ambience patches are limited so that steam, fire, a flyer and patches together stay at or under four loops. Hotpot is the ceiling
 - The `PAINTED_SIGNATURES` entry for the room id defines its one signature motion. Add one per room
+- `npm test` fails when a room has fewer than three always-on loops in either orientation (`room-loops.mjs`). Count: signature + steam + fire + flyer + patches
+
+Fire ellipses show in both orientations unless the portrait declares its own `fire` list. Write `portrait: { fire: [] }` when the flame is visible only in the wide painting. Steam behaves the same way: `portrait: { steam: [] }` hides a wide-only source on phones.
 
 ### 7.1 Coordinates
 
@@ -313,7 +316,23 @@ Give each room two or three touches. Each touch names something visible in both 
 { kind: "birds", wide: [.58, .025, .95, .18], phone: [.56, .025, .98, .15], period: 11.5 }
 ```
 
-Kinds: `water`, `leaves`, `birds`, `oil`, `dust`, `rain`, `mist`, `light`, `breeze`. A `breeze` patch cuts an isolated hanging detail out of the painting by colour (`isBreezePixel`) and sways it from its top edge. Inspect the cut mask alone before you approve it. If the box contains a face, a wall or a shelf, do not use it.
+Kinds and what each may sit on:
+
+| Kind | Draws | Only on |
+| --- | --- | --- |
+| `leaves` | Four falling leaves. Default: painted hotpot leaf cutouts. `leaf: 'yellow'` small autumn leaves, `leaf: 'olive'` narrow evergreen leaves; `color` tints them | Pictured foliage or an opening under trees |
+| `birds` | Two small distant silhouettes crossing; `period` seconds per crossing | Real open sky |
+| `mist` | Four soft fog banks drifting | Water or a valley that already shows haze |
+| `light` | A slow warm radial shimmer; `color` | A pictured lamp, oven mouth or fire glow |
+| `sunray` | One broad soft beam; `angles` per orientation | A room where the painting shows a light direction |
+| `dust` | A soft flour puff | A pictured floured board or bowl |
+| `snow` | Sixteen slow flakes | An outdoor opening in a winter painting |
+| `rain` | Beads running down | Pictured wet glass |
+| `embers` | Five rising sparks | A pictured flame |
+| `stream-glint`, `waterfall-glint` | A travelling highlight along `paths` traced inside the box, per orientation | A painted liquid stream, traced exactly. An untraced box draws nothing |
+| `breeze` | Cuts an isolated hanging detail out of the painting by colour (`isBreezePixel`, `source`) and sways it from its top edge; `sway` per orientation, `period` | One hanging chilli braid, tassel, bell or grape bunch with nothing else in the box |
+
+Nothing else is allowed on a finished painting. If a room needs a moving object the painting does not contain, request a sprite. Inspect every breeze mask with `scripts/audit/breeze-masks.py` and look at the isolated foreground on grey; a face, wall, lantern, shelf or pole in it fails the room. The grape key matches purple hues only; a green bunch needs a different subject. A tight box needs a larger `sway` so the tip still travels 14 px; `scene-ambience.mjs` checks this.
 
 Test each room with `scene-ambience.mjs` style checks: steam visible at time zero, portrait steam at its own coordinates, no steam at wide coordinates after rotation.
 
@@ -351,6 +370,7 @@ npm test
 
 | Harness | Checks |
 | --- | --- |
+| `room-loops.mjs` | Every painted room has three or four always-on loops in wide and portrait |
 | `prop-supports.mjs` | Lantern cords start at a beam; bench guests rest on the seat; village walkers cross no wall |
 | `prop-reactions.mjs` | Room touch effects are local, bounded and use no inserted images |
 | `village-speech.mjs` | One bubble at a time; two to seven background lines in two minutes; taps replace bubbles |
@@ -363,6 +383,8 @@ npm test
 | `world-availability.mjs`, `world-intros.mjs` | The public page shows only finished worlds; every world has a complete intro |
 
 Add `<id>-reactions.mjs` and `<id>-world.mjs` for a new area. Copy the nearest harness and change the ids.
+
+Audit scripts in `scripts/audit/` are not tests but review tools: `objects.mjs` lists rooms and card-only clickable objects per area, `breeze-masks.py` renders every cropped mask for inspection.
 
 Browser verification uses the dev server from `.claude/launch.json` (`food-tour-web`, port 5180) and the debug hooks on `window.__fw`:
 

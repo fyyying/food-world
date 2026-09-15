@@ -52,9 +52,11 @@ export const TURKEY_AMBIENCE: Record<string, AmbientPatch[]> = {
     { kind: 'stream-glint', phone: [.911, .503, .925, .529], color: '#ffe0a0', paths: [undefined, [[[.48,.03],[.53,.34],[.58,.66],[.64,.96]]]] },
     { kind: 'stream-glint', phone: [.894, .541, .912, .573], color: '#ffe0a0', paths: [undefined, [[[.42,.03],[.46,.32],[.52,.67],[.58,.96]]]] },
     { kind: 'birds', wide: [.47, .15, .64, .22], phone: [.72, .12, .98, .17] },
+    { kind: 'leaves', leaf: 'olive', color: '#82945e', wide: [.62, 0, .98, .22] },   // the second canopy, wide only
   ],
   tr_tea_hill: [
-    { kind: 'mist', wide: [.30, .10, .79, .38], phone: [.22, .15, .76, .39] },
+    { kind: 'birds', wide: [.55, 0, .95, .10], phone: [.55, 0, .95, .10], period: 13 },
+    { kind: 'sunray', wide: [.45, 0, .95, .45], phone: [.45, 0, .98, .40], angles: [-.30, -.30] },   // the sun already breaking through the clouds
   ],
   tr_supper: [
     { kind: 'leaves', wide: [.01, .025, .17, .37], phone: [.72, .015, .95, .36] },

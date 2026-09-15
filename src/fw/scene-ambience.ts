@@ -24,7 +24,7 @@ export const PAINTED_SIGNATURES: Record<string, AmbientPatch> = {
   noodle_shop: {kind:'sunray',wide:[.38,0,.93,.72],phone:[.42,.02,.94,.62],angles:[-.42,.36]},
   teahouse: {kind:'breeze',wide:[.445,.16,.465,.24],phone:[.435,.17,.46,.22],source:'red-tassel',period:7.8,sway:[.045,.045]},
   market: {kind:'breeze',wide:[.952,.025,.998,.31],phone:[.03,.10,.15,.33],source:'chilli',period:7.4,sway:[.045,.060]},
-  home_kitchen: {kind:'breeze',wide:[.015,0,.09,.31],phone:[.105,.035,.215,.34],source:'chilli',period:7.0,sway:[.040,.045]},
+  home_kitchen: {kind:'breeze',wide:[.028,0,.09,.30],phone:[.105,.035,.215,.34],source:'chilli',period:7.0,sway:[.040,.045]},
   tower: {kind:'birds',wide:[.60,.02,.95,.24],phone:[.55,.08,.94,.25],period:12},
   bao_shop: {kind:'dust',wide:[.08,.52,.32,.67],phone:[.08,.55,.45,.68]},
   stone_bridge: {kind:'mist',wide:[.35,.40,.82,.66],phone:[.35,.37,.78,.57]},
@@ -62,31 +62,31 @@ export const PAINTED_SIGNATURES: Record<string, AmbientPatch> = {
   tr_simit: {kind:'birds',wide:[.75,.02,.96,.20],phone:[.59,.045,.95,.18]},
   tr_tea: {kind:'birds',wide:[.66,.02,.94,.18],phone:[.66,.04,.98,.20],period:14},
   tr_coffee: {kind:'rain',wide:[.808,.09,.923,.30],phone:[.903,.164,.991,.306]},
-  tr_market: {kind:'breeze',wide:[0,0,.075,.275],phone:[0,0,.06,.18],period:7.2,sway:[.048,.065]},
+  tr_market: {kind:'breeze',wide:[0,0,.075,.275],phone:[0,0,.05,.18],period:7.2,sway:[.048,.065]},
   tr_fish: {kind:'light',wide:[.40,.72,.50,.88],phone:[.70,.58,.82,.72],color:'#f3a34b'},
   tr_kebab: {kind:'breeze',wide:[.292,.0,.335,.235],phone:[.13,.0,.22,.18],period:6.8,sway:[.052,.072]},
   tr_baklava: {kind:'sunray',wide:[.36,.0,.98,.92],phone:[.36,.0,.99,.90],angles:[.55,.42],sway:[.026,.065]},
-  tr_pide: {kind:'breeze',wide:[.57,.0,.74,.20],phone:[.065,.0,.19,.17],period:7.4,sway:[.052,.072]},
+  tr_pide: {kind:'breeze',wide:[.655,.0,.706,.155],phone:[.065,.0,.19,.17],period:7.4,sway:[.052,.072]},
   tr_yufka: {kind:'dust',wide:[.19,.60,.36,.75],phone:[.24,.58,.46,.74]},
-  tr_dolma: {kind:'breeze',wide:[.39,.0,.50,.24],phone:[.43,.0,.57,.14],period:7.1,sway:[.052,.072]},
+  tr_dolma: {kind:'breeze',wide:[.412,.0,.458,.235],phone:[.43,.0,.57,.14],period:7.1,sway:[.052,.072]},
   tr_breakfast: {kind:'sunray',wide:[.18,.0,.72,.90],phone:[.08,.0,.77,.82],angles:[-.48,.44]},
-  tr_meze: {kind:'breeze',wide:[.585,.0,.67,.19],phone:[.185,.0,.33,.16],period:7.7,sway:[.052,.072]},
+  tr_meze: {kind:'breeze',wide:[.618,.0,.665,.15],phone:[.185,.0,.33,.16],period:7.7,sway:[.052,.072]},
   tr_olive: {kind:'leaves',wide:[.37,.04,.59,.52],phone:[.50,.03,.82,.37],leaf:'olive',color:'#82945e'},
   tr_tea_hill: {kind:'mist',wide:[.30,.10,.79,.38],phone:[.22,.15,.76,.39]},
-  tr_supper: {kind:'breeze',wide:[.0,.0,.12,.24],phone:[.945,.16,1,.305],period:6.9,sway:[.052,.072]},
+  tr_supper: {kind:'breeze',wide:[.0,.0,.043,.235],phone:[.945,.16,1,.305],period:6.9,sway:[.052,.072]},
 };
 
 /** Extra source-observed motion for Xinjiang rooms whose signature alone is too quiet. */
 export const XINJIANG_AMBIENCE: Record<string, AmbientPatch[]> = {
   kebab_grill: [
-    {kind:'breeze',wide:[.322,.018,.357,.132],phone:[.755,.035,.825,.145],period:5.8,sway:[.140,.150],source:'grape'},
+    {kind:'breeze',wide:[.324,.065,.35,.145],phone:[.755,.035,.825,.145],period:5.8,sway:[.24,.150],source:'grape'}   // a tight bunch needs a wider swing to read,
   ],
   naan_bakery: [
     {kind:'leaves',wide:[.70,.02,.94,.30],phone:[.63,.035,.92,.20],leaf:'yellow',color:'#c99235'},
   ],
   oasis_field: [
     {kind:'birds',wide:[.58,.025,.95,.18],phone:[.56,.025,.98,.15],period:11.5},
-    {kind:'breeze',wide:[.275,0,.325,.14],phone:[.265,.025,.345,.155],period:5.9,sway:[.120,.130],source:'grape'},
+    {kind:'breeze',wide:[.275,0,.325,.14],phone:[.185,.03,.265,.14],period:5.9,sway:[.120,.16],source:'grape'},
   ],
   grape_courtyard: [
     // Two isolated bunches per composition, staggered so the trellis breathes without moving as one sheet.
@@ -94,7 +94,7 @@ export const XINJIANG_AMBIENCE: Record<string, AmbientPatch[]> = {
     {kind:'breeze',wide:[.18,.0,.24,.15],phone:[.455,.105,.56,.205],period:6.2,sway:[.150,.210],source:'grape'},
   ],
   chaikhana: [
-    {kind:'breeze',wide:[.355,0,.405,.115],phone:[.445,.075,.505,.185],period:5.7,sway:[.140,.150],source:'grape'},
+    {kind:'breeze',wide:[.408,.02,.458,.10],phone:[.445,.075,.505,.185],period:5.7,sway:[.21,.150],source:'grape'},
     {kind:'leaves',wide:[.06,.04,.28,.24],phone:[.55,.14,.87,.30],leaf:'yellow',color:'#c99235'},
   ],
   xj_home: [
@@ -102,7 +102,7 @@ export const XINJIANG_AMBIENCE: Record<string, AmbientPatch[]> = {
     {kind:'leaves',wide:[.41,.015,.57,.30],phone:[.10,.015,.55,.19],leaf:'yellow',color:'#c99235'},
   ],
   evening_feast: [
-    {kind:'breeze',wide:[.235,.007,.263,.112],phone:[.27,.018,.335,.104],period:5.6,sway:[.155,.180],source:'grape'},
+    {kind:'breeze',wide:[.236,.015,.262,.135],phone:[.27,.018,.335,.104],period:5.6,sway:[.155,.180],source:'grape'},
     {kind:'sunray',wide:[.44,0,.96,.72],phone:[.46,.015,.96,.68],angles:[-.40,.34]},
   ],
 };

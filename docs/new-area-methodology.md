@@ -128,6 +128,10 @@ Include occasional surprises and keep chatter restrained and non-overlapping. Us
 
 The hotpot house (`hotpot()` in `src/fw/props.ts`) is the measured reference for a main stand. The table in [Building a world, section 5](building-a-world.md#5-stands-the-china-standard) lists its components: a building with a sign, a visible work surface, at least three modelled foods, one always-on food loop, six to nine people with idle motion, a walker on a wall-free path, lanterns under a beam, a steam point, a click chain that moves the food first and speaks last, ambient speech in two languages, and a reaction that returns to rest in about two seconds. A stand that has fewer of these components is below the China standard.
 
+### Give every area clickable places that are not food stands
+
+Each area has at least three clickable objects with a card and a 3D reaction but no room: an ingredient source, an animal, a tree or a landmark. Sichuan has the chilli field, the pepper tree, the pigs, the cows, the chickens and the tofu workshop; the north has winter cabbage, sheep, millet, the jujube tree and the scallion bed; Turkey has the fountain, the cat, the hammam and the citrus orchard. These give the visitor a different kind of discovery between rooms. `node scripts/audit/objects.mjs` lists them per area.
+
 ### Mark clickable items with a diamond
 
 Use a small diamond signal to identify clickable items, following the existing Turkey design. Turkey's explorable buildings use a steady ivory-and-brass diamond above the destination; decorative houses have no marker. See the [Turkey world reference](turkey-world.md#historical-stories-and-quiet-discovery).
@@ -165,7 +169,11 @@ Use Sichuan hotpot as the upper bound for animation density. At rest, show no mo
 
 ### Live-image motion standard
 
-The default room needs two or three clearly readable ambient cues. One barely visible effect is not enough. Use four only when the composition has enough space and the result stays no more complex than Sichuan hotpot.
+Every room has at least three always-on loops in each orientation, and at most four. This is a hard minimum, checked by `npm test` (`scripts/tests/room-loops.mjs`). The loops are counted as the engine applies them: the room's signature motion, steam, fire, one sky flyer, and ambience patches. Hotpot sits above the ceiling as the hand-laid reference.
+
+Every pictured hot food steams. A steamer, a wok, a kettle, a bowl of soup and a tea glass each get their own steam source in both orientations. The engine caps rate and opacity, not the number of sources.
+
+Use four loops only when the composition has enough space and the result stays no more complex than Sichuan hotpot.
 
 Build the live image from these roles:
 
@@ -195,6 +203,10 @@ Treat the finished painting as the source of truth. A live-image effect may use 
 1. Animate a supplied transparent layer, as with the Sichuan lanterns
 2. Add a natural emitted effect whose source and boundary are visible, such as steam, rain, water glints, mist, light, birds, sparks, or a narrow oil stream from a pictured spout
 3. Reuse a very tight crop of the painting only for a clearly isolated hanging detail such as chilli, garlic, herbs, a grape cluster, cloth, or a lantern; anchor it at the pictured tie point and move it by only a few visible pixels
+
+Nothing drawn by code may sit on a finished painting unless it fits the picture completely: steam from a pictured vessel, a lamp glow on a pictured lamp, snow through a pictured opening, leaves near pictured foliage, mist over pictured water, a glint inside a pictured stream, birds in real sky. A drawn shape that reads as a new object fails. When a room needs a moving object that the painting cannot supply, request or generate a separate sprite for it; do not draw it.
+
+Inspect every cropped mask before it ships. `uv run --with pillow --with numpy --with scipy scripts/audit/breeze-masks.py <out dir>` renders each breeze crop as three panels: the crop, the isolated foreground on grey, and the repaired background. Look at the grey panel. If it contains any part of a face, hand, wall, lantern, shelf or pole, tighten the box or drop the patch. Every mask fix must pass this inspection again and `npm test` (`scene-ambience.mjs`) before publication.
 
 Do not use a broad rectangular crop, move a crop that includes a face or body, or invent a replacement silhouette with canvas lines and ellipses. If a clean layer cannot be obtained, keep the food still and animate a natural part of the environment instead. A world stand's signature verb and a finished room painting are different systems: the 3D stand can move its modeled food and tools, but the painting cannot depict a new physical action without suitable source art.
 

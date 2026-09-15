@@ -84,12 +84,12 @@ try {
   assert.match(stoneBridgeSvg,/class="portrait-only"[^>]*>[\s\S]*?\/scenes\/props\/swallow\.webp/,
     'stone bridge phone swallow must remain portrait-only');
   const teahouseWide = sampleSteam(SCENES.teahouse, false);
-  assert.equal(teahouseWide.points.length,8,'teahouse wide keeps its pictured tea steam');
-  assert.ok(teahouseWide.averageX>=85&&teahouseWide.averageX<=115&&teahouseWide.lowestY<=420,
-    'teahouse wide steam must rise from the pictured tea source');
+  assert.equal(teahouseWide.points.length,16,'teahouse wide steams from both pictured tea cups');
+  assert.ok(teahouseWide.points.every(([x])=>Math.abs(x-100)<=45||Math.abs(x-1330)<=45)&&teahouseWide.lowestY<=720,
+    'teahouse wide steam must rise from the two pictured tea sources');
   const teahousePhone = sampleSteam(SCENES.teahouse, true);
-  assert.equal(teahousePhone.points.length,6,'teahouse phone keeps its pictured tea steam');
-  assert.ok(teahousePhone.lowestY<=390,'teahouse phone steam must rise from the pictured tea source');
+  assert.equal(teahousePhone.points.length,14,'teahouse phone steams from both pictured tea cups');
+  assert.ok(teahousePhone.lowestY<=720,'teahouse phone steam must rise from the pictured tea sources');
   const teahouseSvg=SCENES.teahouse().layers.map(layer=>layer.svg).join('');
   assert.equal([...teahouseSvg.matchAll(/\/scenes\/props\/bird\.webp/g)].length,2,
     'teahouse must keep one bird in each authored composition');

@@ -96,7 +96,7 @@ try {
     'Sichuan market wide must include the far-right chilli tie point while excluding the vendor and canopy');
   assert.ok(PAINTED_SIGNATURES.market.phone[2]<=.15&&PAINTED_SIGNATURES.market.phone[3]<=.33,
     'Sichuan market phone must keep its left-edge chilli crop above the vendor');
-  assert.ok(PAINTED_SIGNATURES.home_kitchen.wide[0]<=.02&&PAINTED_SIGNATURES.home_kitchen.wide[2]<=.10,
+  assert.ok(PAINTED_SIGNATURES.home_kitchen.wide[0]<=.03&&PAINTED_SIGNATURES.home_kitchen.wide[2]<=.10,
     'home kitchen wide must isolate the left chilli braid, away from the garlic and shelves');
   assert.ok(PAINTED_SIGNATURES.home_kitchen.phone[0]>=.10&&PAINTED_SIGNATURES.home_kitchen.phone[2]<=.22,
     'home kitchen phone must isolate the actual chilli braid rather than the left shelf');

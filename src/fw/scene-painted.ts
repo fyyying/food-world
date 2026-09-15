@@ -114,7 +114,7 @@ export function paintedScene(cfg: PaintedCfg): SceneDef {
     cfg = { ...cfg, hang: [], front: [], walkers: safeFlyers(cfg.walkers), portrait: { ...cfg.portrait, walkers: safeFlyers(cfg.portrait?.walkers) } };
   }
   if (signature) {
-    const steamLimit=cfg.id==='chaikhana'?5:cfg.id==='polo_kitchen'?4:['mantou_kitchen','roast_duck','jiangnan_home','bao_shop','xj_home'].includes(cfg.id)?3:['courtyard_kitchen','rice_wine','kebab_grill','caravan_stop'].includes(cfg.id)?2:1;
+    const steamLimit=cfg.id==='chaikhana'?5:4;   // every pictured hot dish may steam; the rate and alpha caps below keep it quiet
     const maxSteamRate=['noodle_workshop','polo_kitchen'].includes(cfg.id)?14:cfg.id==='stone_bridge'?12:10;
     const maxSteamAlpha=['noodle_workshop','stone_bridge','roast_duck','jiangnan_home','bao_shop','rice_wine','grape_courtyard'].includes(cfg.id)?.28:.24;
     const steam = (sources: PaintedCfg['steam']) => sources?.slice(0,steamLimit).map(s => ({...s,rate:Math.min(maxSteamRate,s.rate),a:Math.min(maxSteamAlpha,s.a??.24)}));

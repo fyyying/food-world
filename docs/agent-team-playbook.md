@@ -131,7 +131,7 @@ World:
 
 - Four or more clusters with clear separation, connected by continuous roads. Every door meets a road
 - Water is continuous, square at the table edge, and correct in colour. Nothing stands in water
-- At least ten interactive stands and five ingredient stops, each with a diamond cue
+- At least ten interactive stands and five ingredient stops, each with a diamond cue. At least three clickable objects per area are not food stands: an ingredient source, an animal, a tree or a landmark with a card and a 3D reaction (`node scripts/audit/objects.mjs`)
 - At least three walker loops or lanes with residents in the area's traditional clothing, steps matched to distance
 - Small details in every cluster: hanging produce that sways, stacks, racks, crocks, animals in pens
 - No flicker while still, moving or zooming. No floating object, no unsupported seat, no wall crossing
@@ -147,9 +147,9 @@ Stands:
 Rooms:
 
 - Every room has two paintings at the required sizes that pass the art-direction check
-- Every room is alive on entry: one signature motion plus one or two supporting cues, never more than four loops
+- Every room is alive on entry with three or four always-on loops in both orientations, and every pictured hot food steams. `room-loops.mjs` passes
 - Every room has two or three touches that name something visible in both orientations, each with a fact and, where the fact is specialist, a source
-- Every effect stays on its source. No mask moves a face, wall or shelf. No invented food, hand, wake or stream
+- Every effect stays on its source and fits the painting completely. Every breeze mask was inspected with `scripts/audit/breeze-masks.py` and moves only the hanging detail. No invented food, hand, wake or stream. Missing moving objects were requested as sprites, not drawn
 - Reduced motion keeps the room understandable
 
 Cards and stories:

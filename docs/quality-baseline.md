@@ -25,6 +25,7 @@ How to update: change a value, add one line under a dated heading below that say
 
 ## Changes
 
+- 2026-09-15: The two Anatolian wheat plots rose from .019 to .030 above the paving at .018 and the eastern one moved off the lane edge; their soil had z-fought with the paving.
 - 2026-09-15: The Anatolian kitchen garden shrank from 7 to 4 units wide; it had overlapped the coppersmith's and potter's floor slabs at the same height and z-fought. `scripts/audit/flicker.mjs` now reports zero exact overlaps at both shops.
 - 2026-09-15: The house south of the Istanbul coffeehouse was removed because it hid the coffeehouse from the default view; the Anatolian front house dropped to two storeys; courtyard houses no longer receive a street planter.
 - 2026-09-15: Baseline created. 20 rooms raised from one or two loops to three or four; 9 masks tightened; Black Sea gained hazelnut grove, anchovy landing and kale beds; the Turkish bazaar lost its own floor plane and the stone squares rose to 0.027 to stop z-fighting.

@@ -104,8 +104,9 @@ function layoutMideast(ctx:LayoutCtx) {
   place(galataTower(),-49,-38.5,0,.85).name='galata';
   for(const [x,z] of [[-51,-21],[-33,-20],[15,-35],[49,-30],[-38,-3]]) place(tulips(10),x,z);
   // Small wheat plots link the Anatolian ovens with their flour.
-  for(const x of [13,21]){
-    const soil=add(group,new THREE.Mesh(new THREE.PlaneGeometry(4.6,2.5),mat('#b4a373')),x,.019,0);soil.rotation.x=-Math.PI/2;
+  // The soil sits 12 mm above the town paving (.018); at .019 the two planes z-fought. The second plot stays clear of the x=24 lane.
+  for(const x of [13,20.5]){
+    const soil=add(group,new THREE.Mesh(new THREE.PlaneGeometry(4.6,2.5),mat('#b4a373')),x,.030,0);soil.rotation.x=-Math.PI/2;
     for(let i=0;i<40;i++){
       const px=x-2+(i%8)*.56,pz=-1+Math.floor(i/8)*.48;
       const stalk=add(group,new THREE.Mesh(new THREE.CylinderGeometry(.018,.024,.65,4),mat('#b59b51')),px,.325,pz);stalk.name='wheat';

@@ -7,6 +7,8 @@ type WorldIntroHandlers = {
   onExploreArea: (area: Area) => void;
 };
 
+const SEEN_KEY = "food-world:seen-world-intro:";
+
 /** A paper storybook that introduces a world without replacing the world behind it. */
 export function mountWorldIntro({ onExploreArea }: WorldIntroHandlers) {
   const trigger = document.getElementById("world-intro-toggle") as HTMLButtonElement;
@@ -76,6 +78,18 @@ export function mountWorldIntro({ onExploreArea }: WorldIntroHandlers) {
     if (dialog.open) dialog.close();
   }
 
+  function hasSeen(world: WorldId) {
+    if (seen.has(world)) return true;
+    try { return localStorage.getItem(`${SEEN_KEY}${world}`) === "1"; }
+    catch { return false; }
+  }
+
+  function markSeen(world: WorldId) {
+    seen.add(world);
+    try { localStorage.setItem(`${SEEN_KEY}${world}`, "1"); }
+    catch { /* The in-memory set still prevents repeats during this visit. */ }
+  }
+
   trigger.addEventListener("click", open);
   dialog.addEventListener("close", () => trigger.setAttribute("aria-expanded", "false"));
   dialog.addEventListener("keydown", event => {
@@ -95,8 +109,8 @@ export function mountWorldIntro({ onExploreArea }: WorldIntroHandlers) {
       trigger.hidden = false;
       trigger.title = `Read the ${WORLDS[world].name} food story`;
       trigger.setAttribute("aria-label", trigger.title);
-      if (autoOpen && !seen.has(world)) {
-        seen.add(world);
+      if (autoOpen && !hasSeen(world)) {
+        markSeen(world);
         open();
       }
     },

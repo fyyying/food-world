@@ -479,8 +479,9 @@ function enterRegion(region: MapRegion) {
   if (diorama) worldScene.remove(diorama.group);
   world = id; currentArea = id === 'middle-east' ? 'istanbul' : null;
   diorama = getWorld(id);
+  const enteringDiorama = diorama;
   china = worldRecipes(id, allRecipes).map(enrich);
-  worldScene.add(diorama.group);
+  worldScene.add(enteringDiorama.group);
   const placed = mapWorld!.regions.find((r) => r.region.id === region.id)!;
   const c = placed.group.position;
   // dive toward the region, fade to paper, arrive above the valley
@@ -492,6 +493,12 @@ function enterRegion(region: MapRegion) {
       const target = id === 'middle-east' ? new THREE.Vector3(-24,0,-20) : new THREE.Vector3(-4, 0, 2);
       camera.position.copy(target).add(new THREE.Vector3(-2,80,90)); controls.target.copy(target);
       worldIntro.enter(id, false);
+      // Set time-based poses and warm the world's shaders while the paper still covers it. Without this,
+      // dense props such as China's market snap and shimmer into their first animated frame as the fade lifts.
+      enteringDiorama.tick(clock.elapsedTime + stepT, 0);
+      controls.update();
+      renderer.render(active, camera);
+      labelRenderer.render(active, camera);
       fly(target.clone().add(id === 'middle-east' ? new THREE.Vector3(12,36,57) : new THREE.Vector3(2,48,60)), target, 2.0, () => {
         if (!story) worldIntro.enter(id);
       });

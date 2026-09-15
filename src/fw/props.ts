@@ -133,6 +133,9 @@ function stripes(color: string): THREE.Texture {
   ctx.fillStyle = "#fbf6ea"; ctx.fillRect(0, 0, 64, 16);
   ctx.fillStyle = color; for (let x = 0; x < 64; x += 16) ctx.fillRect(x, 0, 8, 16);
   const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace;
+  // Striped awnings sit at a shallow angle during the opening camera flight. Extra anisotropic filtering
+  // keeps their high-contrast bands from shimmering as they shrink into the world overview.
+  t.anisotropy = 4;
   awningTex.set(color, t); return t;
 }
 
@@ -1154,7 +1157,7 @@ export function foodDetail(kind: "chilliFrame" | "jars" | "garlicBasket" | "vegB
 /** The village market: stalls with striped awnings, heaps of produce, hanging ducks, steamers, fish on ice, sacks of spice. */
 export function market(): P {
   const g = group();
-  const plaza = add(g, new THREE.Mesh(new THREE.CircleGeometry(7.2, 24), mat("#cbbb96")), -0.6, 0.02, 0);
+  const plaza = add(g, new THREE.Mesh(new THREE.CircleGeometry(7.2, 24), mat("#cbbb96", { polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 })), -0.6, 0.035, 0);
   plaza.rotation.x = -Math.PI / 2; plaza.scale.y = 0.7; // flattened toward the river so the square stays on the bank
   const stall = (kind: string, awning: string) => {
     const s = group();

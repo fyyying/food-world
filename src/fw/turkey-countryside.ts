@@ -22,12 +22,13 @@ export function turkeyCountryside(ctx:LayoutCtx){
   }
   for(const [x,z,r] of [[-51,7,.48],[-50,8.7,.32],[-41.4,8,.48],[-43,9.7,.34]])rock(group,x,z,r);
   // A planted village garden occupies a former house footprint, with paths between full, leafy beds.
-  const garden=new THREE.Group();garden.name='turkish-kitchen-garden';garden.position.set(12,0,6);
-  add(garden,block(7,.10,4.3,'#aa9675'),0,.05,0);
-  for(const z of [-2.25,2.25])add(garden,block(7.4,.28,.22,TR.stone),0,.14,z);
-  for(const x of [-3.6,3.6])add(garden,block(.22,.28,4.3,TR.stone),x,.14,0);
-  for(let row=0;row<3;row++)for(let col=0;col<9;col++){
-    const x=-2.9+col*.71,z=-1.45+row*1.4;
+  // The bed fits between the coppersmith (x 5.3..10.7) and the potter (x 15.3..20.7); a wider bed shared the shops' floor height and z-fought.
+  const garden=new THREE.Group();garden.name='turkish-kitchen-garden';garden.position.set(13,0,6);
+  add(garden,block(4,.10,4.3,'#aa9675'),0,.05,0);
+  for(const z of [-2.25,2.25])add(garden,block(4.4,.28,.22,TR.stone),0,.14,z);
+  for(const x of [-2.1,2.1])add(garden,block(.22,.28,4.3,TR.stone),x,.14,0);
+  for(let row=0;row<3;row++)for(let col=0;col<5;col++){
+    const x=-1.6+col*.8,z=-1.45+row*1.4;
     const greens=add(garden,new THREE.Mesh(new THREE.SphereGeometry(.27,7,5),mat(row===1?'#527c46':'#729753')),x,.31,z);
     greens.scale.set(1,.75,1);
     if(row!==1)add(garden,new THREE.Mesh(new THREE.SphereGeometry(.10,6,4),mat(row?'#d7b344':'#bb5639')),x+.16,.42,z+.15);

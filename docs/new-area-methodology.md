@@ -8,6 +8,14 @@ The sequence is **Research and concept image → room paintings and useful props
 
 The visitor experience follows **Place → food → story**. The place draws the visitor in, a visible food detail invites interaction, and a short story rewards curiosity. Keep deeper reading optional.
 
+## Companion documents
+
+This document sets the quality standard. Three companions make the standard buildable by an agent team:
+
+- [Art direction](art-direction.md): the picture standard. Painterly illustrated realism between a photograph and a cartoon, people in the area's traditional everyday clothing, realistic food, and the acceptance check for every delivered image
+- [Building a world](building-a-world.md): the engineering handbook. Files, registration, the stand standard measured on the hotpot house, the room configuration, the helper catalogue, tests and publishing
+- [Agent team playbook](agent-team-playbook.md): how several agents divide the work, the stage order, and the definition of done
+
 ## 1. Research the area and generate a concept image in ChatGPT
 
 Research what makes the area distinctive before drawing it. Cover its landscape, architecture, food culture, ingredients, everyday activities, regional differences, and locally famous places. Keep sources for the claims that will become visitor-facing stories.
@@ -41,6 +49,8 @@ Attach reference images to the generation request. Add this instruction to the a
 For each room, record its purpose, foods and ingredients, people and activities, atmosphere, possible discoveries, and useful motion. Generate one room at a time and inspect it against the references before continuing.
 
 ### Image-production rules
+
+Every picture must pass the [art direction](art-direction.md) acceptance check before it enters the repository.
 
 - Generate every room or environment as its own image, never as a contact sheet or collage
 - Use the largest native output size available
@@ -113,6 +123,10 @@ The first food or material movement must remain visible when the camera finishes
 Time the reaction against navigation, not only against a close-up test harness. If the camera takes 1.6 seconds to approach a stand, the signature food or tool response must still be clearly visible when that approach finishes and remain readable for a short beat afterwards. Test the actual arrival camera from the directions in which the stand can be selected. Roofs, awnings, walls, neighbouring buildings, and people must not block the reacting subject. Aim the approach at the working surface rather than the building's bounding-box centre when those differ.
 
 Include occasional surprises and keep chatter restrained and non-overlapping. Use a mix of living illustrations, simple animated objects, and cards so that different discoveries offer variety.
+
+### The China standard in numbers
+
+The hotpot house (`hotpot()` in `src/fw/props.ts`) is the measured reference for a main stand. The table in [Building a world, section 5](building-a-world.md#5-stands-the-china-standard) lists its components: a building with a sign, a visible work surface, at least three modelled foods, one always-on food loop, six to nine people with idle motion, a walker on a wall-free path, lanterns under a beam, a steam point, a click chain that moves the food first and speaks last, ambient speech in two languages, and a reaction that returns to rest in about two seconds. A stand that has fewer of these components is below the China standard.
 
 ### Mark clickable items with a diamond
 

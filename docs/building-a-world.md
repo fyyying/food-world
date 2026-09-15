@@ -1,0 +1,398 @@
+# Building a Food World area: the engineering handbook
+
+This handbook tells an agent how the code produces a Food World area. Read it with the [new-area methodology](new-area-methodology.md), which sets the quality standard, and the [art direction](art-direction.md), which sets the picture standard. The [team playbook](agent-team-playbook.md) tells several agents how to share the work.
+
+The China world is the reference. When this handbook and the China code disagree, the China code wins. Report the difference.
+
+## 1. Vocabulary
+
+| Term | Meaning | Where it lives |
+| --- | --- | --- |
+| World | One wooden table on the atlas, for example `china` or `middle-east` | `WorldId` in `src/fw/graph.ts`, one `world-<id>.ts` |
+| Area | A region inside a world, for example `sichuan` or `istanbul`. The location picker lists areas | `Area` and `AREAS` in `graph.ts` |
+| Object | A clickable thing with a card: a place, an ingredient, a landmark | `WorldObject` entries in `graph.ts` or `<id>-objects.ts` |
+| Stand | The 3D miniature that an object shows. A stand is a function that returns a group with `tick` and `poke` | `props*.ts` |
+| Detail | A small 3D miniature with no card: hanging chillies, a cabbage stack | `northDetail`, `xjDetail`, `jnDetail`, `foodDetail` |
+| Room | A living painting that opens when the visitor clicks an object with `scene:` | `scenes-<id>.ts`, `public/scenes/<room>/` |
+| Touch | A diamond marker inside a room. It gives a small effect and a short discovery | `hotspots` of a room |
+| Card | The text panel for an object: tagline, blurb, dishes | `ui.ts` renders it from the object |
+| Story depth | Optional long reading with dates and sources under a card | `<id>-stories.ts` |
+| Discovery cue | The small ivory-and-brass diamond over every clickable object in the 3D world | `discoveryCues: true` in `buildWorld` |
+
+## 2. Scale and numbers
+
+Use these numbers. They come from the China code.
+
+| Item | Value |
+| --- | --- |
+| World unit | About one metre. A person is 1.18 units tall. Hats end below 1.3 |
+| House footprint | `house(style, w = 3, d = 2.4, h = 1.8)` |
+| China table | `W: 112, D: 84`, centre offset `cx: -6` |
+| Middle East table | `W: 124, D: 132`, centre offset `cz: 10` |
+| Road width | 1.6 for lanes, 1.8 for town streets, 2.6 for the main street |
+| River width | 3.4 default in `addWater`; irrigation 0.65 |
+| Path colour | `#cdbb94` default, `#c9bfa0` for a northern street, `#c9c2aa` for a towpath |
+| Walker speed | About 0.01 of a loop per second on a town street, 0.008 on a long road |
+| Camera arrival | 1.6 seconds from click to close view. The first food movement must still be visible then |
+| Seat height | Stool top 0.42. A seated `person()` goes at `seatTop - 0.44` because the hips are at 0.44 |
+| Hand position | `arms.hand` is `-0.37 * figureScale` below the arm pivot. Put held tools there |
+| Speech | One bubble at a time in the whole world. Background lines wait 18 to 28 seconds |
+| Phone viewport | 390 x 844. Desktop check 1280 x 720 and one large screen |
+| Zoom-out limit | 90 on phones for every world; 215 on desktop for the Middle East |
+| Room stage | 1600 x 900 stage units. A wide painting is 1672 x 941 and fills the stage at (-8, -5) as 1616 x 910 |
+
+## 3. Files for one area
+
+Use the modular layout. Turkey (`turkey-*.ts` inside `world-mideast.ts`) is the model. China is one large file because it came first; do not copy that shape.
+
+Reasons for the modular layout:
+
+- Several agents can work at the same time. Each agent owns files, not line ranges
+- Each file has one subject. A reviewer can read the people file without the landscape file
+- Tests can bundle one module. `scripts/tests/turkey-reactions.mjs` loads `props-turkey.ts` alone
+- A world file stays short. `world-mideast.ts` is about 200 lines and calls the modules
+
+Create these files for an area with id `<id>` (for example `spain`):
+
+| File | Contents | Size guide |
+| --- | --- | --- |
+| `src/fw/world-<world>.ts` | `buildWorld` spec and a `layout` that calls the modules. When the area joins an existing world, edit that world's file | Under 250 lines |
+| `src/fw/<id>-landscape.ts` | Ground tints, water curves, coast, mountains, terraces | Data first, geometry second |
+| `src/fw/<id>-architecture.ts` | The palette constant, house builders, roofs, walls, arches | Pure builders, no positions |
+| `src/fw/<id>-town.ts` | Clusters, streets, squares, decorative buildings, landmarks. Positions live here | One exported `townStreets(ctx)` |
+| `src/fw/<id>-people.ts` | `<id>Resident(seed)` and `<id>Walk(person, from, to, range, seed)`. Clothing styles as data | Follow `turkey-people.ts` |
+| `src/fw/<id>-countryside.ts` | Fields, orchards, animals, threshing floors | One exported `<id>Countryside(ctx)` |
+| `src/fw/props-<id>.ts` | One stand function per object, `<ID>_PROPS`, `<ID>_ICONS`, `<ID>_LINES` | The largest file |
+| `src/fw/<id>-objects.ts` | `WorldObject` entries, `<ID>_CARD_ART`, `<ID>_NEXT` | Data only |
+| `src/fw/<id>-stories.ts` | `<ID>_STORY_DEPTH` and `<ID>_SOURCES` | Text and links |
+| `src/fw/scenes-<id>.ts` | Rooms as `paintedScene` configs, exported as `<ID>_SCENES` | One entry per room |
+| `src/fw/<id>-ambience.ts` | `<ID>_AMBIENCE`: always-on painting motion per room | Rectangles per orientation |
+| `scripts/tests/<id>-reactions.mjs` | Stand reaction order, bounded repeats, clean-up | Copy `xinjiang-reactions.mjs` |
+| `scripts/tests/<id>-world.mjs` | Routes, supports, zoom limits, coplanar faces | Copy `turkey-world.mjs` |
+| `scripts/scenes/import-<id>.py` | Copies the delivered paintings into place and registers their sizes | Copy `import-turkey.py` |
+| `docs/<id>-world.md` | What was built, the animation inventory, what was checked | Follow `turkey-world.md` |
+
+Assets:
+
+| Path | Contents |
+| --- | --- |
+| `public/scenes/<room>/wide.jpg` | The wide painting, JPEG quality 88 |
+| `public/scenes/<room>/portrait.jpg` | The independently composed portrait painting |
+| `public/scenes/<id>-food/<name>.webp` | Card illustrations on transparent background |
+| `public/scenes/props/<name>.webp` | Shared sprites that hang or stand in a room. Long side 960 px maximum |
+| `src/fw/scenes-props.json` | Registered sizes of every room painting (`rooms`) and sprite (`props`). The cutter writes it |
+
+## 4. Registration checklist
+
+Do these steps in order. Steps 1 to 7 apply to a new area inside an existing world. Steps 8 to 15 apply only to a new world.
+
+1. Add the area ids to the `Area` union in `graph.ts`
+2. Add one `AREAS` entry per area: `name`, `zh` (the local-language name), `blurb`, `center`, `world`. The location picker reads it. The country navigation groups areas of one country under one button, as `ui.ts` does for Turkey
+3. Export the objects from `<id>-objects.ts` and spread them into the world's object list in `graph.ts`. Object ids are unique across all worlds. Add a world suffix when a name repeats, for example `oliveTr`
+4. Give each object the fields in section 6. Set `scene:` on objects that open a room
+5. Spread `<ID>_PROPS` into the world's `props` in `buildWorld`. Every `prop:` name must exist there
+6. Spread `<ID>_SCENES` into `SCENES` in `main.ts`
+7. Hook card art: `cardArt()` in `ui.ts` maps object ids to files. Extend the branch for your world, as `TURKEY_CARD_ART` does
+8. New world only: add the id to `WorldId`, `WORLDS`, `MAP_REGIONS` (with `built: true`, `cuisines`, `pos`, `size`, `color`, `emoji`)
+9. New world only: add `is<World>Recipe` and extend `worldRecipes` and `enrich` in `graph.ts`; add `ENRICH` rows so each recipe has `area`, `core`, `techniques`, `place`
+10. New world only: add the `build<World>` branch to `getWorld` in `main.ts`
+11. New world only: add `<ID>_ICONS` and `<ID>_PROPS` to the lookup in `snapshot.ts`, and `ICON_KEYS` entries in `ui.ts` for objects whose card badge is a rendered prop
+12. New world only: add an atlas preview branch in `map.ts`
+13. New world only: add a `WORLD_INTROS` entry in `world-intros.ts`. Summary 60 to 180 characters, three to six beats, each body 420 characters maximum. The test `world-intros.mjs` enforces this
+14. New world only: add the recipe filter to `scripts/export-static.mjs`
+15. New world only: add the id to `PUBLISHED_WORLDS` in `world-availability.ts` when the world is finished. Without this the public page shows it asleep. Update `world-availability.mjs`
+16. Add one line to `README.md` and write `docs/<id>-world.md`
+
+## 5. Stands: the China standard
+
+The hotpot house in `props.ts` (`hotpot()`) is the standard for a main food stand. It contains:
+
+| Component | In hotpot | Rule for a new main stand |
+| --- | --- | --- |
+| Building | A `house("sichuan", 3.5, 2.8, 1.8)` with a red sign board | One building or shelter from the area's architecture file |
+| Work surface | A round table with a copper pot, a divider, a burner | The food surface is visible from above and from the front |
+| Food, modelled | Chilli cones and greens in the broth, four platters of raw ingredients, a three-tier trolley with nine dishes, three beer bottles | At least three named foods, each a recognisable shape and colour |
+| Always-on motion | Eight broth bits circle and bob every frame | One food or material loop that never stops |
+| People | Four seated diners, one couple at a second table, one waiter, two people waiting | Six to nine people with different shirt colours and jobs |
+| Idle body motion | Diners sway, lean and turn slowly; the queue looks around | Every person moves a little. Nobody is a statue |
+| Walking | The waiter sweeps an arc in front of the tables and never through the house | A walker uses `walk(t)` and follows a path that avoids walls |
+| Light | Two lanterns under the front beam; an awning on the back edge only | Lanterns hang from a beam, under a roof edge, never in the air |
+| Steam | `userData.steam` at the pot | One steam or smoke point per hot source |
+| Click chain | `poke()`: the broth boils over first, the diners lean back and raise both arms, one speaks | Food or material first, worker second, one bystander third, speech last |
+| Ambient speech | Six lines in Chinese and English through `ambientChat` | Four to eight lines in the local language and English |
+| Decay | `reaction(0.5)`: the reaction fades in about two seconds | Every reaction returns to the exact rest pose |
+
+A small ingredient stand (the chilli field, the jujube tree, the pepper tree) is simpler: one crop that responds, one or two workers, a card, no room.
+
+### 5.1 Stand skeleton
+
+```ts
+export function paellaKitchen(): P {
+  const g = group();
+  add(g, spanishHouse("white", 3.4, 2.6, 1.9), 0, 0, -1.6);        // building at the back
+  const pan = add(g, cyl(0.7, 0.65, 0.08, "#8a8f94", 20), 0, 0.82, 1.2); // work surface, visible
+  const rice: THREE.Mesh[] = [];                                     // modelled food, found again by hopFood
+  const cook = person("#e9d7b8", { apron: true }); add(g, cook, 0.9, 0, 1.4); cook.rotation.y = -1.2;
+  const diners = [/* seated persons at seatTop - 0.44 */];
+  g.userData.steam = new THREE.Vector3(0, 1.0, 1.2);
+  const re = reaction(0.6);
+  const chat = ambientChat(g, ES_LINES);
+  g.userData.ownReaction = true;                                     // the stand animates itself; no generic bounce
+  g.userData.poke = () => { re.poke(); };
+  g.userData.tick = (t, dt) => {
+    const k = re.step(dt);
+    // 1. food first: rice simmers always, jumps on k
+    hopFood(g, k, t, dt);
+    // 2. worker second: the cook's arm follows with a delay tied to k
+    // 3. one bystander third; 4. speech last, when k has passed its peak
+    if (k > 0.55 && k < 0.6) bubble(pick(diners), pick(ES_LINES), 1.4, 1800);
+    chat(dt);
+    tickChildren(g)(t, dt);
+  };
+  return g;
+}
+```
+
+Rules that the tests enforce:
+
+- `poke()` alone produces no bubble. Speech appears in a later `tick` (`turkey-reactions.mjs`, `xinjiang-reactions.mjs`)
+- Repeated clicks do not add geometry without limit. Falling fruit is removed after it lands (`xinjiang-reactions.mjs`)
+- A seated person's lowest point rests on the seat, within 0.002 (`prop-supports.mjs`)
+- A lantern's cord starts at a beam, not in the air (`prop-supports.mjs`)
+- Walkers never intersect walls or terraces (`prop-supports.mjs`, `turkey-world.mjs`)
+- Many stands never speak over each other (`village-speech.mjs`)
+
+Rules that only a browser check can prove:
+
+- The click reaction is readable at the normal world zoom after the 1.6-second approach
+- A chef's arm swing is not the main reaction, and no person shakes
+- Nothing floats, nothing walks through a wall, every click does something
+
+### 5.2 Motion helpers
+
+| Need | Helper | File | Notes |
+| --- | --- | --- | --- |
+| A click that fades | `reaction(rate)` | `props.ts` | `poke()` sets `k = 1`; `step(dt)` returns `k`. Multiply amplitudes by `k`, never speeds |
+| Food that jumps and turns on a tap | `hopFood(g, k, t, dt)` | `props.ts` | Finds small meshes with a colour in `FOOD_COLORS`, skips meshes inside people. Add new food colours to the set |
+| Occasional talk | `ambientChat(g, lines)` | `props.ts` | Call the returned function every tick. Uses the shared speech cooldown |
+| One line now | `bubble(obj, text, y, ms)` | `props.ts` | Taps replace background speech |
+| Swaying strings | `hang(x, y)` pattern | `props-north.ts` `northDetail` | A pivot group at the tie point; rotate `z` by `sin(t * 1.3 + i) * 0.06` |
+| Falling fruit with gravity | `jujubeTree()` | `props-north.ts` | Copies dates from the crown, `v += dt * 9`, settles at `y = 0.06`, removed after four seconds |
+| Nested props that tick | `tickChildren(g)` | `props.ts` | Call at the end of the stand's tick so lanterns and chimneys animate |
+| A person | `person(shirt, { hat, pole, apron })` | `props.ts` | `userData.upper`, `legs`, `arms`, `sit()`, `walk(t)`, `figureScale` |
+| Clothing on a person | `wear(p, mesh, x, y, z)` | `props.ts` | Attaches to the upper body so it leans with it |
+| A regional resident | `turkeyResident(seed, working)` | `turkey-people.ts` | Recolours skin, hair, trousers; adds coats, sashes, scarves. Copy this for a new area |
+| A walk with real steps and a pause | `turkeyWalk(p, from, to, range, seed)` | `turkey-people.ts` | Steps match distance. The person stops stepping when standing |
+| A loop walk on a curve | `nPath` pattern | `world-china.ts` | `CatmullRomCurve3` closed; `u = (t * speed + i * 0.2) % 1`; `rotation.y` from the tangent |
+| A camel | `camelWalker()` and `camel-gait.ts` | `props-xinjiang.ts` | Legs rotate about `z`, never `x`. The gait test checks planted feet |
+| Steam or smoke | `userData.steam`, `userData.smoke` | any stand | A `Vector3` in the stand's local space. The engine draws the puffs |
+
+### 5.3 Building and landscape helpers
+
+| Need | Helper | File |
+| --- | --- | --- |
+| Primitives | `box`, `cyl`, `cone`, `ball`, `mat`, `smooth`, `stem`, `add`, `group`, `rnd`, `pick`, `C` colours | `props.ts` |
+| Chinese house, three styles | `house("sichuan" \| "jiangnan" \| "northern", w, d, h, storeys)` | `props.ts` |
+| Ottoman house, five styles | `ottomanHouse(color, storeys, style)` | `turkey-architecture.ts` |
+| Roofs | `chineseRoof`, `pavilionRoof`, `hipRoof`, `dome` | `props.ts`, `turkey-architecture.ts` |
+| Walls, arches, tile | `brickWall`, `gate`, `masonry`, `arch`, `tilePanel`, `kilim` | `props-north.ts`, `turkey-architecture.ts` |
+| Awning, lantern, sign | `awning`, `lantern`, `lanternString`, `signBoard(g, w, h, x, y, z, text)` | `props.ts`, `props-north.ts` |
+| Landmarks | `temple`, `pagoda`, `gate`, `dragon`, `bathhouse`, `iznikFountain`, `turkeyMosque`, `turkeyBazaar` | `props.ts`, `turkey-*.ts` |
+| Trees | `tree("round" \| "pine" \| "willow" \| "bamboo" \| "blossom" \| "ginkgo" \| "persimmon", scale)`, `poplar`, `osmanthusTree` | `props.ts`, `props-xinjiang.ts`, `props-jiangnan.ts` |
+| Terrain | `mountain(r, h, dark)`, `terrace(levels, r, tea)`, `pond()`, `ricePaddy`, `wheatField`, `chilliField` | `props.ts` |
+| Raised ground with stairs | `terrace(ctx, x, z, rx, rz, height, color)`, `terraceStairs` | `turkey-landscape.ts` |
+| Roads | `path(points, width, color)` | `props.ts` |
+| Water | `addWater(ctx, curve, width)`, `seaWater()`, `freshWater()`, `estuaryWater(x, z, r)`, `addFish`, `addRiverJunction` | `worldkit.ts`, `river-junction.ts` |
+| Bridges and boats | `bridge(len)`, `woodenBridge(len)`, `boat()` | `props.ts` |
+| Animals | `cow`, `pig`, `chicken`, `coop`, `goat`, `fish`, `birds`, `butterfly`, `crane`, `panda`, `fatTailSheep`, `turkishCat` | `props.ts`, `props-xinjiang.ts`, `props-turkey.ts` |
+| Ground colour | `ctx.tint(x, z, rx, rz, color, rot)` | `LayoutCtx` |
+| Placing | `ctx.place(obj, x, z, rot, scale)` | `LayoutCtx` |
+
+Prop gotcha: `add(parent, child, x, y, z)` sets the child's position. Pass offsets as arguments. Do not set `position` before `add`.
+
+Water rules: seas use `seaWater()`, rivers and ponds use `freshWater()`, a river that meets the sea uses `estuaryWater`. A river that reaches the table edge ends with two points at the same edge coordinate so the cap is square. Nothing walks or stands in water.
+
+Road rules: one continuous ribbon per route. Two ribbons at the same height flicker where they overlap; lift the second by `0.004`. Every door and gathering place meets a road.
+
+## 6. Objects and cards
+
+Each `WorldObject` has these fields:
+
+| Field | Value |
+| --- | --- |
+| `id` | Unique across all worlds |
+| `world`, `area`, `kind` | `kind` is `place`, `ingredient`, `flavour`, `technique`, `landmark` or `dish` |
+| `name`, `placeName`, `zh`, `emoji` | `zh` holds the local-language name for any world |
+| `pos`, `rot`, `elevation` | World coordinates. `elevation` lifts the stand onto a terrace |
+| `prop` | A key in the world's `props`. `"none"` with `hitOnly: true` and `hit: [w, h, d, cy]` for an invisible click box |
+| `place: true` | Dishes may sit here |
+| `scene` | The room id this object opens |
+| `tagline` | One sentence, under 80 characters |
+| `blurb` | Three to five paragraphs separated by `\n\n`. See the standard below |
+| `match(r)` | Which recipes live here. Use `has(r.core, /regex/)` or `r.place === id` |
+
+The China blurb standard (see `hotpot`, `dumpling`, `teahouse` in `graph.ts`):
+
+- Paragraph 1: When and where the food or place began, with a dated era in brackets, for example "late Qing dynasty (1800s)"
+- Paragraph 2: The ingredients and the method, with the local names in the local script
+- Paragraph 3: How people eat it today and what it means socially
+- Paragraph 4 or 5, optional: A regional variant or a comparison with another area
+- Dates describe records, not invented birthdays. Say "first written down in" or "a record from" when that is the evidence
+- Distinguish a legend from a document. Write "legend puts" for a legend
+
+Story depth (`<ID>_STORY_DEPTH`) adds three paragraphs of dated history with sources for objects that open rooms. `<ID>_NEXT` links each card to two related objects.
+
+Card art: `<ID>_CARD_ART` maps an object id to a WebP in `public/scenes/<id>-food/`. Objects without art show a rendered snapshot of the prop.
+
+## 7. Rooms
+
+A room is a `paintedScene(cfg)` call. The engine draws the painting, parallax, a warm light, steam, fire, lamps, motes, leaves, petals, mist, sky lanterns and hotspots. The room supplies coordinates.
+
+```ts
+const paellaCourtyard = (): SceneDef => paintedScene({
+  id: "es_paella", folder: "es_paella", title: "Paella courtyard", zh: "Arrocería", caption: "One sentence about the room.",
+  painting: true,
+  steam: [{ x: 760, y: 560, w: 180, rate: 10, a: 0.28 }],            // wide coordinates, stage units
+  fire: [{ x: 700, y: 640, rx: 60, ry: 30 }],
+  portrait: {                                                          // the portrait is a different painting
+    steam: [{ ...pAt("es_paella", 0.47, 0.62), w: 120, rate: 9, a: 0.28 }],
+    fire: [{ ...pAt("es_paella", 0.45, 0.70), rx: 40, ry: 20 }],
+  },
+  hotspots: [/* section 7.2 */],
+  ambience: ES_AMBIENCE.es_paella,
+  light: { x: 750, y: 280, color: "rgba(255,210,150,0.16)" },
+});
+```
+
+Rules the engine applies to every `painting: true` room except hotpot:
+
+- `hang`, `front` and `walkers` are cleared. Sprites would duplicate the painting. Only one sky flyer survives in rooms listed in `flyersAllowed`
+- Steam sources are limited to one per room unless the room id is listed in `paintedScene` (`steamLimit`). Add the id there when a room has more than one hot source
+- Ambience patches are limited so that steam, fire, a flyer and patches together stay at or under four loops. Hotpot is the ceiling
+- The `PAINTED_SIGNATURES` entry for the room id defines its one signature motion. Add one per room
+
+### 7.1 Coordinates
+
+- Wide: stage units. `x = fx * 1600`, `y = fy * 900` from fractions of the wide painting
+- Portrait: use `pAt(folder, fx, fy)` with fractions of the portrait painting. It reads the portrait size from `scenes-props.json`, so the room must be registered there first
+- Measure every coordinate on the actual painting. Do not copy wide fractions to portrait
+
+### 7.2 Touches
+
+A touch is a `SceneHotspot` with an `interaction`:
+
+```ts
+{ id: "es_paella-0", label: "Lift the rice", text: "One or two sentences of discovery.",
+  x: 0.42 * 1600, y: 0.66 * 900, portrait: pAt("es_paella", 0.47, 0.62),
+  interaction: { effect: "tea", icon: "♨", wide: [0.42, 0.66], phone: [0.47, 0.62], extent: [0.10, 0.22], folder: "es_paella", food: "paella" } }
+```
+
+Effects and their meaning:
+
+| Effect | Local response | Icon | Sound |
+| --- | --- | --- | --- |
+| `detail` | A highlight and the discovery text only | ⌕ | none |
+| `tea` | Steam from the pictured vessel | ♨ | tea |
+| `sizzle` | Sparks and heat over a pictured pan or grill | ♨ | sizzle |
+| `flour` | A puff of flour over a board | ⋯ | flour |
+| `leaves` | A few leaves move near pictured foliage | ❧ | leaves |
+| `water` | One ripple on pictured open water, only when no boat, person or post shares the box | ≈ | water |
+| `light` | A pictured lamp brightens | ☼ | none |
+| `chime` | A pictured bell rings | ♪ | chime |
+| `purr`, `woof` | A pictured cat or dog answers | ♡ | purr, woof |
+
+Give each room two or three touches. Each touch names something visible in both paintings. The `text` states one fact. `scene-discoveries.ts` keeps the sources for specialist facts; add yours there.
+
+### 7.3 Ambience
+
+`AmbientPatch` entries are always-on movement aligned to the painting:
+
+```ts
+{ kind: "leaves", wide: [.70, .02, .94, .30], phone: [.63, .035, .92, .20], leaf: "yellow", color: "#c99235" }
+{ kind: "breeze", wide: [.32, .02, .36, .13], phone: [.75, .03, .82, .14], period: 5.8, sway: [.14, .15], source: "grape" }
+{ kind: "birds", wide: [.58, .025, .95, .18], phone: [.56, .025, .98, .15], period: 11.5 }
+```
+
+Kinds: `water`, `leaves`, `birds`, `oil`, `dust`, `rain`, `mist`, `light`, `breeze`. A `breeze` patch cuts an isolated hanging detail out of the painting by colour (`isBreezePixel`) and sways it from its top edge. Inspect the cut mask alone before you approve it. If the box contains a face, a wall or a shelf, do not use it.
+
+Test each room with `scene-ambience.mjs` style checks: steam visible at time zero, portrait steam at its own coordinates, no steam at wide coordinates after rotation.
+
+### 7.4 Asset import
+
+1. Receive the paintings. Check each file's size. Wide 1672 x 941, portrait 941 x 1672. Other sizes need a new `paintingFrame` in `scene-ambience.ts`; report this rather than upscaling
+2. Copy `scripts/scenes/import-turkey.py` to `import-<id>.py`. Map delivered file names to room ids. Map card illustrations to object ids
+3. Run it with `uv run --with pillow scripts/scenes/import-<id>.py "<delivered folder>"`. It writes the JPEGs, the WebPs and the sizes in `scenes-props.json`
+4. Sprites on white or black backgrounds go through `scripts/scenes/cut-props.py`, which trims, keys and edge-bleeds them into `public/scenes/props/`
+5. Open `scripts/tests/room-audit.html` in the dev server and look at every room in both orientations
+
+## 8. People and movement rules
+
+- Every area has its own resident builder with varied heights, builds, skin, hair, clothing and carried things. Eight profiles is the Turkey count
+- Steps match distance. A standing person does not step. `turkeyWalk` does this; the China loop walkers use `walk(t)` continuously, which is acceptable only on a continuous loop
+- Lanes are straight segments or smooth curves that never cross a wall, a stand footprint or water. Keep 1.6 units between parallel lanes
+- The torso bob lives on `upper.position.y`, so a walker on a bridge deck stays on the deck
+- Animals stay in pens or on their own path. Nothing enters water except boats and fish
+- Every seat has a person or a reason to be empty. Every person has a job or a destination
+- Bubbles speak the local language plus English on one line: `"¡Salud! Cheers!"`
+
+## 9. Tests and verification
+
+Run before every commit:
+
+```bash
+npm run typecheck
+```
+
+```bash
+npm test
+```
+
+`npm test` runs every `scripts/tests/*.mjs` harness. Each bundles the real modules with rolldown and asserts geometry and timing. The set takes about twenty seconds.
+
+| Harness | Checks |
+| --- | --- |
+| `prop-supports.mjs` | Lantern cords start at a beam; bench guests rest on the seat; village walkers cross no wall |
+| `prop-reactions.mjs` | Room touch effects are local, bounded and use no inserted images |
+| `village-speech.mjs` | One bubble at a time; two to seven background lines in two minutes; taps replace bubbles |
+| `scene-ambience.mjs` | Steam is visible on entry; portrait steam has its own coordinates |
+| `room-controls.mjs` | Touch reactions return true; specific plumes keep their size and place |
+| `room-sound.mjs` | Every synthesised sound is short, audible, finite and distinct |
+| `turkey-reactions.mjs`, `xinjiang-reactions.mjs` | Food moves before speech; repeats stay bounded; falling items clean up; `ownReaction` set |
+| `turkey-world.mjs` | Zoom limits; stairs are continuous flights; no coplanar overlapping faces; a 240-second route and support simulation |
+| `camel-gait.mjs` | A foot is always planted; joint reach; loop continuity |
+| `world-availability.mjs`, `world-intros.mjs` | The public page shows only finished worlds; every world has a complete intro |
+
+Add `<id>-reactions.mjs` and `<id>-world.mjs` for a new area. Copy the nearest harness and change the ids.
+
+Browser verification uses the dev server from `.claude/launch.json` (`food-tour-web`, port 5180) and the debug hooks on `window.__fw`:
+
+| Hook | Use |
+| --- | --- |
+| `__fw.enter("middle-east")` | Enter a world from the atlas |
+| `__fw.look(x, z, dist)` | Move the camera |
+| `__fw.step(n)` | Render `n` frames while the pane is hidden |
+| `__fw.open(id)` | Click an object |
+| `__fw.shot(name)` | Save the canvas to `.data/shots/<name>.jpg` through the dev API |
+| `__fw.sceneShot(name)` | Save the open room's composite |
+| `__fw.closeScene()` | Close the room before opening the next |
+| `__fw.audit(seconds)` | Report anything that walks into water, walls or each other |
+| `__fw.figures()` | Show the person rig in six poses |
+| `window.__fwInstant = true` | Skip scene fade timers in a hidden pane |
+
+Check at 1280 x 720, at 390 x 844 and on one large screen. Watch each room for twenty seconds before clicking. Click every stand from the direction a visitor would use. Screenshots prove composition. Only watching proves motion.
+
+HTML harnesses in `scripts/tests/` open in the dev server: `room-audit.html` (every room, both orientations), `ambient-motion.html` (canvas pixels composited over the real JPEG), `china-prop-audit.html` (support audit), `camel-walk.html`, `building-cutaways.html`, `turkey.html`.
+
+## 10. Publish
+
+```bash
+npm run build:pages
+```
+
+Commit with the project's author identity, push `main`, and watch the Pages run:
+
+```bash
+gh run watch --exit-status
+```
+
+`.github/workflows/pages.yml` builds on every push to `main` and deploys to https://fyyying.github.io/food-world/. Verify the live site on a phone-sized viewport after the run succeeds.

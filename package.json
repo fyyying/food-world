@@ -8,6 +8,7 @@
     "build": "vite build",
     "start": "NODE_ENV=production node server/index.mjs",
     "typecheck": "tsc --noEmit",
+    "test": "node scripts/tests/run.mjs",
     "export": "node scripts/export-static.mjs",
     "build:pages": "vite build --config vite.pages.config.ts",
     "preview:pages": "vite preview --config vite.pages.config.ts --outDir dist-pages"

@@ -72,7 +72,7 @@ Check: Type check and all harnesses pass, the baseline numbers hold, and the lea
 
 1. Research the area: landscape, architecture, food culture, ingredients, everyday activities, clothing, period. Keep the sources
 2. Write the area brief and the object list. Ten to fifteen objects with rooms, five to ten ingredient stops, three to six landmarks
-3. Write the image brief from `docs/examples/spain-scene-generation-prompt.md` and the art direction. Stop here when pictures do not exist yet
+3. Write the image brief from `docs/examples/spain-scene-generation-prompt.md` and the art direction. When pictures do not exist yet, hand the owner the final brief with the exact file names and the folder to drop them in, then stop and wait. Do not start Stage B on guessed pictures
 
 Check: The object list has unique ids, every object has a `kind`, an `area` and a purpose, and every historical claim has a source.
 
@@ -131,7 +131,8 @@ Failures return to the owning role. The stage repeats until every line passes.
 
 ### Stage F: Publish (Lead)
 
-1. Add the world to `PUBLISHED_WORLDS` when it is a new world
+0. When the area's world is not yet in `PUBLISHED_WORLDS`, publishing the area publishes the whole world, including its unfinished areas. Ask the owner before this stage whether to publish the world as it is, as the Middle East went live with Turkey finished and three areas not, or to dim the unfinished areas first. Do not decide this alone
+1. Add the world to `PUBLISHED_WORLDS` when it is a new world, or when the owner has answered yes above
 2. Write `docs/<id>-world.md`: what was built, the animation inventory table, what was checked, what remains
 3. Commit, push `main`, watch the Pages run, verify the live site on a phone viewport
 4. Report to the owner with three screenshots: the whole area, one stand mid-reaction, one room

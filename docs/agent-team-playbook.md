@@ -168,32 +168,44 @@ Verification record:
 
 ## 6. Which model does which step
 
-Match the model to the kind of judgement the step needs. Visual and spatial judgement and cross-file integration go to the strongest model. Sourced prose and configuration go to the next tier. Mechanical steps go to the fastest tier.
+Match the model to the kind of judgement the step needs. Visual and spatial judgement and cross-file integration go to the strongest tier. Sourced prose and configuration go to the middle tier. Mechanical steps go to the fast tier. The Claude column is the default; the OpenAI column is the equivalent when the team runs on Codex.
 
-| Step | Role | Model | Reason |
-| --- | --- | --- | --- |
-| Area research, brief, object list, image brief | Researcher | Claude Opus 5 (`claude-opus-5`) with web search | Long sourced writing; must separate records from legends |
-| Image generation | Outside the repository | ChatGPT image generation, or Gemini through the `ce-gemini-imagegen` skill | The methodology and the Spain prompt were written for ChatGPT; both accept reference images |
-| Picture acceptance against the art direction | Room maker, then lead | Claude Fable 5.1 (`claude-fable-5-1`) | Judging style, clothing period, food accuracy and vessel orientation from the image itself |
-| Layout blueprint: clusters, roads, water, landmarks | Lead | Claude Fable 5.1 | Spatial reasoning over the whole table; road joins and river edges were the most-corrected defects in China |
-| Landscape, water, roads, town clusters | Builder | Claude Fable 5.1 | Flicker, broken ribbons and wall crossings come from geometry mistakes that need careful spatial checking |
-| Architecture builders, resident clothing profiles, countryside | Builder | Claude Opus 5 | Pattern work from `turkey-architecture.ts` and `turkey-people.ts` with a fixed palette |
-| Stands with the China click chain | Stand maker | Claude Fable 5.1 | The stand is where China was corrected most: people in walls, shaking chefs, floating boards, seats. Supports, timing and reaction order need the strongest model |
-| Details that sway and small ingredient stops | Stand maker | Claude Opus 5 | Copies of `northDetail`, `jujubeTree` and `chilliField` with new shapes |
-| Room configs: coordinates, touches, steam, fire | Room maker | Claude Opus 5 with vision | Measuring points on the actual paintings and writing data |
-| Ambience masks and signature motion | Room maker, approved by lead | Claude Fable 5.1 | A mask that moves a face or wall passed pixel tests before; only careful visual inspection catches it |
-| Blurbs, story depth, discoveries, speech lines, world intro | Researcher | Claude Opus 5 with web search | Sourced, dated prose to the China blurb standard |
-| Import scripts, cutter runs, registration checklist, `docs/<id>-world.md` draft | Any role | Claude Sonnet 5 (`claude-sonnet-5`) | Mechanical, well-specified steps with a checklist |
-| Running `npm test`, `npm run typecheck`, screenshots at both sizes, status posts | Any role | Claude Haiku 4.5 (`claude-haiku-4-5-20251001`) or Sonnet 5 | Execution and reporting, no judgement |
-| Integration and merge | Lead | Claude Fable 5.1 | Conflicts across `graph.ts`, `main.ts`, `ui.ts` and the world file |
-| Review against the definition of done | Lead and one other agent | Claude Fable 5.1 | The review must be stronger than the author. Never the same agent that wrote the file |
-| Publish and live check | Lead | Claude Sonnet 5 | Build, push, watch the run, verify the URL on a phone viewport |
+Model names change. Before a kick-off, check each provider's current list and take the newest model in the same tier. Model ids in this table are current on 2026-09-15.
+
+| Step | Role | Claude | OpenAI | Reason |
+| --- | --- | --- | --- | --- |
+| Area research, brief, object list, image brief | Researcher | Claude Opus 5 (`claude-opus-5`) with web search | GPT-5.1 with web search, reasoning high | Long sourced writing; must separate records from legends |
+| Image generation | Outside the repository | Gemini through the `ce-gemini-imagegen` skill | GPT Image (`gpt-image-1`) in ChatGPT with the reference images attached | The methodology and the Spain prompt were written for ChatGPT image generation; both tools accept reference images |
+| Picture acceptance against the art direction | Room maker, then lead | Claude Fable 5.1 (`claude-fable-5-1`) | GPT-5.1 with image input, reasoning high | Judging style, clothing period, food accuracy and vessel orientation from the image itself |
+| Layout blueprint: clusters, roads, water, landmarks | Lead | Claude Fable 5.1 | GPT-5.1-Codex-Max, reasoning xhigh | Spatial reasoning over the whole table; road joins and river edges were the most-corrected defects in China |
+| Landscape, water, roads, town clusters | Builder | Claude Fable 5.1 | GPT-5.1-Codex-Max, reasoning high | Flicker, broken ribbons and wall crossings come from geometry mistakes that need careful spatial checking |
+| Architecture builders, resident clothing profiles, countryside | Builder | Claude Opus 5 | GPT-5.1-Codex, reasoning medium | Pattern work from `turkey-architecture.ts` and `turkey-people.ts` with a fixed palette |
+| Stands with the China click chain | Stand maker | Claude Fable 5.1 | GPT-5.1-Codex-Max, reasoning xhigh | The stand is where China was corrected most: people in walls, shaking chefs, floating boards, seats. Supports, timing and reaction order need the strongest tier |
+| Details that sway and small ingredient stops | Stand maker | Claude Opus 5 | GPT-5.1-Codex, reasoning medium | Copies of `northDetail`, `jujubeTree` and `chilliField` with new shapes |
+| Room configs: coordinates, touches, steam, fire | Room maker | Claude Opus 5 with vision | GPT-5.1-Codex with image input, reasoning medium | Measuring points on the actual paintings and writing data |
+| Ambience masks and signature motion | Room maker, approved by lead | Claude Fable 5.1 | GPT-5.1-Codex-Max with image input, reasoning high | A mask that moves a face or wall passed pixel tests before; only careful visual inspection catches it |
+| Blurbs, story depth, discoveries, speech lines, world intro | Researcher | Claude Opus 5 with web search | GPT-5.1 with web search, reasoning high | Sourced, dated prose to the China blurb standard |
+| Import scripts, cutter runs, registration checklist, `docs/<id>-world.md` draft | Any role | Claude Sonnet 5 (`claude-sonnet-5`) | GPT-5.1-Codex-Mini, or GPT-5 mini | Mechanical, well-specified steps with a checklist |
+| Running `npm test`, `npm run typecheck`, screenshots at both sizes, status posts | Any role | Claude Haiku 4.5 (`claude-haiku-4-5-20251001`) or Sonnet 5 | GPT-5 mini or GPT-5 nano | Execution and reporting, no judgement |
+| Integration and merge | Lead | Claude Fable 5.1 | GPT-5.1-Codex-Max, reasoning high | Conflicts across `graph.ts`, `main.ts`, `ui.ts` and the world file |
+| Review against the definition of done | Lead and one other agent | Claude Fable 5.1 | GPT-5.1-Codex-Max, reasoning xhigh | The review must be stronger than the author. Never the same agent that wrote the file |
+| Publish and live check | Lead | Claude Sonnet 5 | GPT-5.1-Codex-Mini | Build, push, watch the run, verify the URL on a phone viewport |
+
+Tier equivalents:
+
+| Tier | Claude | OpenAI |
+| --- | --- | --- |
+| Strongest: space, motion, review | Claude Fable 5.1 | GPT-5.1-Codex-Max at high or xhigh reasoning |
+| Middle: prose, configuration, pattern code | Claude Opus 5 | GPT-5.1 for prose, GPT-5.1-Codex for code |
+| Fast: mechanical steps | Claude Sonnet 5 | GPT-5.1-Codex-Mini or GPT-5 mini |
+| Execution and reporting | Claude Haiku 4.5 | GPT-5 mini or GPT-5 nano |
 
 Rules:
 
 - The reviewer model is never weaker than the author model
-- When a step fails review twice, escalate it one tier: Sonnet 5 to Opus 5, Opus 5 to Fable 5.1
-- Fable 5.1 owns every step whose failure the visitor would see as a defect in space or motion: floating, flicker, walls, wrong reactions, moving faces
+- When a step fails review twice, escalate it one tier
+- The strongest tier owns every step whose failure the visitor would see as a defect in space or motion: floating, flicker, walls, wrong reactions, moving faces
+- Mixing providers inside one team is fine. Keep one provider per role for one area so the style of the code stays consistent within a file set
 - Give each agent this playbook, the handbook, the art direction and the blueprint section of `docs/<id>-world.md` at start, and nothing else. Long context from other roles causes drift
 
 ## 7. Communication rules

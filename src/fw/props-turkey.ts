@@ -485,6 +485,101 @@ export function turkeyCitrus(): P {
 }
 Object.assign(TURKEY_PROPS,{turkeyHammam,turkeyCitrus});
 
+// ---------- Black Sea corner: three card-only stands so the tea terraces have neighbours that are not food stands ----------
+
+/** A hazel: a low multi-stemmed crown with nuts in pale husks. `crown` and `fruits` follow the orchard convention for harvest(). */
+function hazelTree(s=1):P {
+  const g=group();
+  for(const [dx,dz] of [[0,0],[-.12,.08],[.11,-.07]])add(g,cyl(.05*s,.9*s,'#5e4632'),dx*s,.45*s,dz*s);
+  const crown=new THREE.Group();g.add(crown);
+  for(const [i,[dx,dy,dz,r]] of ([[0,1.25,0,.62],[-.42,1.05,.1,.42],[.40,1.10,-.12,.44],[.05,.95,.40,.40]] as [number,number,number,number][]).entries()){
+    const leaf=add(crown,ball(r*s,i%2?'#4d7a38':'#5c8a44'),dx*s,dy*s,dz*s);leaf.scale.y=.85;
+  }
+  const fruits:THREE.Mesh[]=[];
+  for(let i=0;i<8;i++){
+    const a=i*2.4,rr=.56*s,y=(.85+(i%3)*.22)*s;
+    add(crown,ball(.075*s,'#9db86a'),Math.cos(a)*rr,y,Math.sin(a)*rr).scale.set(1,1.15,1);
+    fruits.push(add(crown,ball(.06*s,'#8a5a2b'),Math.cos(a)*rr,y-.05*s,Math.sin(a)*rr));
+  }
+  g.userData.crown=crown;g.userData.fruits=fruits;
+  return g;
+}
+/** Giresun-style hazelnut grove: tap it and the nearest trees shake nuts into the pickers' baskets. */
+export function turkeyHazelnut():P {
+  const g=group(),trees:THREE.Object3D[]=[];
+  for(const [i,[x,z]] of ([[-2.4,-1.6],[0,-2.1],[2.4,-1.5],[-1.3,.6],[1.3,.7]] as [number,number][]).entries()){
+    const tr=add(g,hazelTree(1.15+(i%3)*.12),x,0,z);tr.name='hazel-tree';tr.rotation.y=i*1.3;trees.push(tr);
+  }
+  const picker=add(g,local('#8e6b4a',{hijab:'#b9484a'}),.2,0,2.3);picker.rotation.y=Math.PI;
+  const baskets:THREE.Vector3[]=[];
+  for(const x of [-1.1,1.0]){
+    add(g,cyl(.38,.34,'#a37c52'),x,.17,2.9);
+    const nuts=add(g,group(),x,.36,2.9);
+    for(let j=0;j<9;j++)add(nuts,ball(.07,j%2?'#8a5a2b':'#a06b35'),Math.sin(j*2.1)*.22,(j%3)*.03,Math.cos(j*2.1)*.22);
+    baskets.push(new THREE.Vector3(x,.42,2.9));
+  }
+  // The day's pick dries on a cloth beside the baskets.
+  add(g,block(1.6,.02,1.0,'#d9c9a6'),0,.012,3.9);
+  for(let j=0;j<14;j++)add(g,ball(.055,'#8a5a2b'),-.6+(j%7)*.2,.06,3.7+Math.floor(j/7)*.35);
+  const crop=harvest(g,[trees[1],trees[0],trees[2]],baskets);
+  return life(g,[picker],'Fındık toplama zamanı! Hazelnut harvest!',crop.tick,crop.poke);
+}
+/** Anchovy landing on the shingle: nets drying between poles, an upturned boat, crates of hamsi that leap when tapped. */
+export function turkeyHamsi():P {
+  const g=group();
+  for(const x of [-1.3,1.3])add(g,cyl(.05,2.3,TR.wood),x,1.15,-.6);
+  add(g,cyl(.02,2.6,TR.wood),0,2.2,-.6).rotation.z=Math.PI/2;
+  // A wireframe net: no transparent surface to sort against the sea behind it.
+  const net=add(g,new THREE.Mesh(new THREE.PlaneGeometry(2.4,1.7,10,7),mat('#4a5a5e',{wireframe:true})),0,1.3,-.6);
+  for(const [x,y] of [[-.9,1.05],[.7,.95],[-.2,.62]])add(g,ball(.09,'#c9412f'),x,y,-.58);   // cork floats caught in the mesh
+  const hull=add(g,ball(.9,'#4c3a2a'),-2.6,.34,.6);hull.scale.set(1.9,.38,.72);hull.rotation.y=.35;
+  add(g,block(3.2,.05,.12,'#7a5a3c'),-2.6,.68,.6).rotation.y=.35;                          // the keel of the boat drawn up on the beach
+  for(const [x,z] of ([[.2,.9],[1.4,1.1],[.8,1.9]] as [number,number][])){
+    add(g,block(1.0,.34,.7,'#a58a62'),x,.17,z);
+    for(let j=0;j<10;j++){
+      const fish=add(g,ball(.055,j%3?'#c8d0d6':'#9fb1bb'),x-.36+(j%5)*.18,.36+Math.floor(j/5)*.05,z-.15+Math.floor(j/5)*.3);
+      fish.scale.set(2.6,.6,.9);fish.rotation.y=(j%2)*.3-.15;
+      if(j===2)fish.userData.foodReaction='flip';                                           // one fish per crate leaps and turns
+    }
+  }
+  const fisher=add(g,local('#41546a',{apron:true}),-.6,0,.2);fisher.rotation.y=-.6;
+  const boy=add(g,local('#7b8fa3'),2.2,0,.4);boy.scale.setScalar(.72);boy.rotation.y=-2.4;
+  return life(g,[fisher,boy],'Hamsi geldi! The anchovies are in!',(t)=>{
+    (fisher.userData.arms as {left:THREE.Group}).left.rotation.x=-1.1+Math.sin(t*1.7)*.15;  // hands working along the net
+    net.position.y=1.3+Math.sin(t*.9)*.01;
+  });
+}
+/** A kale and maize bed on the wet slope: the heads shiver and a cob drops into the basket when tapped. */
+export function turkeyKaleCorn():P {
+  const g=group();
+  add(g,block(2.8,.12,5.2,'#6b5742'),0,.06,0);
+  const heads:THREE.Mesh[]=[];
+  for(let row=0;row<4;row++)for(let col=0;col<3;col++){
+    const x=-.85+col*.85,z=-1.9+row*.9;
+    const head=add(g,ball(.28,row%2?'#3e6b3a':'#4b7a44'),x,.30,z);head.scale.set(1,.7,1);heads.push(head);
+    for(let k=0;k<4;k++){const leaf=add(g,ball(.16,'#3a5f36'),x+Math.cos(k*1.6)*.26,.22,z+Math.sin(k*1.6)*.26);leaf.scale.set(1,.35,1.6);leaf.rotation.y=k*1.6;}
+  }
+  const stalks:THREE.Object3D[]=[];
+  for(const [i,x] of [-.9,-.3,.3,.9].entries()){
+    const stalk=add(g,group(),x,.12,2.15);const crown=new THREE.Group();stalk.add(crown);
+    add(crown,cyl(.035,1.7,'#8faf58'),0,.85,0);
+    for(let k=0;k<4;k++){const leaf=add(crown,ball(.28,'#7c9d4c'),Math.cos(k*2.1)*.22,.55+k*.3,Math.sin(k*2.1)*.22);leaf.scale.set(.25,.12,1);leaf.rotation.y=k*2.1;}
+    add(crown,cyl(.02,.35,'#d9c48a'),0,1.85,0);
+    const cob=add(crown,ball(.075,'#e3c35a'),.10,1.05+(i%2)*.15,.02);cob.scale.set(1,2.4,1);cob.rotation.z=-.3;
+    add(crown,ball(.08,'#9db86a'),.10,.95+(i%2)*.15,.02).scale.set(.9,1.6,.9);
+    stalk.userData.crown=crown;stalk.userData.fruits=[cob];stalks.push(stalk);
+  }
+  const gardener=add(g,local('#5d6e5a',{hijab:'#c8a04a'}),1.9,0,.9);gardener.rotation.y=-Math.PI/2;
+  add(g,cyl(.36,.32,'#a37c52'),1.9,.16,-.1);
+  const greens=add(g,group(),1.9,.34,-.1);for(let j=0;j<5;j++)add(greens,ball(.14,'#4b7a44'),Math.sin(j*2.2)*.16,0,Math.cos(j*2.2)*.16).scale.y=.6;
+  const crop=harvest(g,stalks,[new THREE.Vector3(1.9,.42,-.1)]);
+  return life(g,[gardener],'Karalahana ve mısır! Kale and corn for the pot.',(t,k,dt)=>{
+    crop.tick(t,k,dt);
+    heads.forEach((h,i)=>{h.rotation.z=Math.sin(t*1.1+i)*.03+Math.sin(t*17+i)*.06*k;});
+  },crop.poke);
+}
+Object.assign(TURKEY_PROPS,{turkeyHazelnut,turkeyHamsi,turkeyKaleCorn});
+
 /** Small street kitchens react in 3D before opening their food cards. */
 function streetKitchen(kind:'doner'|'gozleme'):P {
   const g=group();

@@ -13,7 +13,8 @@ export function turkeyBazaar():P {
   const g=bazaar((_shirt,opts)=>turkeyResident(resident++,!!opts?.apron));
   const inheritedTick=g.userData.tick;
   // Retain the working stalls and shoppers; replace the single shed with open stone arcades.
-  for(const o of [...g.children])if(o instanceof THREE.Mesh && o.position.y>.1){g.remove(o);o.geometry.dispose();}
+  // The market stands on the town paving; its own floor plane sat 2 mm above it and z-fought while the camera moved.
+  for(const o of [...g.children])if(o instanceof THREE.Mesh && (o.position.y>.1 || o.geometry instanceof THREE.PlaneGeometry)){g.remove(o);o.geometry.dispose();}
   const stone=new THREE.Group();
   for(const x of [-5,0,5])for(const z of [-4.5,4.5]){
     // The central entrance replaces this bay; two identical arch rings z-fight along their curves.
@@ -122,7 +123,7 @@ function limestone() {
 function square(ctx:LayoutCtx,x:number,z:number,rx:number,rz:number) {
   const outline:[number,number][]=[];
   for(let i=0;i<48;i++){const a=i/48*Math.PI*2;outline.push([x+Math.cos(a)*rx,z+Math.sin(a)*rz]);}
-  ctx.group.add(surface(outline,limestone(),.021,'turkish-stone-square'));
+  ctx.group.add(surface(outline,limestone(),.027,'turkish-stone-square'));   // clear of the town paving at .018; lanes at .032 carry polygonOffset
 }
 
 /** Deliberately composed groups: shared walls and yards, varied roofs, and turns towards lanes. */
@@ -138,11 +139,12 @@ export const TOWN_HOUSES: [number,number,number,HouseStyle,number,number?][] = [
   [-26.9,-13.5,2,'narrow',.09],[-16,-13.0,2,'narrow',-.15],
   // Coffeehouse hill: buildings overlap in the view, with their feet on a solid terrace.
   [1.25,-36.1,3,'narrow',-.12,2.6],[4.65,-36.5,2,'timber',.06,2.6],
-  [8.7,-34.3,2,'corner',.30,2.6],[1.4,-30,2,'narrow',-.18],
+  [8.7,-34.3,2,'corner',.30,2.6],
+  // The narrow house at (1.4,-30) stood between the coffeehouse and the visitor's default view and hid it; removed 2026-09-15.
   [12.8,-24.8,1,'stone',-.13,1.2],
   [-2.1,-12.6,2,'courtyard',-.12],
   // Anatolian courtyard cluster sits above the oven lane.
-  [16.3,-27.3,3,'narrow',-.16,1.2],[17.6,-22.4,2,'timber',-.07,1.2],
+  [16.3,-27.3,2,'narrow',-.16,1.2],[17.6,-22.4,2,'timber',-.07,1.2],   // two storeys, so the rock spires and the house behind stay visible
   [21.2,-26.9,2,'narrow',.13,1.2],
   // Beyond this cluster the roofs give way to dry orchards and rocky, wooded ground.
   [28.6,-22.6,1,'courtyard',.16],
@@ -195,7 +197,7 @@ export function townStreets(ctx:LayoutCtx) {
       const b=new THREE.Box3().setFromObject(h),s=b.getSize(new THREE.Vector3()),c=b.getCenter(new THREE.Vector3());
       add(group,block(s.x+.12,elevation,s.z+.12,'#b6a68d'),c.x,elevation/2,c.z);
     }
-    if(i%3===0&&!elevation){
+    if(i%3===0&&!elevation&&style!=='courtyard'){   // courtyard houses have their own yard; a planter in front would reach the lane
       const b=new THREE.Box3().setFromObject(h),s=b.getSize(new THREE.Vector3()),c=b.getCenter(new THREE.Vector3());
       floweringCorner(group,c.x-s.x*.33,b.max.z+.15,Math.min(4,floors*1.8),i);
     }

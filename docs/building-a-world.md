@@ -84,7 +84,7 @@ Assets:
 
 ## 4. Registration checklist
 
-Do these steps in order. Steps 1 to 7 apply to a new area inside an existing world. Steps 8 to 15 apply only to a new world.
+Do these steps in order. Steps 1 to 7 apply to a new area inside an existing world. Steps 8 to 15 apply only to a new world. Step 16 applies to both. Card-only objects inside an existing world, like Turkey's Black Sea stops, need only steps 3, 5 and 16 plus a `<ID>_SOURCES` entry.
 
 1. Add the area ids to the `Area` union in `graph.ts`
 2. Add one `AREAS` entry per area: `name`, `zh` (the local-language name), `blurb`, `center`, `world`. The location picker reads it. The country navigation groups areas of one country under one button, as `ui.ts` does for Turkey
@@ -186,6 +186,9 @@ Rules that only a browser check can prove:
 | A loop walk on a curve | `nPath` pattern | `world-china.ts` | `CatmullRomCurve3` closed; `u = (t * speed + i * 0.2) % 1`; `rotation.y` from the tangent |
 | A camel | `camelWalker()` and `camel-gait.ts` | `props-xinjiang.ts` | Legs rotate about `z`, never `x`. The gait test checks planted feet |
 | Steam or smoke | `userData.steam`, `userData.smoke` | any stand | A `Vector3` in the stand's local space. The engine draws the puffs |
+| A Turkey-style stand in one call | `life(g, people, phrase, work?, onPoke?)` | `props-turkey.ts` (module-private; copy it into `props-<id>.ts`) | Sets `ownReaction`, decays the reaction over 3.5 s, moves every mesh tagged `userData.foodReaction` (`simit`, `knead`, `roll`, `grill`, `puff`, `sheet`, `serve`, `contents`, `cup`, `flip`, `carve`) first, then the worker's arm, then speech through `deferredBubble`, then `ambientChat` |
+| Fruit that falls into baskets | `harvest(g, trees, baskets)` | `props-turkey.ts` (module-private) | Trees carry `userData.crown` and `userData.fruits`; the nearest three shake and drop copies that land, bounce and clean up after 3.6 s; repeats stay under 24 |
+| A timed beat inside a reaction | `beat(k, start, end)` | `props-turkey.ts` | A sine pulse that runs between two points of the decaying reaction `k` |
 
 ### 5.3 Building and landscape helpers
 
@@ -213,6 +216,8 @@ Prop gotcha: `add(parent, child, x, y, z)` sets the child's position. Pass offse
 Water rules: seas use `seaWater()`, rivers and ponds use `freshWater()`, a river that meets the sea uses `estuaryWater`. A river that reaches the table edge ends with two points at the same edge coordinate so the cap is square. Nothing walks or stands in water.
 
 Road rules: one continuous ribbon per route. Two ribbons at the same height flicker where they overlap; lift the second by `0.004`. Every door and gathering place meets a road.
+
+Flicker rules: two horizontal surfaces closer than about 0.01 in height z-fight at world zoom, and the flicker shows most while the camera moves. One ground per spot: a stand placed on town paving has no floor plane of its own. Squares and courtyards sit 0.008 or more above the paving they cover; lanes carry `polygonOffset` so they win over squares. `node scripts/audit/flicker.mjs <world-module> <build-fn> <x> <z> <radius>` lists every upward face near a point by height and reports exact coplanar overlaps; run it on any spot the owner reports as flickering, and on every new cluster before review.
 
 ## 6. Objects and cards
 
@@ -384,7 +389,7 @@ npm test
 
 Add `<id>-reactions.mjs` and `<id>-world.mjs` for a new area. Copy the nearest harness and change the ids.
 
-Audit scripts in `scripts/audit/` are not tests but review tools: `objects.mjs` lists rooms and card-only clickable objects per area, `breeze-masks.py` renders every cropped mask for inspection.
+Audit scripts in `scripts/audit/` are not tests but review tools: `objects.mjs` lists rooms and card-only clickable objects per area, `breeze-masks.py` renders every cropped mask for inspection, `flicker.mjs` lists ground planes by height around a point. The [quality baseline](quality-baseline.md) records the numbers these tools reported at the last review; a session that changes a number must explain why.
 
 Browser verification uses the dev server from `.claude/launch.json` (`food-tour-web`, port 5180) and the debug hooks on `window.__fw`:
 

@@ -105,6 +105,9 @@ export const TURKEY_SOURCES: Record<string,{title:string;url:string}[]> = {
   hammamTr:[{title:'Çemberlitaş Hamamı · The bath founded in 1584',url:'https://www.cemberlitashamami.com/en/history/'}],
   fountainTr:[{title:'Ministry of Culture · Historic fountains',url:'https://kulturportali.gov.tr/portal/tarihin-taniklari-cesmeler'}],
   citrusTr:[{title:'GoTürkiye · Mediterranean produce',url:'https://goturkiye.com/mediterranean'}],
+  hazelnutTr:[{title:'International Nut and Dried Fruit Council · Hazelnuts in Türkiye',url:'https://inc.nutfruit.org/industry-highlight-hazelnuts-turkey/'}],
+  hamsiTr:[{title:'Eurasianet · Chasing hamsi, Türkiye’s little fish with a big reputation',url:'https://eurasianet.org/chasing-hamsi-turkeys-little-fish-with-a-big-reputation'}],
+  kaleTr:[{title:'Daily Sabah · Black Sea foods made from corn',url:'https://www.dailysabah.com/life/food/3-foods-you-have-to-try-from-turkeys-black-sea-cuisine-made-from-corn'}],
   potteryTr:[{title:'Avanos Governorate · Pottery workshops',url:'https://www.avanos.gov.tr/canak-comlek-atolyeleri'}],
   copperTr:[{title:'GoTürkiye · Gaziantep crafts',url:'https://gaziantep.goturkiye.com/tr/dokun'}],
 };

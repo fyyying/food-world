@@ -55,6 +55,19 @@ Ids are the contract. Once the object list is fixed, nobody renames an id withou
 
 Each stage ends with a check. The next stage starts only when the check passes.
 
+### Stage 0: Session start (Lead)
+
+The lead runs this before any other work, in every new session, including a session that only coordinates.
+
+1. Read the four documents listed at the top of this playbook
+2. Run `npm run typecheck` and `npm test`. Every harness passes before work starts; a failure is the first task
+3. Run `node scripts/audit/objects.mjs` and compare with the [quality baseline](quality-baseline.md). Every area keeps at least its recorded number of card-only clickables
+4. Run `uv run --with pillow --with numpy --with scipy scripts/audit/breeze-masks.py <out dir>` when any mask changed since the baseline, and look at the grey panels
+5. Open the dev server and look at the live world for two minutes: the China clusters, the Turkish town, one room in each orientation. Anything that floats, flickers or crosses a wall goes on the task list before the kick-off work
+6. Post the baseline result as the first status. The lead is accountable for every number in the baseline until the session ends and updates the baseline file when the numbers change
+
+Check: Type check and all harnesses pass, the baseline numbers hold, and the lead has seen the live world.
+
 ### Stage A: Research and brief (Researcher, Lead)
 
 1. Research the area: landscape, architecture, food culture, ingredients, everyday activities, clothing, period. Keep the sources
@@ -74,7 +87,7 @@ Check: `scenes-props.json` has every room with `wide` and `portrait`; every pict
 
 ### Stage C: Parallel build (Builder, Stand maker, Room maker, Researcher)
 
-Work proceeds in four files sets at once.
+Work proceeds in four file sets at once.
 
 Builder:
 

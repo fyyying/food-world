@@ -15,7 +15,7 @@ type Room = { title: string; zh: string; caption: string; touches: Touch[]; ambi
 const rooms: Record<string, Room> = {
   tr_simit: {
     title: 'Simit by the ferry', zh: 'Simitçi', caption: 'Sesame rings, a glass of tea, and the next ferry across the Bosphorus.',
-    ambience: { steam: [{ at: [[.23,.58],[.12,.51]], width: 82, rate: 9, alpha: .28 }] },
+    ambience: { steam: [{ at: [[.23,.58],[.12,.51]], width: 110, rate: 13, alpha: .32 }] },
     touches: [
       ['Break a sesame ring', 'A simit gets its glossy crust from a molasses dip before it is rolled in sesame. Pick up a ring for the ferry, or sit down with cheese and tea.', 'detail', [.28,.70], [.34,.54], 'simit'],
       ['Tea before the crossing', 'Steam curls from the tea glass. There is time for a sip before the ferry leaves.', 'tea', [.23,.58], [.12,.51]],
@@ -24,7 +24,7 @@ const rooms: Record<string, Room> = {
   },
   tr_tea: {
     title: 'Tea under the plane tree', zh: 'Çay bahçesi', caption: 'A tray of tulip glasses, backgammon on the table, and the water just beyond the shade.',
-    ambience: { steam: [{ at: [[.325,.686],[.54,.858]], width: 84, rate: 9, alpha: .28 }] },
+    ambience: { steam: [{ at: [[.325,.686],[.54,.858]], width: 110, rate: 13, alpha: .32 }] },
     touches: [
       ['Fresh çay on the tray', 'The tea sends up a fresh curl of steam. Strong tea is traditionally diluted with hot water to taste before the glasses are carried out.', 'tea', [.60,.44], [.40,.345]],
       ['A tray for company', 'The waiter carries several tulip glasses together. Offering tea welcomes a guest; another round gives the conversation more time.', 'detail', [.60,.44], [.40,.345]],
@@ -33,7 +33,7 @@ const rooms: Record<string, Room> = {
   },
   tr_coffee: {
     title: 'The neighbourhood coffeehouse', zh: 'Kahvehane', caption: 'Coffee warms in a cezve while friends linger over their small cups.', night: true,
-    ambience: { steam: [{ at: [[.13,.60],[.19,.61]], width: 76, rate: 8, alpha: .30 }] },
+    ambience: { steam: [{ at: [[.13,.60],[.19,.61]], width: 100, rate: 12, alpha: .34 }] },
     touches: [
       ['Warm the cezve', 'A little steam rises as finely ground coffee warms slowly in the cezve.', 'tea', [.13,.60], [.19,.61]],
       ['Let the grounds settle', 'Turkish coffee is served unfiltered in a small cup. Let the fine grounds settle before sipping; water is commonly served alongside.', 'detail', [.26,.85], [.29,.76], 'coffee'],
@@ -52,7 +52,7 @@ const rooms: Record<string, Room> = {
   tr_fish: {
     title: 'Fish at the Bosphorus quay', zh: 'Balık ekmek', caption: 'A hot grill, lemon and a fish sandwich beside the ferry landing.',
     ambience: {
-      steam: [{ at: [[.44,.82],[.75,.66]], width: 68, rate: 7, alpha: .24 }],
+      steam: [{ at: [[.44,.82],[.75,.66]], width: 110, rate: 13, alpha: .30 }],
       fire: [{ at: [[.44,.82],[.75,.66]], radius: [46, 19] }],
     },
     touches: [
@@ -97,7 +97,7 @@ const rooms: Record<string, Room> = {
   tr_yufka: {
     title: 'Bread in the village courtyard', zh: 'Yufka ve gözleme', caption: 'Dough is rolled at a shared table while flatbreads cook nearby.',
     ambience: {
-      steam: [{ at: [[.87,.42],[.84,.35]], width: 86, rate: 8, alpha: .22 }],
+      steam: [{ at: [[.87,.42],[.84,.35]], width: 115, rate: 13, alpha: .30 }],
       fire: [{ at: [[.87,.42],[.84,.35]], radius: [62, 34] }],
     },
     touches: [
@@ -108,7 +108,7 @@ const rooms: Record<string, Room> = {
   },
   tr_dolma: {
     title: 'The family dolma kitchen', zh: 'Dolma ve sarma', caption: 'Peppers to fill, leaves to roll, and several hands around one table.',
-    ambience: { steam: [{ at: [[.69,.45],[.68,.39]], width: 108, rate: 10, alpha: .30 }] },
+    ambience: { steam: [{ at: [[.69,.45],[.68,.39]], width: 130, rate: 13, alpha: .34 }] },
     touches: [
       ['Let the pot simmer', 'Steam rises gently from the pot as the filled vegetables cook together.', 'tea', [.69,.45], [.68,.44]],
       ['Fill or wrap?', 'Dolma describes something filled, such as a pepper. Sarma describes something wrapped, such as a vine leaf rolled around its filling.', 'detail', [0.25,0.715], [0.75,0.585], 'sarma'],
@@ -146,7 +146,7 @@ const rooms: Record<string, Room> = {
   },
   tr_tea_hill: {
     title: 'The Black Sea tea hills', zh: 'Karadeniz çaylıkları', caption: 'Green rows climb the wet hills, and baskets follow the pickers along the terraces.',
-    ambience: {},
+    ambience: { steam: [{ at: [[.05,.22],[.13,.19]], width: 70, rate: 8, alpha: .30 }] },   // the samovar on the balcony; the tea tray in the portrait
     touches: [
       ['Brush the tea leaves', 'Young leaves stir above the rows. The path stays between the bushes.', 'leaves', [0.32,0.75], [0.32,0.716]],
       ['From green leaf to black tea', 'The leaf is withered, rolled, oxidised and dried to make black tea. The green plant and the dark drink belong to the same journey.', 'detail', [0.525,0.735], [0.83,0.78], 'tea-leaves'],

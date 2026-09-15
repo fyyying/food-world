@@ -5,7 +5,14 @@ export type AmbientPatch = {
   wide?: PaintingRect;
   phone?: PaintingRect;
   color?: string;
-  leaf?: 'olive' | 'yellow';
+  leaf?: 'olive' | 'yellow' | 'blossom';
+  /** Peak opacity of a mist bank (default .40). Raise it where the painting behind is already hazy. */
+  alpha?: number;
+  /** Size multiplier for birds (default 1). Use up to 1.6 for birds in a large open sky near the viewer. */
+  scale?: number;
+  /** Falling leaves per patch (default 4, at most 8) and their size multiplier (default 1). */
+  count?: number;
+  size?: number;
   angles?: [wide: number, phone: number];
   /** Orientation-specific paths traced inside the patch rectangle, in local 0..1 coordinates. */
   paths?: [wide: Point[][] | undefined, phone: Point[][] | undefined];
@@ -27,25 +34,25 @@ export const PAINTED_SIGNATURES: Record<string, AmbientPatch> = {
   home_kitchen: {kind:'breeze',wide:[.028,0,.09,.30],phone:[.105,.035,.215,.34],source:'chilli',period:7.0,sway:[.040,.045]},
   tower: {kind:'birds',wide:[.60,.02,.95,.24],phone:[.55,.08,.94,.25],period:12},
   bao_shop: {kind:'dust',wide:[.08,.52,.32,.67],phone:[.08,.55,.45,.68]},
-  stone_bridge: {kind:'mist',wide:[.35,.40,.82,.66],phone:[.35,.37,.78,.57]},
+  stone_bridge: {kind:'mist',wide:[.35,.40,.82,.66],phone:[.35,.37,.78,.57],alpha:.50},
   crab_pond: {kind:'leaves',wide:[.45,.02,.88,.55],phone:[.25,.02,.78,.48],color:'#b96d42'},
   jiangnan_home: {kind:'birds',wide:[.40,.02,.72,.20],phone:[.38,.05,.70,.22],period:13},
-  lotus_garden: {kind:'sunray',wide:[.06,0,.66,.68],phone:[0,.05,.58,.65],angles:[-.45,.38]},
+  lotus_garden: {kind:'sunray',wide:[.06,0,.66,.68],phone:[0,.05,.58,.65],angles:[-.45,.38],sway:[.04,.04]},
   rice_wine: {kind:'sunray',wide:[.35,0,.88,.72],phone:[.28,0,.82,.65],angles:[-.42,.38]},
-  river_market: {kind:'sunray',wide:[.40,0,.92,.66],phone:[.35,0,.95,.60],angles:[-.40,.36]},
+  river_market: {kind:'sunray',wide:[.40,0,.92,.66],phone:[.35,0,.95,.60],angles:[-.40,.36],sway:[.04,.04]},
   riverside_restaurant: {kind:'birds',wide:[.48,.04,.84,.22],phone:[.42,.09,.77,.27],period:13},
   tea_hill: {kind:'birds',wide:[.48,.02,.82,.18],phone:[.35,.06,.75,.21],period:13},
   kebab_grill: {kind:'light',wide:[.30,.63,.78,.78],phone:[.12,.59,.45,.65],color:'#f3a34b'},
   naan_bakery: {kind:'sunray',wide:[.50,0,.98,.70],phone:[.42,0,.96,.66],angles:[-.42,.36]},
   polo_kitchen: {kind:'light',wide:[.20,.53,.54,.64],phone:[.08,.47,.64,.54],color:'#e6b452'},
   laghman_shop: {kind:'dust',wide:[.25,.59,.51,.65],phone:[.18,.51,.53,.56]},
-  oasis_bazaar: {kind:'sunray',wide:[.15,0,.75,.75],phone:[.12,0,.72,.65],angles:[-.36,.34]},
+  oasis_bazaar: {kind:'sunray',wide:[.15,0,.75,.75],phone:[.12,0,.72,.65],angles:[-.36,.34],sway:[.05,.05]},
   grape_courtyard: {kind:'sunray',wide:[.28,0,.72,.58],phone:[.18,0,.62,.55],angles:[-.52,.42],sway:[.018,.025]},
-  oasis_field: {kind:'sunray',wide:[.43,0,.96,.62],phone:[.40,0,.98,.52],angles:[-.45,.38],sway:[.018,.018]},
+  oasis_field: {kind:'sunray',wide:[.43,0,.96,.62],phone:[.40,0,.98,.52],angles:[-.45,.38],sway:[.04,.04]},
   chaikhana: {kind:'sunray',wide:[.10,0,.80,.70],phone:[.10,0,.85,.65],angles:[-.42,.36]},
   xj_home: {kind:'dust',wide:[.18,.60,.34,.65],phone:[.21,.44,.39,.47]},
   caravan_stop: {kind:'leaves',wide:[.70,.22,.93,.43],phone:[.39,0,.68,.18],leaf:'olive',color:'#6f8f4e'},
-  tianshan: {kind:'mist',wide:[.50,.15,.85,.55],phone:[.45,.20,.90,.60]},
+  tianshan: {kind:'mist',wide:[.50,.15,.85,.55],phone:[.45,.20,.90,.60],alpha:.55},
   evening_feast: {kind:'light',wide:[.11,.10,.18,.20],phone:[.02,.04,.09,.14],color:'#ffc47a'},
   skewer_courtyard: {kind:'leaves',wide:[.38,0,.88,.34],phone:[.45,0,.98,.30],color:'#b64b35'},
   mantou_kitchen: {kind:'dust',wide:[.10,.42,.36,.66],phone:[.26,.44,.72,.59]},
@@ -54,25 +61,25 @@ export const PAINTED_SIGNATURES: Record<string, AmbientPatch> = {
   courtyard_kitchen: {kind:'snow',wide:[.61,.015,.73,.30],phone:[.60,.02,.84,.20],color:'#fff9e9'},
   hutong: {kind:'leaves',wide:[.45,0,.92,.64],phone:[.44,0,.93,.62],color:'#a76543'},
   bing_stall: {kind:'dust',wide:[.08,.40,.34,.57],phone:[.05,.43,.49,.58]},
-  north_market: {kind:'sunray',wide:[.38,0,.88,.72],phone:[.35,0,.88,.68],angles:[-.42,.38]},
+  north_market: {kind:'sunray',wide:[.38,0,.88,.72],phone:[.35,0,.88,.68],angles:[-.42,.38],sway:[.04,.04]},
   noodle_workshop: {kind:'leaves',wide:[.64,0,.98,.31],phone:[.42,.06,.82,.27],leaf:'yellow',color:'#cc7f2f'},
   roast_duck: {kind:'light',wide:[.27,.18,.51,.48],phone:[.77,.32,1,.54],color:'#f2a34b'},
   vinegar_workshop: {kind:'sunray',wide:[.55,.08,.92,.72],phone:[.42,.04,.88,.54],angles:[-.42,.38]},
-  wheat_harvest: {kind:'sunray',wide:[.25,0,.90,.75],phone:[.10,0,.90,.68],angles:[-.45,.38]},
-  tr_simit: {kind:'birds',wide:[.75,.02,.96,.20],phone:[.59,.045,.95,.18]},
-  tr_tea: {kind:'birds',wide:[.66,.02,.94,.18],phone:[.66,.04,.98,.20],period:14},
+  wheat_harvest: {kind:'sunray',wide:[.25,0,.90,.75],phone:[.10,0,.90,.68],angles:[-.45,.38],sway:[.04,.04]},
+  tr_simit: {kind:'birds',wide:[.75,.02,.96,.20],phone:[.59,.045,.95,.18],period:8,scale:1.5},
+  tr_tea: {kind:'birds',wide:[.66,.02,.94,.18],phone:[.66,.04,.98,.20],period:8,scale:1.4},
   tr_coffee: {kind:'rain',wide:[.808,.09,.923,.30],phone:[.903,.164,.991,.306]},
-  tr_market: {kind:'breeze',wide:[0,0,.075,.275],phone:[0,0,.05,.18],period:7.2,sway:[.048,.065]},
+  tr_market: {kind:'breeze',wide:[0,0,.075,.275],phone:[0,0,.05,.18],period:6.4,sway:[.075,.095]},
   tr_fish: {kind:'light',wide:[.40,.72,.50,.88],phone:[.70,.58,.82,.72],color:'#f3a34b'},
   tr_kebab: {kind:'breeze',wide:[.292,.0,.335,.235],phone:[.13,.0,.22,.18],period:6.8,sway:[.052,.072]},
   tr_baklava: {kind:'sunray',wide:[.36,.0,.98,.92],phone:[.36,.0,.99,.90],angles:[.55,.42],sway:[.026,.065]},
   tr_pide: {kind:'breeze',wide:[.655,.0,.706,.155],phone:[.065,.0,.19,.17],period:7.4,sway:[.052,.072]},
   tr_yufka: {kind:'dust',wide:[.19,.60,.36,.75],phone:[.24,.58,.46,.74]},
-  tr_dolma: {kind:'breeze',wide:[.412,.0,.458,.235],phone:[.43,.0,.57,.14],period:7.1,sway:[.052,.072]},
-  tr_breakfast: {kind:'sunray',wide:[.18,.0,.72,.90],phone:[.08,.0,.77,.82],angles:[-.48,.44]},
-  tr_meze: {kind:'breeze',wide:[.618,.0,.665,.15],phone:[.185,.0,.33,.16],period:7.7,sway:[.052,.072]},
-  tr_olive: {kind:'leaves',wide:[.37,.04,.59,.52],phone:[.50,.03,.82,.37],leaf:'olive',color:'#82945e'},
-  tr_tea_hill: {kind:'mist',wide:[.30,.10,.79,.38],phone:[.22,.15,.76,.39]},
+  tr_dolma: {kind:'breeze',wide:[.412,.0,.458,.235],phone:[.43,.0,.57,.14],period:6.4,sway:[.08,.10]},
+  tr_breakfast: {kind:'sunray',wide:[.18,.0,.72,.90],phone:[.08,.0,.77,.82],angles:[-.48,.44],sway:[.04,.04]},
+  tr_meze: {kind:'breeze',wide:[.618,.0,.665,.15],phone:[.185,.0,.33,.16],period:6.6,sway:[.085,.10]},
+  tr_olive: {kind:'leaves',wide:[.37,.04,.59,.52],phone:[.50,.03,.82,.37],leaf:'olive',color:'#82945e',count:8,size:1.6},
+  tr_tea_hill: {kind:'mist',wide:[.28,.12,.78,.40],phone:[.20,.16,.78,.40],alpha:.58},   // the valley haze the painting already shows, strong enough to read
   tr_supper: {kind:'breeze',wide:[.0,.0,.043,.235],phone:[.945,.16,1,.305],period:6.9,sway:[.052,.072]},
 };
 
@@ -85,7 +92,7 @@ export const XINJIANG_AMBIENCE: Record<string, AmbientPatch[]> = {
     {kind:'leaves',wide:[.70,.02,.94,.30],phone:[.63,.035,.92,.20],leaf:'yellow',color:'#c99235'},
   ],
   oasis_field: [
-    {kind:'birds',wide:[.58,.025,.95,.18],phone:[.56,.025,.98,.15],period:11.5},
+    {kind:'birds',wide:[.58,.025,.95,.18],phone:[.56,.025,.98,.15],period:6,scale:1.8},
     {kind:'breeze',wide:[.275,0,.325,.14],phone:[.185,.03,.265,.14],period:5.9,sway:[.120,.16],source:'grape'},
   ],
   grape_courtyard: [
@@ -269,13 +276,14 @@ export function drawAmbience(ctx: CanvasRenderingContext2D, t: number, portrait:
         }
       }
     } else if (patch.kind === 'leaves') {
-      for (let i = 0; i < 4; i++) {
+      const leafCount = Math.min(8, Math.max(1, patch.count ?? 4));
+      for (let i = 0; i < leafCount; i++) {
         // Already in flight on entry. Different speeds and flutter phases prevent a repeated curtain.
         const phase = fraction(t / (7.5 + i * 1.7) + i * .271 + .13);
         const flutter = Math.sin(t * (1.3 + i * .17) + i * 2.3);
-        const px = x + w * (.24 + i * .16 + flutter * .12 + (phase - .5) * .12);
+        const px = x + w * (.10 + fraction(i * .618) * .80 + flutter * .10 + (phase - .5) * .10);
         const py = y + h * (.04 + phase * .92);
-        const size = (patch.leaf === 'yellow' ? (portrait ? 16 : 20) : (portrait ? 25 : 35)) * (.78 + i * .12);
+        const size = (patch.leaf === 'yellow' || patch.leaf === 'blossom' ? (portrait ? 16 : 20) : (portrait ? 25 : 35)) * (.78 + (i % 4) * .12) * (patch.size ?? 1);
         ctx.save(); ctx.translate(px, py); ctx.rotate(i + t * (i % 2 ? .65 : -.48) + flutter * .55);
         ctx.scale(.28 + .72 * Math.abs(Math.cos(t * .95 + i)), 1);
         ctx.globalAlpha = opacity * .94 * Math.min(1, phase * 9, (1 - phase) * 9);
@@ -285,14 +293,14 @@ export function drawAmbience(ctx: CanvasRenderingContext2D, t: number, portrait:
           ctx.drawImage(image, -leafWidth / 2, -size / 2, leafWidth, size);
         } else {
           // Procedural leaves are reserved for small yellow autumn leaves and narrow evergreen olive leaves.
-          const width = size * (patch.leaf === 'olive' ? .20 : .35);
+          const width = size * (patch.leaf === 'olive' ? .20 : patch.leaf === 'blossom' ? .55 : .35);
           const shade = ctx.createLinearGradient(-width, 0, width, 0);
-          const edge=patch.leaf==='yellow'?(patch.color??'#d7a632'):(patch.color??'#7c873f');
-          shade.addColorStop(0, edge); shade.addColorStop(.5, patch.leaf==='yellow'?'#f0c95a':'#d0ce92');
-          shade.addColorStop(1, patch.leaf==='yellow'?'#aa7025':'#657b45');
+          const edge=patch.leaf==='yellow'?(patch.color??'#d7a632'):patch.leaf==='blossom'?(patch.color??'#f3c9d4'):(patch.color??'#7c873f');
+          shade.addColorStop(0, edge); shade.addColorStop(.5, patch.leaf==='yellow'?'#f0c95a':patch.leaf==='blossom'?'#fff4f7':'#d0ce92');
+          shade.addColorStop(1, patch.leaf==='yellow'?'#aa7025':patch.leaf==='blossom'?'#e8a9bb':'#657b45');
           ctx.fillStyle = shade; ctx.beginPath(); ctx.moveTo(0, -size / 2);
           ctx.quadraticCurveTo(width, 0, 0, size / 2); ctx.quadraticCurveTo(-width, 0, 0, -size / 2); ctx.fill();
-          ctx.strokeStyle = patch.leaf==='yellow'?'#e2ad48':'#ddd7ac'; ctx.lineWidth = .7; ctx.beginPath(); ctx.moveTo(0, -size * .37); ctx.lineTo(0, size * .38); ctx.stroke();
+          ctx.strokeStyle = patch.leaf==='yellow'?'#e2ad48':patch.leaf==='blossom'?'#f7dde4':'#ddd7ac'; ctx.lineWidth = .7; ctx.beginPath(); ctx.moveTo(0, -size * .37); ctx.lineTo(0, size * .38); ctx.stroke();
         }
         ctx.restore();
       }
@@ -302,7 +310,7 @@ export function drawAmbience(ctx: CanvasRenderingContext2D, t: number, portrait:
         // Cross often enough that a normal room visit cannot land entirely in a long empty interval.
         const phase = fraction((t + 2 - i * 1.5) / (patch.period ?? 15)) * 1.65;
         if (phase > 1) continue;
-        const span = (portrait ? 8 : 11) * (i ? .7 : 1);
+        const span = (portrait ? 8 : 11) * (i ? .7 : 1) * (patch.scale ?? 1);
         ctx.save(); ctx.translate(x + w * (.08 + phase * .84), y + h * (.45 + i * .22) + Math.sin(t * 1.4 + i) * 3);
         ctx.globalAlpha = opacity * .72 * Math.min(1, phase * 8, (1 - phase) * 8);
         ctx.strokeStyle = '#4d5147'; ctx.lineWidth = portrait ? 1.4 : 1.8; ctx.lineCap = 'round';
@@ -321,13 +329,14 @@ export function drawAmbience(ctx: CanvasRenderingContext2D, t: number, portrait:
         ctx.moveTo(px,py);ctx.lineTo(px-2,Math.min(y+h,py+trail));ctx.stroke();
       }
     } else if (patch.kind === 'mist') {
+      const mistAlpha = patch.alpha ?? .40;
       for (let i = 0; i < 4; i++) {
         ctx.save();
         // Keep the whole soft bank inside its clip, avoiding a straight fog edge as it drifts.
         ctx.translate(x + w * (.25 + i * .16 + Math.sin(t * .25 + i) * .025), y + h * (.40 + i * .055 + Math.sin(t * .32 + i) * .07));
         ctx.scale(w * .22, h * .29);
         const fog = ctx.createRadialGradient(0, 0, .08, 0, 0, 1);
-        fog.addColorStop(0, 'rgba(237,243,232,.30)'); fog.addColorStop(.45, 'rgba(237,243,232,.16)'); fog.addColorStop(1, 'rgba(237,243,232,0)');
+        fog.addColorStop(0, `rgba(237,243,232,${mistAlpha.toFixed(2)})`); fog.addColorStop(.45, `rgba(237,243,232,${(mistAlpha*.55).toFixed(2)})`); fog.addColorStop(1, 'rgba(237,243,232,0)');
         ctx.fillStyle = fog; ctx.beginPath(); ctx.arc(0, 0, 1, 0, Math.PI * 2); ctx.fill(); ctx.restore();
       }
     } else if (patch.kind === 'snow') {

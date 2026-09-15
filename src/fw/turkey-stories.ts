@@ -15,7 +15,7 @@ The stacked çaydanlık keeps concentrated tea above hot water, allowing a stron
 The early coffeehouse offered more than refreshment. People listened to readings, exchanged news, played games and talked. The small cup belonged to a place where time and company mattered. Coffee culture developed in households too, with a welcome for visitors and customs around significant family occasions. No single cup could represent every household or century.
 
 Look at the cezve beside the cups. Very fine grounds are heated with water and remain in the drink, so a pause allows them to settle. Sip slowly and leave the sediment behind. Reading patterns in the grounds can become a playful exchange of stories. UNESCO recognised this culture in 2013, long after the sixteenth-century coffeehouses; the preparation and the gathering both belong to its history.`,
-  bazaar: `Istanbul’s Grand Bazaar traces its beginnings to 1461, in the rebuilding of the city under Mehmed II. The early covered trading buildings formed a nucleus around which a much larger commercial district developed. Shops could also support religious and charitable institutions through endowment income: commerce was woven into how the city maintained itself.
+  bazaarTr: `Istanbul’s Grand Bazaar traces its beginnings to 1461, in the rebuilding of the city under Mehmed II. The early covered trading buildings formed a nucleus around which a much larger commercial district developed. Shops could also support religious and charitable institutions through endowment income: commerce was woven into how the city maintained itself.
 
 An arcade was useful infrastructure. Shelter, storage and neighbouring craftspeople brought buyers and sellers together. Over time, additions and rebuilding produced an accumulated network of passages rather than a market designed all at once. The dense roofs and turning lanes here borrow that sense of growth.
 
@@ -87,7 +87,7 @@ export const TURKEY_SOURCES: Record<string,{title:string;url:string}[]> = {
   simit:[{title:'Fahri Dikkaya · Simit in Evliya Çelebi and Ottoman records',url:'https://www.istanbulsimidi.com.tr/pdf/Evliya%20%C3%87elebi%20Seyahatnamesinde%20Simit.pdf'}],
   teaGarden:[teaHistory,teaFactory,{title:'UNESCO · Tea culture and hospitality',url:'https://ich.unesco.org/en/RL/culture-of-ay-tea-a-symbol-of-identity-hospitality-and-social-interaction-01685'}],
   turkishCoffee:[{title:'Ministry of Culture · Turkish coffee and early coffeehouses',url:'https://teda.ktb.gov.tr/Eklenti/6594%2Cturkishcoffeeculturepdf.pdf?0='},{title:'UNESCO · Turkish coffee culture',url:'https://ich.unesco.org/en/RL/turkish-coffee-culture-and-tradition-00645'}],
-  bazaar:[{title:'Ministry of Culture · The Grand Bazaar',url:'https://kulturportali.gov.tr/turkiye/istanbul/gezilecekyer/kapalicarsi'}],
+  bazaarTr:[{title:'Ministry of Culture · The Grand Bazaar',url:'https://kulturportali.gov.tr/turkiye/istanbul/gezilecekyer/kapalicarsi'}],
   balikEkmek:[ferries,{title:'GoTürkiye · Istanbul street food',url:'https://goturkiye.com/istanbul/street-food'}],
   mangal:[cookbook,cookbookContents],
   sweetShop:[{title:'GoTürkiye · Baklava and its 1473 palace record',url:'https://goturkiye.com/de/branding/press-releases/baklava-turkiyenin-asirlari-asan-milli-tatlisi'}],

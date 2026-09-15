@@ -341,6 +341,10 @@ Nothing else is allowed on a finished painting. If a room needs a moving object 
 
 Test each room with `scene-ambience.mjs` style checks: steam visible at time zero, portrait steam at its own coordinates, no steam at wide coordinates after rotation.
 
+Measure whether the loops can be seen. Capture two composites two seconds apart for every room (`__fw.open(id)`, `step(60)`, `__fw.sceneShot('rm-<id>-a')`, `step(120)`, `__fw.sceneShot('rm-<id>-b')`, `__fw.closeScene()`), then run `uv run --with pillow --with numpy scripts/audit/room-motion.py .data/shots`. It prints the share of the frame that changed. Rooms with hot food or mist reach 3 percent or more. Outdoor rooms that live on crisp small motion score lower; they need at least one medium cue that reads on a phone: birds at `scale` 1.4 or more with `period` 8, six or more leaves at `size` 1.2 or more, or a breeze bunch that swings. A room under 2.5 percent with no such cue fails. The Turkish tea hill measured 0.3 percent before this rule and 3 percent after steam from its samovar, a readable mist and larger, more frequent birds.
+
+Tunable strengths: `alpha` on `mist` (default .40; use .55 where the painting behind is already hazy), `scale` and `period` on `birds`, `count` and `size` on `leaves`, `sway` on `sunray` (the drift of the beam; .04 reads, .012 does not), `sway` on `breeze`.
+
 ### 7.4 Asset import
 
 1. Receive the paintings. Check each file's size. Wide 1672 x 941, portrait 941 x 1672. Other sizes need a new `paintingFrame` in `scene-ambience.ts`; report this rather than upscaling
@@ -376,6 +380,7 @@ npm test
 | Harness | Checks |
 | --- | --- |
 | `room-loops.mjs` | Every painted room has three or four always-on loops in wide and portrait |
+| `object-ids.mjs` | Object ids are unique across every world; every alias and parent resolves |
 | `prop-supports.mjs` | Lantern cords start at a beam; bench guests rest on the seat; village walkers cross no wall |
 | `prop-reactions.mjs` | Room touch effects are local, bounded and use no inserted images |
 | `village-speech.mjs` | One bubble at a time; two to seven background lines in two minutes; taps replace bubbles |
@@ -389,7 +394,7 @@ npm test
 
 Add `<id>-reactions.mjs` and `<id>-world.mjs` for a new area. Copy the nearest harness and change the ids.
 
-Audit scripts in `scripts/audit/` are not tests but review tools: `objects.mjs` lists rooms and card-only clickable objects per area, `breeze-masks.py` renders every cropped mask for inspection, `flicker.mjs` lists ground planes by height around a point. The [quality baseline](quality-baseline.md) records the numbers these tools reported at the last review; a session that changes a number must explain why.
+Audit scripts in `scripts/audit/` are not tests but review tools: `objects.mjs` lists rooms and card-only clickable objects per area, `breeze-masks.py` renders every cropped mask for inspection, `flicker.mjs` lists ground planes by height around a point, `room-motion.py` ranks rooms by how much of the frame moves in two seconds. The [quality baseline](quality-baseline.md) records the numbers these tools reported at the last review; a session that changes a number must explain why.
 
 Browser verification uses the dev server from `.claude/launch.json` (`food-tour-web`, port 5180) and the debug hooks on `window.__fw`:
 

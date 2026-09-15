@@ -161,6 +161,7 @@ Rooms:
 
 - Every room has two paintings at the required sizes that pass the art-direction check
 - Every room is alive on entry with three or four always-on loops in both orientations, and every pictured hot food steams. `room-loops.mjs` passes
+- The loops can be seen: `scripts/audit/room-motion.py` shows 3 percent or more of the frame changing in two seconds, or the room carries a medium crisp cue (birds at scale 1.4, six or more leaves, a swinging bunch) and scores at least 2.5 percent
 - Every room has two or three touches that name something visible in both orientations, each with a fact and, where the fact is specialist, a source
 - Every effect stays on its source and fits the painting completely. Every breeze mask was inspected with `scripts/audit/breeze-masks.py` and moves only the hanging detail. No invented food, hand, wake or stream. Missing moving objects were requested as sprites, not drawn
 - Reduced motion keeps the room understandable

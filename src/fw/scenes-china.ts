@@ -255,7 +255,7 @@ const lotusGarden = (): SceneDef => { const f = "lotus_garden"; return paintedSc
   walkers: [{ name: "swallow", w: 50, y: 120, from: 300, to: 780, dur: 9, every: 34, fly: true }],
   motes: 35,
   portrait: { lamps: [{ ...pAt(f, 0.92, 0.17), r: 40 }], walkers: [{ name: "swallow", w: 36, y: 140, from: pAt(f, 0.2, 0).x, to: pAt(f, 0.75, 0).x, dur: 8, every: 34, fly: true }] },
-  ambience: [{ kind: 'mist', wide: [.10,.36,.66,.50], phone: [.05,.38,.95,.50] }],   // the pond's own dawn mist
+  ambience: [{ kind: 'mist', wide: [.10,.36,.66,.50], phone: [.05,.38,.95,.50], alpha: .55 }, { kind: 'leaves', leaf: 'olive', color: '#7a9a55', wide: [0,0,.30,.25], phone: [0,0,.35,.20], count: 7, size: 1.3 }],   // the pond's own dawn mist; willow leaves at the top left
   light: { x: wx(0.5), y: 250, color: "rgba(255,240,215,0.2)" },
 }); };
 
@@ -285,7 +285,7 @@ const riverMarket = (): SceneDef => { const f = "river_market"; return paintedSc
   petals: { color: "rgba(190,220,130,0.8)", rate: 0.4, size: 5 },
   motes: 35,
   portrait: { walkers: [{ name: "swallow", w: 34, y: 120, from: pAt(f, 0.3, 0).x, to: pAt(f, 0.85, 0).x, dur: 8, every: 32, fly: true }], lamps: [] },
-  ambience: [{ kind: 'leaves', leaf: 'olive', color: '#7a9a55', wide: [.72,0,.98,.30], phone: [.55,0,.98,.20] }, { kind: 'birds', wide: [.50,0,.72,.10], phone: [.35,0,.75,.10], period: 13 }],
+  ambience: [{ kind: 'leaves', leaf: 'olive', color: '#7a9a55', wide: [.72,0,.98,.30], phone: [.55,0,.98,.20], count: 8, size: 1.4 }, { kind: 'birds', wide: [.50,0,.72,.10], phone: [.35,0,.75,.10], period: 8, scale: 1.4 }],
   light: { x: wx(0.4), y: 220, color: "rgba(255,240,210,0.2)" },
 }); };
 
@@ -306,11 +306,11 @@ const teaHill = (): SceneDef => { const f = "tea_hill"; return paintedScene({
   id: "tea_hill", folder: f, title: "Tea hill", zh: "茶山", caption: "Dragon Well before Qingming: a bud and a leaf, fired by hand the same afternoon, poured in a glass.",
   painting: true,
   mist: { x: wx(0.3), y: wy(0.3), w: 900, h: 110 },
-  steam: [{ x: wx(0.42), y: wy(0.84), w: 40, rate: 3, a: 0.22 }, { x: wx(0.5), y: wy(0.8), w: 30, rate: 3, a: 0.22 }],
+  steam: [{ x: wx(0.42), y: wy(0.84), w: 90, rate: 7, a: 0.30 }, { x: wx(0.5), y: wy(0.8), w: 70, rate: 5, a: 0.28 }],   // two fresh glasses of Longjing
   petals: { color: "rgba(255,250,235,0.95)", rate: 0.9, size: 5 },
   motes: 30,
-  portrait: { steam: [{ ...pAt(f, 0.35, 0.82), w: 30, rate: 3, a: 0.22 }], lamps: [] },
-  ambience: [{ kind: 'mist', wide: [.30,.10,.80,.35], phone: [.20,.10,.75,.30] }],   // the valley mist in the painting
+  portrait: { steam: [{ ...pAt(f, 0.35, 0.82), w: 70, rate: 6, a: 0.30 }, { ...pAt(f, 0.5, 0.78), w: 60, rate: 5, a: 0.28 }], lamps: [] },
+  ambience: [{ kind: 'mist', wide: [.30,.10,.80,.35], phone: [.20,.10,.75,.30], alpha: .55 }, { kind: 'leaves', leaf: 'blossom', wide: [0,0,.30,.30], phone: [0,0,.32,.20] }],   // the valley mist in the painting; petals from the blossoming tree at the top left
   light: { x: wx(0.5), y: 220, color: "rgba(255,245,220,0.18)" },
 }); };
 
@@ -381,7 +381,7 @@ const oasisBazaar = (): SceneDef => { const f = "oasis_bazaar"; return paintedSc
   motes: 50,
   portrait: { steam: [], walkers: [{ name: "swallow", w: 34, y: pAt(f, 0, 0.1).y, from: pAt(f, 0.5, 0).x, to: pAt(f, 0.95, 0).x, dur: 8, every: 26, fly: true }] },
   steam: [{ x: wx(0.08), y: wy(0.52), w: 50, rate: 4, a: .22 }],   // the tea glasses by the samovar (wide only)
-  ambience: [{ kind: 'leaves', leaf: 'olive', color: '#6f8f4e', wide: [.45,0,.65,.18], phone: [.60,0,.90,.10] }],
+  ambience: [{ kind: 'leaves', leaf: 'olive', color: '#6f8f4e', wide: [.45,0,.65,.18], phone: [.60,0,.90,.10], count: 8, size: 1.6 }],
   light: { x: wx(0.55), y: 240, color: "rgba(255,235,200,0.2)" },
 }); };
 
@@ -399,7 +399,7 @@ const grapeCourtyard = (): SceneDef => { const f = "grape_courtyard"; return pai
 const oasisField = (): SceneDef => { const f = "oasis_field"; return paintedScene({
   id: "oasis_field", folder: f, title: "The melon oasis", zh: "Bostan", caption: "Hami melons and grapes picked by the channel, poplars along the water, and the mountains that sent it.",
   painting: true,
-  ambience: XINJIANG_AMBIENCE.oasis_field,
+  ambience: [...XINJIANG_AMBIENCE.oasis_field, { kind: 'leaves', leaf: 'olive', color: '#7f9a4a', wide: [.0,.0,.22,.30], phone: [.0,.0,.30,.22], count: 7, size: 1.3 }],   // the poplar and vine at the top left
   light: { x: wx(0.5), y: 200, color: "rgba(255,245,215,0.18)" },
 }); };
 
@@ -467,7 +467,7 @@ const tianshan = (): SceneDef => { const f = "tianshan"; return paintedScene({
   walkers: [{ name: "swallow", w: 44, y: wy(0.2), from: wx(0.3), to: wx(0.92), dur: 11, every: 22, fly: true }],
   motes: 20,
   portrait: { walkers: [{ name: "swallow", w: 34, y: pAt(f, 0, 0.14).y, from: pAt(f, 0.35, 0).x, to: pAt(f, 0.98, 0).x, dur: 9, every: 22, fly: true }] },
-  ambience: [{ kind: 'birds', wide: [.30,.02,.92,.16], phone: [.35,.03,.98,.14], period: 14 }, { kind: 'leaves', leaf: 'olive', color: '#6f8f4e', wide: [0,0,.30,.20], phone: [0,0,.25,.15] }],   // birds over the range and the vine over the stall
+  ambience: [{ kind: 'birds', wide: [.30,.02,.92,.16], phone: [.35,.03,.98,.14], period: 8, scale: 1.5 }, { kind: 'leaves', leaf: 'olive', color: '#6f8f4e', wide: [0,0,.30,.20], phone: [0,0,.25,.15], count: 7, size: 1.3 }],   // birds over the range and the vine over the stall
   light: { x: wx(0.5), y: 180, color: "rgba(255,250,235,0.16)" },
 }); };
 
@@ -563,11 +563,11 @@ const bingStall = (): SceneDef => { const f = "bing_stall"; return paintedScene(
 const northMarket = (): SceneDef => { const f = "north_market"; return paintedScene({
   id: "north_market", folder: f, title: "The northern market", zh: "北方集市", caption: "Winter cabbages and radishes by the cartload, flour and grain in sacks, pork on the block, pickles from the crock.",
   painting: true,
-  steam: [{ x: wx(.07), y: wy(.30), w: 70, rate: 5, a: .26 }],
+  steam: [{ x: wx(.07), y: wy(.30), w: 100, rate: 9, a: .30 }],
   walkers: [{ name: "swallow", w: 40, y: wy(0.12), from: wx(0.4), to: wx(0.72), dur: 9, every: 28, fly: true }],
   motes: 50,
   portrait: {
-    steam: [{ ...pAt(f,.34,.23), w: 65, rate: 6, a: .28 }],
+    steam: [{ ...pAt(f,.34,.23), w: 95, rate: 9, a: .32 }],
     walkers: [{ name: "swallow", w: 34, y: pAt(f, 0, 0.1).y, from: pAt(f, 0.45, 0).x, to: pAt(f, 0.9, 0).x, dur: 8, every: 28, fly: true }],
   },
   ambience: [{ kind: 'snow', wide: [.35,0,.85,.25], phone: [.30,0,.90,.22] }],   // snow over the gate and roofs
@@ -618,8 +618,8 @@ const wheatHarvest = (): SceneDef => { const f = "wheat_harvest"; return painted
   petals: { color: "rgba(232,204,124,0.9)", rate: 1.2, size: 4 },
   walkers: [{ name: "swallow", w: 42, y: wy(0.16), from: wx(0.4), to: wx(0.92), dur: 10, every: 24, fly: true }],
   motes: 30,
-  portrait: { steam: [{ ...pAt(f, .70, .72), w: 70, rate: 6, a: .24 }], walkers: [{ name: "swallow", w: 34, y: pAt(f, 0, 0.12).y, from: pAt(f, 0.4, 0).x, to: pAt(f, 0.98, 0).x, dur: 9, every: 24, fly: true }] },
-  steam: [{ x: wx(0.50), y: wy(0.60), w: 90, rate: 6, a: .24 }],   // the steamer on the table
+  portrait: { steam: [{ ...pAt(f, .70, .72), w: 95, rate: 9, a: .30 }], walkers: [{ name: "swallow", w: 34, y: pAt(f, 0, 0.12).y, from: pAt(f, 0.4, 0).x, to: pAt(f, 0.98, 0).x, dur: 9, every: 24, fly: true }] },
+  steam: [{ x: wx(0.50), y: wy(0.60), w: 110, rate: 9, a: .30 }],   // the steamer on the table
   ambience: [{ kind: 'dust', wide: [.12,.55,.30,.65], phone: [.40,.60,.70,.72] }],   // flour at the kneading board
   light: { x: wx(0.5), y: 220, color: "rgba(255,240,200,0.2)" },
 }); };

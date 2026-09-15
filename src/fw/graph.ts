@@ -444,7 +444,7 @@ export const OBJECTS: WorldObject[] = [
     match: () => false },
 
   // --- ingredients with a story and no room: the north ---
-  { id: "cabbage", world: "china", kind: "ingredient", name: "Winter cabbage", zh: "大白菜", emoji: "🥬", area: "northern", pos: [9.5, -17], prop: "cabbagePile", rot: 0.1, place: true,
+  { id: "cabbageN", world: "china", kind: "ingredient", name: "Winter cabbage", zh: "大白菜", emoji: "🥬", area: "northern", pos: [9.5, -17], prop: "cabbagePile", rot: 0.1, place: true,
     tagline: "A hundred heads bought in November, stacked under a quilt, eaten until March.", blurb: "Chinese cabbage, 大白菜, was the vegetable of the northern winter for centuries and the ritual survives: in late autumn trucks arrive in every Beijing lane and families buy cabbages by the hundred, stack them against the wall under old quilts, and turn them every few days so they keep. It goes into dumplings with pork, into hotpot with lamb, stir-fried with vinegar and dried chilli, braised with glass noodles, and salted in a crock as suancai, the sour cabbage of the north-east.\n\nIt is sweet when it has had a frost, and cheap enough that no one measures it. Napa cabbage was bred in the Ming dynasty from the loose southern brassicas; the tight-headed northern type is barely two hundred years old.",
     flavour: ["sweet", "mild", "juicy"], partners: ["pork", "vinegar", "dried chilli", "glass noodles", "lamb"], match: (r) => r.area === "northern" && has(r.core, /cabbage|napa|suancai/) },
   { id: "sheep", world: "china", kind: "ingredient", name: "Mutton", zh: "羊肉", emoji: "🐑", area: "northern", pos: [3, -31], prop: "sheepPen", rot: 0.2, place: true,
@@ -475,7 +475,7 @@ export const OBJECTS: WorldObject[] = [
     flavour: ["sweet", "nutty", "chewy"], partners: ["tea", "raisins", "nan", "polo", "honey"], match: (r) => has(r.core, /apricot|walnut|almond|dried fruit/) },
 
   // --- ingredients with a story and no room: Jiangnan ---
-  { id: "bamboo", world: "china", kind: "ingredient", name: "Bamboo shoots", zh: "笋", emoji: "🎋", area: "jiangnan", pos: [21, 28], prop: "bambooShootClump", rot: 0.2, place: true,
+  { id: "bambooJn", world: "china", kind: "ingredient", name: "Bamboo shoots", zh: "笋", emoji: "🎋", area: "jiangnan", pos: [21, 28], prop: "bambooShootClump", rot: 0.2, place: true,
     tagline: "Dug at dawn in spring, eaten the same day: the taste of the Jiangnan hills.", blurb: "The spring shoot is the Jiangnan vegetable the poets wrote about: dug before it breaks the soil, peeled, and cooked within hours because it turns bitter by evening. Braised with pork belly in soy and sugar it is youmen sun; sliced into a clear soup with ham and salted pork it is yandu xian, Shanghai's spring soup; blanched and dressed it is a cold dish in every teahouse. Winter shoots, dug from under the ground, are denser and sweeter. The groves around Hangzhou, Anji and the Tianmu mountains supply the whole region, and a farmer who knows his grove finds the shoots by the cracks in the earth.",
     flavour: ["crisp", "sweet", "clean"], partners: ["pork belly", "ham", "soy sauce", "shiitake", "rice wine"], match: (r) => has(r.core, /bamboo shoot|winter shoot|spring shoot/) },
   { id: "ham", world: "china", kind: "ingredient", name: "Jinhua ham", zh: "金华火腿", emoji: "🍖", area: "jiangnan", pos: [44, 28], prop: "hamRack", rot: -0.3, place: true,

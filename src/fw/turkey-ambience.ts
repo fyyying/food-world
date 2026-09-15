@@ -4,11 +4,11 @@ import type { AmbientPatch } from './scene-ambience';
 // room signature as one tightly cropped, top-pivoted source layer rather than a broad JPEG patch.
 export const TURKEY_AMBIENCE: Record<string, AmbientPatch[]> = {
   tr_simit: [
-    { kind: 'leaves', wide: [.53, .01, .69, .34], phone: [.39, .02, .73, .34] },
+    { kind: 'leaves', wide: [.53, .01, .69, .34], phone: [.39, .02, .73, .34], count: 6, size: 1.2 },
   ],
   tr_tea: [
     { kind: 'light', wide: [.105, .11, .16, .23], phone: [.21, .065, .34, .17] },
-    { kind: 'leaves', wide: [.04, .02, .20, .48], phone: [.12, .025, .36, .36] },
+    { kind: 'leaves', wide: [.04, .02, .20, .48], phone: [.12, .025, .36, .36], count: 6, size: 1.2 },
   ],
   tr_coffee: [
     { kind: 'light', wide: [.36, .015, .447, .16], phone: [.59, .07, .73, .21] },
@@ -16,10 +16,12 @@ export const TURKEY_AMBIENCE: Record<string, AmbientPatch[]> = {
     { kind: 'rain', phone: [.715, .05, .846, .132] },
   ],
   tr_market: [
-    { kind: 'leaves', wide: [.35, .02, .51, .35], phone: [.40, .012, .68, .32] },
+    { kind: 'leaves', wide: [.35, .02, .51, .35], phone: [.40, .012, .68, .32], count: 8, size: 1.5 },
     { kind: 'sunray', wide: [.08,.02,.69,.92], phone: [.14,.02,.82,.90], angles: [-.42,.36] },
   ],
-  tr_fish: [],
+  tr_fish: [
+    { kind: 'embers', wide: [.40, .70, .50, .86], phone: [.70, .56, .82, .70] },   // sparks from the pictured grill
+  ],
   tr_kebab: [
     { kind: 'dust', wide: [.10, .54, .24, .61], phone: [.18, .55, .33, .62] },
   ],
@@ -33,11 +35,11 @@ export const TURKEY_AMBIENCE: Record<string, AmbientPatch[]> = {
     { kind: 'dust', wide: [.17, .47, .33, .62], phone: [.22, .44, .45, .60] },
   ],
   tr_yufka: [
-    { kind: 'leaves', wide: [.015, .03, .18, .36], phone: [.43, .015, .73, .33] },
+    { kind: 'leaves', wide: [.015, .03, .18, .36], phone: [.43, .015, .73, .33], count: 6, size: 1.2 },
     { kind: 'dust', wide: [.20, .55, .34, .66], phone: [.28, .52, .47, .65] },
   ],
   tr_dolma: [
-    { kind: 'leaves', wide: [.035, .03, .20, .37], phone: [.82, .025, .99, .36] },
+    { kind: 'leaves', wide: [.035, .03, .20, .37], phone: [.82, .025, .99, .36], count: 6, size: 1.2 },
   ],
   tr_breakfast: [
     { kind: 'leaves', wide: [.52, .01, .72, .32], phone: [.57, .012, .84, .32] },
@@ -51,11 +53,13 @@ export const TURKEY_AMBIENCE: Record<string, AmbientPatch[]> = {
   tr_olive: [
     { kind: 'stream-glint', phone: [.911, .503, .925, .529], color: '#ffe0a0', paths: [undefined, [[[.48,.03],[.53,.34],[.58,.66],[.64,.96]]]] },
     { kind: 'stream-glint', phone: [.894, .541, .912, .573], color: '#ffe0a0', paths: [undefined, [[[.42,.03],[.46,.32],[.52,.67],[.58,.96]]]] },
-    { kind: 'birds', wide: [.47, .15, .64, .22], phone: [.72, .12, .98, .17] },
-    { kind: 'leaves', leaf: 'olive', color: '#82945e', wide: [.62, 0, .98, .22] },   // the second canopy, wide only
+    { kind: 'birds', wide: [.47, .15, .64, .22], phone: [.72, .12, .98, .17], period: 6, scale: 1.8 },   // gulls over the bay at sunset
+    { kind: 'light', wide: [.56, .02, .70, .16], phone: [.62, .04, .80, .17], color: '#ffd9a0' },   // the low sun over the sea
+    { kind: 'sunray', wide: [.30, 0, .80, .60], phone: [.35, 0, .95, .55], angles: [.42, .40], sway: [.05, .05] },   // the evening beam through the branches
+    { kind: 'leaves', leaf: 'olive', color: '#82945e', wide: [.62, 0, .98, .22], count: 8, size: 1.3 },   // the second canopy, wide only
   ],
   tr_tea_hill: [
-    { kind: 'birds', wide: [.55, 0, .95, .10], phone: [.55, 0, .95, .10], period: 13 },
+    { kind: 'birds', wide: [.50, 0, .96, .12], phone: [.45, 0, .98, .12], period: 8, scale: 1.5 },   // gulls in the big open sky, near enough to read
     { kind: 'sunray', wide: [.45, 0, .95, .45], phone: [.45, 0, .98, .40], angles: [-.30, -.30] },   // the sun already breaking through the clouds
   ],
   tr_supper: [

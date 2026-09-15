@@ -28,7 +28,7 @@ const CARD_ART: Record<string, string> = {
   "stall-produce": "veggie-basket-2", "stall-tofu": "tofu",
   crab: "hairy-crab", lotus: "lotus-root", teahill: "tea", rivermarket: "river-fish", fish: "river-fish", rice: "rice-sheaf", jnhome: "greens", riverside: "river-shrimp",
   dumpling: "cooked-dumpling", knifenoodle: "wide-noodles", mantou: "steamed-bread", vinegar: "vinegar-jar", roastduck: "roasted-duck", bing: "scallion-bread", hutong: "gate", northmarket: "chinese-cabbage", wintertable: "steamed-bao", wheat: "wheat-north", griddle: "flat-pan", skewers: "grill-north",
-  cabbage: "chinese-cabbage", sheep: "lamb-north", millet: "grain", scallion: "scallion", xjsheep: "lamb", cumin: "cumin", carrot: "carrot", apricot: "walnut", osmanthus: "osmanthus",
+  cabbageN: "chinese-cabbage", sheep: "lamb-north", millet: "grain", scallion: "scallion", xjsheep: "lamb", cumin: "cumin", carrot: "carrot", apricot: "walnut", osmanthus: "osmanthus",
   kebab: "kebab-plate", naan: "naan-breads", polo: "polo", laghman: "laghman-bowl", bazaar: "fruit-stand", grapes: "grapes", oasis: "melon", chaikhana: "teapot", caravan: "rug", xjhome: "dough", feast: "dastikhan", tianshan: "karez",
 };
 const cardArt = (o: WorldObject) => o.world === 'middle-east' && TURKEY_CARD_ART[o.id]

@@ -47,7 +47,7 @@ try {
     assert.ok(Math.abs(geometry.boundingBox.max.y-flight.userData.rise-.024)<1e-6,'top tread must clear the terrace');
     assert.ok(Array.from(geometry.attributes.position.array).every(Number.isFinite));
   }
-  const bazaar=world.placed.find(p=>p.obj.id==='bazaar');
+  const bazaar=world.placed.find(p=>p.obj.id==='bazaarTr');
   const arcades=bazaar.group.getObjectByName('market-arcades');
   assert.ok(arcades);assert.deepEqual(coplanarOverlaps(arcades),[],'market arch faces overlap on the same plane');
   const nuts=world.placed.find(p=>p.obj.id==='stall-nuts').obj;

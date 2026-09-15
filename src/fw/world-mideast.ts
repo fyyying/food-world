@@ -117,7 +117,7 @@ function layoutMideast(ctx:LayoutCtx) {
   tramway(ctx);
   // Mountains sit inland of the tea slopes so the sea remains visible behind the terraces.
   for(const [x,z,h] of [[53,-32,8],[54,-21,6],[47,-27,5]]) place(mountain(3.2,h,true),x,z);
-  for(const [x,z] of [[29,-39],[48,-39],[28,-30],[46,-32],[52,-38],[37,-3],[43,2],[13,1.2],[-38,6],[-50,3]])place(tree('pine',1.2),x,z);
+  for(const [x,z] of [[29,-39],[48,-39],[28,-30],[46,-32],[52,-38],[37,-3],[43,2],[16.6,1.4],[-38,6],[-50,3]])place(tree('pine',1.2),x,z);
   // Fairy chimneys stand on the Anatolian ground, with slow balloons above an open rock valley.
   for(let i=0;i<7;i++){
     const x=13+(i%3)*2.8,z=-37+Math.floor(i/3)*3,h=2.6+(i%3)*.8;

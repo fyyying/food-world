@@ -4,9 +4,10 @@
 import '/src/fw/style.css';
 import {TURKEY_SCENES} from '/src/fw/scenes-turkey.ts';
 import {SCENES as CHINA_SCENES} from '/src/fw/scenes-china.ts';
+import {SPAIN_SCENES} from '/src/fw/scenes-spain.ts';
 import {openLivingScene} from '/src/fw/scene.ts';
 import {paintingFrame} from '/src/fw/scene-ambience.ts';
-const scenes={...TURKEY_SCENES,...CHINA_SCENES},picker=document.querySelector('select'),output=document.querySelector('output'),history=document.querySelector('pre');
+const scenes={...TURKEY_SCENES,...CHINA_SCENES,...SPAIN_SCENES},picker=document.querySelector('select'),output=document.querySelector('output'),history=document.querySelector('pre');
 const forcedPortrait=new URLSearchParams(location.search).get('portrait')==='1';
 for(const id of Object.keys(scenes))picker.add(new Option(id,id));
 let room,picture,started=0,baseline,queue=[],results=[],last=performance.now(),sampled=false;

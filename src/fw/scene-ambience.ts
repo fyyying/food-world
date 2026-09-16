@@ -19,7 +19,7 @@ export type AmbientPatch = {
   /** Maximum top-pivot rotation for a tightly cropped source layer. */
   sway?: [wide: number, phone: number];
   /** Painted subject isolated by a source-layer breeze. Red hanging details use the same conservative colour key. */
-  source?: 'chilli' | 'red-tassel' | 'garlic' | 'bell' | 'grape' | 'leaves';
+  source?: 'chilli' | 'ristra' | 'red-tassel' | 'garlic' | 'bell' | 'grape' | 'leaves';
   /** A restrained ambient accent can be reserved for touch. */
   clickOnly?: boolean;
   period?: number;
@@ -81,6 +81,22 @@ export const PAINTED_SIGNATURES: Record<string, AmbientPatch> = {
   tr_olive: {kind:'leaves',wide:[.37,.04,.59,.52],phone:[.50,.03,.82,.37],leaf:'olive',color:'#82945e',count:8,size:1.6},
   tr_tea_hill: {kind:'mist',wide:[.28,.12,.78,.40],phone:[.20,.16,.78,.40],alpha:.58},   // the valley haze the painting already shows, strong enough to read
   tr_supper: {kind:'breeze',wide:[.0,.0,.043,.235],phone:[.945,.16,1,.305],period:6.9,sway:[.052,.072]},
+  // Spain: one signature per room, measured on each painting. No Spain room uses a breeze crop: a painted string
+  // that can hold motion carries the es-pepper-ristra sprite over it instead (see spain-ambience.ts), and one that
+  // cannot stays still while its room's signature moves something else the painting already shows.
+  es_paella: {kind:'birds',wide:[.40,.045,.78,.115],phone:[.46,.07,.85,.16],period:5.5,scale:1.6},   // gulls over the paddies, beside the painted ones
+  es_tapas: {kind:'light',wide:[.556,.090,.610,.182],phone:[.525,.082,.588,.142]},   // the arcade lantern in the doorway, box widened to the lantern glass and its halo
+  es_jamon: {kind:'sunray',wide:[.06,0,.60,.72],phone:[.46,0,1,.52],angles:[-.30,.35],sway:[.090,.075]},   // the beam through the glass roof
+  es_tortilla: {kind:'light',wide:[.042,.578,.148,.742],phone:[.485,.605,.560,.685],color:'#f3a34b'},   // the open firebox of the range, the strongest cue left now the string swings as a sprite
+  es_churros: {kind:'light',wide:[.79,.855,.975,.965],phone:[.41,.555,.56,.635],color:'#f3a34b'},   // the hearth under the fryer
+  es_pintxos: {kind:'sunray',wide:[.56,.02,1,.78],phone:[.26,.02,1,.58],angles:[-.30,.30],sway:[.090,.080]},   // the coastal light through the stone doorway
+  es_gazpacho: {kind:'leaves',wide:[.02,.02,.42,.22],phone:[.55,.02,.98,.24],leaf:'olive',color:'#5f7f3b',count:8,size:1.6},   // the orange tree canopy over the courtyard, in both compositions
+  es_pulpo: {kind:'birds',wide:[.372,0,.532,.056],phone:[.33,.005,.56,.10],period:4.5,scale:1.7},   // the clean grey opening between the arcade piers, above the trees and the hórreo
+  es_pa_tomaquet: {kind:'leaves',wide:[.38,.02,.84,.32],phone:[.30,.02,.97,.28],count:8,size:1.4},   // the plane tree canopy
+  es_manchego: {kind:'birds',wide:[.52,.025,.74,.085],phone:[.19,.03,.45,.095],period:5.5,scale:1.6},   // the sky over the windmill ridge, and the doorway sky in the portrait
+  es_sidreria: {kind:'stream-glint',wide:[.508,.062,.534,.585],phone:[.606,.090,.652,.553],color:'#f6e3a8',
+    paths:[[[[.42,.02],[.58,.5],[.70,.98]]],[[[.30,.02],[.48,.5],[.72,.98]]]]},   // the escanciado: the painted cider thread, bottle to glass, traced on the pixels of each composition
+  es_bodega: {kind:'sunray',wide:[.40,0,1,.72],phone:[.28,0,1,.64],angles:[.60,.50],sway:[.09,.085]},   // the shaft from the high shutter
 };
 
 /** Extra source-observed motion for Xinjiang rooms whose signature alone is too quiet. */
@@ -131,13 +147,15 @@ const fraction = (n: number) => n - Math.floor(n);
 /** A deliberately narrow colour key for a source-observed hanging subject. */
 export function isBreezePixel(subject: AmbientPatch['source']='chilli', r: number, g: number, b: number) {
   const chilli=r>55&&r-g>24&&r>g*1.38&&r>b*1.16;
+  // A ristra on a warm-lit ochre or whitewashed wall: the Spanish paintings glow orange, so the chilli key would carry the wall along.
+  const ristra=r>60&&r-g>45&&r>g*1.75&&r>b*1.6;
   const max=Math.max(r,g,b),min=Math.min(r,g,b),chroma=max-min;
   const hue=chroma===0?0:max===r?60*((g-b)/chroma%6):max===g?60*((b-r)/chroma+2):60*((r-g)/chroma+4);
   const grape=max>35&&max<215&&chroma/max>.165&&(hue<25||hue>310);
   const garlic=r>145&&g>120&&b>82&&r-g<58&&g-b<58;
   const bell=max<155&&r>g*.9&&g>b*.85;
   const leaves=g>55&&g-r>10&&g>b*1.08;
-  return subject==='grape'?grape:subject==='garlic'?garlic:subject==='bell'?bell:subject==='leaves'?leaves:chilli;
+  return subject==='ristra'?ristra:subject==='grape'?grape:subject==='garlic'?garlic:subject==='bell'?bell:subject==='leaves'?leaves:chilli;
 }
 
 /** Separate one hanging painted subject, then reconstruct the few pixels behind it. */
@@ -162,9 +180,11 @@ function prepareBreezeLayer(image: HTMLImageElement, rect: PaintingRect, subject
     }
     mask.set(next);
   }
-  if(subject==='grape'||subject==='bell'||subject==='leaves') {
+  if(subject==='grape'||subject==='bell'||subject==='leaves'||subject==='ristra') {
     // Keep only the main connected subject so similarly coloured scenery remains part of the static painting.
-    const seen=new Uint8Array(mask.length),queue=new Int32Array(mask.length);let best=new Int32Array(0);
+    // A ristra keeps every string that is at least a quarter of the largest one, so paired strings sway together
+    // while flecks of warm wall, wood and ham stay put.
+    const seen=new Uint8Array(mask.length),queue=new Int32Array(mask.length),components:Int32Array[]=[];
     for(let start=0;start<mask.length;start++)if(mask[start]&&!seen[start]) {
       let head=0,tail=0;queue[tail++]=start;seen[start]=1;
       while(head<tail) {
@@ -173,9 +193,11 @@ function prepareBreezeLayer(image: HTMLImageElement, rect: PaintingRect, subject
         for(const next of neighbours)if(next>=0&&next<mask.length&&!seen[next]&&mask[next]
           &&(next===current-width||next===current+width||Math.floor(next/width)===y)) {seen[next]=1;queue[tail++]=next;}
       }
-      if(tail>best.length)best=queue.slice(0,tail);
+      components.push(queue.slice(0,tail));
     }
-    mask.fill(0);for(const pixel of best)mask[pixel]=1;
+    const largest=components.reduce((m,c)=>Math.max(m,c.length),0);
+    const kept=subject==='ristra'?components.filter(c=>c.length>=largest*.25):components.filter(c=>c.length===largest).slice(0,1);
+    mask.fill(0);for(const component of kept)for(const pixel of component)mask[pixel]=1;
   }
   const foreground=document.createElement('canvas');foreground.width=width;foreground.height=height;
   const foregroundCtx=foreground.getContext('2d');if(!foregroundCtx)return;
@@ -186,16 +208,44 @@ function prepareBreezeLayer(image: HTMLImageElement, rect: PaintingRect, subject
   const background=document.createElement('canvas');background.width=width;background.height=height;
   const backgroundCtx=background.getContext('2d');if(!backgroundCtx)return;
   const backgroundPixels=new ImageData(new Uint8ClampedArray(original.data),width,height),data=backgroundPixels.data;
-  // Fill each horizontal subject run from the static pixels immediately beside it. The moving foreground covers most
-  // of this repair; it is visible only in the narrow gap opened by the sway.
-  for(let y=0;y<height;y++)for(let x=0;x<width;) {
-    if(!mask[y*width+x]){x++;continue;}
-    const start=x;while(x<width&&mask[y*width+x])x++;const end=x-1;
-    const left=Math.max(0,start-1),right=Math.min(width-1,end+1);
-    for(let px=start;px<=end;px++) {
-      const mix=(px-start+1)/(end-start+2),to=(y*width+px)*4,lp=(y*width+left)*4,rp=(y*width+right)*4;
-      for(let c=0;c<3;c++)data[to+c]=Math.round(data[lp+c]*(1-mix)+data[rp+c]*mix);
+  // Fill each horizontal subject run from the static wall beside it. The moving foreground covers most of this
+  // repair; it is visible only in the gap opened by the sway. Each row blends the mean of a few pixels either side
+  // rather than one pixel, and the filled rows are then averaged vertically, so the revealed strip reads as wall
+  // rather than as streaks (the streaks were what the owner saw beside every Spanish pepper string).
+  // The pixels touching the subject are its painted outline and cast shadow, so the sample skips the first three
+  // and averages the eight beyond them: the fill is the wall's own colour, not a dark ghost of the string.
+  // Pixels within four of the subject are its outline and cast shadow, and the gaps between peppers are shadow
+  // too, so a sample walks outward past all of that and averages up to eight clear wall pixels.
+  const near=new Uint8Array(mask.length);
+  for(let y=0;y<height;y++)for(let x=0;x<width;x++)if(mask[y*width+x])for(let dy=-4;dy<=4;dy++)for(let dx=-4;dx<=4;dx++){const yy=y+dy,xx=x+dx;if(yy>=0&&yy<height&&xx>=0&&xx<width)near[yy*width+xx]=1;}
+  // Samples also skip anything the subject's own key would take (a second string, a ham), so the fill never
+  // carries a red tint. The whole shadow ring and the gaps between peppers are filled, not only the subject.
+  const sample=(y: number, from: number, step: number) => {
+    const acc=[0,0,0];let n=0;
+    for(let k=0,px=from;k<40&&n<8&&px>=0&&px<width;k++,px+=step){
+      if(near[y*width+px])continue;const at=(y*width+px)*4;
+      const sr=original.data[at],sg=original.data[at+1],sb=original.data[at+2];
+      if(isBreezePixel(subject,sr,sg,sb)||(sr>sg*1.5&&sr-sg>35))continue;   // the subject's own key, or any red at all (a ham, a shadowed pepper)
+      for(let c=0;c<3;c++)acc[c]+=original.data[at+c];n++;
     }
+    return n?acc.map(v=>v/n):undefined;
+  };
+  for(let y=0;y<height;y++)for(let x=0;x<width;) {
+    if(!near[y*width+x]){x++;continue;}
+    const start=x;while(x<width&&near[y*width+x])x++;const end=x-1;
+    const left=sample(y,start-1,-1),right=sample(y,end+1,1),l=left??right,r=right??left;
+    if(!l||!r)continue;
+    for(let px=start;px<=end;px++) {
+      const mix=(px-start+1)/(end-start+2),to=(y*width+px)*4;
+      for(let c=0;c<3;c++)data[to+c]=Math.round(l[c]*(1-mix)+r[c]*mix);
+    }
+  }
+  // Vertical average over the filled pixels only (radius 8), which removes the row-to-row noise of the fill.
+  const filled=new Uint8ClampedArray(data);
+  for(let y=0;y<height;y++)for(let x=0;x<width;x++)if(near[y*width+x]) {
+    const acc=[0,0,0];let n=0;
+    for(let dy=-8;dy<=8;dy++){const yy=y+dy;if(yy<0||yy>=height||!near[yy*width+x])continue;const at=(yy*width+x)*4;for(let c=0;c<3;c++)acc[c]+=filled[at+c];n++;}
+    const to=(y*width+x)*4;for(let c=0;c<3;c++)data[to+c]=Math.round(acc[c]/n);
   }
   backgroundCtx.putImageData(backgroundPixels,0,0);
   return {background,foreground};
@@ -215,6 +265,18 @@ export function ambientPainter(patches: AmbientPatch[], folder?: string) {
     image.src=`${import.meta.env.BASE_URL}scenes/${folder}/${name}.jpg`;
   }
   return (ctx: CanvasRenderingContext2D, t: number, portrait: boolean) => drawAmbience(ctx, t, portrait, patches, { leaves, breeze });
+}
+
+let sunrayCanvas: HTMLCanvasElement | undefined;
+/** One reusable scratch canvas for the sunray fade; returns nothing where there is no DOM or no 2d context. */
+function sunrayScratch(width: number, height: number): HTMLCanvasElement | undefined {
+  if (typeof document === 'undefined') return;
+  try {
+    if (!sunrayCanvas) sunrayCanvas = document.createElement('canvas');
+    if (sunrayCanvas.width < width || sunrayCanvas.height < height) { sunrayCanvas.width = Math.max(sunrayCanvas.width, width); sunrayCanvas.height = Math.max(sunrayCanvas.height, height); }
+    const context = sunrayCanvas.getContext('2d') as Partial<CanvasRenderingContext2D> | null;
+    return typeof context?.setTransform === 'function' && typeof context.createLinearGradient === 'function' ? sunrayCanvas : undefined;
+  } catch { return; }
 }
 
 export function drawAmbience(ctx: CanvasRenderingContext2D, t: number, portrait: boolean, patches: AmbientPatch[],
@@ -243,13 +305,35 @@ export function drawAmbience(ctx: CanvasRenderingContext2D, t: number, portrait:
       const angle = patch.angles?.[portrait ? 1 : 0] ?? -.4;
       const length = Math.hypot(w,h) * 1.25, beam = Math.min(w,h) * .26;
       const drift=patch.sway?.[portrait ? 1 : 0] ?? .012;
-      ctx.translate(x+w*(.50+Math.sin(t*.28)*drift),y+h*(.48+Math.sin(t*.19)*drift*.55));
-      ctx.rotate(angle);ctx.globalCompositeOperation='screen';
+      const cx=w*(.50+Math.sin(t*.28)*drift), cy=h*(.48+Math.sin(t*.19)*drift*.55);
+      const paintRay=(target: CanvasRenderingContext2D, ox: number, oy: number) => {
+        target.save(); target.translate(ox+cx,oy+cy); target.rotate(angle);
+        const ray=target.createLinearGradient(-beam/2,0,beam/2,0);
+        ray.addColorStop(0,'rgba(255,225,158,0)');ray.addColorStop(.22,'rgba(255,225,158,.16)');
+        ray.addColorStop(.5,'rgba(255,244,214,.52)');ray.addColorStop(.78,'rgba(255,225,158,.16)');ray.addColorStop(1,'rgba(255,225,158,0)');
+        target.fillStyle=ray;target.fillRect(-beam/2,-length/2,beam,length);target.restore();
+      };
+      ctx.globalCompositeOperation='screen';
       ctx.globalAlpha=opacity*(.68+Math.sin(t*.55)*.08);
-      const ray=ctx.createLinearGradient(-beam/2,0,beam/2,0);
-      ray.addColorStop(0,'rgba(255,225,158,0)');ray.addColorStop(.22,'rgba(255,225,158,.16)');
-      ray.addColorStop(.5,'rgba(255,244,214,.52)');ray.addColorStop(.78,'rgba(255,225,158,.16)');ray.addColorStop(1,'rgba(255,225,158,0)');
-      ctx.fillStyle=ray;ctx.fillRect(-beam/2,-length/2,beam,length);
+      // The beam is clipped to its box, and a box that stops inside the painting (the tapas bar's ends at .68 of the
+      // height, above the table) showed a straight cut where the light stopped. Where a box edge is not the edge of
+      // the painting, the beam now fades out over the last fifth of the box on that side, drawn through a scratch
+      // canvas so the fade multiplies only the light and not the painting under it.
+      const inner=[r[0]>.001, r[1]>.001, r[2]<.999, r[3]<.999];
+      const scratch=inner.some(Boolean)?sunrayScratch(Math.ceil(w),Math.ceil(h)):undefined;
+      if(scratch) {
+        const o=scratch.getContext('2d')!;
+        o.setTransform(1,0,0,1,0,0);o.globalCompositeOperation='source-over';o.globalAlpha=1;o.clearRect(0,0,scratch.width,scratch.height);
+        paintRay(o,0,0);
+        o.globalCompositeOperation='destination-in';
+        const fade=(x0: number, y0: number, x1: number, y1: number) => {
+          const g=o.createLinearGradient(x0,y0,x1,y1);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,1)');
+          o.fillStyle=g;o.fillRect(0,0,w,h);
+        };
+        if(inner[0])fade(0,0,w*.20,0);if(inner[2])fade(w,0,w*.80,0);
+        if(inner[1])fade(0,0,0,h*.22);if(inner[3])fade(0,h,0,h*.78);
+        ctx.drawImage(scratch,0,0,w,h,x,y,w,h);
+      } else paintRay(ctx,x,y);
     } else if (patch.kind === 'light') {
       // A slow, warm lamp shimmer, never a whole-image flash.
       const glow = .32 + Math.sin(t * 1.5 + index) * .10 + Math.sin(t * 3.7 + index * 2) * .035;
@@ -270,7 +354,9 @@ export function drawAmbience(ctx: CanvasRenderingContext2D, t: number, portrait:
         const unit=Math.max(3,h*(patch.kind === 'waterfall-glint' ? .20 : .30));ctx.setLineDash([unit,unit*1.7]);
         for(const [pathIndex,path] of paths.entries()){
           if(path.length<2)continue;ctx.globalAlpha=opacity*(.82+.14*Math.sin(t*.8+pathIndex));
-          ctx.lineDashOffset=-(t*(patch.kind==='waterfall-glint'?10:7)+pathIndex*unit*.7);
+          // A poured thread falls at roughly its own length every second; the dash speed scales with the box height
+          // the way the dash length already does, so a tall cider or sherry pour no longer creeps.
+          ctx.lineDashOffset=-(t*Math.max(patch.kind==='waterfall-glint'?10:7,h*(patch.kind==='waterfall-glint'?.9:1.6))+pathIndex*unit*.7);
           ctx.beginPath();ctx.moveTo(x+w*path[0][0],y+h*path[0][1]);
           for(const point of path.slice(1))ctx.lineTo(x+w*point[0],y+h*point[1]);ctx.stroke();
         }

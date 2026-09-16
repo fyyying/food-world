@@ -8,6 +8,7 @@
 // its particle painter and a tick that moves the small things (see scene-hotpot.ts).
 
 import { animateRoomTouch, type RoomInteraction } from "./scene-props";
+import { paintingFrame } from "./scene-ambience";
 import { playRoomSound, preloadCatSound } from "./room-sound";
 import { imageUrl } from "../data";
 import { type EnrichedRecipe } from "./graph";
@@ -132,6 +133,18 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
     S = Math.max(W / STAGE_W, H / STAGE_H);
     const visibleW = W / S;
     el.querySelectorAll<SVGImageElement>("image.portrait-only").forEach((im) => { const w = Math.max(Number(im.dataset.minw), visibleW); im.setAttribute("x", ((STAGE_W - w) / 2).toFixed(1)); im.setAttribute("width", w.toFixed(1)); });
+    // sprites hung over the portrait painting follow it: the same frame the ambience effects use, so they stay on
+    // the painted object they cover when a wider portrait screen re-fits the picture
+    el.querySelectorAll<SVGGElement>("g[data-pf]").forEach((group) => {
+      const [fx, fy, fw, ratio] = group.dataset.pf!.split(",").map(Number);
+      const frame = paintingFrame(true, visibleW);
+      const w = fw * frame.width, h = w * ratio;
+      const x = frame.x + fx * frame.width, y = frame.y + fy * frame.height;
+      const image = group.querySelector("image");
+      image?.setAttribute("x", x.toFixed(1)); image?.setAttribute("y", y.toFixed(1));
+      image?.setAttribute("width", w.toFixed(1)); image?.setAttribute("height", h.toFixed(1));
+      group.dataset.px = (x + w / 2).toFixed(1); group.dataset.py = y.toFixed(1);
+    });
     if (isPortrait !== portrait) {
       const panel = el.querySelector<HTMLElement>('.scene-feedback');
       if (panel) panel.hidden = true;
@@ -244,7 +257,7 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
         const left = Math.max(0, Math.min(width - cropW, x * width - cropW / 2));
         const top = Math.max(0, Math.min(height - cropH, y * height - cropH / 2));
         detail.innerHTML = spot.interaction.food
-          ? `<img class="scene-food" src="${import.meta.env.BASE_URL}scenes/turkey-food/${esc(spot.interaction.food)}.webp" alt="${esc(spot.label)}">`
+          ? `<img class="scene-food" src="${import.meta.env.BASE_URL}scenes/${esc(spot.interaction.food.includes("/") ? spot.interaction.food : `turkey-food/${spot.interaction.food}`)}.webp" alt="${esc(spot.label)}">`
           : `<svg viewBox="${left} ${top} ${cropW} ${cropH}" xmlns="http://www.w3.org/2000/svg"><image href="${import.meta.env.BASE_URL}scenes/${folder}/${isPortrait ? 'portrait' : 'wide'}.jpg" width="${width}" height="${height}" preserveAspectRatio="none"/></svg>`;
       }
       feedback.querySelector("strong")!.textContent = spot.label;

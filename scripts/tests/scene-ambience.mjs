@@ -54,7 +54,7 @@ try {
   assert.equal(isBreezePixel('grape',160,24,30),true);
   assert.equal(isBreezePixel('leaves',40,100,50),true);
   assert.equal(isBreezePixel('chilli',40,100,50),false,'green wall and foliage pixels stay in the static painting');
-  assert.equal(Object.keys(PAINTED_SIGNATURES ?? {}).length,53,'all rooms except the preserved hotpot benchmark need an authored signature');
+  assert.equal(Object.keys(PAINTED_SIGNATURES ?? {}).length,65,'all rooms except the preserved hotpot benchmark need an authored signature');
   for(const [id,patch] of Object.entries(PAINTED_SIGNATURES)) {
     for(const orientation of ['wide','phone']) {
       assert.equal(patch[orientation]?.length,4,`${id} needs a ${orientation} anchor`);
@@ -286,5 +286,5 @@ try {
     'coffee phone prioritises the exposed lower-right window pane');
   assert.ok(portraitRain.operations.filter(([op])=>op==='lineTo').length>=8,
     'coffee window rain needs enough readable beads to remain visible over the painted rain');
-  console.log('PASS: 53 paired signatures, painting-native China/Turkey/Xinjiang motion, tight hanging layers, bounded geometry, reduced motion, orientation reset, and readable ambience.');
+  console.log('PASS: 65 paired signatures, painting-native China/Turkey/Xinjiang motion, tight hanging layers, bounded geometry, reduced motion, orientation reset, and readable ambience.');
 } finally {await rm(temp,{recursive:true,force:true})}

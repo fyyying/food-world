@@ -217,27 +217,38 @@ export const WORLD_INTROS: Record<WorldId, WorldIntro> = {
     ],
   },
   mediterranean: {
-    summary: "Around the Mediterranean, coastlines and trade connect olive oil, grains, vegetables and seafood without making every shore taste the same.",
+    summary: "Coasts and trade connect olive oil, grain, vegetables and fish around one sea: Spain's six neighbourhoods, Greek tavernas, Moroccan souks and Dalmatian konobas.",
     accent: "#4f8b86",
     beats: [
       {
         eyebrow: "A connected sea",
         title: "Coasts exchange ingredients",
-        body: "Sailors, merchants and migrants carried crops, spices and techniques between ports. The same ingredient can become something entirely different from one shore to the next.",
+        body: "Sailors, merchants and migrants carried crops, spices and techniques between ports. The same ingredient can become something entirely different from one shore to the next: a pepper dried over oak smoke in Extremadura ends up on an octopus plate at an inland Galician fair.",
         emoji: "⛵",
         areas: ["spain", "morocco", "greece", "dalmatia"],
       },
       {
+        eyebrow: "The western shore",
+        title: "Spain is several places at once",
+        body: "Spain fills the west of this table as six neighbourhoods: rice fields and a port on the Valencian lagoon, an arcaded square with its market hall, a whitewashed patio above the sherry bodegas, the dry Manchega plateau, a Galician ría, and a northern coast that turns towards Catalonia. Rice, ham, cheese, cider and rubbed bread each belong to one of them.",
+        emoji: "🥘",
+        areas: ["spain"],
+        sources: [
+          { label: "UNESCO · Asturian cider culture", url: "https://ich.unesco.org/en/RL/asturian-cider-culture-01959" },
+          { label: "BOE · Arroz de Valencia, 2001", url: "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2001-13609" },
+        ],
+      },
+      {
         eyebrow: "Climate and season",
         title: "The landscape enters the kitchen",
-        body: "Olives, grapes, grains, citrus, pulses, vegetables and fish reflect varied coastal climates. Drying, salting, pickling and preserving make abundance last.",
+        body: "Olives, grapes, grain, citrus, pulses, vegetables and fish reflect varied coastal climates. Drying, salting, pickling and preserving make abundance last: anchovies in salt, ham hung for years, peppers on a string, cheese turned every week in a cool store.",
         emoji: "🫒",
         areas: ["greece", "spain"],
       },
       {
-        eyebrow: "Four shores",
+        eyebrow: "Many shores",
         title: "Shared threads, local tables",
-        body: "The tavernas of Greece, Spanish ports, Moroccan souks and Dalmatian konobas are a small sample of a sea ringed by many languages, faiths and food traditions.",
+        body: "A Basque pintxo counter, an Asturian cider house, Greek tavernas, Moroccan souks and Dalmatian konobas are a small sample of a sea ringed by many languages, faiths and food traditions. Neighbouring does not mean the same.",
         emoji: "🍋",
         areas: ["greece", "spain", "morocco", "dalmatia"],
       },

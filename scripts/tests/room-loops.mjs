@@ -8,15 +8,15 @@ import { build } from 'rolldown';
 const root = process.cwd();
 const real = resolve(root, 'src/fw/scene-painted.ts');
 const stub = `export { pAt, at } from ${JSON.stringify(real)}; export const paintedScene = (cfg) => ({ __cfg: cfg });`;
-const plugin = { name: 'stub', resolveId(src, importer) { if (src === './scene-painted' && importer && /scenes-(china|turkey)\.ts$/.test(importer)) return '\0stub'; }, load(id) { if (id === '\0stub') return stub; } };
+const plugin = { name: 'stub', resolveId(src, importer) { if (src === './scene-painted' && importer && /scenes-(china|turkey|spain)\.ts$/.test(importer)) return '\0stub'; }, load(id) { if (id === '\0stub') return stub; } };
 const dir = await mkdtemp(join(tmpdir(), 'loops-'));
 try {
-  await build({ input: { china: 'src/fw/scenes-china.ts', turkey: 'src/fw/scenes-turkey.ts', amb: 'src/fw/scene-ambience.ts' }, plugins: [plugin], platform: 'node', output: { banner: 'import.meta.env = { VITE_STATIC: "1", BASE_URL: "/" };', dir, format: 'esm', entryFileNames: '[name].mjs', chunkFileNames: '[name].mjs' } });
+  await build({ input: { china: 'src/fw/scenes-china.ts', turkey: 'src/fw/scenes-turkey.ts', spain: 'src/fw/scenes-spain.ts', amb: 'src/fw/scene-ambience.ts' }, plugins: [plugin], platform: 'node', output: { banner: 'import.meta.env = { VITE_STATIC: "1", BASE_URL: "/" };', dir, format: 'esm', entryFileNames: '[name].mjs', chunkFileNames: '[name].mjs' } });
   globalThis.Image = class { constructor() { this.src = ''; } };
   globalThis.document = { createElement: () => ({ getContext: () => null }) };
-  const [china, turkey, amb] = await Promise.all(['china', 'turkey', 'amb'].map(n => import(pathToFileURL(join(dir, `${n}.mjs`)))));
+  const [china, turkey, spain, amb] = await Promise.all(['china', 'turkey', 'spain', 'amb'].map(n => import(pathToFileURL(join(dir, `${n}.mjs`)))));
   const SIG = amb.PAINTED_SIGNATURES;
-  const all = { ...china.SCENES, ...turkey.TURKEY_SCENES };
+  const all = { ...china.SCENES, ...turkey.TURKEY_SCENES, ...spain.SPAIN_SCENES };
   const rows = [];
   for (const [id, make] of Object.entries(all)) {
     const r = make(); const cfg = r.__cfg ?? r;
@@ -33,11 +33,13 @@ try {
       const patches = sig ? cand.filter(p=>p[o==='wide'?'wide':'phone']).slice(0,Math.max(0,3-heat-flyers)) : (cfg.ambience??[]);
       const sigOn = sig ? Number(Boolean(sig[o==='wide'?'wide':'phone'])) : 0;
       const extra = sig ? 0 : Number(Boolean(cfg.pot))+Number((cfg.leaves??0)>0)+Number((cfg.motes??0)>0)+Number((cfg.lamps?.length??0)>0)+(cfg.hang?.filter(h=>h.sway).length??0);
-      const loops = sigOn + Number(steam>0) + Number(fire>0) + flyers + patches.length + extra;
-      return { loops, steam: Math.min(steam, steamLimit), fire: Math.min(fire,1), patches: patches.map(p=>p.kind).join('+'), sig: sig ? sig.kind : 'n/a', flyers };
+      // a library sprite hung over the painting swings on its own timer, so it is an always-on loop in that orientation
+      const hung = ((o==='wide' ? cfg.hung : cfg.portrait?.hung)??[]).filter(h=>h.sway).length;
+      const loops = sigOn + Number(steam>0) + Number(fire>0) + flyers + patches.length + extra + hung;
+      return { loops, steam: Math.min(steam, steamLimit), fire: Math.min(fire,1), patches: patches.map(p=>p.kind).join('+'), sig: sig ? sig.kind : 'n/a', flyers, hung };
     };
     const w = count('wide'), p = count('portrait');
-    rows.push([id, `sig=${w.sig}`, `wide: loops=${w.loops} steam=${w.steam} fire=${w.fire} ${w.patches}`, `portrait: loops=${p.loops} steam=${p.steam} fire=${p.fire} ${p.patches}`, (w.loops<3||p.loops<3)?'BELOW3':(cfg.id!=='hotpot'&&(w.loops>4||p.loops>4))?'ABOVE4':'']);
+    rows.push([id, `sig=${w.sig}`, `wide: loops=${w.loops} steam=${w.steam} fire=${w.fire} hung=${w.hung} ${w.patches}`, `portrait: loops=${p.loops} steam=${p.steam} fire=${p.fire} hung=${p.hung} ${p.patches}`, (w.loops<3||p.loops<3)?'BELOW3':(cfg.id!=='hotpot'&&(w.loops>4||p.loops>4))?'ABOVE4':'']);
   }
   const failures = rows.filter(r => r[4]);
   for (const r of failures) console.log(r.join(' | '));

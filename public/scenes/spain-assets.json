@@ -1,0 +1,380 @@
+[
+  {
+    "source": "es01_paella_wide.png",
+    "source_sha256": "be0cf67b4b86669af5a7b83c432bf3e33560165b7d9d8411281167e9a5132654",
+    "path": "scenes/es_paella/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "es01_paella_portrait.png",
+    "source_sha256": "d5f9bd97bbbfb5089419882428e6b4c3e521415356f4f9414c322719a63a903b",
+    "path": "scenes/es_paella/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "es02_tapas_wide.png",
+    "source_sha256": "7bf917783b5cfc99f5faba72ad6ba1358331b1ef523d28d064ad6fa3d2cd1bcd",
+    "path": "scenes/es_tapas/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "es02_tapas_portrait.png",
+    "source_sha256": "4011c0a86253a2c84d6d923e7b171baf1aa4e8e39a8bfcfa959a1f1ac07f054f",
+    "path": "scenes/es_tapas/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "es03_jamon_wide.png",
+    "source_sha256": "628504907394754a4f01a151bc25c25d81c34399fb01f4f1ed0df2179fef9395",
+    "path": "scenes/es_jamon/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "es03_jamon_portrait.png",
+    "source_sha256": "e6d4b604def7c0afc8b48563310cf8e160edefeaa9737c7febd9b7af9d91cb2e",
+    "path": "scenes/es_jamon/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "es04_tortilla_wide.png",
+    "source_sha256": "ea8520eca98586d96e49d60f6ef94daaa59fec07eca5dc38ae11083f9742a01a",
+    "path": "scenes/es_tortilla/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "es04_tortilla_portrait.png",
+    "source_sha256": "b46be6241e7232d2b4861b3aae81beffbe12449f1fa59a7ed2256eaeffa3ef73",
+    "path": "scenes/es_tortilla/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "es05_churros_wide.png",
+    "source_sha256": "dd30eff93ddae714788c64993a640f7fb359ffc14ddb4667d25a63b9469d5c88",
+    "path": "scenes/es_churros/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "es05_churros_portrait.png",
+    "source_sha256": "322aefaa77763fb5bc9ea024d2d401a5ad1ef8d420f119e3b99a554c61ba06ea",
+    "path": "scenes/es_churros/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "es06_pintxos_wide.png",
+    "source_sha256": "63479ffaecb64ceb3ffa90be971e8c384c156c345056c489970c9c500f3b91d6",
+    "path": "scenes/es_pintxos/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "es06_pintxos_portrait.png",
+    "source_sha256": "c683dc50e55fb7f99fd3eb6c861be7cff98cd5f3dffee4fae98224f6fb2257b1",
+    "path": "scenes/es_pintxos/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "es07_gazpacho_wide.png",
+    "source_sha256": "fb10062d9ad9b632582d6d9b025cabad1781c42586fdd2d11273ea398a1dda31",
+    "path": "scenes/es_gazpacho/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "es07_gazpacho_portrait.png",
+    "source_sha256": "14b62cb53b601a137a4ec44e24e24754b50b5317aa8057e86b0a1fcc600403c4",
+    "path": "scenes/es_gazpacho/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "es08_pulpo_wide.png",
+    "source_sha256": "e2494413c753e1104123cf1397b8c0788e6e0b6c6e88829bede6de9a877b37ae",
+    "path": "scenes/es_pulpo/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "es08_pulpo_portrait.png",
+    "source_sha256": "601e4ec6a5ba34d990eafa3f35a39fc5acf2edfe682b7f58a2cca6e914e1af7d",
+    "path": "scenes/es_pulpo/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "es09_pa_tomaquet_wide.png",
+    "source_sha256": "1a34cc1fdc886a5d5d9102ca029b25d7b1b68a358e388354ad11e73fdd2e3d2a",
+    "path": "scenes/es_pa_tomaquet/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "es09_pa_tomaquet_portrait.png",
+    "source_sha256": "3abf76e1eab649e8cffba538201e7efc223320a61f06ee7a7cd9219320b9ee04",
+    "path": "scenes/es_pa_tomaquet/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "es10_manchego_wide.png",
+    "source_sha256": "0627b7d3d8c5a2fef9a0efdd9efbf8aabfa5ac0622683796824a31ad3abb7a69",
+    "path": "scenes/es_manchego/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "es10_manchego_portrait.png",
+    "source_sha256": "98a7f3d97d97145b7cdcd55026185089888f433b9d4909d59f0348bb169d6455",
+    "path": "scenes/es_manchego/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "es11_sidreria_wide.png",
+    "source_sha256": "0f07f872281aa1a3a677523f22fdc1388b0d53bed8795323cc4b4bad523e1242",
+    "path": "scenes/es_sidreria/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "es11_sidreria_portrait.png",
+    "source_sha256": "e9dbc55032198e8f490fe3e69c3edc2af1f912f3515aad7841a39482a8e9839b",
+    "path": "scenes/es_sidreria/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "es12_bodega_wide.png",
+    "source_sha256": "c42af861088edaec60f16111a1f14de2db51eef553f1df51b0d9cf0c1c45eb61",
+    "path": "scenes/es_bodega/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "es12_bodega_portrait.png",
+    "source_sha256": "e67b4df682283d568d622c8e51b31b9d85b71d7f200c49d50bef6fbc89e97c2d",
+    "path": "scenes/es_bodega/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "es_card_paella.png",
+    "source_sha256": "48cb354b3cd7d3a13242846bf5d7f9d228360e41a9f0a4b6169d4ce898e38385",
+    "path": "scenes/spain-food/paella.webp",
+    "size": [
+      960,
+      628
+    ]
+  },
+  {
+    "source": "es_card_tapas.png",
+    "source_sha256": "b9018391d0cee5a4ccad5bcac87d1b4027b668d2e59a68574ed0ac0918a665d0",
+    "path": "scenes/spain-food/tapas.webp",
+    "size": [
+      960,
+      607
+    ]
+  },
+  {
+    "source": "es_card_jamon.png",
+    "source_sha256": "21fefa0ac26fe961828b0f900d42fa6ac399508ae87dcb1f82a39880152978f0",
+    "path": "scenes/spain-food/jamon.webp",
+    "size": [
+      960,
+      612
+    ]
+  },
+  {
+    "source": "es_card_tortilla.png",
+    "source_sha256": "bf41d0f0b5018a098192136fa54a58ac97115d61900ada7891146a3c7fe78b66",
+    "path": "scenes/spain-food/tortilla.webp",
+    "size": [
+      960,
+      633
+    ]
+  },
+  {
+    "source": "es_card_churros.png",
+    "source_sha256": "3aafa59f1ab15852370eef60396071396b759b792aeccec8ac19ebabb13c069a",
+    "path": "scenes/spain-food/churros.webp",
+    "size": [
+      795,
+      960
+    ]
+  },
+  {
+    "source": "es_card_pintxos.png",
+    "source_sha256": "a236d6b6c9d167a778f5fd6f58590f4017ce166891680ec8ef4920472d01daff",
+    "path": "scenes/spain-food/pintxos.webp",
+    "size": [
+      819,
+      960
+    ]
+  },
+  {
+    "source": "es_card_gazpacho.png",
+    "source_sha256": "30ab05a87e62a32d2d9114eb25baf0bd8ad8dc92dac25dc86fab26fdf9fa3194",
+    "path": "scenes/spain-food/gazpacho.webp",
+    "size": [
+      960,
+      655
+    ]
+  },
+  {
+    "source": "es_card_pulpo.png",
+    "source_sha256": "bd631c414b6f6c05c4cf462ef114fc65ab967a5f5e56c1c7f0e6958a5685cfc1",
+    "path": "scenes/spain-food/pulpo.webp",
+    "size": [
+      960,
+      567
+    ]
+  },
+  {
+    "source": "es_card_pa_tomaquet.png",
+    "source_sha256": "96f7047ce22fe04df5a2416069475d89b0d9cc285fe8d2cbf3a18b7694b4c84e",
+    "path": "scenes/spain-food/pa-tomaquet.webp",
+    "size": [
+      960,
+      618
+    ]
+  },
+  {
+    "source": "es_card_manchego.png",
+    "source_sha256": "03437469908bfab366c4f2f295c0ae28f52bf4b52ab1a038aad371b474723f94",
+    "path": "scenes/spain-food/manchego.webp",
+    "size": [
+      960,
+      891
+    ]
+  },
+  {
+    "source": "es_card_sidreria.png",
+    "source_sha256": "299ca50c8c3e2f5fbd8244992a4736a34a8f9dec76d6464aeba2d211a58ccdbf",
+    "path": "scenes/spain-food/sidreria.webp",
+    "size": [
+      702,
+      960
+    ]
+  },
+  {
+    "source": "es_card_bodega.png",
+    "source_sha256": "98469de9d409472923fc2eb1ba4d85a4b989687039638a714c4ca313e6edb1f0",
+    "path": "scenes/spain-food/bodega.webp",
+    "size": [
+      960,
+      626
+    ]
+  },
+  {
+    "source": "es_motion_orange_twig.png",
+    "source_sha256": "98a567f8fb709a9234635be7ef6563b797d841784b619acffb2ea4931b165415",
+    "path": "scenes/props/es-orange-twig.webp",
+    "size": [
+      960,
+      858
+    ]
+  },
+  {
+    "source": "es_motion_awning_fringe.png",
+    "source_sha256": "b0de7af7a503e03392036d3c1229993b09b9b11c5c5e40e0803a5c05d2d514d3",
+    "path": "scenes/props/es-awning-fringe.webp",
+    "size": [
+      960,
+      286
+    ]
+  },
+  {
+    "source": "es_motion_gull.png",
+    "source_sha256": "8138e077e3e8d88a63109e43f2e1c13ded41f91565d82fbe736617c726a59d1e",
+    "path": "scenes/props/es-gull.webp",
+    "size": [
+      960,
+      559
+    ]
+  },
+  {
+    "source": "es_motion_pepper_ristra.png",
+    "source_sha256": "8ddcc5bb505796b19694e56cd935dd68e6bf5cb4e75b67100701cf1f287c6266",
+    "path": "scenes/props/es-pepper-ristra.webp",
+    "size": [
+      259,
+      960
+    ]
+  },
+  {
+    "source": "es_motion_apple_twig.png",
+    "source_sha256": "b2387ca766a3375620d5ef342f81fc7419a7f2a30625864fae59f715cc02eefe",
+    "path": "scenes/props/es-apple-twig.webp",
+    "size": [
+      960,
+      774
+    ]
+  },
+  {
+    "source": "es00_concept.png",
+    "source_sha256": "26f75a8313a1472495f360570113e28fd2b11412d5aa87b4907effad531934b4",
+    "path": "scenes/es_concept.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  }
+]

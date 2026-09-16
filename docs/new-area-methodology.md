@@ -81,6 +81,15 @@ Balance busy places with landscape. Concentrate bustle around markets, workshops
 - Connect doors and gathering places to usable roads, paths, stairs, and bridges
 - Give food venues the dishes and ingredients that belong there
 
+Decoration serves the explorable places; it does not crowd them. Cap the decorative houses at twelve to sixteen for an area, one to three per architectural style, and spend the rest of the density on stands, ingredient sources, animals and small details. Spain shipped with twenty-four, which hemmed the stands in, closed three lanes and put a three-storey house on the arrival camera's line to two stands. Four rules, and each is a harness check in `scripts/tests/<id>-world.mjs`:
+
+- Twelve to sixteen decorative houses per area, one to three per style, bounded at both ends so nobody quietly refills a cluster
+- Nothing solid stands on a road centreline. Sample every centreline against every solid decor footprint. Only a bridge deck and a walked-through arcade are exempt
+- Every stand keeps a clear corridor from the nearest point of the road network, with 2.5 units clear in front of the stand itself
+- No house stands on the arrival camera's line to a stand. Check it from each azimuth the stand can be approached from
+
+Judge every decor type from the overview camera, not only at close range, and ask what it reads as rather than what it is. Spain's free-standing plaza arcades were a tan cornice slab on grey granite piers: correct at eye level, and from above a bridge half in the water. The hórreo, a tan granary on grey stilts, read the same way. A decor type that reads as something else from the overview is wrong even when it is historically right, so change its materials and proportions or remove it.
+
 Show everyday culture alongside landmarks: What locals grow, prepare, eat, sell, and share. Create life through purposeful activity and relationships between places, such as produce moving from a garden to a market or cooks serving neighbours in a courtyard.
 
 People must vary in age, height, build, appearance, occupation, clothing, and behaviour. Use locally grounded ancient, historical, and traditional clothing styles appropriate to the period specified in the area brief. If the world combines periods, record that choice; do not describe it as an exact reconstruction of one era.
@@ -171,7 +180,9 @@ Use Sichuan hotpot as the upper bound for animation density. At rest, show no mo
 
 Every room has at least three always-on loops in each orientation, and at most four. This is a hard minimum, checked by `npm test` (`scripts/tests/room-loops.mjs`). The loops are counted as the engine applies them: the room's signature motion, steam, fire, one sky flyer, and ambience patches. Hotpot sits above the ceiling as the hand-laid reference.
 
-Every pictured hot food steams. A steamer, a wok, a kettle, a bowl of soup and a tea glass each get their own steam source in both orientations. The engine caps rate and opacity, not the number of sources.
+Every pictured hot food steams, and that means every vessel, not only the big ones. A steamer, a wok, a kettle, a bowl of soup and a tea glass each get their own steam source in both orientations; so does every hot cup, plate, cazuela, pan, pot and oven mouth. Frying oil and a boiling pot also get a pot ellipse, which is the boil, not the steam. The engine caps rate, opacity and the number of sources per room; it does not decide which vessels count.
+
+Three things stay dry: cold food, however inviting the bowl; a cup or plate held in a hand, because the steam belongs on the standing vessel beside it, not on the hand; and anything under glass. Measure each orientation separately and write the dry ones down with the reason. Spain shipped with steam on five big vessels only, because the build followed a heat list written at blueprint time instead of this rule, and the owner's first note on the rooms was that the cups should be steaming.
 
 Use four loops only when the composition has enough space and the result stays no more complex than Sichuan hotpot.
 
@@ -202,11 +213,29 @@ Treat the finished painting as the source of truth. A live-image effect may use 
 
 1. Animate a supplied transparent layer, as with the Sichuan lanterns
 2. Add a natural emitted effect whose source and boundary are visible, such as steam, rain, water glints, mist, light, birds, sparks, or a narrow oil stream from a pictured spout
-3. Reuse a very tight crop of the painting only for a clearly isolated hanging detail such as chilli, garlic, herbs, a grape cluster, cloth, or a lantern; anchor it at the pictured tie point and move it by only a few visible pixels
+3. Reuse a very tight crop of the painting only for a clearly isolated hanging detail such as chilli, garlic, herbs, a grape cluster, cloth, or a lantern; anchor it at the pictured tie point and move it by only a few visible pixels. **This method is closed to new areas**: see "Hanging motion is a sprite over a clean painting" below. The existing crops in China, Xinjiang and Turkey stay as they are
 
 Nothing drawn by code may sit on a finished painting unless it fits the picture completely: steam from a pictured vessel, a lamp glow on a pictured lamp, snow through a pictured opening, leaves near pictured foliage, mist over pictured water, a glint inside a pictured stream, birds in real sky. A drawn shape that reads as a new object fails. When a room needs a moving object that the painting cannot supply, request or generate a separate sprite for it; do not draw it.
 
+Measure every path and every box on the pixels of the painting it belongs to, at a known scale. Open that orientation's file with a two per cent grid over it, read the coordinates of the real painted object off the grid, and write them down in the motion matrix as fractions of that file. A box copied from the other orientation, scaled from a thumbnail or estimated from memory lands somewhere plausible and wrong: the Spanish cider room's stream glint ran fifty pixels left of the painted thread, straight across the pourer's face, because the portrait path was never measured on the portrait file.
+
+Prove the measurements with an overlay contact sheet before hand-over. Draw every box and every traced path on top of the painting itself, both orientations on one sheet, and look at it. The sheet answers the only question that matters — is this box on that object — and it answers it for a whole room at once. A path that misses its stream, a box that has slipped onto a face, a patch that sits on the wall beside its lamp are all obvious on the sheet and invisible in a pixel-difference test.
+
+A box is a clip, and its edges show. Any edge of a patch box that falls inside the painting, rather than at the painting's own edge, is looked at at 100 percent zoom: a beam, a glow or a mist bank that ends at its box shows a straight cut across the picture. Fade the effect out before the edge and check the result magnified, in the running room, at both sizes. Spain's tapas sunbeam shipped with a hard horizontal cut over the diners' table for exactly this reason.
+
 Inspect every cropped mask before it ships. `uv run --with pillow --with numpy --with scipy scripts/audit/breeze-masks.py <out dir>` renders each breeze crop as three panels: the crop, the isolated foreground on grey, and the repaired background. Look at the grey panel. If it contains any part of a face, hand, wall, lantern, shelf or pole, tighten the box or drop the patch. Every mask fix must pass this inspection again and `npm test` (`scene-ambience.mjs`) before publication.
+
+#### Hanging motion is a sprite over a clean painting
+
+The standard is the China hotpot room: a keyed sprite hangs over a painting that has nothing under it, so there is no cut edge and no repaired hole to see when it swings. A crop keyed out of a finished painting is the opposite — it shows its own edge and the repair behind it on every swing, and it shows them worst in exactly the rooms that need the motion most. Spain's pepper strings were keyed crops on warm ochre walls, where the colour key took the wall with the peppers, and the owner's verdict was that they were not natural.
+
+- Hanging motion in a room is a **sprite on the prop layer over a clean painting**. Ask for it in the image brief, beside the room's own paintings
+- Never colour-key a crop out of a finished painting for a new area
+- When the painting already carries the object, **paint it out offline** with `scripts/scenes/paint-out-strings.py` before hanging the sprite: the script keys the object inside a hand-measured box, protects the hook and its neighbours, smears along the painted cast shadow and inpaints, writes the original and a SHA-256 sidecar to `.data/originals/`, refuses to run twice over the same file, and undoes itself with `--restore`. Hang the sprite from the painted hook and fit it to the space the painted object filled
+- Hanging the sprite over the painted object is not enough. The painted one shows through the gaps in the sprite and at the ends of the swing, which was the owner's second note on the same pass
+- A breeze-mask coverage above about 0.7 means the key is taking the wall, not the object. Check it in `scripts/audit/breeze-masks.py` and stop
+- **Every delivered motion sprite is used, or the room doc says why not.** Spain was delivered `es-pepper-ristra` and shipped keyed crops instead, with the sprite unused in the folder
+- Where a sprite cannot sit convincingly — the object is crossed by a person, cut by the frame, tangled with another object, or in hard sun the even-lit sprite cannot match — **the object stays still** and the room takes its motion from a lamp, a beam, birds, leaves or a traced liquid instead. A still painted string is not a defect; a swinging cut-out is
 
 Do not use a broad rectangular crop, move a crop that includes a face or body, or invent a replacement silhouette with canvas lines and ellipses. If a clean layer cannot be obtained, keep the food still and animate a natural part of the environment instead. A world stand's signature verb and a finished room painting are different systems: the 3D stand can move its modeled food and tools, but the painting cannot depict a new physical action without suitable source art.
 

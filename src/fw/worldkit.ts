@@ -122,7 +122,9 @@ export function buildWorld(spec: WorldSpec): Diorama {
 
 
   // ---------- interactive objects ----------
-  const steamSources: THREE.Vector3[] = [];
+  // A smoke or steam point plus the tint its sprites take: a chimney asks for wood-smoke grey, a cooking
+  // stand leaves it white. Size, count and opacity are the same either way, so both read at overview zoom.
+  const steamSources: { at: THREE.Vector3; tint?: string }[] = [];
   const placed: Placed[] = OBJECTS.map((obj) => {
     if (obj.hitOnly) {
       // a clickable spot inside a place (a market stall): no prop of its own
@@ -145,7 +147,7 @@ export function buildWorld(spec: WorldSpec): Diorama {
     group.add(prop);
     prop.updateMatrixWorld(true);
     if (prop.userData.tick) tickers.push(prop.userData.tick);
-    for (const key of ["steam", "smoke"] as const) { const local = prop.userData[key]; if (local) steamSources.push(/market/i.test(obj.prop) ? local.clone() : prop.localToWorld(local.clone())); }
+    for (const key of ["steam", "smoke"] as const) { const local = prop.userData[key]; if (local) steamSources.push({ at: /market/i.test(obj.prop) ? local.clone() : prop.localToWorld(local.clone()), tint: prop.userData.smokeTint as string | undefined }); }
     // a prop may declare its own clickable footprint (local space) when parts of it reach over other things, like the fishing nets' arms
     const own = prop.userData.hitBox as THREE.Box3 | undefined;
     const box = own ? own.clone().applyMatrix4(prop.matrixWorld) : new THREE.Box3().setFromObject(prop);
@@ -202,13 +204,16 @@ export function buildWorld(spec: WorldSpec): Diorama {
 
   // ---------- ambient life ----------
   const puffTex = softDot();
-  const puffs: { s: THREE.Sprite; life: number; max: number; src: THREE.Vector3; drift: number }[] = [];
+  const puffs: { s: THREE.Sprite; life: number; max: number; src: THREE.Vector3; drift: number; tinted?: boolean }[] = [];
   // chimneys, incense burners, ovens: anything placed with a smoke point
-  group.traverse((o) => { const sm = (o as P).userData?.smoke; if (sm && o.parent === group && !placed.some((p) => p.group === o)) { o.updateMatrixWorld(true); steamSources.push(o.localToWorld(sm.clone())); } });
-  for (const src of steamSources) for (let i = 0; i < 4; i++) {
-    const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: puffTex, transparent: true, opacity: 0.7, depthWrite: false }));
+  group.traverse((o) => { const sm = (o as P).userData?.smoke; if (sm && o.parent === group && !placed.some((p) => p.group === o)) { o.updateMatrixWorld(true); steamSources.push({ at: o.localToWorld(sm.clone()), tint: o.userData.smokeTint as string | undefined }); } });
+  // A chimney asks for a tint, and gets a denser column with it: eight puffs instead of four, a taller rise and
+  // a higher peak alpha. Four white puffs at half alpha are what China's houses use, and at the overview zoom
+  // they cannot be seen over a tan roof, which is exactly what the owner reported on 2026-09-16.
+  for (const { at, tint } of steamSources) for (let i = 0; i < (tint ? 8 : 4); i++) {
+    const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: puffTex, transparent: true, opacity: 0.7, depthWrite: false, color: tint ?? "#ffffff" }));
     s.visible = false; group.add(s);
-    puffs.push({ s, life: Math.random() * 2.6, max: 2.6, src, drift: Math.random() * 6 });
+    puffs.push({ s, life: Math.random() * 2.6, max: 2.6, src: at, drift: Math.random() * 6, tinted: Boolean(tint) });
   }
   tickers.push((t, dt) => {
     for (const p of puffs) {
@@ -216,11 +221,11 @@ export function buildWorld(spec: WorldSpec): Diorama {
       if (p.life > p.max) { p.life = 0; p.s.position.copy(p.src); }
       const k = p.life / p.max;
       p.s.visible = true;
-      p.s.position.y = p.src.y + k * 2.4;
+      p.s.position.y = p.src.y + k * (p.tinted ? 3.1 : 2.4);
       p.s.position.x = p.src.x + Math.sin(t * 0.8 + p.drift) * 0.25 * k;
       p.s.position.z = p.src.z + Math.cos(t * 0.6 + p.drift) * 0.2 * k;
       const sc = 0.5 + k * 1.4; p.s.scale.set(sc, sc, 1);
-      (p.s.material as THREE.SpriteMaterial).opacity = 0.5 * (1 - k) * Math.min(1, k * 6);
+      (p.s.material as THREE.SpriteMaterial).opacity = (p.tinted ? 0.85 : 0.5) * (1 - k) * Math.min(1, k * 6);
     }
   });
 

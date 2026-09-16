@@ -14,10 +14,14 @@ The [new-area methodology](docs/new-area-methodology.md) documents the workflow 
 
 The [Spain image-generation prompt](docs/examples/spain-scene-generation-prompt.md) applies it to ten food rooms with a fixed, minimal prop list.
 
+Spain is the first area built by the agent team from those documents: the [Spain world](docs/spain-world.md) records the baseline, the blueprint, the picture acceptance and the checks; the [Spain research](docs/spain-research.md) holds the sourced facts; the [Spain image brief](docs/spain-image-brief.md) is the final brief the pictures were generated from.
+
 Three companion documents make that method buildable by agents without the author: the [art direction](docs/art-direction.md)
 for every picture, the [engineering handbook](docs/building-a-world.md) for the code (files, registration, the stand standard
 measured on the hotpot house, rooms, helpers, tests, publishing), and the [agent team playbook](docs/agent-team-playbook.md)
 for dividing the work and the definition of done. `npm test` runs every node harness in `scripts/tests/`.
+The [quality baseline](docs/quality-baseline.md) records what those harnesses enforce and the numbers a session must hold, and the
+[Spain retrospective](docs/spain-world.md#retrospective-2026-09-16) lists the twelve things ten minutes of the owner's looking found after the area had been called done.
 
 ## Run
 

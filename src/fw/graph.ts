@@ -5,6 +5,7 @@
  */
 import type { Recipe } from "../data";
 import { TURKEY_OBJECTS } from "./turkey-objects";
+import { SPAIN_OBJECTS } from "./spain-objects";
 
 export type Kind = "ingredient" | "flavour" | "technique" | "landmark" | "place" | "dish";
 export type WorldId = "china" | "italy" | "korea" | "mexico" | "middle-east" | "mediterranean" | "india" | "southeast-asia" | "north-america" | "japan" | "central-europe";
@@ -91,7 +92,7 @@ export const AREAS: Record<Area, AreaInfo> = {
   arabia: { world: "middle-east", name: "Arabia", zh: "الجزيرة العربية", blurb: "dunes, dates, coffee and the caravan", center: [-14, 62] },
   persia: { world: "middle-east", name: "Persia", zh: "ایران", blurb: "Isfahan: saffron, pomegranates and rice", center: [34, 44] },
   greece: { world: "mediterranean", name: "Greece", zh: "Ελλάδα", blurb: "islands: tavernas, feta, olives and the Acropolis", center: [25, 4] },
-  spain: { world: "mediterranean", name: "Spain", zh: "España", blurb: "the port, the tapas bar, oranges and the Alhambra", center: [-27, -2] },
+  spain: { world: "mediterranean", name: "Spain", zh: "España", blurb: "the Plaza Mayor, the rice fire, the ría, the cider house and the Alhambra", center: [-46, -2] },
   morocco: { world: "mediterranean", name: "Morocco", zh: "المغرب", blurb: "the souk, the square, tagines and mint tea", center: [-8, 20] },
   dalmatia: { world: "mediterranean", name: "Dalmatia", zh: "Dalmacija", blurb: "a walled harbour, the konoba, cabbage and lentils", center: [6, -21] },
   punjab: { world: "india", name: "Punjab & Delhi", zh: "पंजाब", blurb: "the tandoor, the dhaba, wheat, dairy and the Golden Temple", center: [-6, -14] },
@@ -759,6 +760,7 @@ export const MIDEAST_OBJECTS: WorldObject[] = [
 
 const SK: [number, number] = [-16, 20];
 export const MED_OBJECTS: WorldObject[] = [
+  ...SPAIN_OBJECTS,
   // --- ingredients ---
   { id: "saladVeg", world: "mediterranean", kind: "ingredient", name: "Tomatoes, cucumbers & peppers", zh: "Ντομάτα, αγγούρι, πιπεριά", emoji: "🥗", area: "greece", pos: [26, 17.5], prop: "saladGarden", rot: -0.1,
     tagline: "The summer garden that becomes a horiatiki.", blurb: "Cucumbers came from India by way of Persia and were eaten in Greece by 500 BC; tomatoes and peppers only arrived from the Americas in the 1500s and were treated with suspicion for two centuries. The village salad, horiatiki, was fixed in the 1960s: tomato, cucumber, green pepper, red onion and olives under a slab of feta, oregano and oil, never lettuce. Everyday salads across the sea are the same garden with lemon and whatever herb is nearest.",
@@ -769,12 +771,6 @@ export const MED_OBJECTS: WorldObject[] = [
   { id: "olivesGr", world: "mediterranean", kind: "ingredient", name: "Olives & oil", zh: "Ελιές", emoji: "🫒", area: "greece", pos: [25, 12], prop: "oliveGroveGr", rot: 0.1,
     tagline: "Athena's gift to Athens, and the fat of the whole sea.", blurb: "The olive was domesticated in the eastern Mediterranean around 4000 BC, and the Greeks say Athena won the city by planting one on the Acropolis. Kalamata olives are cured in brine and vinegar; Cretan oil, pressed the day the fruit is picked, is the greenest. Greeks use more oil per head than anyone, about twenty litres a year: on salad, over beans, in every stew, and on bread with a pinch of salt.",
     partners: ["lemon", "oregano", "garlic", "feta"], match: (r) => has(r.core, /olive|caper/) },
-  { id: "fishMed", world: "mediterranean", kind: "ingredient", name: "Fish & prawns", zh: "Pescado y gambas", emoji: "🐟", area: "spain", pos: [-17, 1], prop: "fishingPort", rot: -Math.PI / 2, place: true, placeName: "The port",
-    tagline: "Landed at dawn, on the grill or in the pan by noon.", blurb: "The Phoenicians were salting Atlantic tuna at Cádiz by 800 BC and Rome's favourite sauce, garum, came from the same coast. Spain still eats more fish than any country in Europe: hake and monkfish simmered with chickpeas, sardines grilled on skewers on the beach, prawns flashed on the plancha with garlic, and salt-baked bream. Salmon is the northern guest, roasted with tomato, olives and capers.",
-    partners: ["garlic", "olive oil", "lemon", "chickpeas", "tomato"], match: (r) => has(r.protein, /fish|prawn|shrimp|salmon/) },
-  { id: "oranges", world: "mediterranean", kind: "ingredient", name: "Oranges & almonds", zh: "Naranjas y almendras", emoji: "🍊", area: "spain", pos: [-31, 9], prop: "orangeGrove", rot: 0.05,
-    tagline: "Seville's bitter oranges and the almond blossom of February.", blurb: "The Moors planted bitter oranges along Seville's streets in the 900s for their scent, and the English turned the fruit into marmalade; the sweet orange came later, from China by way of Portugal in the 1500s. Almonds arrived earlier still, from the Levant, and blossom pink across Andalusia in February. Together they make turrón, marzipan and the almond sauces of the south, and orange goes into salads with fennel and olives.",
-    partners: ["honey", "cinnamon", "olive oil"], match: (r) => has(r.core, /orange|almond/) },
   { id: "cabbage", world: "mediterranean", kind: "ingredient", name: "Cabbage & paprika", zh: "Kupus i paprika", emoji: "🥬", area: "dalmatia", pos: [16, -23], prop: "cabbageField", rot: 0.1,
     tagline: "Shredded fine, salted, and dressed with vinegar and pepper.", blurb: "Cabbage has fed the Balkans through every winter since the Romans planted it; the Croatian kupus salata is cabbage sliced hair-thin, salted and squeezed, then dressed with oil, vinegar and black pepper, and it comes with every grill. Whole heads sour in barrels for sarma in autumn. Paprika, dried and ground from the peppers the Ottomans brought in the 1500s, is the other winter colour, sweet or hot, on everything.",
     partners: ["vinegar", "black pepper", "lentils", "olive oil"], match: (r) => has(r.core, /cabbage|paprika/) },
@@ -792,9 +788,6 @@ export const MED_OBJECTS: WorldObject[] = [
   { id: "taverna", world: "mediterranean", kind: "technique", name: "The taverna table", zh: "Ταβέρνα", emoji: "🍽️", area: "greece", pos: [27, -2.5], prop: "taverna", rot: 0.1, place: true, placeName: "Taverna",
     tagline: "Blue chairs, a vine overhead, plates that arrive as they are ready.", blurb: "A taverna is the family place with paper on the table and a vine over the yard, where the meal is a run of shared plates: a horiatiki and tzatziki first, then whatever came off the grill or out of the oven, with bread to wipe the oil. Souvlaki has been grilled on skewers since Homer; ouzo, the anise spirit, came from Lesbos in the 1800s. Greeks still cook pasta with halloumi or feta and call it their own, as they have since Byzantine times.",
     partners: ["feta", "olives", "tomato", "olive oil", "lemon"], match: (r) => has(r.techniques, /raw|pan|pot/) && r.area === "greece" },
-  { id: "plancha", world: "mediterranean", kind: "technique", name: "Plancha & paella", zh: "Plancha y paella", emoji: "🥘", area: "spain", pos: [-25, 4], prop: "tapasBar", rot: 0.2, place: true, placeName: "Tapas bar",
-    tagline: "A hot iron plate, a wide pan, and a plate on top of the glass.", blurb: "Tapa means lid: the slice of ham a Andalusian barman laid on a glass of sherry to keep the flies off, sometime in the 1800s, which became the small plate that comes with every drink. The plancha is a slab of hot iron for prawns, fish and chorizo in seconds; the paella is the wide, shallow pan of Valencia, where rice was planted by the Moors in the 700s and cooked outdoors over orange-wood fires with saffron. Chickpeas simmered with fish and paprika are the everyday version of the same kitchen.",
-    partners: ["prawns", "chickpeas", "saffron", "paprika", "garlic"], match: (r) => has(r.techniques, /plancha/) },
   { id: "konoba", world: "mediterranean", kind: "technique", name: "The konoba", zh: "Konoba", emoji: "🔥", area: "dalmatia", pos: [-10, -21], prop: "konoba", rot: 0.1, place: true, placeName: "Konoba",
     tagline: "A stone cellar, a bell of iron over embers, salads to cut the fat.", blurb: "A konoba was the cellar where Dalmatian families kept wine and salted fish; now it is the tavern. Under the peka, an iron bell buried in embers for two hours, octopus or lamb bakes with potatoes and rosemary. Ćevapi, the small skinless sausages the Ottomans left behind, come off the grill with onion and flatbread, and there is always a cabbage salad, a lentil salad and a glass of rakija. Everything is finished with the island's oil.",
     partners: ["cabbage", "lentils", "olive oil", "rosemary", "garlic"], match: (r) => has(r.techniques, /raw|pot/) && r.area === "dalmatia" },
@@ -807,8 +800,7 @@ export const MED_OBJECTS: WorldObject[] = [
   { id: "stall-slippers", world: "mediterranean", kind: "landmark", name: "Slippers & lamps", zh: "بلغة", emoji: "🪔", area: "morocco", pos: [SK[0] + 1, SK[1] + 2.6], prop: "none", hitOnly: true, parent: "souk", alias: "mintTea", tagline: "", blurb: "", match: () => false },
   { id: "jemaa", world: "mediterranean", kind: "landmark", name: "Jemaa el-Fna", zh: "جامع الفنا", emoji: "🐍", area: "morocco", pos: [-2, 18], prop: "jemaaSquare", rot: 0.1,
     tagline: "Storytellers, snake charmers, orange juice and, at dusk, a hundred kitchens.", blurb: "The square has been Marrakech's stage since the 1000s: storytellers, snake charmers, water sellers in red with brass cups, and orange juice from carts. At sunset the food stalls roll in, grilling merguez and sardines, ladling harira and snails in broth, under smoke and gas lamps. UNESCO listed the square's living culture in 2001, the first place of its kind.", match: () => false },
-  { id: "flamenco", world: "mediterranean", kind: "landmark", name: "Flamenco", zh: "Flamenco", emoji: "💃", area: "spain", pos: [-30, -24], prop: "flamenco", rot: 0.2,
-    tagline: "Guitar, palms and a stamping heel, from the Gitano quarters of Andalusia.", blurb: "Flamenco grew among the Gitanos of Seville, Jerez and Cádiz in the 1700s and 1800s, in the tablaos and the patios: a singer, a guitar, hands clapping the rhythm and a dancer whose heels are the drum. Sherry, aged in Jerez since the 1400s, and a plate of jamón are what come with it. UNESCO listed it in 2010.", match: () => false },
+  // --- ingredients ---
 ];
 
 
@@ -816,7 +808,6 @@ export const MED_OBJECTS: WorldObject[] = [
 
 const CM: [number, number] = [-4, 10];
 export const INDIA_OBJECTS: WorldObject[] = [
-  // --- ingredients ---
   { id: "wheatNaan", world: "india", kind: "ingredient", name: "Wheat, roti & naan", zh: "गेहूँ और रोटी", emoji: "🫓", area: "punjab", pos: [-33, -13], prop: "wheatMustard", rot: 0.1,
     tagline: "The bread basket of the north, and the bread that mops up everything.", blurb: "Wheat has been grown on the Indus plain since about 7000 BC, and Punjab, the land of five rivers, still grows most of India's. Every meal in the north ends with bread: roti or chapati patted from whole wheat and puffed on a tawa, paratha stuffed with potato and fried in ghee for breakfast, and naan, leavened and slapped onto the tandoor wall, a Persian idea that reached Delhi's courts by the 1300s. The yellow mustard flowering among the wheat is winter's saag.",
     partners: ["ghee", "butter", "dal", "tandoori chicken"], match: (r) => has(r.core, /naan|roti|wheat|flour/) },

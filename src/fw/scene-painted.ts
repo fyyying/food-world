@@ -7,7 +7,7 @@ import { flickerNoise, STAGE_W, STAGE_H, type SceneDef } from "./scene";
 import { roomProps } from "./scene-props";
 import sizes from "./scenes.json";
 import propSizes from "./scenes-props.json";
-import { ambientPainter, PAINTED_SIGNATURES, type AmbientPatch } from './scene-ambience';
+import { ambientPainter, paintingFrame, PAINTED_SIGNATURES, type AmbientPatch } from './scene-ambience';
 
 const SIZES = sizes as unknown as Record<string, Record<string, [number, number]>>;
 const PROPS = (propSizes as unknown as { rooms: Record<string, Record<string, [number, number]>>; props: Record<string, [number, number]> });
@@ -32,6 +32,25 @@ export type Sprite = {
   mirror?: boolean;
 };
 
+/**
+ * A library sprite hung over the painting itself, so a painted hanging object can swing without being cut out of
+ * the picture. Every number is a fraction of that orientation's painting, measured on its pixels, because the two
+ * compositions place the same object differently and the portrait painting is re-fitted to the screen on resize.
+ */
+export type HungSprite = {
+  /** a sprite from the shared prop library (public/scenes/props) */
+  name: string;
+  /** left edge and top edge of the sprite, as fractions of the painting */
+  fx: number;
+  fy: number;
+  /** width as a fraction of the painting's width; the height follows the picture */
+  fw: number;
+  /** degrees of sway about the hanging point at the top of the sprite */
+  sway?: number;
+  /** brightness multiplier, to seat a library sprite in the painting's own light (1 leaves it alone) */
+  tone?: number;
+};
+
 export type Walker = { name: string; w: number; y: number; from: number; to: number; dur: number; every: number; fly?: boolean };
 
 export type PaintedCfg = {
@@ -44,6 +63,8 @@ export type PaintedCfg = {
   night?: boolean;
   /** pieces hanging from the top, mid depth */
   hang?: Sprite[];
+  /** library sprites hung over the wide painting, in front of it, positioned in that painting's own fractions */
+  hung?: HungSprite[];
   /** pieces in the front, full parallax */
   front?: Sprite[];
   /** steam sources on the stage */
@@ -71,7 +92,7 @@ export type PaintedCfg = {
   /** figures that walk across the front now and then */
   walkers?: Walker[];
   /** the portrait painting is a different composition: where its steam, fire, lamps and flyers are */
-  portrait?: { steam?: PaintedCfg["steam"]; fire?: PaintedCfg["fire"]; lamps?: PaintedCfg["lamps"]; pot?: PaintedCfg["pot"]; walkers?: Walker[] };
+  portrait?: { steam?: PaintedCfg["steam"]; fire?: PaintedCfg["fire"]; lamps?: PaintedCfg["lamps"]; pot?: PaintedCfg["pot"]; walkers?: Walker[]; hung?: HungSprite[] };
   light: { x: number; y: number; color: string };
 };
 
@@ -87,6 +108,24 @@ export const pAt = (folder: string, fx: number, fy: number) => { const [w, h] = 
 export const at = (folder: string, fx: number, fy: number) => { const b = coverBox(folder); return { x: b.x + fx * b.w, y: b.y + fy * b.h }; };
 
 function size(folder: string, name: string, w: number, prop = false) { const [pw, ph] = prop ? PROPS.props[name] : SIZES[folder][name]; return { w, h: (w * ph) / pw }; }
+
+/**
+ * One library sprite hung over the painting. The wide painting is stretched across a fixed stage rectangle, so its
+ * sprites are laid out once; the portrait painting is re-fitted whenever the viewport changes, so its sprites carry
+ * their painting fractions in `data-pf` and `scene.ts` re-places them from the same `paintingFrame` the effects use.
+ */
+function hung(s: HungSprite, id: string, portrait: boolean) {
+  const [pw, ph] = PROPS.props[s.name];
+  const frame = paintingFrame(portrait, 0);
+  const w = s.fw * frame.width, h = (w * ph) / pw;
+  const x = frame.x + s.fx * frame.width, y = frame.y + s.fy * frame.height;
+  const tone = s.tone && s.tone !== 1 ? ` filter="url(#tone-${id})"` : "";
+  const toneDef = tone
+    ? `<filter id="tone-${id}" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="${s.tone} 0 0 0 0 0 ${s.tone} 0 0 0 0 0 ${s.tone} 0 0 0 0 0 1 0"/></filter>`
+    : "";
+  const fractions = portrait ? ` data-pf="${s.fx},${s.fy},${s.fw},${(ph / pw).toFixed(4)}"` : "";
+  return `${toneDef}<g id="${id}" class="${s.sway ? "sway " : ""}${portrait ? "portrait-only" : "wide-only"}"${s.sway ? ` data-amp="${s.sway}"` : ""}${fractions} data-px="${(x + w / 2).toFixed(1)}" data-py="${y.toFixed(1)}"><image href="${propUrl(s.name)}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}"${tone}/></g>`;
+}
 
 function sprite(folder: string, s: Sprite, id: string, group: "hang" | "front") {
   const { w, h } = size(folder, s.name, s.w, s.prop);
@@ -144,7 +183,11 @@ export function paintedScene(cfg: PaintedCfg): SceneDef {
   const backLayer = `
     <rect x="-100" y="-60" width="1800" height="1020" fill="${cfg.night ? "#0d0a14" : "#1c110c"}"/>`;
 
-  const hangLayer = `${HALO}${(cfg.hang ?? []).map((s, i) => sprite(f, s, `hang-${i}`, "hang")).join("")}`;
+  // Library sprites hung over the painting share the hanging layer: no parallax runs in a room with touches, so a
+  // sprite laid over a painted hanging object stays exactly on it, and the painting underneath is never cut open.
+  const hungLayer = [...(cfg.hung ?? []).map((s, i) => hung(s, `hungw-${i}`, false)),
+    ...(cfg.portrait?.hung ?? []).map((s, i) => hung(s, `hungp-${i}`, true))].join("");
+  const hangLayer = `${HALO}${(cfg.hang ?? []).map((s, i) => sprite(f, s, `hang-${i}`, "hang")).join("")}${hungLayer}`;
 
   const allWalkers: { wk: Walker; cls: string }[] = [...(cfg.walkers ?? []).map((wk) => ({ wk, cls: cfg.portrait?.walkers ? "wide-only" : "" })), ...(cfg.portrait?.walkers ?? []).map((wk) => ({ wk, cls: "portrait-only" }))];
   const walkerSvg = ({ wk, cls }: { wk: Walker; cls: string }, i: number) => { const { w, h } = size(f, wk.name, wk.w, true); return `<g id="walk-${i}" class="${cls}" opacity="0"><image href="${propUrl(wk.name)}" x="0" y="${(wk.y - h).toFixed(1)}" width="${w}" height="${h.toFixed(1)}"/></g>`; };

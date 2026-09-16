@@ -539,6 +539,126 @@
     941,
     1672
    ]
+  },
+  "es_paella": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "es_tapas": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "es_jamon": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "es_tortilla": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "es_churros": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "es_pintxos": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "es_gazpacho": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "es_pulpo": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "es_pa_tomaquet": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "es_manchego": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "es_sidreria": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
+  },
+  "es_bodega": {
+   "wide": [
+    1672,
+    941
+   ],
+   "portrait": [
+    941,
+    1672
+   ]
   }
  },
  "props": {
@@ -1221,6 +1341,26 @@
   "wok-north": [
    960,
    514
+  ],
+  "es-orange-twig": [
+   960,
+   858
+  ],
+  "es-awning-fringe": [
+   960,
+   286
+  ],
+  "es-gull": [
+   960,
+   559
+  ],
+  "es-pepper-ristra": [
+   259,
+   960
+  ],
+  "es-apple-twig": [
+   960,
+   774
   ]
  }
 }

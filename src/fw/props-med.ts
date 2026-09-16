@@ -519,7 +519,19 @@ export function sailboat(color = MD.white): P {
   add(g, box(2.4, 0.4, 0.9, color), 0, 0.2, 0); add(g, box(2.4, 0.06, 0.96, MD.blue), 0, 0.42, 0);
   add(g, cyl(0.03, 0.03, 2.6, "#c9a37a", 4), 0.1, 1.7, 0);
   const sail = add(g, new THREE.Mesh(new THREE.ConeGeometry(0.9, 2.2, 3), mat("#f7f4ee", { side: THREE.DoubleSide })), 0.1, 1.6, 0); sail.rotation.y = Math.PI / 2; sail.scale.set(1, 1, 0.05);
-  add(g, islander("#3f6fb5", { hat: true }), -0.7, 0.45, 0).scale.setScalar(0.85);
+  // The sailor sits on a thwart and holds the tiller. He used to stand: the boat sails a lap of the sea every
+  // three minutes, and a standing figure crossing the water with its legs locked straight was the most visible
+  // case of the "people moving without moving legs" the owner reported on 2026-09-16. Seated, the pose is right.
+  const thwart = 0.5, scale = 0.85;
+  add(g, box(0.5, 0.06, 0.8, "#c9a37a"), -0.7, thwart, 0);
+  const sailor = islander("#3f6fb5", { hat: true }); sailor.scale.setScalar(scale);
+  sailor.userData.sit?.();
+  const pelvis = sailor.children.find((c) => c instanceof THREE.Mesh) as THREE.Mesh;
+  pelvis.geometry.computeBoundingBox();
+  const seatBottom = (pelvis.position.y + pelvis.geometry.boundingBox!.min.y) * scale;
+  add(g, sailor, -0.7, thwart + 0.03 - seatBottom, 0).rotation.y = Math.PI / 2;   // facing the bow, legs along the hull
+  sailor.userData.seated = true;   // spain-world.mjs allows a seated figure to travel without stepping
+  add(g, cyl(0.02, 0.02, 0.5, "#7a4a2a", 5), -1.0, 0.62, 0).rotation.z = 0.5;     // the tiller under his hand
   g.userData.tick = (t) => { g.rotation.z = Math.sin(t * 0.9) * 0.05; sail.rotation.y = Math.PI / 2 + Math.sin(t * 0.7) * 0.15; };
   return g;
 }

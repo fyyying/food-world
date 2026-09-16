@@ -22,6 +22,7 @@ import { auditDiorama } from "./audit";
 import { openLivingScene, type LivingScene } from "./scene";
 import { SCENES as CHINA_SCENES } from "./scenes-china";
 import { TURKEY_SCENES } from "./scenes-turkey";
+import { SPAIN_SCENES } from "./scenes-spain";
 import { STORIES, type Story } from "./stories";
 import { escapeHtml } from "./plates";
 import { type Diorama, type DishMarker, type Placed } from "./worldkit";
@@ -31,7 +32,7 @@ import { mountSettings } from "./settings";
 import { mountWorldIntro } from "./world-intro";
 import { person } from "./props";
 import { snapshotObject } from "./snapshot";
-const SCENES = { ...CHINA_SCENES, ...TURKEY_SCENES };
+const SCENES = { ...CHINA_SCENES, ...TURKEY_SCENES, ...SPAIN_SCENES };
 mountSettings();
 
 // ---------- renderer ----------
@@ -103,6 +104,8 @@ window.addEventListener("resize", () => {
 });
 
 // ---------- camera flights ----------
+/** Overview pitch clamp in radians from vertical, and the looser clamp used while approaching a room so the food stays in view. */
+const OVERVIEW_MAX_POLAR = 1.12, APPROACH_MAX_POLAR = 1.45;
 const easeInOut = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
 let flight: { from: THREE.Vector3; to: THREE.Vector3; tf: THREE.Vector3; tt: THREE.Vector3; t: number; dur: number; done?: () => void } | null = null;
 function fly(to: THREE.Vector3, target: THREE.Vector3, dur = 1.4, done?: () => void) {
@@ -210,7 +213,7 @@ function configureControls(l: Level) {
   } else {
     controls.minDistance = 10; controls.maxDistance = worldZoomLimit(world, window.innerWidth, window.innerHeight);
     worldScene.fog = new THREE.Fog('#e9e0cd', world === 'middle-east' ? 500 : 90, world === 'middle-east' ? 600 : 200);
-    controls.minPolarAngle = 0.5; controls.maxPolarAngle = 1.12;
+    controls.minPolarAngle = 0.5; controls.maxPolarAngle = OVERVIEW_MAX_POLAR;
     controls.minAzimuthAngle = -0.75; controls.maxAzimuthAngle = 0.75;
   }
 }
@@ -558,6 +561,9 @@ function enterLivingScene(p: Placed, obj: WorldObject, recipes: EnrichedRecipe[]
   const approachDistance=Math.max(8.8,Math.min(18,Math.max(hitSize.width,hitSize.depth)*1.05));
   approachHorizontal.setLength(approachDistance);
   const approachOffset=approachHorizontal.add(new THREE.Vector3(0,1.4,0));
+  // The overview clamp (maxPolarAngle 1.12, about 26 degrees of elevation) would cancel this low pitch and let a
+  // facade hide the work surface; loosen it for the approach and restore it when the room closes.
+  controls.maxPolarAngle = APPROACH_MAX_POLAR;
   fly(approachTarget.clone().add(approachOffset),approachTarget,1.6,() => {
     fade.classList.add("on");
     later(() => {
@@ -591,7 +597,7 @@ function enterLivingScene(p: Placed, obj: WorldObject, recipes: EnrichedRecipe[]
 function dropScene() {
   if (!livingScene) return;
   livingScene.destroy(); livingScene = null;
-  controls.enabled = true; flight = null;   // nothing pending may carry the camera away from where it was
+  controls.enabled = true; flight = null; controls.maxPolarAngle = OVERVIEW_MAX_POLAR;   // nothing pending may carry the camera away from where it was
   if (sceneReturn) { camera.position.copy(sceneReturn.pos); controls.target.copy(sceneReturn.target); sceneReturn = null; }
   diorama?.highlight(null, null);
 }

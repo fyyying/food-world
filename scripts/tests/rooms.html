@@ -2,7 +2,8 @@
 import '/src/fw/style.css';
 import { SCENES as CHINA_SCENES } from '/src/fw/scenes-china.ts';
 import { TURKEY_SCENES } from '/src/fw/scenes-turkey.ts';
-const SCENES = { ...CHINA_SCENES, ...TURKEY_SCENES };
+import { SPAIN_SCENES } from '/src/fw/scenes-spain.ts';
+const SCENES = { ...CHINA_SCENES, ...TURKEY_SCENES, ...SPAIN_SCENES };
 import { openLivingScene } from '/src/fw/scene.ts';
 // Optional real-browser audio diagnostics: ?room=home_kitchen&portrait&audio
 // Observe the production control's source; do not replace or mock playback.

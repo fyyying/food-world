@@ -83,6 +83,17 @@ Check: Type check and all harnesses pass, the baseline numbers hold, and the lea
 
 Check: The object list has unique ids, every object has a `kind`, an `area` and a purpose, and every historical claim has a source. **Every kitchen room and every place-or-dish object has a repertoire** — a landmark room with no kitchen is the only exception — hero first, each line 12 to 25 words, each key a real object id, each `recipe` id exact (`node scripts/tests/repertoire.mjs`). A place left with no list goes back at this check, not at the walkthrough. A card-only object's blurb is accepted at the same length as its neighbours': it sits in the file's own length band, which is three paragraphs — identity, record, and a route out — with sources. The Turkish market's sumac card shipped at two sentences in a file whose other stall cards run to three paragraphs, and the owner found it by opening it. A thin card goes back at this check, not at the walkthrough.
 
+**Stage A files, exactly these four, nothing else edited** (the finished examples are Spain, Britain `london`, Thailand and Italy; match them file for file):
+
+| File | What it holds | Match |
+| --- | --- | --- |
+| `docs/<id>-world.md` | Stage 0 baseline from the code and `node scripts/audit/objects.mjs`; the Stage A decisions table; the object list (id, kind, area, position proposal, prop, purpose, reaction, cluster); the clusters with a one-line character each; "What happens next" saying Stage B waits for the pictures | `docs/spain-world.md`, `docs/italy-world.md` |
+| `docs/<id>-research.md` | Landscape, architecture per cluster, food culture by region, ingredients, everyday activities, clothing, the period band and why, every claim with a source | `docs/spain-research.md`, `docs/thailand-research.md` |
+| `docs/<id>-image-brief.md` | How to use, task and reference authority, period and people, palette, Part A concept, Part B room pairs (wide 1672 x 941, portrait 941 x 1672), Part C motion sprites, Part D cards, Parts E to G acceptance, order and notes; file names `<xx>00_concept.png`, `<xx>01_<room>_wide.png` / `_portrait.png`, `<xx>_motion_<name>.png`, `<xx>_card_<object>.png`; drop folder `~/Downloads/additional game asset/<id>/`; the six China and Spain lessons in the opening and in every room prompt; the total image count | `docs/london-image-brief.md` |
+| `src/fw/<id>-repertoire.ts` | `<ID>_REPERTOIRE`, no imports, keyed by every room and place-or-dish object id | `src/fw/spain-repertoire.ts` |
+
+Stage A ends when `npm run typecheck` and `npm test` pass unchanged, the brief has been re-read once against `docs/art-direction.md`, and the report names: the scope recommendation and why, the clusters, object counts by kind, repertoire coverage and recipe links, the image count, the decisions the owner must take before generating, and the four paths. The owner then hands the image tool everything from "Task and reference authority" through Part D. Nothing after that starts until the pictures are in the drop folder.
+
 ### Stage B: Blueprint and assets (Lead, Room maker)
 
 1. Lead draws the layout blueprint on paper coordinates: clusters, roads, water, landmarks. Clusters are dense and separated; roads connect every door

@@ -10,11 +10,11 @@ The Researcher's delivery is [italy-research.md](italy-research.md): area brief,
 
 | Check | Result |
 | --- | --- |
-| `npm run typecheck` | Passes, before and after `italy-repertoire.ts` was added |
+| `npm run typecheck` | Passes on the current checkout |
 | `npm test` | 17 harnesses pass: `camel-gait`, `object-ids`, `prop-reactions`, `prop-supports`, `recipe-addon`, `repertoire`, `room-controls`, `room-loops`, `scene-ambience`, `spain-reactions`, `spain-world`, `turkey-reactions`, `turkey-world`, `village-speech`, `world-availability`, `world-intros`, `xinjiang-reactions` |
 | `node scripts/audit/objects.mjs` | Runs and matches the [quality baseline](quality-baseline.md) for China, the Middle East and the Mediterranean. **It does not report this world at all**: line 6 filters to `['china','middle-east','mediterranean']`, so `italy` is invisible to it. The baseline below was read out of `graph.ts` and `world-italy.ts` by hand, the same way Britain's and Thailand's were |
-| Breeze masks | Not re-run, and nothing to run them on: the Italy world has no painted scenes, so it has no masks |
-| Live world | **Not looked at.** Stage 0's live pass belongs to the lead, and this session is the Stage A researcher. Everything below the audit line is read from the code and is marked as such |
+| Breeze masks | Not re-run: Stage A changes no masks, and the Italy world has no painted scenes yet |
+| Live world, recipes disabled | Completed a two-minute pass through the China overview, Sichuan, Jiangnan and the Turkish town, then watched the Ocakbaşı room at the default wide viewport and at 390 x 844 portrait. The room opened without a visible flicker; the skewer reaction remained grounded and readable in portrait; no floating objects, people crossing walls or broken water were seen in the sampled views |
 
 Two things that are not defects but that the lead should know before Stage B:
 
@@ -243,11 +243,11 @@ And three that belong to this world in particular:
 
 `src/fw/italy-repertoire.ts` holds `ITALY_REPERTOIRE`, keyed by all thirteen room objects plus the two card-only place-or-dish objects that have a kitchen: `gelateria`, the caffè, and `stall-arancini`, the fry barrow inside Ballarò. No landmark and no ingredient stop carries one, which is the handbook's rule: a caper terrace and a campanile have no kitchen. `quintoQuarto` carries none either, because a slaughterhouse is a trade and not a kitchen, and its dishes are the trattoria's.
 
-Entry counts: `ragu`, `pasta` and `pastry` 8 each; `romeMarket`, `oven`, `cheese`, `seafood`, `bacaro`, `casaVeneta`, `friggitoria`, `sicilyMarket` and `tonnaraIt` 7 each; `lagunaIt` 6; `gelateria` 5; `stall-arancini` 3, because one barrow selling three fried things is a short list written down rather than silence. **One hundred and one entries**, every line inside the 12-to-25-word band, every `zh` a real Italian, Roman, Venetian or Sicilian name in its own spelling rather than a translation of the English.
+Entry counts: `ragu`, `pasta`, `bacaro` and `pastry` 8 each; `romeMarket`, `oven`, `cheese`, `seafood`, `casaVeneta`, `friggitoria`, `sicilyMarket` and `tonnaraIt` 7 each; `lagunaIt` 6; `gelateria` 5; `stall-arancini` 3, because one barrow selling three fried things is a short list written down rather than silence. **One hundred and two entries**, every line inside the 12-to-25-word band, every `zh` a real Italian, Roman, Venetian or Sicilian name in its own spelling rather than a translation of the English.
 
 **Six `recipe` ids, and each is exact.** `public/static/recipes.json` holds eighty-nine recipes, eleven of them Italian. Six of those eleven are dishes an entry really names and they are attached: Homemade Meatballs to the trattoria's *polpette al sugo*; Caprese Salad to the market's *insalata caprese*; Bolognese, Lasagna and Creamy Mushroom Pasta to the pasta kitchen's *tagliatelle al ragù*, *lasagne* and *pasta ai funghi*; and Homemade Pizza to the forno's *pizza napoletana*. The other five Italian recipes — Chicken Parmesan Stuffed Peppers, One-Pan Chicken Parmesan Pasta, Creamy Chicken Pesto Pasta, Tomato Soup and Bolognese Mapo Tofu Pasta — name no dish in this world and are deliberately left unlinked, because the rule is an exact id where the recipe **is** that dish, not a resemblance. Their enrichment rows in `graph.ts` are untouched and the add-on still routes them.
 
-Verified by building the module and counting: 15 keys, 101 entries, 6 recipe links that all resolve against the export, 0 lines outside the band, 0 empty names or local names. `npm run typecheck` passes with the file present and unimported, and `npm test` is 17/17. Wiring the table into `src/fw/repertoire.ts` — adding it to `REPERTOIRE_TABLES` and extending `scripts/tests/repertoire.mjs`'s `tables` array and room-id set — is a Stage D registration, not a Stage A change.
+Verified from the module and the recipe export: 15 keys, 102 entries, 6 recipe links that all resolve, and 0 lines outside the 12-to-25-word band. `npm run typecheck` passes with the file present and unimported, and `npm test` is 17/17. Wiring the table into `src/fw/repertoire.ts` — adding it to `REPERTOIRE_TABLES` and extending `scripts/tests/repertoire.mjs`'s `tables` array and room-id set — is a Stage D registration, not a Stage A change.
 
 ## Shared contract: the card blurb band
 
@@ -277,16 +277,16 @@ Section 2.5 of the research holds five ambient lines per room object, in Romanes
 
 - **Every object has a unique id, a `kind`, an `area`, a position proposal, a prop, a purpose and a named reaction**: yes, 36 objects plus 10 hit-only children, 28 of them existing, none retired, seven recast. Eighteen new ids checked against all 353 ids in `src/fw/*.ts`; no collision. Prop names checked against `ITALY_PROPS`; no collision, and four reuse builders `props-italy.ts` already exports.
 - **Every historical claim has a source**: section 4 of the research, grouped by object, with URLs in section 4.15. Eleven facts are flagged unverified and are kept out of cards until checked; five more are to be written as "by tradition" or "legend puts" rather than as records.
-- **Every kitchen room and every place-or-dish object has a repertoire**: fifteen keys, hero first, three to eight entries each, every line 12 to 25 words, six exact `recipe` ids. Verified by building the module and counting: 101 entries, 0 problems. `npm run typecheck` passes and `npm test` is 17/17.
+- **Every kitchen room and every place-or-dish object has a repertoire**: fifteen keys, hero first, three to eight entries each, every line 12 to 25 words, six exact `recipe` ids. Verified from the module and recipe export: 102 entries, 0 problems. `npm run typecheck` passes and `npm test` is 17/17.
 - **The card blurb band is written down before any card is written**, and the eighteen retained blurbs and the nine empty ones are booked for rewriting to it.
 - **The period problem is named and answered six times**, not once: carbonara, tiramisù, caprese, fettuccine Alfredo, the many-plate cicchetti counter and the granita-and-brioche breakfast all take Spain's gilda answer, and the Vespas on the piazza are recast as wine carts rather than painted out of period.
 - **One open engine question from a previous area is answered here**: China's `aromatics` already carries `open: "reveal"` and `scene` together, so a market may reveal its stalls and open a room, in Italy and in Thailand both.
 - **Image brief written with exact file names and the drop folder**: [italy-image-brief.md](italy-image-brief.md), 46 files into `~/Downloads/additional game asset/italy/`.
-- **Not done in this pass, and not this role's**: no second-agent review of the brief against the art direction (Spain's had one and it found twelve things on the first pass); no live look at the world; no picture acceptance, because there are no pictures; no check of the Romanesco, Venetian and Sicilian speech lines by a native reader; and **no verified clothing description for any of the three regions**, which is the largest gap in this delivery and is written up as such.
+- **Not done in this pass, and not this role's**: no second-agent review of the brief against the art direction (Spain's had one and it found twelve things on the first pass); no picture acceptance, because there are no pictures; no check of the Romanesco, Venetian and Sicilian speech lines by a native reader; and **no verified clothing description for any of the three regions**, which is the largest gap in this delivery and is written up as such.
 
 ## What happens next
 
-**Stage B waits for the pictures.** Forty-six files into `~/Downloads/additional game asset/italy/` with the exact names in the [image brief](italy-image-brief.md). Nothing in Stage B starts on guessed pictures, and the owner has said development pauses until Monday while she generates them.
+**Stage B waits for the pictures.** Forty-six files into `~/Downloads/additional game asset/italy/` with the exact names in the [image brief](italy-image-brief.md). Nothing in Stage B starts on guessed pictures, and nothing in Stage B was started in this pass.
 
 Before the files arrive, three things are open and none of them belongs to the Researcher:
 

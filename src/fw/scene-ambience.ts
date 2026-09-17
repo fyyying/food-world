@@ -32,12 +32,15 @@ export type AmbientPatch = {
 type Point = [number, number];
 // 53 signatures + the existing hotpot boil. Effects may move an isolated painted detail or add a
 // natural cue anchored to visible scenery; they never draw replacement food, people or processes.
+// A `breeze` isolates a painted subject by colour and repairs the wall behind it, so it belongs only where the
+// subject is one clean object on a plain, neutral wall. Spain dropped all eleven of its crops on 2026-09-16 and
+// China's chilli crops followed on 2026-09-17: see docs/spain-rooms.md and docs/building-a-world.md.
 export const PAINTED_SIGNATURES: Record<string, AmbientPatch> = {
   noodle_shop: {kind:'sunray',wide:[.38,0,.93,.72],phone:[.42,.02,.94,.62],angles:[-.42,.36]},
-  teahouse: {kind:'breeze',wide:[.445,.16,.465,.24],phone:[.435,.17,.46,.22],source:'red-tassel',period:7.8,sway:[.045,.045]},
-  market: {kind:'breeze',wide:[.952,.025,.998,.31],phone:[.03,.10,.15,.33],source:'chilli',period:7.4,sway:[.045,.060]},
-  home_kitchen: {kind:'breeze',wide:[.028,0,.09,.30],phone:[.105,.035,.215,.34],source:'chilli',period:7.0,sway:[.040,.045]},
-  tower: {kind:'birds',wide:[.60,.02,.95,.24],phone:[.55,.08,.94,.25],period:12},
+  teahouse: {kind:'leaves',wide:[.30,.12,.72,.40],phone:[.28,.19,.80,.38],leaf:'yellow',color:'#c9b23a',count:8,size:1.6},   // the willow and osmanthus canopy over the open view; the painted tassel hangs against that foliage, which no repair can rebuild, so it stays still
+  market: {kind:'light',wide:[.827,.038,.873,.112],phone:[.198,.175,.332,.256]},   // the lit lantern over the lane; the painted chilli strings run off the frame edge and tangle with garlic, so they stay still
+  home_kitchen: {kind:'light',wide:[.095,.560,.215,.730],phone:[.265,.543,.348,.600],color:'#f3a34b'},   // the open wood fire under the wok; the painted chillies hang in a curtain no crop can isolate, so they stay still
+  tower: {kind:'birds',wide:[.60,.02,.95,.24],phone:[.55,.08,.94,.25],period:8,scale:1.5},   // larger and more frequent since 2026-09-17, to carry the room after its tassel and bell crops came out
   bao_shop: {kind:'dust',wide:[.08,.52,.32,.67],phone:[.08,.55,.45,.68]},
   stone_bridge: {kind:'mist',wide:[.35,.40,.82,.66],phone:[.35,.37,.78,.57],alpha:.50},
   crab_pond: {kind:'leaves',wide:[.45,.02,.88,.55],phone:[.25,.02,.78,.48],color:'#b96d42'},
@@ -67,7 +70,7 @@ export const PAINTED_SIGNATURES: Record<string, AmbientPatch> = {
   hutong: {kind:'leaves',wide:[.45,0,.92,.64],phone:[.44,0,.93,.62],color:'#a76543'},
   bing_stall: {kind:'dust',wide:[.08,.40,.34,.57],phone:[.05,.43,.49,.58]},
   north_market: {kind:'sunray',wide:[.38,0,.88,.72],phone:[.35,0,.88,.68],angles:[-.42,.38],sway:[.04,.04]},
-  noodle_workshop: {kind:'leaves',wide:[.64,0,.98,.31],phone:[.42,.06,.82,.27],leaf:'yellow',color:'#cc7f2f'},
+  noodle_workshop: {kind:'leaves',wide:[.64,0,.98,.31],phone:[.42,.06,.82,.27],leaf:'yellow',color:'#cc7f2f',count:8,size:1.5},   // fuller since 2026-09-17, to carry the room after its garlic crop came out
   roast_duck: {kind:'light',wide:[.27,.18,.51,.48],phone:[.77,.32,1,.54],color:'#f2a34b'},
   vinegar_workshop: {kind:'sunray',wide:[.55,.08,.92,.72],phone:[.42,.04,.88,.54],angles:[-.42,.38]},
   wheat_harvest: {kind:'sunray',wide:[.25,0,.90,.75],phone:[.10,0,.90,.68],angles:[-.45,.38],sway:[.04,.04]},

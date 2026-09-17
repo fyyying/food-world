@@ -41,6 +41,20 @@ try {
     const w = count('wide'), p = count('portrait');
     rows.push([id, `sig=${w.sig}`, `wide: loops=${w.loops} steam=${w.steam} fire=${w.fire} hung=${w.hung} ${w.patches}`, `portrait: loops=${p.loops} steam=${p.steam} fire=${p.fire} hung=${p.hung} ${p.patches}`, (w.loops<3||p.loops<3)?'BELOW3':(cfg.id!=='hotpot'&&(w.loops>4||p.loops>4))?'ABOVE4':'']);
   }
+  // After 2026-09-17 a `breeze` crop ships in China only where the render-before-you-enable check passes: the
+  // hutong string on flat vertical planks and the stone bridge's willow inside more willow, both wide only. Every
+  // other China crop showed its repair (docs/building-a-world.md 7.3), so adding one back needs that check first.
+  const xinjiang = new Set(Object.keys(amb.XINJIANG_AMBIENCE));   // the grape bunches hang inside their own trellis; a different case
+  const chinaBreezes = Object.entries(china.SCENES).filter(([id]) => !xinjiang.has(id)).flatMap(([id, make]) => {
+    const cfg = make().__cfg ?? make();
+    return (cfg.ambience ?? []).filter(p => p.kind === 'breeze').map(p => [id, Boolean(p.wide), Boolean(p.phone)]);
+  });
+  assert.deepEqual(chinaBreezes.sort(), [['hutong', true, false], ['stone_bridge', true, false]],
+    'China may crop a painted subject only where the repair is invisible: hutong and stone bridge, wide only');
+  for (const [id, sig] of Object.entries(SIG))
+    if (id.startsWith('es_') || ['home_kitchen', 'market', 'teahouse'].includes(id))
+      assert.notEqual(sig.kind, 'breeze', `${id} must not sway a crop of its own painting`);
+
   const failures = rows.filter(r => r[4]);
   for (const r of failures) console.log(r.join(' | '));
   assert.equal(failures.length, 0, `${failures.length} rooms have fewer than three always-on loops in one orientation`);

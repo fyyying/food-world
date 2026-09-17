@@ -7,17 +7,23 @@ from PIL import Image
 from scipy import ndimage
 out = sys.argv[1]; os.makedirs(out, exist_ok=True)
 # The signatures live in scene-ambience.ts; the per-area ambience lists (Xinjiang, Turkey, Spain) live beside them
-# or in <area>-ambience.ts. Read them all, so every breeze crop that ships is inspected by this tool.
+# or in <area>-ambience.ts, and China declares its ambience inline in scenes-china.ts. Read them all, so every
+# breeze crop that ships is inspected by this tool. Until 2026-09-17 the inline ones were invisible to it, which is
+# how six China crops went unchecked; in a scenes-*.ts file the room comes from the config's own `id:` line.
 signatures = 'src/fw/scene-ambience.ts'
-sources = [signatures] + [f for f in sorted(glob.glob('src/fw/*-ambience.ts')) if f != signatures]
+sources = ([signatures] + [f for f in sorted(glob.glob('src/fw/*-ambience.ts')) if f != signatures]
+           + sorted(glob.glob('src/fw/scenes-*.ts')))
 patches = []
 for path in sources:
     cur = None
+    inline = '/scenes-' in path.replace(os.sep, '/')
     for line in open(path).read().splitlines():
-        head = re.match(r"\s*(\w+):\s*[\{\[]", line)
+        named = re.search(r'''id:\s*["'](\w+)["']''', line)
+        if inline and named: cur = named.group(1)
+        head = None if inline else re.match(r"\s*(\w+):\s*[\{\[]", line)
         if head and "kind:" not in line: cur = head.group(1); continue
         if not re.search(r"kind:\s*'breeze'", line): continue
-        room = head.group(1) if head else cur
+        room = (head.group(1) if head else cur)
         if room is None: continue
         rects = {o: [float(v) for v in re.search(o + r":\s*\[([^\]]+)\]", line).group(1).split(',')]
                  for o in ('wide', 'phone') if re.search(o + r":\s*\[", line)}

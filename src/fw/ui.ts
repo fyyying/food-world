@@ -5,6 +5,7 @@ import { escapeHtml as esc } from "./plates";
 import { fetchBody, isRecipeLayerEnabled, minutesLabel, type RecipeBody } from "../data";
 import { imageUrl } from "../data";
 import { AREAS, SPICE, objectById, type Area, type EnrichedRecipe, type MapRegion, type WorldObject } from "./graph";
+import { repertoireHtml, repertoireRecipe } from "./repertoire";
 import { snapshot } from "./snapshot";
 import { STORIES } from "./stories";
 import { TURKEY_CARD_ART, TURKEY_NEXT } from "./turkey-objects";
@@ -99,7 +100,8 @@ export function mountUi(h: UiHandlers) {
     const t = e.target as HTMLElement;
     if (t.closest(".close")) { h.onClose(); return; }
     const d = t.closest<HTMLElement>("[data-recipe]");
-    if (d) { const r = current.recipes.find((x) => x.id === d.dataset.recipe); if (r) h.onOpenRecipe(r); return; }
+    // a dish row names one of the card's own recipes; a repertoire link names a loaded recipe by id
+    if (d) { const r = current.recipes.find((x) => x.id === d.dataset.recipe) ?? repertoireRecipe(d.dataset.recipe); if (r) h.onOpenRecipe(r); return; }
     const o = t.closest<HTMLElement>("[data-object]");
     if (o) { h.onGoObject(objectById(o.dataset.object!)); return; }
   });
@@ -116,6 +118,9 @@ export function mountUi(h: UiHandlers) {
     const kindLabel = { ingredient: "Ingredient", flavour: "Signature flavour", technique: "Technique", landmark: "Place", place: "Place", dish: "Dish" }[o.kind];
     const partnerObjs = (o.partners ?? []).map((p) => ({ p, obj: partnerObject(p, o, allObjects) }));
     const story = o.blurb.split(/\n\n+/).map((para) => `<p class="blurb">${esc(para)}</p>`).join("");
+    // a place is not one dish: what this kitchen cooks is world content, there with the add-on off. Where a place
+    // has one, it replaces the add-on's fuzzy "Related recipes" guesses; an ingredient with no repertoire keeps them.
+    const repertoire = repertoireHtml(o);
     const nextPlaces = (o.world === 'middle-east' ? TURKEY_NEXT[o.id] ?? [] : o.world === 'mediterranean' ? SPAIN_NEXT[o.id] ?? [] : []).flatMap(id => allObjects.filter(p => p.id === id));
     el.className = "";
     el.innerHTML = `
@@ -132,8 +137,9 @@ export function mountUi(h: UiHandlers) {
       ${(() => { const srcs = o.world==='middle-east' ? TURKEY_SOURCES[o.id] : o.world==='mediterranean' ? SPAIN_SOURCES[o.id] : undefined; return srcs?.length ? `<details class="story-sources"><summary>Sources and further reading</summary>${srcs.map(s=>`<p><a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${esc(s.title)}</a></p>`).join('')}</details>` : ''; })()}
       ${storiesThrough(o).map((st) => `<button class="explore origin" data-story="${st.id}"><span class="em">${st.emoji}</span><span><b>Where it came from</b><small>${esc(st.title)} · ${esc(st.chapters[0].era)}</small></span></button>`).join("")}
       ${o.flavour ? `<h4>Flavour</h4><div class="chips">${o.flavour.map((f) => `<span class="chip fl">${esc(f)}</span>`).join("")}</div>` : ""}
+      ${repertoire}
       ${o.partners ? `<h4>Often paired with</h4><div class="chips">${partnerObjs.map(({ p, obj }) => obj ? `<button class="chip link" data-object="${obj.id}">${obj.emoji} ${esc(p)}</button>` : `<span class="chip">${esc(p)}</span>`).join("")}</div>` : ""}
-      ${recipes.length ? `<h4>Related recipes</h4>${dishRows(recipes)}` : ""}
+      ${recipes.length && !repertoire ? `<h4>Related recipes</h4>${dishRows(recipes)}` : ""}
       ${nextPlaces.length ? `<h4>Continue exploring</h4><div class="chips">${nextPlaces.map(p => `<button class="chip link" data-object="${p.id}">${p.emoji} ${esc(p.name)}</button>`).join('')}</div>` : ''}
 `;
     el.querySelectorAll<HTMLButtonElement>("button[data-story]").forEach((b) => b.addEventListener("click", () => h.onStartStory(b.dataset.story!)));

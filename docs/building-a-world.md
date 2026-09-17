@@ -66,6 +66,7 @@ Create these files for an area with id `<id>` (for example `spain`):
 | `src/fw/props-<id>.ts` | One stand function per object, `<ID>_PROPS`, `<ID>_ICONS`, `<ID>_LINES` | The largest file |
 | `src/fw/<id>-objects.ts` | `WorldObject` entries, `<ID>_CARD_ART`, `<ID>_NEXT` | Data only |
 | `src/fw/<id>-stories.ts` | `<ID>_STORY_DEPTH` and `<ID>_SOURCES` | Text and links |
+| `src/fw/<id>-repertoire.ts` | `<ID>_REPERTOIRE`: what every room and place cooks, the hero dish first | Data only |
 | `src/fw/scenes-<id>.ts` | Rooms as `paintedScene` configs, exported as `<ID>_SCENES` | One entry per room |
 | `src/fw/<id>-ambience.ts` | `<ID>_AMBIENCE`: always-on painting motion per room | Rectangles per orientation |
 | `scripts/tests/<id>-reactions.mjs` | Stand reaction order, bounded repeats, clean-up | Copy `xinjiang-reactions.mjs` |
@@ -95,7 +96,7 @@ Do these steps in order. Steps 1 to 7 apply to a new area inside an existing wor
 6. Spread `<ID>_SCENES` into `SCENES` in `main.ts`
 7. Hook card art: `cardArt()` in `ui.ts` maps object ids to files. Extend the branch for your world, as `TURKEY_CARD_ART` does
 8. New world only: add the id to `WorldId`, `WORLDS`, `MAP_REGIONS` (with `built: true`, `cuisines`, `pos`, `size`, `color`, `emoji`)
-9. New world only, and only when the recipe add-on is being extended to the world: add `is<World>Recipe` and extend `worldRecipes` and `enrich` in `graph.ts`; add `ENRICH` rows so each recipe has `area`, `core`, `techniques`, `place`. This is a separate, later task and never blocks the area (see section 6.1)
+9. New world only, and only when the recipe add-on is being extended to the world: add `is<World>Recipe` and extend `worldRecipes` and `enrich` in `graph.ts`; add `ENRICH` rows so each recipe has `area`, `core`, `techniques`, `place`. This is a separate, later task and never blocks the area (see section 6.2)
 10. New world only: add the `build<World>` branch to `getWorld` in `main.ts`
 11. New world only: add `<ID>_ICONS` and `<ID>_PROPS` to the lookup in `snapshot.ts`, and `ICON_KEYS` entries in `ui.ts` for objects whose card badge is a rendered prop
 12. New world only: add an atlas preview branch in `map.ts`
@@ -250,7 +251,64 @@ Story depth (`<ID>_STORY_DEPTH`) adds three paragraphs of dated history with sou
 
 Card art: `<ID>_CARD_ART` maps an object id to a WebP in `public/scenes/<id>-food/`. Objects without art show a rendered snapshot of the prop.
 
-### 6.1 Recipes are an add-on, not part of an area
+### 6.1 A place is not one dish: the repertoire
+
+A kitchen cooks a list. A noodle shop is not one bowl, a tapas counter is not one plate, and a card that names a
+single dish tells the visitor less than the place does. So every room and every place-or-dish object declares its
+repertoire as **world content**: the hero dish first, then the dishes that kitchen actually cooks. It is there
+with the recipe add-on off, because that is the picture the area is built and reviewed against.
+
+One table per world, owned by that world's Researcher, keyed by the object id (or the room id) it belongs to:
+
+```ts
+// src/fw/<id>-repertoire.ts
+export type RepertoireEntry = { name: string; zh?: string; line: string; recipe?: string };
+
+export const SPAIN_REPERTOIRE: Record<string, RepertoireEntry[]> = {
+  plancha: [
+    { name: "Patatas bravas", zh: "Patatas bravas", line: "Fried potato under a paprika and oil sauce, the plate that arrives first on this counter and is eaten standing." },
+    // … the rest of what this counter cooks
+  ],
+};
+```
+
+| Field | Value |
+| --- | --- |
+| `name` | The dish in English, as the card heads the entry |
+| `zh` | The local name, in the local script or spelling. Drawn in the card's `.zh` style beside the name |
+| `line` | One line, **12 to 25 words**, saying what it is and why it belongs to this place. Not a recipe step |
+| `recipe` | Optional. An exact id from `public/static/recipes.json`. It is what the add-on links to |
+| `art` | Optional. A file stem under `public/scenes/<world>-dishes/`, drawn as a small square thumbnail before the name |
+
+**Repertoire pictures: none yet.** The owner set this aside on 2026-09-17 as a to-do for later, not for this
+pass. Later, one image brief per world for small square dish illustrations, hero dishes first, delivered like
+the card art and imported by the area's import script; until then the list is text, and `art` stays unset.
+
+Rules:
+
+- The **hero dish is the first entry**. The card draws a red rule beside it
+- A single-dish place gets a list of one. One cart, one dish is a real answer; leaving the place silent is not
+- Every key must be a real object id or a real room id, and a key belongs to one world's table only
+- Every **kitchen** room is covered: a room whose object is a `place` or a `dish`. A landmark room — a stone
+  bridge, a hutong lane, the Tianshan snowmelt — has no kitchen and carries no list, and a "What this kitchen
+  cooks" heading over a mountain would be wrong
+- The `recipe` id is exact. A guess that resolves to nothing fails `scripts/tests/repertoire.mjs`
+
+Where it renders: `src/fw/repertoire.ts` merges the three tables behind `repertoireOf(objectId)` and draws the
+card section in `ui.ts` `showObject`, after the story text and before "Often paired with". The heading is **What
+this kitchen cooks** for a place, a room or a landmark, and **How it is served** for an object whose `kind` is
+`dish` and which opens no room — a dish that opens a painted room, like the hotpot house, is a kitchen and takes
+the kitchen heading. An object with no repertoire gets no section and no leftover heading.
+
+A room has no story panel of its own: its "The story" button opens the place's card, so the room's repertoire is
+that card's list and the room bar below the title stays the stands and one button.
+
+With the add-on on, an entry whose `recipe` id is a recipe that really loaded grows a small **Recipe ↗** link
+that opens the existing preview through the card's `[data-recipe]` handling. Nothing else changes, and a place
+with a repertoire never shows the add-on's fuzzy "Related recipes" rows — it has said what it cooks. Those rows
+now belong to the objects without a repertoire: the ingredients.
+
+### 6.2 Recipes are an add-on, not part of an area
 
 Recipes are a layer over a finished world, not a property of it. The switch lives in the settings panel as
 **Recipes**, with the line "Show the family recipes that match each place" under it. It is **off by default**,
@@ -275,13 +333,15 @@ Where it is gated:
 | --- | --- |
 | The fetch | `main.ts` calls `fetchRecipes()` only when the add-on is on — at boot when it was already on, otherwise at the moment it is switched on. Nothing is requested while it is off |
 | Card "Related recipes" | `ui.ts` `showObject` drops the recipes it is handed, so the heading and `.dishes` rows are absent, not empty |
+| Card repertoire links | `repertoire.ts` `repertoireRecipe` returns nothing while the add-on is off, so the list is there and the **Recipe ↗** links are not |
 | Room "FROM THIS KITCHEN" | `scene.ts` `sceneDishRowHtml` returns the empty string, so `.scene-actions` holds only the story button |
 | The recipe preview and page | Unreachable: nothing renders a `[data-recipe]` button. Switching off closes an open one |
 | The atlas | `map.ts` takes no recipe counts at all; an island's clouds and signpost follow `region.built` |
 | Live switching | `onRecipeLayerChange` in `data.ts`. `main.ts` refetches, redraws the open card and calls `livingScene.setDishes`, so the open card or room changes without a reload |
 
 The 3D world, its stands, rooms, discovery cues and stories are identical with the add-on on and off. Only the
-dish rows differ. `scripts/tests/recipe-addon.mjs` holds that line.
+dish rows differ, and the repertoire list (section 6.1) is world content that stays either way.
+`scripts/tests/recipe-addon.mjs` and `scripts/tests/repertoire.mjs` hold that line.
 
 ## 7. Rooms
 
@@ -331,17 +391,19 @@ A touch is a `SceneHotspot` with an `interaction`:
 
 Effects and their meaning:
 
-| Effect | Local response | Icon | Sound |
-| --- | --- | --- | --- |
-| `detail` | A highlight and the discovery text only | ⌕ | none |
-| `tea` | Steam from the pictured vessel | ♨ | tea |
-| `sizzle` | Sparks and heat over a pictured pan or grill | ♨ | sizzle |
-| `flour` | A puff of flour over a board | ⋯ | flour |
-| `leaves` | A few leaves move near pictured foliage | ❧ | leaves |
-| `water` | One ripple on pictured open water, only when no boat, person or post shares the box | ≈ | water |
-| `light` | A pictured lamp brightens | ☼ | none |
-| `chime` | A pictured bell rings | ♪ | chime |
-| `purr`, `woof` | A pictured cat or dog answers | ♡ | purr, woof |
+| Effect | Local response | Icon |
+| --- | --- | --- |
+| `detail` | A highlight and the discovery text only | ⌕ |
+| `tea` | Steam from the pictured vessel | ♨ |
+| `sizzle` | Sparks and heat over a pictured pan or grill | ♨ |
+| `flour` | A puff of flour over a board | ⋯ |
+| `leaves` | A few leaves move near pictured foliage | ❧ |
+| `water` | One ripple on pictured open water, only when no boat, person or post shares the box | ≈ |
+| `light` | A pictured lamp brightens | ☼ |
+| `chime` | A pictured bell rings | ♪ |
+| `purr`, `woof` | A pictured cat or dog answers | ♡ |
+
+Every response is silent. The world has no sound; the removal on 2026-09-17 took out the `room-sound` module, its harness, the bundled recording and the Sound switch.
 
 Give each room two or three touches. Each touch names something visible in both paintings. The `text` states one fact. `scene-discoveries.ts` keeps the sources for specialist facts; add yours there.
 
@@ -369,9 +431,18 @@ Kinds and what each may sit on:
 | `rain` | Beads running down | Pictured wet glass |
 | `embers` | Five rising sparks | A pictured flame |
 | `stream-glint`, `waterfall-glint` | A travelling highlight along `paths` traced inside the box, per orientation | A painted liquid stream, traced exactly. An untraced box draws nothing |
-| `breeze` | Cuts an isolated hanging detail out of the painting by colour (`isBreezePixel`, `source`) and sways it from its top edge; `sway` per orientation, `period` | One hanging chilli braid, tassel, bell or grape bunch with nothing else in the box |
+| `breeze` | Cuts an isolated hanging detail out of the painting by colour (`isBreezePixel`, `source`) and sways it from its top edge; `sway` per orientation, `period` | **Last resort.** One hanging bunch, alone in the box, on a plain low-detail background the row-fill repair can rebuild — see the rule below |
 
-Nothing else is allowed on a finished painting. If a room needs a moving object the painting does not contain, request a sprite. Inspect every breeze mask with `scripts/audit/breeze-masks.py` and look at the isolated foreground on grey; a face, wall, lantern, shelf or pole in it fails the room. The grape key matches purple hues only; a green bunch needs a different subject. A tight box needs a larger `sway` so the tip still travels 14 px; `scene-ambience.mjs` checks this.
+Nothing else is allowed on a finished painting. If a room needs a moving object the painting does not contain, request a sprite. Inspect every breeze mask with `scripts/audit/breeze-masks.py` and look at the isolated foreground on grey; a face, wall, lantern, shelf or pole in it fails the room.
+
+**When a `breeze` is allowed at all (2026-09-17).** The owner rejected these twice: in Spain on 2026-09-16 ("it's just not natural") and in China on 2026-09-17 ("the wrongly cropped chillies are also here in the Sichuan home kitchen"). A `breeze` repairs the hole it cuts by averaging wall pixels along each row and then down the column. That only works where the background is plain and low-detail. It fails, visibly and at rest, on painted foliage, on a busy shop front, on a person, and wherever the box edge crosses a different material — you get a flat rectangle sitting on the picture. Before enabling one, render it the way the room will draw it: repaired background, then the isolated foreground rotated about the top centre of the box, at rest and at both ends of the sway, with fifty pixels of context around the box. If any panel shows a patch, a seam or a colour block, the crop fails. Then choose, in this order:
+
+1. **Hang a sprite instead**, if one exists in `public/scenes/props`, and paint the painted subject out of the picture first with `scripts/scenes/paint-out-strings.py`, so the sprite has clean wall behind it as the hotpot lanterns do. A sprite over a painted twin is not enough; the owner saw the twin through the gaps.
+2. **Leave the subject still** and give the room's loop to a lamp, a fire, a canopy, a beam, birds or a stream glint the painting already shows. A still string is better than a wrong one.
+
+Spain now uses no breeze at all. In China every crop was rendered this way on 2026-09-17 and only two survived, **wide only**: `hutong` (one chilli string on flat vertical planks) and `stone_bridge` (willow leaves moving inside more willow), because their background is plain or is the same material as the subject. Eight crops came out: the `home_kitchen` and `market` chilli signatures, the `teahouse` tassel, the `tower` tassel (it took the whole paper lantern and left a seam beside it) and the `tower` bell (it smeared the carved eave), the `bing_stall` chilli (a pale block on a shop front of shelves and baskets), the `noodle_workshop` garlic (its key took the noodle maker's dark hair and the repair carved a grey patch out of her head), and the portrait halves of the two survivors — `hutong` portrait chops the door frame and speckles a cook's hair, `stone_bridge` portrait duplicates a roof ridge and a white gable. A crop that works in one orientation is not evidence for the other: render both.
+
+`room-loops.mjs` now asserts that list, so putting a China crop back means doing the render check first. `scripts/audit/breeze-masks.py` also reads the inline `ambience` in `scenes-*.ts` as of the same day; before that it only read `scene-ambience.ts` and the `*-ambience.ts` files, which is how six China crops shipped without ever being inspected by the tool the definition of done names. The grape key matches purple hues only; a green bunch needs a different subject. A tight box needs a larger `sway` so the tip still travels 14 px; `scene-ambience.mjs` checks this.
 
 Test each room with `scene-ambience.mjs` style checks: steam visible at time zero, portrait steam at its own coordinates, no steam at wide coordinates after rotation.
 
@@ -420,7 +491,6 @@ npm test
 | `village-speech.mjs` | One bubble at a time; two to seven background lines in two minutes; taps replace bubbles |
 | `scene-ambience.mjs` | Steam is visible on entry; portrait steam has its own coordinates |
 | `room-controls.mjs` | Touch reactions return true; specific plumes keep their size and place |
-| `room-sound.mjs` | Every synthesised sound is short, audible, finite and distinct |
 | `turkey-reactions.mjs`, `xinjiang-reactions.mjs` | Food moves before speech; repeats stay bounded; falling items clean up; `ownReaction` set |
 | `turkey-world.mjs` | Zoom limits; stairs are continuous flights; no coplanar overlapping faces; a 240-second route and support simulation |
 | `camel-gait.mjs` | A foot is always planted; joint reach; loop continuity |

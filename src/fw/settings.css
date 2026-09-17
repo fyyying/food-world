@@ -16,16 +16,16 @@
 #settings h2 { margin: 0; font: 600 24px var(--display); }
 #settings form { margin: 0; }
 #settings header button { width: 44px; height: 44px; margin: -8px -8px -8px 0; padding: 0; border: 0; border-radius: 50%; background: transparent; font-size: 26px; }
-.sound-setting { position: relative; display: flex; align-items: center; gap: 10px; min-height: 64px; margin-top: 14px; cursor: pointer; font-weight: 700; }
-.sound-setting > span:first-child { margin-right: auto; }
+.setting-row { position: relative; display: flex; align-items: center; gap: 10px; min-height: 64px; margin-top: 14px; cursor: pointer; font-weight: 700; }
+.setting-row > span:first-child { margin-right: auto; }
 /* A setting that needs a line of explanation under its name (the recipe add-on). */
-.sound-setting small { display: block; max-width: 210px; margin-top: 3px; color: var(--ink-2); font-size: 13px; font-weight: 400; line-height: 1.4; }
-.sound-setting input { position: absolute; right: 0; width: 44px; height: 44px; margin: 0; opacity: 0; cursor: pointer; }
+.setting-row small { display: block; max-width: 210px; margin-top: 3px; color: var(--ink-2); font-size: 13px; font-weight: 400; line-height: 1.4; }
+.setting-row input { position: absolute; right: 0; width: 44px; height: 44px; margin: 0; opacity: 0; cursor: pointer; }
 .switch-track { width: 44px; height: 26px; padding: 3px; border-radius: 99px; background: #a99b88; pointer-events: none; transition: background .15s; }
 .switch-track::after { content: ""; display: block; width: 20px; height: 20px; border-radius: 50%; background: #fffaf1; box-shadow: 0 1px 3px #0002; transition: transform .15s; }
-.sound-setting input:checked + .switch-track { background: var(--ink); }
-.sound-setting input:checked + .switch-track::after { transform: translateX(18px); }
-.sound-setting input:focus-visible + .switch-track { outline: 2px solid var(--red-ink); outline-offset: 3px; }
+.setting-row input:checked + .switch-track { background: var(--ink); }
+.setting-row input:checked + .switch-track::after { transform: translateX(18px); }
+.setting-row input:focus-visible + .switch-track { outline: 2px solid var(--red-ink); outline-offset: 3px; }
 .controls-help { border-top: 1px solid var(--line); }
 .controls-help summary { min-height: 44px; padding: 16px 0 4px; font-weight: 700; cursor: pointer; }
 .controls-help p { margin: 12px 0 0; color: var(--ink-2); font-size: 14px; line-height: 1.55; }

@@ -1,4 +1,4 @@
-"""Paint the hanging pepper strings out of the Spain room paintings, once, offline.
+"""Paint a hanging pepper string out of a room painting, once, offline. Spain only so far; see PLACEMENTS.
 
 Runs AFTER scripts/scenes/import-spain.py, on the JPGs that script writes.
 
@@ -72,6 +72,17 @@ PLACEMENTS = {
     # es_jamon portrait is deliberately absent. Its string hangs in front of a curing ham, an iron column and the
     # bright glazed roof, three different things at once; every inpaint smears them together (the attempt is in the
     # 2026-09-16 sprite section of docs/spain-rooms.md), so that room keeps its painted string, still, and no sprite.
+    #
+    # China has no placement here either, and that was measured rather than assumed on 2026-09-17, when the owner
+    # found the same cropped chillies in the Sichuan home kitchen. All four candidates were rejected:
+    #   home_kitchen wide     a curtain of many strings, cut by the top frame edge, overlapping garlic braids
+    #   home_kitchen portrait one clean string, but over a shelf of jars, a bamboo sieve, plank lines and the stove
+    #                         smoke; the trial inpaint wiped all of that into a vertical golden smear
+    #   market wide           the string runs off the right frame edge with a garlic braid against it
+    #   market portrait       a wall of strings and garlic, and its left half is outside the band a phone shows
+    # The colour keys cannot isolate these strings either: both paintings are lit warm red-orange, so even the tight
+    # `ristra` rule takes about a fifth of the wooden wall beside the string. Those rooms keep their painted strings,
+    # still, and move a pictured lamp, a wood fire or their own canopy instead. See docs/building-a-world.md.
 }
 
 

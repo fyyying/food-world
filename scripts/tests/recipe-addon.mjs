@@ -29,6 +29,7 @@ try {
     `export { sceneDishRowHtml } from '${src('src/fw/scene.ts')}';`,
     `export { isRecipeLayerEnabled, setRecipeLayerEnabled } from '${src('src/data.ts')}';`,
     `export { enrich, objectsOf, isChinaRecipe } from '${src('src/fw/graph.ts')}';`,
+    `export { repertoireOf } from '${src('src/fw/repertoire.ts')}';`,
   ].join('\n'));
 
   // the card is written into one element: a stub is enough to read the markup mountUi produces
@@ -44,7 +45,7 @@ try {
 
   const output = join(temporary, 'recipe-addon.mjs');
   await build({ input: entry, platform: 'node', output: { file: output, format: 'esm', banner: 'import.meta.env = { BASE_URL: "/", VITE_STATIC: "1" };' } });
-  const { mountUi, sceneDishRowHtml, isRecipeLayerEnabled, setRecipeLayerEnabled, enrich, objectsOf, isChinaRecipe } = await import(pathToFileURL(output));
+  const { mountUi, sceneDishRowHtml, isRecipeLayerEnabled, setRecipeLayerEnabled, enrich, objectsOf, isChinaRecipe, repertoireOf } = await import(pathToFileURL(output));
 
   // 1. off by default, and off is what a missing localStorage gives
   assert.equal(isRecipeLayerEnabled(), false, 'the recipe add-on is off until it is switched on');
@@ -54,8 +55,10 @@ try {
   const chinaRecipes = raw.filter(isChinaRecipe).map(enrich);
   const chinaObjects = objectsOf('china');
   const painted = ['hotpot', 'noodle', 'wok', 'chilli', 'tofu', 'mushroom', 'dumpling', 'teahouse', 'rice', 'veg'];
-  const subject = chinaObjects.find((o) => painted.includes(o.id) && chinaRecipes.some((r) => o.match(r)));
-  assert.ok(subject, 'the fixture needs a China object that really matches recipes');
+  // A place that declares its own repertoire says what it cooks instead of guessing, so the fuzzy rows this
+  // harness is about belong to the objects without one: the ingredients. See repertoire.mjs for the other half.
+  const subject = chinaObjects.find((o) => painted.includes(o.id) && !repertoireOf(o.id).length && chinaRecipes.some((r) => o.match(r)));
+  assert.ok(subject, 'the fixture needs a China object with no repertoire that really matches recipes');
   const matching = chinaRecipes.filter((r) => subject.match(r));
   assert.ok(matching.length >= 1, `${subject.id} matches at least one recipe`);
 

@@ -946,6 +946,9 @@ Dalmatia are live beside it at the card-only level, which the owner accepted whe
 All twenty-six of Spain's clickable objects are clear of every house, tree and neighbouring stand from the
 arrival camera, and the four Albufera stands no longer share ground. What is open:
 
+- **Repertoire pictures: none yet.** Later, one image brief per world for small square dish illustrations, hero
+  dishes first, delivered like the card art and imported by the area's import script; until then the list is
+  text.
 - **The Moroccan souk's footprint on Spanish ground.** It runs to x -24, six units west of the line Spain owns
   to, and takes one of the paddies' ten rays. It was taken up as a hand-off on 2026-09-17 and **does not close
   by moving the souk**: the fifth pass above has the measurements. Morocco's three stands want 32.6 units in a

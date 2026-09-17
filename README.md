@@ -3,7 +3,9 @@
 An explorable miniature world of every recipe in the Notion **Recipes** database. Level 1 is a paper atlas of
 cuisine regions; each region is a handcrafted diorama on a wooden plinth, and the world itself is the interface:
 a cow is where the beef dishes live, the smokehouse is where the ribs are, the ramen shop is where the ramen is.
-Every object has a card with grounded, dated food history. Recipes are an optional add-on, off by default and
+Every object has a card with grounded, dated food history, and every kitchen names what it cooks: a place is not
+one dish, so each room, stand and dish carries its repertoire — the hero first, then the rest of that kitchen's
+list, with local names. Recipes are an optional add-on, off by default and
 switched on under **Recipes** in the settings panel: with it on, cards and rooms end in the dishes that match the
 place and every dish opens the full recipe from Notion; with it off nothing is fetched and the world is exactly
 the same picture, which is how an area is built and reviewed.
@@ -50,6 +52,8 @@ builds a static bundle; `.github/workflows/pages.yml` publishes it on every push
 - `src/fw/worldkit.ts` — the engine: the slab, water materials (sea, fresh water, estuaries), interactive objects,
   dish plates, steam and smoke, hover and click reactions.
 - `src/fw/world-*.ts` — one layout per world; `src/fw/props*.ts` — the procedural clay-and-wood miniatures for each.
+- `src/fw/repertoire.ts` — what each kitchen cooks, merged from the per-world `*-repertoire.ts` tables and drawn
+  on the card as "What this kitchen cooks".
 - `src/fw/map.ts` — the atlas; `src/fw/ui.ts` — the cards; `src/fw/audit.ts` — a dev-only movement audit
   (`__fw.audit()` in the console) that reports anything walking into water, walls or each other.
 - `src/fw/scene.ts` — Living Scenes: 3D world → walk up to a place → paper fade → a living painted room
@@ -148,7 +152,7 @@ nutrition table; the section parser in `server/index.mjs` treats lists under a N
 | Look around | drag pans, wheel zooms, right-drag peeks |
 | Open something | click any object, stall, animal or building |
 | Leave | `Esc` closes a card, then leaves the world |
-| Sound and help | open Settings at the top right; sound is remembered on this device |
+| Settings and help | open Settings at the top right for the Recipes add-on and "How to explore" |
 
 ## House rules for a world
 

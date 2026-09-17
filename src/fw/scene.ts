@@ -9,7 +9,6 @@
 
 import { animateRoomTouch, type RoomInteraction } from "./scene-props";
 import { paintingFrame } from "./scene-ambience";
-import { playRoomSound, preloadCatSound } from "./room-sound";
 import { imageUrl, isRecipeLayerEnabled } from "../data";
 import { type EnrichedRecipe } from "./graph";
 import { escapeHtml as esc } from "./plates";
@@ -56,7 +55,11 @@ export type SceneOpts = {
   /** heading over the dish thumbnails */
   label?: string;
   onDish: (r: EnrichedRecipe) => void;
-  /** opens the place's story card (history, flavours, dishes) */
+  /**
+   * Opens the room's story panel — the place's own card (history, flavours, what this kitchen cooks). A room has
+   * no second panel of its own, so the repertoire list lives on that card and the room bar below stays a title,
+   * the stands and one button. See `repertoire.ts`.
+   */
   onStory: () => void;
   /** the stands inside a place (a market's stalls): each opens its own card */
   stalls?: { label: string; onClick: () => void }[];
@@ -88,8 +91,6 @@ export function sceneDishRowHtml(dishes: EnrichedRecipe[], label?: string): stri
 export const flickerNoise = (t: number, seed = 0) => 0.5 + (Math.sin(t * 7.3 + seed) * 0.45 + Math.sin(t * 13.1 + seed * 2.1) * 0.3 + Math.sin(t * 2.7 + seed * 0.7) * 0.25) * 0.5;
 
 export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
-  const hasCatSound = Boolean(def.hotspots?.some(h => h.interaction?.effect === 'purr'));
-  if (hasCatSound) void preloadCatSound().catch(() => {});
   const anchoredRoom = Boolean(def.hotspots?.some(h => h.interaction));
   const el = document.createElement("section");
   el.id = "scene";
@@ -119,7 +120,6 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
         ${opts.stalls?.length ? `<div class="scene-stalls"><span class="lbl">${esc(opts.stallsLabel ?? "The stands")}</span>${opts.stalls.map((st, i) => `<button class="stall" type="button" data-i="${i}">${esc(st.label)}</button>`).join("")}</div>` : ""}
         ${def.hotspots?.length ? `<p class="scene-discovery" role="status" aria-live="polite"></p>` : ""}
         <div class="scene-actions">
-          ${hasCatSound ? `<a class="scene-sound-credit" href="${import.meta.env.BASE_URL}audio/CREDITS.txt" target="_blank" rel="noopener">Purr recording credit</a>` : ''}
           <button class="story" type="button">📖 The story</button>
           ${sceneDishRowHtml(opts.dishes, opts.label)}
         </div>
@@ -250,10 +250,6 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
     }
     const pressed = def.react?.(spot.id);
     if (spot.activeLabel) {
-      if (spot.id === 'pot') {
-        propCleanups.get(button)?.();
-        if (pressed) propCleanups.set(button, playRoomSound('broth'));
-      }
       if (feedback) feedback.hidden = true;
       activeHotspot?.setAttribute("aria-expanded", "false");
       activeHotspot = null;

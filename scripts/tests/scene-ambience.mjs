@@ -73,7 +73,7 @@ try {
   assert.equal(PAINTED_SIGNATURES.tr_fish.kind,'light','the fish room must keep motion on its pictured grill, away from boats and people');
   assert.equal(PAINTED_SIGNATURES.tr_baklava.kind,'sunray','baklava needs a clearly readable doorway sun ray above its quieter flour effect');
   const chinaNaturalSignatures={
-    noodle_shop:'sunray',teahouse:'breeze',market:'breeze',home_kitchen:'breeze',tower:'birds',
+    noodle_shop:'sunray',teahouse:'leaves',market:'light',home_kitchen:'light',tower:'birds',
     bao_shop:'dust',stone_bridge:'mist',crab_pond:'leaves',jiangnan_home:'birds',lotus_garden:'sunray',
     rice_wine:'sunray',river_market:'sunray',riverside_restaurant:'birds',tea_hill:'birds',
     skewer_courtyard:'leaves',mantou_kitchen:'dust',dumpling_house:'dust',winter_table:'snow',
@@ -88,24 +88,32 @@ try {
     'winter table wide snow must stay outside in the upper doorway, away from the family and table');
   assert.ok(PAINTED_SIGNATURES.winter_table.phone[0]>=.62&&PAINTED_SIGNATURES.winter_table.phone[1]>=.12&&PAINTED_SIGNATURES.winter_table.phone[3]<=.30,
     'winter table phone snow must stay outside within the doorway');
+  // The Sichuan market and home kitchen used to sway a `breeze` crop of their painted chilli strings. The owner saw
+  // the cut edge on 2026-09-17 ("the wrongly cropped chillies are also here in the Sichuan home kitchen") and the
+  // crops came out: neither painting holds one isolated string on a plain wall (the kitchen's chillies hang in a
+  // curtain cut by the top frame and tangled with garlic; the market's run off the right frame edge, and its
+  // portrait strings are a wall of them, partly outside the band a phone shows). Both rooms now move a lit lamp the
+  // painting already draws, and their strings stay still.
   for(const id of ['market','home_kitchen']) {
-    const breeze=PAINTED_SIGNATURES[id];
-    assert.equal(breeze.source,'chilli',`${id} must isolate pictured chilli rather than draw hanging lines`);
+    const signature=PAINTED_SIGNATURES[id];
+    assert.equal(signature.kind,'light',`${id} must light a pictured lamp rather than crop its painted chillies`);
+    assert.ok(!signature.source,`${id} must not isolate a painted subject by colour`);
+    for(const rect of [signature.wide,signature.phone])
+      assert.ok(rect[2]-rect[0]<=.15&&rect[3]-rect[1]<=.20,`${id} lamp box must stay on the lamp, not wash the room`);
   }
-  assert.ok(PAINTED_SIGNATURES.market.wide[0]>=.95&&PAINTED_SIGNATURES.market.wide[1]<=.03&&PAINTED_SIGNATURES.market.wide[2]<=1,
-    'Sichuan market wide must include the far-right chilli tie point while excluding the vendor and canopy');
-  assert.ok(PAINTED_SIGNATURES.market.phone[2]<=.15&&PAINTED_SIGNATURES.market.phone[3]<=.33,
-    'Sichuan market phone must keep its left-edge chilli crop above the vendor');
-  assert.ok(PAINTED_SIGNATURES.home_kitchen.wide[0]<=.03&&PAINTED_SIGNATURES.home_kitchen.wide[2]<=.10,
-    'home kitchen wide must isolate the left chilli braid, away from the garlic and shelves');
-  assert.ok(PAINTED_SIGNATURES.home_kitchen.phone[0]>=.10&&PAINTED_SIGNATURES.home_kitchen.phone[2]<=.22,
-    'home kitchen phone must isolate the actual chilli braid rather than the left shelf');
+  assert.ok(PAINTED_SIGNATURES.home_kitchen.color==='#f3a34b',
+    'the home kitchen lights its open wood fire, so its glow is flame-coloured');
   assert.ok(PAINTED_SIGNATURES.courtyard_kitchen.wide[0]>=.61&&PAINTED_SIGNATURES.courtyard_kitchen.phone[0]>=.60,
     'courtyard kitchen snow must stay in the right-side exterior opening in both compositions');
   assert.equal(PAINTED_SIGNATURES.noodle_workshop.leaf,'yellow',
     'noodle workshop uses small outdoor autumn leaves instead of dough dust');
-  assert.equal(PAINTED_SIGNATURES.teahouse.source,'red-tassel',
-    'teahouse must sway a small painted red tassel rather than replace it with generic light');
+  // The teahouse tassel crop came out with the China chilli crops on 2026-09-17. It failed worse than they did: the
+  // tassel hangs against painted willow foliage, and the row-fill repair replaces that with a flat wash, so a pale
+  // rectangle showed around the tassel even at rest. The painted tassel stays still and the canopy moves instead.
+  assert.equal(PAINTED_SIGNATURES.teahouse.leaf,'yellow',
+    'the teahouse drops leaves through its own painted canopy rather than cutting the tassel out of it');
+  assert.ok(PAINTED_SIGNATURES.teahouse.wide[3]<=.42&&PAINTED_SIGNATURES.teahouse.phone[3]<=.40,
+    'teahouse leaves must stop above the drinkers');
   const xinjiangSignatures={
     kebab_grill:'light',naan_bakery:'sunray',polo_kitchen:'light',laghman_shop:'dust',oasis_bazaar:'sunray',
     grape_courtyard:'sunray',oasis_field:'sunray',chaikhana:'sunray',xj_home:'dust',

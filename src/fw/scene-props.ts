@@ -1,5 +1,4 @@
 import type { SceneHotspot } from './scene';
-import { playRoomSound } from './room-sound';
 
 export type RoomEffect = 'detail' | 'water' | 'leaves' | 'flour' | 'tea' | 'sizzle' | 'light' | 'chime' | 'purr' | 'woof';
 type Point = [number, number];
@@ -267,10 +266,8 @@ export function animateRoomTouch(host: HTMLElement, interaction: RoomInteraction
     }
     animations.push(node.animate(reduced ? [{opacity: 0}, {opacity: .5}, {opacity: 0}] : frames, {duration: reduced ? 350 : duration, delay: reduced ? 0 : delay, fill:'both', easing}));
   }
-  const stopSound = effect === 'detail' || effect === 'light' ? () => {} : playRoomSound(effect);
   let done = false;
   const clearVisuals = () => { if (done) return; done = true; animations.forEach(a => a.cancel()); nodes.forEach(n => n.remove()); trigger?.classList.remove('room-responding'); };
-  // Reduced motion shortens the visual only, not the audible response.
   Promise.all(animations.map(a => a.finished)).then(clearVisuals, () => {});
-  return () => { clearVisuals(); stopSound(); };
+  return clearVisuals;
 }

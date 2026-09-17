@@ -28,7 +28,7 @@ Seven roles. One agent can hold two roles when the area is small. Two agents nev
 | Role | Owns | Produces |
 | --- | --- | --- |
 | Lead | `world-<world>.ts`, `graph.ts` registrations, `main.ts`, `ui.ts` hooks, `README.md`, `docs/<id>-world.md` | The plan, the layout blueprint, the registration, the final review and the publish |
-| Researcher | `<id>-objects.ts`, `<id>-stories.ts`, `scene-discoveries.ts` entries, `world-intros.ts` entry | The area brief, object list with blurbs, story depth with sources, discovery texts, ambient speech lines |
+| Researcher | `<id>-objects.ts`, `<id>-stories.ts`, `<id>-repertoire.ts`, `scene-discoveries.ts` entries, `world-intros.ts` entry | The area brief, object list with blurbs, the repertoire of every place, story depth with sources, discovery texts, ambient speech lines |
 | Builder | `<id>-landscape.ts`, `<id>-architecture.ts`, `<id>-town.ts`, `<id>-people.ts`, `<id>-countryside.ts` | Terrain, water, roads, houses, residents, walkers, countryside |
 | Stand maker | `props-<id>.ts`, `scripts/tests/<id>-reactions.mjs` | One stand per object with the China click chain, ambient chat, details |
 | Room maker | `scenes-<id>.ts`, `<id>-ambience.ts`, `scene-props.ts` entries, `scripts/scenes/import-<id>.py`, `public/scenes/**` | Imported paintings, room configs, touches, ambience, card art |
@@ -44,6 +44,7 @@ Agree these before parallel work starts. The lead writes them into `docs/<id>-wo
 | Contract | Content | Written by |
 | --- | --- | --- |
 | Object list | `id`, `name`, `kind`, `area`, `pos`, `prop`, `scene`, one-line purpose | Researcher proposes, lead fixes positions |
+| Repertoire | Per room and per place-or-dish object: the hero dish first, then what that kitchen cooks, each with its local name and one line | Researcher |
 | Recipe matching | Not a contract for the area. Recipes are an optional add-on, built and agreed separately after the area ships | Nobody, during the area |
 | Layout blueprint | Table size, area centres, clusters, road list with endpoints, water curves, landmark positions, walker loops | Lead |
 | Palette | Named colours for walls, roofs, trim, paving, ground tints, water | Builder |
@@ -77,9 +78,10 @@ Check: Type check and all harnesses pass, the baseline numbers hold, and the lea
 
 1. Research the area: landscape, architecture, food culture, ingredients, everyday activities, clothing, period. Keep the sources
 2. Write the area brief and the object list. Ten to fifteen objects with rooms, five to ten ingredient stops, three to six landmarks
-3. Write the image brief from `docs/examples/spain-scene-generation-prompt.md` and the art direction. When pictures do not exist yet, hand the owner the final brief with the exact file names and the folder to drop them in, then stop and wait. Do not start Stage B on guessed pictures
+3. With the object list, deliver the **repertoire**: for every room and every place-or-dish object, what that kitchen cooks — the hero dish first, then the dishes the place is really known for, each with its local name and one line of 12 to 25 words. It goes into `src/fw/<id>-repertoire.ts` as `<ID>_REPERTOIRE`, keyed by object id. A place is not one dish, and a single-dish place gets a list of one; a landmark with no kitchen gets none (handbook section 6.1)
+4. Write the image brief from `docs/examples/spain-scene-generation-prompt.md` and the art direction. When pictures do not exist yet, hand the owner the final brief with the exact file names and the folder to drop them in, then stop and wait. Do not start Stage B on guessed pictures
 
-Check: The object list has unique ids, every object has a `kind`, an `area` and a purpose, and every historical claim has a source. A card-only object's blurb is accepted at the same length as its neighbours': it sits in the file's own length band, which is three paragraphs — identity, record, and a route out — with sources. The Turkish market's sumac card shipped at two sentences in a file whose other stall cards run to three paragraphs, and the owner found it by opening it. A thin card goes back at this check, not at the walkthrough.
+Check: The object list has unique ids, every object has a `kind`, an `area` and a purpose, and every historical claim has a source. **Every kitchen room and every place-or-dish object has a repertoire** — a landmark room with no kitchen is the only exception — hero first, each line 12 to 25 words, each key a real object id, each `recipe` id exact (`node scripts/tests/repertoire.mjs`). A place left with no list goes back at this check, not at the walkthrough. A card-only object's blurb is accepted at the same length as its neighbours': it sits in the file's own length band, which is three paragraphs — identity, record, and a route out — with sources. The Turkish market's sumac card shipped at two sentences in a file whose other stall cards run to three paragraphs, and the owner found it by opening it. A thin card goes back at this check, not at the walkthrough.
 
 ### Stage B: Blueprint and assets (Lead, Room maker)
 
@@ -209,6 +211,7 @@ Rooms:
 Cards and stories:
 
 - Every object has a tagline and a three-to-five-paragraph blurb with dated eras and local-script names
+- **Every kitchen room and every place-or-dish object shows its repertoire on its card**, hero dish first, under "What this kitchen cooks" ("How it is served" for a single dish). A place is not one dish; a single-dish place carries a list of one, and no place is left silent. A room's list is the card its "The story" button opens. A landmark room with no kitchen — a bridge, a mountain — carries none
 - A card-only object's blurb sits in its file's own length band, beside the blurbs of the objects around it: three paragraphs of identity, record and a route out, with sources. A card that is a fraction of its neighbours' length fails, because the owner opens cards
 - Every room object has story depth with sources and two `NEXT` links
 - The world intro passes `world-intros.mjs`
@@ -267,7 +270,7 @@ Which tier each step belongs to, and why:
 | Stands with the China click chain, details that sway, ingredient stops | Stand maker | Agents | The stand is where China was corrected most: people in walls, shaking chefs, floating boards, seats |
 | Room configs: coordinates, touches, steam, fire, sprites hung over cleaned paintings | Room maker | Agents, with image input | Measuring points on the actual paintings and writing data |
 | Ambience patches and signature motion | Room maker, approved by lead | Agents, with image input | A patch that moves a face or a wall passed pixel tests before; only careful visual inspection catches it |
-| Blurbs, story depth, discoveries, speech lines, world intro | Researcher | Agents, with web search | Sourced, dated prose to the China blurb standard |
+| Blurbs, story depth, discoveries, speech lines, world intro, the repertoire of every place | Researcher | Agents, with web search | Sourced, dated prose to the China blurb standard; the repertoire is what the place really cooks, not a guess |
 | Recipe matching for a shipped area (the `match` predicates and the `ENRICH` rows behind the Recipes add-on) | Researcher | Agents | A separate task after the area ships, never part of its definition of done. The add-on is off while the area is built and reviewed |
 | Repairs from the review and the owner walkthrough | Fix agent | Agents | A one-line fix is still a code change in someone's file, and the lead does not make it |
 | Import scripts, cutter runs, paint-out runs, registration checklist, `docs/<id>-world.md` draft | Any role | Agents for the draft, Mechanical for the script runs | Drafting is writing; running a script with named arguments is not |

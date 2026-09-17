@@ -294,6 +294,14 @@ Use concrete details and sources. Explain the connection between facts instead o
 
 A card-only object's blurb sits in **its file's own length band**, beside the blurbs of the objects around it: three paragraphs — what the thing is, the record with its dates and sources, and a route on to a related place — and roughly the length its neighbours run to. The Turkish market's sumac card was two sentences and 152 characters in a file whose other stall cards run 646 to 782 characters in three paragraphs, and the owner found it by opening it. Check the band when the object list is accepted, not at the walkthrough: measure the file's existing blurbs, write the band down, and send a thin card back then.
 
+**A place is not one dish.** A kitchen cooks a list, and a card that names one dish tells the visitor less than
+the place does. Every room and every place-or-dish object carries its **repertoire**: the hero dish first, then
+the dishes that kitchen is really known for, each with its local name and one line of 12 to 25 words saying what
+it is and why it belongs here. A noodle shop that only says "noodles" and a tapas counter that only says "tapas"
+are both thin cards. A single-dish place — one cart, one dish — gets a list of one, written down, rather than
+silence. A landmark with no kitchen, a bridge or a mountain, carries none. The repertoire is world content and shows with the recipe add-on off; the add-on only adds a link on the
+entries that name a recipe. The shape and where it renders are in the handbook, section 6.1.
+
 As more worlds become available, connect relevant stories across them through ingredients, dishes, techniques, or documented historical routes. Make the relationship clear and let visitors follow it into another world. This direction is tracked as topic 11 in the [product roadmap](product-roadmap.md).
 
 **Handoff:** Living rooms with restrained motion, accurate interaction positions, short discoveries, substantive sourced story cards, and a return path to the visitor's previous place.

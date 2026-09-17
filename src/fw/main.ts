@@ -20,6 +20,7 @@ import { buildJapan } from "./world-japan";
 import { buildCeurope } from "./world-ceurope";
 import { auditDiorama } from "./audit";
 import { openLivingScene, type LivingScene } from "./scene";
+import { setRepertoireRecipes } from "./repertoire";
 import { SCENES as CHINA_SCENES } from "./scenes-china";
 import { TURKEY_SCENES } from "./scenes-turkey";
 import { SPAIN_SCENES } from "./scenes-spain";
@@ -173,6 +174,8 @@ async function loadRecipes() {
   if (recipesLoaded) return;
   const { recipes } = await fetchRecipes();
   allRecipes = recipes.map(enrich);
+  // a repertoire entry names its recipe by id: once they are loaded, those entries can carry a link
+  setRepertoireRecipes(allRecipes);
   recipesLoaded = true;
 }
 /** The current world's recipes, or nothing at all while the add-on is off. */

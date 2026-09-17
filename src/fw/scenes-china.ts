@@ -108,6 +108,10 @@ const market = (): SceneDef => {
     ],
     steam: [{ x: 1550, y: 450, w: 60, rate: 6, a: 0.3 }],
     ambience: [
+      // Leaves first: they took the slot the distant haze had when the chilli crop came out on 2026-09-17, and they
+      // put the motion back that the swaying crop used to carry. Both boxes sit inside the painted canopy over the
+      // lane and stop above the shoppers' heads.
+      { kind: 'leaves', wide: [.38,.02,.62,.28], phone: [.42,.12,.64,.30], count: 8, size: 1.5 },
       { kind: 'sunray', wide: [.43,0,.78,.72], phone: [.32,0,.72,.72], angles: [-.42,.36] },
       { kind: 'mist', wide: [.53,.05,.82,.32], phone: [.40,.10,.78,.28] },
     ],
@@ -136,7 +140,9 @@ const homeKitchen = (): SceneDef => {
     ],
     steam: [{ x: 191, y: 440, w: 110, rate: 16, a: 0.4 }],
     ambience: [
-      { kind: 'breeze', wide: [.09,0,.145,.31], phone: [.21,.09,.32,.34], source: 'garlic', period: 7.4, sway: [.035,.040] },
+      // The garlic braid went the way of the chilli curtain on 2026-09-17: its crop was the same colour cut-out,
+      // and the braid hangs in the same crowded corner. The pictured paper lantern takes the slot.
+      { kind: 'light', wide: [.228,0,.298,.088], phone: [.338,.034,.462,.103] },   // the lit paper lantern over the counter, measured on its glass in each composition
       { kind: 'mist', wide: [.58,.16,.76,.33], phone: [.68,.14,.86,.31] },
     ],
     lamps: [{ x: 450, y: 40, r: 90 }],
@@ -165,9 +171,14 @@ const tower = (): SceneDef => {
     ],
     lamps: [{ x: 235, y: 150, r: 90 }],
     leaves: 2.5, motes: 30,
+    // Both crops came out on 2026-09-17. The tassel crop took the whole paper lantern and left a seam beside it;
+    // the bell crop smeared the eave carving and the sunset cloud behind it. Neither subject can be painted out
+    // either: the lantern sits against posts and ginkgo, the bell against a carved eave. Both hang still now, and
+    // the room lights the lantern it already shows and moves the haze the river valley already carries.
     ambience: [
-      { kind: 'breeze', wide: [.095,.035,.17,.36], phone: [0,.11,.13,.34], source: 'red-tassel', period: 7.8, sway: [.035,.040] },
-      { kind: 'breeze', wide: [.485,.04,.535,.19], phone: [.355,.09,.48,.28], source: 'bell', period: 8.2, sway: [.030,.035] },
+      { kind: 'light', wide: [.103,.055,.163,.235], phone: [.185,.175,.258,.285] },   // the lit red lantern on the balcony post, measured on its paper in each composition
+      { kind: 'leaves', wide: [.265,.135,.445,.335], phone: [.14,.22,.34,.44], count: 8, size: 1.5 },   // the leafy branch over the balustrade, and the creeper beside the lanterns in the portrait
+      { kind: 'mist', wide: [.42,.30,.94,.42], phone: [.45,.32,.92,.44], alpha: .55 },   // the haze the painting already lays between the mountains and the lit town, at the strength the baseline asks for where the painting is already hazy
     ],
     portrait: {
       lamps: [{ ...pAt(f, 0.07, 0.2), r: 70 }, { ...pAt(f, 0.22, 0.25), r: 50 }, { ...pAt(f, 0.35, 0.4), r: 22 }],
@@ -203,7 +214,12 @@ const stoneBridge = (): SceneDef => { const f = "stone_bridge"; return paintedSc
   id: "stone_bridge", folder: f, title: "The stone bridge", zh: "石拱桥", caption: "Willows over the canal, boats under the arch, the whole water town visible at once.",
   painting: true,
   steam: [{ x: wx(.33), y: wy(.84), w: 90, rate: 12, a: .28 }],
-  ambience: [{ kind: 'breeze', wide: [.39,0,.435,.18], phone: [.31,.08,.47,.22], source: 'leaves', period: 8.2, sway: [.025,.030] }],
+  // Wide only since 2026-09-17: the willow crop works in the wide painting, where the branch hangs inside more of
+  // the same willow, but the portrait box straddles a roof ridge and a white gable and the repair duplicates them.
+  ambience: [
+    { kind: 'breeze', wide: [.39,0,.435,.18], source: 'leaves', period: 8.2, sway: [.025,.030] },
+    { kind: 'leaves', phone: [.26,.06,.60,.28], leaf: 'olive', color: '#8fae52', count: 6, size: 1.3 },   // portrait only, in place of the crop: willow leaves falling inside the painted willow
+  ],
   walkers: [{ name: "swallow", w: 54, y: 150, from: 560, to: 1150, dur: 9, every: 30, fly: true }],
   petals: { color: "rgba(180,215,120,0.9)", rate: 0.5, size: 5 },
   motes: 25,
@@ -540,7 +556,13 @@ const hutongLaneScene = (): SceneDef => { const f = "hutong"; return paintedScen
   id: "hutong", folder: f, title: "The hutong", zh: "胡同", caption: "Grey walls, a red door, laundry across the lane, a bao stall steaming on the corner and the ginkgo leaves coming down.",
   painting: true,
   steam: [{ x: wx(0.15), y: wy(0.45), w: 90, rate: 6, a: 0.26 }],
-  ambience: [{ kind: 'breeze', wide: [.065,0,.12,.31], phone: [.16,.11,.27,.35], source: 'chilli', period: 7.6, sway: [.040,.045] }],
+  // Wide only since 2026-09-17: the wide crop is one string on flat vertical planks and reads. The portrait box
+  // takes the corn cobs with the chillies and its repair chops the door frame and speckles the cook's hair, so the
+  // portrait strings hang still and the backlit lane carries that orientation instead.
+  ambience: [
+    { kind: 'breeze', wide: [.065,0,.12,.31], source: 'chilli', period: 7.6, sway: [.040,.045] },
+    { kind: 'sunray', phone: [.38,.12,.98,.60], angles: [-.45,-.45], sway: [.10,.10] },   // the sun down the lane, the direction the portrait already paints
+  ],
   petals: { color: "rgba(232,184,72,0.95)", rate: 1.6, size: 6 },
   motes: 30,
   portrait: { steam: [{ ...pAt(f, 0.2, 0.42), w: 70, rate: 5, a: 0.24 }] },
@@ -552,8 +574,10 @@ const bingStall = (): SceneDef => { const f = "bing_stall"; return paintedScene(
   painting: true,
   steam: [{ x: wx(.55), y: wy(.43), w: 150, rate: 14, a: .32 }],
   ambience: [
-    { kind: 'breeze', wide: [.09,0,.16,.20], phone: [.37,.10,.44,.29], source: 'chilli', period: 7.4, sway: [.040,.045] },
-    { kind: 'leaves', wide: [.55,0,.98,.25], phone: [.45,0,.98,.23], leaf: 'yellow', color: '#d7a632' },
+    // The chilli crop came out on 2026-09-17: it hangs against a shop front of shelves, baskets and a window, and
+    // the repair left a pale block there. The strings hang still; the fire under the griddle takes the slot.
+    { kind: 'light', wide: [.405,.495,.495,.595], phone: [.555,.462,.675,.552], color: '#f3a34b' },   // the flames under the iron griddle
+    { kind: 'leaves', wide: [.55,0,.98,.25], phone: [.45,0,.98,.23], leaf: 'yellow', color: '#d7a632', count: 8, size: 1.5 },   // fuller since 2026-09-17, to carry the room after its chilli crop came out
   ],
   motes: 40,
   portrait: { steam: [{ ...pAt(f,.57,.38), w: 140, rate: 12, a: .32 }] },
@@ -578,7 +602,9 @@ const noodleWorkshop = (): SceneDef => { const f = "noodle_workshop"; return pai
   id: "noodle_workshop", folder: f, title: "The noodle workshop", zh: "面坊", caption: "Dough stretched into ropes, shaved off the block into the pot, rolled and cut wide: the north's wheat in every shape.",
   painting: true,
   steam: [{ x: wx(.36), y: wy(.43), w: 280, rate: 14, a: .28 }],
-  ambience: [{ kind: 'breeze', wide: [.545,.07,.59,.25], phone: [.03,.08,.15,.28], source: 'garlic', period: 7.6, sway: [.035,.040] }],
+  // The garlic crop came out on 2026-09-17. Its key took the noodle maker's dark hair as well as the braid, and the
+  // repair carved a grey patch out of her head. The braids hang still; the floured work board takes the slot.
+  ambience: [{ kind: 'dust', wide: [.16,.585,.42,.675], phone: [.44,.455,.76,.545] }],   // flour on the board the dough is worked on
   motes: 40,
   portrait: { steam: [{ ...pAt(f,.18,.55), w: 250, rate: 14, a: .28 }] },
   light: { x: wx(0.4), y: 280, color: "rgba(255,240,215,0.22)" },

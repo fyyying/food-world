@@ -74,7 +74,7 @@ type Room = {
 const rooms: Room[] = [
   {
     id: "paellaEs", kind: "dish", name: "The rice fire", placeName: "The rice fire", zh: "Arròs a la valenciana", emoji: "🥘",
-    pos: [-28, 13], rot: 0.2, prop: "paellaFire", scene: "es_paella",
+    pos: [-23, 20], rot: 0.2, prop: "paellaFire", scene: "es_paella",
     tagline: "A wide pan, a wood fire, and rice spread one grain deep.",
     blurb: "Arròs a la valenciana is cooked in the open air beside the water that grows it, on the edge of the Albufera, the shallow lagoon south of València. The oldest firm dates here are recent ones, because this is a country dish that was eaten long before anybody wrote it down: an Order of 27 June 2001 gave the rice a protected name, and a Decree of 29 October 2021 declared the dish itself an intangible Bien de Interés Cultural under the title \"el arte de unir y compartir\".\n\nThe pan is wide and shallow so the rice can lie one grain deep and lose its water evenly. The fire is sarments, vine prunings, which burn hot and die quickly. Into the oil go chicken and rabbit, then flat green beans of the ferraura and rotget kinds and the big white garrofó, then grated tomato and sweet pimentó, then water, safrà and salt. The rice goes in last, short and round, one of Bomba, Sénia, Bahía or Albufera, and from that moment nobody stirs it. When the water is gone the grains at the bottom catch on the metal and become the socarrat, the toasted crust that the pan is scraped for.\n\nIt is a midday dish and a Sunday dish. The pan comes off the fire, rests under a cloth, and is eaten straight out of it with wooden spoons, each person working their own wedge from the rim inwards. In València the argument about what belongs in it is a local sport, and the versions of the same pan run through arròs a banda, arròs negre with squid ink, and fideuà, where short noodles take the place of the rice.\n\nLegend puts the name in the phrase \"para ella\", for her, but there is no document behind it. The dictionary is plainer: the Real Academia Española takes paella from the Valencian paella, from the Old French paele, a frying pan, and that from the Latin patella. The dish is named after the vessel, as most dishes are.",
     partners: ["rice", "saffron", "flat beans", "rabbit", "olive oil"],
@@ -203,7 +203,7 @@ SPAIN_OBJECTS.push(
   },
   {
     id: "oranges", world: "mediterranean", kind: "ingredient", name: "Oranges & almonds", zh: "Naranjas y almendras", emoji: "🍊",
-    area: "spain", pos: [-34, 11], rot: 0.3, elevation: 0, prop: "orangeGrove",
+    area: "spain", pos: [-32.5, 12], rot: 0.3, elevation: 0, prop: "orangeGrove",
     tagline: "Seville's bitter oranges and the almond blossom of February.",
     blurb: "Bitter oranges were planted along Seville's streets in the 900s for their scent and their shade, and they are still the city's street tree; the English turned that fruit into marmalade. The sweet orange came later, from China by way of Portugal in the 1500s, and it is the one the Valencian coast now grows in sheets behind the huerta.\n\nAlmonds arrived earlier still, from the eastern Mediterranean, and they flower pink and white across the dry south in February, weeks before anything else. Ground almonds carry turrón, marzipan and the white soup called ajoblanco; bitter orange goes into the water used for pastry, and sweet orange into winter salads with fennel, olives and oil.\n\nA tree of either kind is also furniture. An orange tree in the corner of a whitewashed patio is what makes the shade the cold soup is eaten in, and the fallen fruit is swept up rather than used.",
     partners: ["honey", "cinnamon", "olive oil"],
@@ -219,7 +219,7 @@ SPAIN_OBJECTS.push(
   },
   {
     id: "albuferaRice", world: "mediterranean", kind: "ingredient", name: "The Albufera paddies", zh: "Els arrossars de l'Albufera", emoji: "🌾",
-    area: "spain", pos: [-24, 14], rot: 0, elevation: 0, prop: "albuferaPaddy",
+    area: "spain", pos: [-22, 12], rot: 0, elevation: 0, prop: "albuferaPaddy",
     tagline: "Short round grain, grown in a lagoon.",
     blurb: "The Albufera is a shallow freshwater lagoon behind a sandbar south of València, separated from the sea by a strip of umbrella pines. The natural park around it covers about 21,000 hectares, and roughly 17,500 of those are rice fields: flat bunded squares that are flooded, drained and flooded again through the year.\n\nAn Order of 27 June 2001 ratified the regulation of the Denominación de Origen Protegida Arroz de Valencia, whose council had been set up in 1998. It protects four varieties, Bahía, Sénia, Bomba and Albufera, all of them short and round, because a short round grain takes up flavour and stays separate instead of turning creamy.\n\nWho gets the water and when is settled by an institution older than the paperwork. The Tribunal de les Aigües de València, inscribed by UNESCO in 2009, still sits on Thursdays at the cathedral door, in Valencian, with no written record and no lawyers, and its rulings are obeyed.",
     partners: ["rice", "water", "eels", "saffron"],
@@ -227,7 +227,7 @@ SPAIN_OBJECTS.push(
   },
   {
     id: "huertaEs", world: "mediterranean", kind: "ingredient", name: "The huerta beds", zh: "L'horta", emoji: "🍅",
-    area: "spain", pos: [-30, 16], rot: 0.1, elevation: 0, prop: "huertaBeds",
+    area: "spain", pos: [-32.2, 22], rot: 0.1, elevation: 0, prop: "huertaBeds",
     tagline: "Flat beans, big white beans, and the tomato that changed everything.",
     blurb: "L'horta is the irrigated market garden that wraps the Valencian coast, cut into small plots by channels and worked in beds rather than fields. It is the oldest continuously farmed ground in this area, and the barraca, the whitewashed house with a steep thatched roof and a cross on the gable, is what its farmers built to live in.\n\nFour of its crops go straight into the pan on the next fire. Ferraura and rotget are the flat green beans; garrofó is the big flat white bean that goes in before the rice; the tomato is grated rather than chopped; and the sweet pepper is dried and ground into pimentó. Onions, artichokes, chard and the long green peppers for frying fill the rest of the beds.\n\nThe tomato is the newcomer that rearranged everything. It reached Spain from the Americas in the 1500s and was treated with suspicion for a long time, and only in the nineteenth century did it turn the cold Andalusian soup red and settle into the rice, the bread and the salad.",
     partners: ["tomato", "flat beans", "peppers", "garlic"],

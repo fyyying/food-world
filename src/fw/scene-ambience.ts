@@ -24,6 +24,9 @@ export type AmbientPatch = {
   source?: 'chilli' | 'ristra' | 'red-tassel' | 'garlic' | 'bell' | 'grape' | 'leaves';
   /** A restrained ambient accent can be reserved for touch. */
   clickOnly?: boolean;
+  /** Per orientation, whether a `drip` opens a ring where it lands. False where the painting does not show the
+   * surface the liquid reaches — a drip that passes behind a rim must not splash on wood. */
+  splash?: [wide: boolean, phone: boolean];
   period?: number;
 };
 type Point = [number, number];
@@ -391,7 +394,10 @@ export function drawAmbience(ctx: CanvasRenderingContext2D, t: number, portrait:
             const span=(path.length-1)*Math.min(1,Math.max(0,k)),seg=Math.min(path.length-2,Math.floor(span)),f=span-seg;
             return [x+w*(path[seg][0]+(path[seg+1][0]-path[seg][0])*f), y+h*(path[seg][1]+(path[seg+1][1]-path[seg][1])*f)] as const;
           };
-          const period=patch.period??1.9, drops=3, radius=Math.max(1.3,Math.min(w*.10,h*.027,3.6));
+          // The drop is the width of the painted thread, not of the box, so the width factor is generous and the
+          // floor does the work in a narrow box: a portrait thread clipped to twenty thousandths of the painting
+          // would otherwise get a drop a pixel across and nothing would read.
+          const period=patch.period??1.9, drops=3, radius=Math.max(2,Math.min(w*.22,h*.027,3.6));
           for(let i=0;i<drops;i++){
             // phase^1.55 is the gravity: the drop leaves the lip slowly and is quickest as it reaches the surface
             const phase=fraction((t+pathIndex*.37)/period+i/drops), fall=Math.pow(phase,1.55);
@@ -400,11 +406,14 @@ export function drawAmbience(ctx: CanvasRenderingContext2D, t: number, portrait:
             ctx.fillStyle=`rgba(${tint},.85)`;
             ctx.beginPath();ctx.ellipse(dx,dy,radius*.72,radius*(1+fall*.55),0,0,Math.PI*2);ctx.fill();
           }
-          // one ring per released drop, opening where the last traced point sits on the painted surface
-          const splash=fraction((t+pathIndex*.37)/period*drops),[sx,sy]=point(1);
-          ctx.globalAlpha=opacity*.34*Math.max(0,1-splash);
-          ctx.strokeStyle=`rgba(${tint},.9)`;ctx.lineWidth=1;
-          ctx.beginPath();ctx.ellipse(sx,sy,radius*(.6+splash*3.4),radius*(.22+splash*1.1),0,0,Math.PI*2);ctx.stroke();
+          // One ring per released drop, opening where the last traced point sits on the painted surface — but only
+          // where a surface is pictured there. Where the thread passes behind a rim the drop simply fades out at it.
+          if(patch.splash?.[portrait?1:0]!==false){
+            const splash=fraction((t+pathIndex*.37)/period*drops),[sx,sy]=point(1);
+            ctx.globalAlpha=opacity*.34*Math.max(0,1-splash);
+            ctx.strokeStyle=`rgba(${tint},.9)`;ctx.lineWidth=1;
+            ctx.beginPath();ctx.ellipse(sx,sy,radius*(.6+splash*3.4),radius*(.22+splash*1.1),0,0,Math.PI*2);ctx.stroke();
+          }
         }
       } else if(paths?.length){
         ctx.globalCompositeOperation='screen';ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle=patch.color??'#e8f8ed';

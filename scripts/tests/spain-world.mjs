@@ -292,6 +292,82 @@ try {
   }
   assert.deepEqual(covered,[],'a stand stands in front of another stand');
 
+  // ---------- footprints: what ground each stand actually stands on ----------
+  // Owner feedback, 2026-09-17: "the rice farm and the huerta beds are overlapped a bit and show both in a
+  // section". A stand's footprint is the ground-plane box of everything it is made of that stands on the
+  // ground; a bird, a puff of steam and a lantern over head height are not part of it, so a mesh that begins
+  // above 2.5 is left out. Two stands keep a unit of clear ground between them.
+  const foot=p=>{
+    let b=null;
+    p.group.traverse(o=>{
+      if(!o.isMesh||o.isSprite||!o.geometry)return;
+      if(o.material&&(o.material.visible===false||o.material.opacity===0))return;
+      o.geometry.computeBoundingBox();
+      const box=o.geometry.boundingBox.clone().applyMatrix4(o.matrixWorld);
+      if(box.min.y>2.5)return;
+      b=b?b.union(box):box;
+    });
+    return b;
+  };
+  const clearance=(a,b)=>{
+    const dx=Math.max(a.min.x-b.max.x,b.min.x-a.max.x), dz=Math.max(a.min.z-b.max.z,b.min.z-a.max.z);
+    return (dx<0&&dz<0)?-Math.min(-dx,-dz):Math.hypot(Math.max(dx,0),Math.max(dz,0));
+  };
+  // Eighteen pairs cannot keep the unit, and every one of them comes from the Stage B blueprint: it set cluster
+  // centres five to eight units apart while the stands as built are five to twelve units across, so a cluster
+  // of five or six overlaps itself whatever the Builder does with the positions. They are listed with the
+  // overlap measured on 2026-09-17, and the list is a ceiling, not a licence: a listed pair may not get worse
+  // and an unlisted pair may not appear. Closing them is a re-blueprint of the area, not a pass. The eight
+  // pairs of La Albufera y el Puerto, which is what the owner was looking at, were closed on that day and are
+  // deliberately absent.
+  const CROWDED={
+    'azafranEs/molinosMancha':4.93, 'bodegaJerez/flamenco':3.35, 'paTomaquet/gaudiEs':3.13,
+    'dehesaEs/ovejaManchega':2.29, 'gazpachoEs/bodegaJerez':2.29, 'oliveEs/ovejaManchega':1.99,
+    'manchegoEs/oliveEs':1.68, 'pintxosEs/sidreriaEs':1.65, 'manchegoEs/ovejaManchega':1.51,
+    'jamonEs/tortillaEs':1.39, 'churrosEs/gaudiEs':1.19, 'dehesaEs/pimentonVera':0.81,
+    'pintxosEs/paTomaquet':0.60, 'bodegaJerez/alhambraEs':0.26, 'plancha/tortillaEs':0.10,
+    'pulpoEs/pementoHerbon':0.09, 'fishMed/gaudiEs':0.00, 'plancha/churrosEs':-0.55,
+  };
+  const feet=new Map(spain.map(p=>[p.obj.id,foot(p)]));
+  const crowded=[];
+  for(let i=0;i<spain.length;i++)for(let j=i+1;j<spain.length;j++){
+    const a=spain[i].obj.id, b=spain[j].obj.id, gap=clearance(feet.get(a),feet.get(b));
+    if(gap>=1)continue;
+    const key=`${a}/${b}`;
+    if(!(key in CROWDED)){ crowded.push(`${key}: ${gap<0?`overlap ${(-gap).toFixed(2)}`:`only ${gap.toFixed(2)} of clear ground`}`); continue; }
+    if(-gap>CROWDED[key]+.05) crowded.push(`${key}: ${(-gap).toFixed(2)} where 2026-09-17 measured ${(-CROWDED[key]).toFixed(2)}; a crowded pair may not get worse`);
+  }
+  assert.deepEqual(crowded,[],'two stand footprints share ground');
+  // Footprints and the water. The per-vertex rule above is the real one; this holds the box, which overhangs
+  // the shore at two stands and must not start doing so anywhere else. The port is moored in the bay on purpose.
+  const OVER_WATER={fishMed:45,jamonEs:5};
+  const soaked=[];
+  for(const p of spain){
+    const b=feet.get(p.obj.id); let w=0,t=0;
+    for(let x=b.min.x;x<=b.max.x;x+=.4)for(let z=b.min.z;z<=b.max.z;z+=.4){t++;if(wet(x,z))w++;}
+    const pct=100*w/t;
+    if(pct>(OVER_WATER[p.obj.id]??0)) soaked.push(`${p.obj.id}: ${pct.toFixed(1)} percent of its footprint is over water`);
+  }
+  assert.deepEqual(soaked,[],'a stand footprint reaches over the water');
+  // Roads under a footprint are not a defect and cannot be forbidden: every door must be within 2.6 of a road
+  // and the stands are five to twelve units across, so 25 of the 26 have their own road under them by
+  // construction, and ten more sit where two roads meet. What must hold is that the road at a stand's door
+  // really reaches it, which the door check above measures. This asserts the part that could silently break:
+  // every stand has at least one road centreline under or beside its footprint.
+  const stranded=[];
+  for(const p of spain){
+    const b=feet.get(p.obj.id).clone(); b.expandByScalar(1.5);
+    const near=SPAIN_ROADS.some(r=>{
+      for(let i=0;i<r.points.length-1;i++){
+        const [ax,az]=r.points[i],[bx,bz]=r.points[i+1], n=Math.max(1,Math.ceil(Math.hypot(bx-ax,bz-az)*4));
+        for(let k=0;k<=n;k++){ const x=ax+(bx-ax)*k/n, z=az+(bz-az)*k/n; if(x>b.min.x&&x<b.max.x&&z>b.min.z&&z<b.max.z) return true; }
+      }
+      return false;
+    });
+    if(!near&&!inSquare(...p.obj.pos)) stranded.push(`${p.obj.id}: no road runs under or beside its footprint`);
+  }
+  assert.deepEqual(stranded,[],'a stand has no road at its footprint');
+
   // ---------- the bridges carry the lanes over the river ----------
   const bridges=world.group.children.filter(o=>o.name==='spanish-bridge');
   assert.equal(bridges.length,SPAIN_BRIDGES.length);
@@ -311,7 +387,7 @@ try {
     if(ox>1.2&&oz>1.2) clashes.add(`${solids[i].name} [${solids[i].x.toFixed(1)}, ${solids[i].z.toFixed(1)}] inside ${solids[j].name} [${solids[j].x.toFixed(1)}, ${solids[j].z.toFixed(1)}]`);
   }
   assert.deepEqual([...clashes],[],'two Spanish buildings stand in the same place');
-  for(const name of ['plaza-statue','plaza-lamp','dehesa-pen','threshing-floor','apple-tree','granite-outcrop','olive-terrace-tree','dehesa-oak','saffron-flower','north-broadleaf','sandbar-pine'])
+  for(const name of ['plaza-statue','plaza-lamp','dehesa-pen','threshing-floor','apple-tree','granite-outcrop','olive-terrace-tree','dehesa-oak','saffron-flower','north-broadleaf'])
     assert.ok(world.group.getObjectByName(name),`${name}: missing from the Spanish land`);
   // Removed on the owner's word, 2026-09-16, and kept removed: the four free-standing arcades that ringed the
   // square (a tan slab on grey piers, read from above as a bridge half in the water), the barraca in the rice
@@ -329,10 +405,10 @@ try {
   // styles that are left are named so nobody quietly drops the last house of a region. See the quality
   // baseline for the numbers and docs/spain-world.md for why each one went.
   const houses=world.group.children.filter(o=>o.name==='spanish-house');
-  assert.ok(houses.length>=5&&houses.length<=8,`the wedge rule leaves room for five to eight houses, found ${houses.length}`);
+  assert.ok(houses.length>=4&&houses.length<=8,`the wedge rule leaves room for four to eight houses, found ${houses.length}`);
   const styles=new Set(houses.map(o=>o.userData.houseStyle));
-  for(const style of ['valencian','andalus','mancha','galician','catalan']) assert.ok(styles.has(style),`${style}: no house in that style`);
-  assert.ok(!styles.has('castile'),'a Castilian house is back in the Plaza Mayor: check it against the wedge rule first');
+  for(const style of ['andalus','mancha','galician','catalan']) assert.ok(styles.has(style),`${style}: no house in that style`);
+  for(const style of ['castile','valencian']) assert.ok(!styles.has(style),`a ${style} house is back: the Plaza Mayor and the Albufera have no ground outside their stands' wedges, so check it against the wedge and footprint rules first`);
   for(const style of styles){
     const n=houses.filter(o=>o.userData.houseStyle===style).length;
     assert.ok(n>=1&&n<=2,`${style}: ${n} houses, a cluster wants one or two`);

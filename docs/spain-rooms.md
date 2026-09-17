@@ -169,22 +169,21 @@ the portrait carries its own single ellipse.
 
 | Field | Wide | Portrait |
 | --- | --- | --- |
-| Pictured source | The pepper string by the farm door, the sky over the windmill ridge, the daylight through the door, and the painted whey falling from the draining table into the tub. The copper caldero carried a steam plume until 2026-09-17, when it was removed: see "The cheese farm loses its steam and gets its whey back, 2026-09-17" below | The pepper string by the door, the sky through the doorway, the tree over the door, the daylight through the door |
-| Boundary | Hung sprite at fx .7565, fy .0960, fw .0474, sway 4.4, tone .75, over wall the string was painted out of; signature birds [.552, .118, .720, .172], scale 1.6, period 5.5; doorway sunray [.42, 0, .90, .72], angle +.30, drift .100; whey `drip` [.292, .632, .322, .786] traced [[.45, 0], [.46, .48], [.47, .96]], period 1.8. No steam in either orientation since 2026-09-17 | Hung sprite at fx .7670, fy .0235, fw .0831, sway 2.6, tone .78, over wall the string was painted out of; signature birds [.19, .03, .45, .095]; leaves [.13, 0, .48, .16]; sunray [.08, 0, .66, .52], drift .08. No steam: the portrait shows no heated vessel |
-| Anchor | The birds fly in the open doorway sky, their two rows at y .1423 and .1542, above the near windmill's sails at y .152 and below the fig branch that hangs to y .135; the ray keeps the direction of the painted door-frame shadows on the tiles at x .42 to .56, leaning with its top to the right, and runs from the lintel at x .72 down to x .60, where it fades out above the cheese wheel; the sprite's twine loop sits on the painted iron bracket the string hangs from; the drops leave the draining cloth at the table edge at (.3055, .632), fall along the painted thread at x .3055 and land on the whey in the tub at (.3062, .780), where the painting draws its own ring | The sprite's loop sits on the painted chain hook; the leaves fall inside the painted canopy |
-| Forbidden overlap | The empty second hook at x .805 left for the sprite, the fig branch that hangs into the doorway to y .135 and the near windmill's sails from y .152 down (both re-measured on the pixels on 2026-09-17; the older note here said the windmills sat at y .09 to .15, which put the band on the lintel), the girl in the doorway and her face at x .55 to .58, the cheese wheel and the wedge below y .625 | The windmills below y .10, the press and the maker's hands, the wheel and the wedge in the foreground |
+| Pictured source | The pepper string by the farm door, the sky over the windmill ridge, the daylight through the door, and the painted whey falling from the draining table into the tub. The copper caldero carried a steam plume until 2026-09-17, when it was removed: see "The cheese farm loses its steam and gets its whey back, 2026-09-17" below | The pepper string by the door, the sky through the doorway, the daylight through the door, and the two painted whey threads running off the drainage table into the tub. The tree over the door carried seven leaves until 2026-09-17 |
+| Boundary | Hung sprite at fx .7565, fy .0960, fw .0474, sway 4.4, tone .75, over wall the string was painted out of; signature birds [.552, .118, .720, .172], scale 1.6, period 5.5; doorway sunray [.42, 0, .90, .72], angle +.30, drift .100; whey `drip` [.292, .632, .322, .786] traced [[.45, 0], [.46, .48], [.47, .96]], period 1.8, with its splash ring. No steam in either orientation since 2026-09-17 | Hung sprite at fx .7670, fy .0235, fw .0831, sway 2.6, tone .78, over wall the string was painted out of; signature birds [.19, .03, .45, .095]; sunray [.08, 0, .66, .52], drift .08; whey `drip` [.686, .5405, .706, .589] traced [[.53, 0], [.45, .20], [.40, .51], [.40, 1]], `splash` off. No steam: the portrait shows no heated vessel |
+| Anchor | The birds fly in the open doorway sky, their two rows at y .1423 and .1542, above the near windmill's sails at y .152 and below the fig branch that hangs to y .135; the ray keeps the direction of the painted door-frame shadows on the tiles at x .42 to .56, leaning with its top to the right, and runs from the lintel at x .72 down to x .60, where it fades out above the cheese wheel; the sprite's twine loop sits on the painted iron bracket the string hangs from; the drops leave the draining cloth at the table edge at (.3055, .632), fall along the painted thread at x .3055 and land on the whey in the tub at (.3062, .780), where the painting draws its own ring | The sprite's loop sits on the painted chain hook; the drops leave the drainage table's lower edge at (.6965, .5405), fall along the right-hand painted thread at x .6939 to .6950, and fade out where it passes behind the tub's near rim at (.6945, .589). No ring: that end shows a wooden rim, not a liquid surface |
+| Forbidden overlap | The empty second hook at x .805 left for the sprite, the fig branch that hangs into the doorway to y .135 and the near windmill's sails from y .152 down (both re-measured on the pixels on 2026-09-17; the older note here said the windmills sat at y .09 to .15, which put the band on the lintel), the girl in the doorway and her face at x .55 to .58, the cheese wheel and the wedge below y .625 | The windmills below y .10, the press and the maker's hands, the wheel and the wedge in the foreground, the second painted whey thread at x .672 and the tub's wood below y .589 |
 | Dominant cue | Two birds over the windmill ridge, scale 1.6, period 5.5, the room's signature, crossing the full clean span of the doorway sky since 2026-09-17; the pepper string swings beside them as a sprite | The same birds in the doorway sky, and the same sprite measured on the portrait |
-| Supporting cues | The doorway beam at drift .100, the whey drip into the tub, the hung string | Seven yellow leaves at size 1.4, the doorway beam, the hung string |
-| Visibility | 4.15 per cent, the six-pair median of the 2026-09-17 evening run after the steam came off (2.7 to 4.9); it was 5.65 with the steam and 2.15 before the beam went back | 6.00 per cent (2.1 to 8.6) |
-| Reduced motion | The sprite's rotation is removed and it hangs straight and the beam stops drifting; the leaves stop in the portrait | Same |
-| Browser status | Watched again through the world route at 1280 x 720 on 2026-09-17 after the steam came off, ten frames apart. The copper caldero is dry, the birds cross clean sky above the windmills, the ristra swings on its twine over clean plaster, the beam reads as the doorway daylight shifting rather than as a band, and drops travel down the painted whey thread and open a small ring on the tub | Checked at 390 x 844 in `rooms.html` on 2026-09-16 at rest and at both ends of the swing. The breeze crop that used to reach the wooden shelf is gone; the painted string is out of the picture and the sprite hangs from the painted chain hook over clean stone |
+| Supporting cues | The doorway beam at drift .100, the whey drip into the tub, the hung string | The doorway beam, the whey drip down the right-hand thread, the hung string. The seven yellow leaves were given up for the drip on 2026-09-17 |
+| Visibility | 4.15 per cent, the six-pair median of the 2026-09-17 evening run after the steam came off (2.7 to 4.9); it was 5.65 with the steam and 2.15 before the beam went back | 3.75 per cent, the six-pair median at 390 x 844 after the leaves were traded for the drip (2.4 to 6.4); it was 6.00 with the leaves |
+| Reduced motion | The sprite's rotation is removed and it hangs straight, the beam stops drifting and the drops stop falling | Same |
+| Browser status | Watched again through the world route at 1280 x 720 on 2026-09-17 after the steam came off, ten frames apart. The copper caldero is dry, the birds cross clean sky above the windmills, the ristra swings on its twine over clean plaster, the beam reads as the doorway daylight shifting rather than as a band, and drops travel down the painted whey thread and open a small ring on the tub | Watched for ten seconds at 390 x 844 on 2026-09-17, ten frames a second apart, and again over the painting itself at five times its own pixels. Pale swellings appear at the table edge, travel down the right-hand painted thread and fade out at the tub rim; the left thread stays exactly as painted, nothing is drawn below the rim, and there is no ring. It reads as whey on its own thread rather than as rain, because every drop is in the one painted column and carries the thread's own cream |
 
-The portrait carries no whey effect. It does picture whey — short threads running off the cheese mould onto the
-drainage table at y .480 to .520, and two longer ones from the table edge into the tub at x .672 and x .690 from
-y .540 — but their lower ends disappear behind the tub's rim, so there is no landing surface to end a drip on, and
-the portrait is already at four always-on loops (signature birds, leaves, doorway beam, hung sprite) with no slot
-free. Its `paths` entry stays `undefined` and nothing is drawn there. It never had steam either, so the 2026-09-17
-change took nothing away from it.
+The portrait has its own whey drip since the evening of 2026-09-17; the paragraph that used to stand here said it
+could not, for two reasons that both turned out to be answerable. The first was that the threads' lower ends vanish
+behind the tub's rim, so there is no landing surface to end a drip on — true, and the answer is that the drip ends
+there without a ring rather than not running at all. The second was the four-loop ceiling, which was answered by
+giving up the leaves. See "The portrait drips too, 2026-09-17" at the end of this document.
 
 **The cheese farm at its floor, 2026-09-17.** This was the one Spain cell left under its floor by the re-measurement
 below: `es_manchego` wide, a six-pair median of 2.15 per cent against the 3 per cent a heat room has to reach, with
@@ -255,7 +254,9 @@ adds `cfg.hung` and `cfg.portrait.hung` entries that carry a `sway`, the same wa
 `3 - heat`, so a steam source can never push a signed room above four; a sprite can, which is why `es_tortilla` gave
 its firebox light to the signature and emptied its ambience list, and why `es_manchego` held exactly one wide
 ambience patch beside its signature, its steam and its sprite. Since the steam came off on 2026-09-17 the wide
-orientation has two ambience slots instead of one, and they hold the doorway beam and the whey `drip`. The counts as they ship, wide then portrait: `es_paella` 4/4, `es_tapas` 4/3, `es_jamon` 4/3,
+orientation has two ambience slots instead of one, and they hold the doorway beam and the whey `drip`; the portrait
+has always had two, and since the same evening they hold the doorway beam and the portrait's own whey `drip`, the
+seven yellow leaves having been given up for it. The counts as they ship, wide then portrait: `es_paella` 4/4, `es_tapas` 4/3, `es_jamon` 4/3,
 `es_tortilla` 4/4, `es_churros` 4/4, `es_pintxos` 3/3, `es_gazpacho` 3/3, `es_pulpo` 4/4, `es_pa_tomaquet` 4/3,
 `es_manchego` 4/4, `es_sidreria` 4/4, `es_bodega` 3/3. The engine keeps one fire ellipse per orientation, so the second fire the
 paella wide painting shows at the left station is not configured. Every patch added in the Stage E fixes went into
@@ -1041,7 +1042,7 @@ thousandths of height below the impact so the ring fits inside the clip, path **
 period 1.8 s. Live canvas probe: lit pixels span x .3014–.3100 and y **.6330–.7813** — inside the box, starting at
 the cloth and ending on the whey.
 
-The portrait keeps its other cues unchanged (see the note under its matrix row for why it gets no drip).
+The portrait was left unchanged by this pass; it got its own drip the same evening, in the section below.
 
 **Loops.** `room-loops.mjs` prints `es_manchego | sig=birds | wide: loops=4 steam=0 fire=0 hung=1 sunray+drip |
 portrait: loops=4 steam=0 fire=0 hung=1 leaves+sunray`. Four in each orientation, at the ceiling, and all 66 rooms
@@ -1089,3 +1090,87 @@ wedge. At 390 x 844 the portrait is unchanged and shows no steam anywhere.
   looking at the room at 390 x 844
 - Reduced motion was not re-run after this pass. The `drip` draws inside `drawAmbience`, which `makeFx` never reaches
   under `prefers-reduced-motion: reduce`, so it should stop with everything else, but that was reasoned, not seen
+
+## The portrait drips too, 2026-09-17
+
+> "One little thing missing: in the portrait version of the cheese farm there is no water dripping; the horizontal
+> one was good."
+
+The wide painting got its whey back that afternoon and the portrait did not, because the note under the cheese
+farm's matrix row said the portrait could not have one. Two reasons were given and both were answerable.
+
+**The thread.** The portrait pictures two whey threads running off the drainage table into the tub. Traced on
+`portrait.jpg` by taking the brightest pale pixel in each row of a narrow window around each: the left one runs at
+x .6716 to .6727 with a mean luminance of about 190, the right one at **x .6939 to .6950** at about 225. The right
+is the brighter and the longer — it necks off the table's lower edge at **(.6965, .5405)** against the left one's
+.5415 — so it is the one that carries the drops. It falls dead straight across the tub's two pale hoop bands at
+y .566 to .570 and y .578 to .583, and **passes behind the tub's near rim at (.6945, .589)**; nothing of either
+thread is painted below y .590.
+
+**Box [.686, .5405, .706, .589]**, path **[[.53, 0], [.45, .20], [.40, .51], [.40, 1]]**. The box's left edge at
+x .686 keeps the second thread at x .672 outside it, and its bottom edge is the rim, so the clip is what stops the
+drops rather than the drawing. Live canvas probe at 390 x 844, four phases: lit pixels span x .6905 to .6988 and
+y **.5404 to .5855**, inside the box and on the painted thread.
+
+**No ring.** A `drip` opened a ring at its last traced point, which is right in the wide painting, where that point
+is the whey surface in the tub, and wrong here, where it is a wooden rim with the liquid hidden behind it. The
+`AmbientPatch` gained `splash?: [wide, phone]`, a per-orientation pair like `angles`, `sway` and `paths`, and this
+patch carries `splash: [true, false]`. The drop's own alpha already fades in and out over its fall, so it thins away
+at the rim rather than stopping dead.
+
+**One engine number changed.** The drop's radius was `max(1.3, min(w * .10, h * .027, 3.6))`, where `w` is the box's
+width. That was written for a box 48 stage units wide; this one is 10, which would have given a drop one pixel
+across. It is now `max(2, min(w * .22, h * .027, 3.6))`: the drop is the width of the painted thread, not of the
+clip. The wide painting is unaffected, because `h * .027` and the 3.6 cap already bound it there and still do.
+
+**What was given up.** The room is at the four-loop ceiling in both orientations, so the portrait's fourth cue had
+to go. The two candidates were the seven yellow leaves over the farm door and the doorway sunray; the hung ristra
+and the signature birds were never in question. Each was drawn alone on a canvas carrying this room's real portrait
+transform and its change over two seconds measured at six phases, at `room-motion.py`'s own `>24` threshold:
+
+| Portrait cue | Change in two seconds, six phases | Median |
+| --- | --- | --- |
+| Seven yellow leaves `[.13, 0, .48, .16]` | 0.34, 0.32, 0.31, 0.29, 0.32, 0.33 % | **0.32 %** |
+| Doorway sunray `[.08, 0, .66, .52]` | 11.22, 10.38, 2.31, 10.74, 10.91, 3.62 % | **10.56 %** |
+
+The leaves are the weaker by a factor of about thirty, so the leaves went. They were a phone-only patch, so the
+whole entry left `SPAIN_AMBIENCE.es_manchego` rather than losing one orientation. The beam stays, which also suits
+the wide painting, where it is the room's main cue and the two orientations share one patch.
+
+**Loops.** `room-loops.mjs`: `es_manchego | sig=birds | wide: loops=4 steam=0 fire=0 hung=1 sunray+drip |
+portrait: loops=4 steam=0 fire=0 hung=1 sunray+drip`. Four in each orientation, and all 66 rooms still pass.
+
+**Motion, six-pair median, portrait at 390 x 844.** Same method as the wide run: hidden pane (zero animation frames
+in a second of wall clock, so `__fw.step` is the only clock), `window.__fwInstant = true`, `__fw.enter('mediterranean')`,
+then per pair `__fw.open('manchegoEs')`, `__fw.step(100)`, settle, `__fw.step(<offset>)`,
+`__fw.sceneShot('rm-MCP-<n>-a')`, `__fw.step(120)`, `__fw.sceneShot('rm-MCP-<n>-b')`, `__fw.closeScene()`.
+
+| Pair | Step offset | Changed in two seconds |
+| --- | --- | --- |
+| 1 | 60 | 2.5% |
+| 2 | 100 | 6.4% |
+| 3 | 140 | 2.4% |
+| 4 | 180 | 4.4% |
+| 5 | 220 | 4.7% |
+| 6 | 260 | 3.1% |
+
+**Median 3.75 per cent against the 2.5 per cent a dry room owes.** Four of the six samples clear the floor outright;
+the two that do not, 2.4 and 2.5 at offsets 140 and 60, are the `sunray` stall this document describes in the
+residual note above, and they are the reason the recorded method is a median of six phases rather than one pair. The
+portrait measured 6.00 per cent with the leaves, so the trade cost about two and a quarter points of changed pixels
+and bought the cue the owner asked for. Raw shots `.data/shots/rm-MCP-<1..6>-a/b.jpg`.
+
+**Does it read as whey rather than rain.** Watched for ten seconds at 390 x 844, ten frames a second apart, and then
+composited again over the painting's own pixels at five times magnification. Pale swellings appear where the thread
+leaves the table, travel down it and fade out at the tub rim; the left thread stays exactly as painted; nothing is
+drawn below the rim and there is no ring. It reads as whey and not as rain for three reasons that are visible in the
+frames: every drop is inside the one painted column rather than scattered across an area, each drop is the cream of
+the thread rather than a blue-white, and each follows the thread's own silhouette down to the rim.
+
+### Not verified
+
+- A physical phone; 390 x 844 was an emulated viewport
+- Reduced motion was not re-run for the portrait drip either, for the same reason as the wide one
+- The wide orientation was not re-measured after the radius formula changed, because the formula gives it the same
+  3.6 it had: `h * .027` is 3.78 and the cap is 3.6 both before and after. That was checked by arithmetic and by the
+  isolated canvas probe returning the same wide extents, not by another six-pair run

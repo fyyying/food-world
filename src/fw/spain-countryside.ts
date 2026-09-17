@@ -110,11 +110,12 @@ export function spainCountryside(ctx: LayoutCtx) {
   // of the mosaic bench; it was removed, 2026-09-17.
 
   // ---------- the bay: umbrella pines on the sandbar and the shore behind the port ----------
-  // The pine behind the port stood seven units in front of it and was removed, 2026-09-17.
-  for (const [x, z] of [[-19.2, 14.4]]) place(umbrellaPine(.9), x, z, x).name = 'bay-pine';
-  // Of the three southern cypresses one stood in front of the paddies, one in front of the huerta beds and one
-  // in front of the flamenco stage. The first moved north of the paddies, the other two came out, 2026-09-17.
-  for (const [x, z] of [[-21.4, 11]]) place(cypress(.85), x, z, x).name = 'southern-cypress';
+  // Both bay pines are gone: the one behind the port stood seven units in front of it, and the other stood on
+  // the ground the rice fire moved onto when the Albufera stands were spread apart. The bay keeps the two
+  // sandbar pines at the river mouth and the cypress on the shore. 2026-09-17.
+  // All three southern cypresses are gone, 2026-09-17: one stood in front of the paddies, one in front of the
+  // huerta beds and one in front of the flamenco stage, and once the Albufera stands were spread apart there
+  // was no ground left on that shore outside every one of their wedges.
   // Dry scrub tufts fill the open ground between the huerta and the bodega hill.
   for (let i = 0; i < 16; i++) {
     const x = -38 - (i % 4) * 3.2 + Math.sin(i) * 1.2, z = 6 + Math.floor(i / 4) * 3.4 + Math.cos(i) * 1.1;

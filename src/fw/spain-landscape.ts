@@ -31,8 +31,9 @@ export const RIVER_POINTS: Pt[] = [
 ];
 export const RIVER_WIDTH = 2.4;
 export const RIVER_CURVE = new THREE.CatmullRomCurve3(RIVER_POINTS.map(([x, z]) => new THREE.Vector3(x, 0, z)));
-/** The acequia leaves the river east of the Valencia lane and runs north towards the paddies. */
-export const CHANNEL_POINTS: Pt[] = [[-22.6, 5.4], [-22.8, 9], [-23.2, 11]];
+/** The acequia leaves the river east of the Valencia lane and runs south into the paddies. It was shortened
+ *  on 2026-09-17 when the paddies moved north to meet it: it is now the sluice cut between river and field. */
+export const CHANNEL_POINTS: Pt[] = [[-22.6, 5.4], [-22.7, 6.1], [-22.8, 6.8]];
 export const CHANNEL_CURVE = new THREE.CatmullRomCurve3(CHANNEL_POINTS.map(([x, z]) => new THREE.Vector3(x, 0, z)));
 export const CHANNEL_WIDTH = .65;
 /** Raised ground: centre, radii, height. The crown fraction gives the flat top. */
@@ -99,13 +100,12 @@ export function spainLandscape(ctx: LayoutCtx) {
   const { group, tickers, tint, TOP } = ctx;
   // Ground tints per cluster, laid before anything solid.
   tint(-43.5, -4, 11, 8, '#d9c9a8');          // the town around the Plaza Mayor
-  tint(-28, 8, 12, 9, '#c9c08a', .05);        // dry gold round the huerta
+  tint(-28, 16, 20, 20, '#c9c08a', .05);      // dry gold round the huerta, widened in 2026-09-17 when the four Albufera stands were spread apart
   tint(-47, 13, 16, 9, '#e5dcc6', -.05);      // lime-washed lanes on the low hill, widened east on 2026-09-17 to carry the courtyard kitchen
   tint(-70, 2, 19, 19, SP.tierraManchega);    // the dry plain, widened east and north on 2026-09-17 to carry the saffron plot
   tint(-52, -16, 12, 8, '#9fb08a', .1);       // wet green above the ria
   tint(-31, -20, 9, 5, '#a9b58a');            // the Cantabrian green
   tint(-24, -14, 7, 12, '#d9cfae');           // turning to render and tile at the corner, widened north on 2026-09-17 to carry the mosaic balustrade
-  tint(-19.6, 10, 2.2, 3.2, '#e6d9b2');       // the pine sandbar along the bay
   tint(-56, 8, 6, 4, '#b3ad7e');              // the olive slope
 
   // One sea, one beach rim under it, both mirrored into the x/z plane like the rest of the Mediterranean water.
@@ -122,7 +122,7 @@ export function spainLandscape(ctx: LayoutCtx) {
   for (const x of [-23.2, -22.0]) add(group, new THREE.Mesh(new THREE.BoxGeometry(.14, .55, .14), mat(SP.maderaCastano)), x, .27, 5.8);   // the sluice posts
   add(group, new THREE.Mesh(new THREE.BoxGeometry(1.35, .08, .12), mat(SP.maderaCastano)), -22.6, .52, 5.8);
   // A low earth bund carries the water on from the head of the channel to the paddy bunds.
-  const bund = add(group, new THREE.Mesh(new THREE.BoxGeometry(.5, .14, 2.2), mat('#a8956f')), -23.4, .07, 12.1); bund.rotation.y = .12; bund.name = 'acequia-bund';
+  const bund = add(group, new THREE.Mesh(new THREE.BoxGeometry(.5, .14, 2.2), mat('#a8956f')), -22.9, .07, 8.4); bund.rotation.y = .12; bund.name = 'acequia-bund';
   // Reeds and stones along the river, clear of the bridges and the lanes.
   for (const [i, [x, z]] of ([[-52.0, 0.2], [-40.5, 6.4], [-32.5, 3.6], [-25, 3.6], [-20.5, 6.6], [-52.5, -0.4], [-60.2, -6.6], [-65.4, -10.8]] as Pt[]).entries()) {
     if (i % 2) add(group, new THREE.Mesh(new THREE.DodecahedronGeometry(.22 + (i % 3) * .06, 0), mat('#a3a094')), x, .1, z);

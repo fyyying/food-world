@@ -71,7 +71,10 @@ export const SPAIN_AMBIENCE: Record<string, AmbientPatch[]> = {
     { kind: 'leaves', wide: [.84, 0, 1, .33], leaf: 'olive', color: '#6c8a45', count: 5, size: 1.2 },   // the potted orange tree, wide only
   ],
   es_manchego: [
-    { kind: 'leaves', phone: [.13, 0, .48, .16], leaf: 'yellow', color: '#c9a63a', count: 7, size: 1.4 },   // the tree over the farm door, portrait only
+    // The seven yellow leaves over the farm door were removed from the portrait on 2026-09-17 to free its fourth
+    // slot for the whey drip the owner asked for. They were the weakest cue in the room by a long way: drawn alone
+    // on a canvas carrying this room's real portrait transform, the leaves changed 0.29 to 0.34 per cent of the
+    // frame over two seconds at six phases, against 2.3 to 11.2 per cent for the doorway beam beside them.
     // The doorway beam is in the wide painting since 2026-09-17. Its wide box was measured on wide.jpg: the light
     // enters the door and falls left across the tiles, which is the direction of the painted door-frame shadows on
     // the floor at x .42 to .56, so the ray leans with its top to the right (angle +.30) and runs from the lintel at
@@ -84,8 +87,15 @@ export const SPAIN_AMBIENCE: Record<string, AmbientPatch[]> = {
     // leaves the draining cloth at the table edge at (.3055, .632), falls as three beads at x .3055 and lands in the
     // tub at (.3062, .780), where the painting itself draws the ring. Measured on wide.jpg on 2026-09-17; the
     // earlier stream-glint on this drip was a dashed line and read as one, which is why this is a `drip`.
-    { kind: 'drip', wide: [.292, .632, .322, .786], color: '#f1e7cf', period: 1.8,
-      paths: [[[[.45, 0], [.46, .48], [.47, .96]]], undefined] },   // the whey from the draining table into the tub, wide only
+    // The portrait was given its own whey on 2026-09-17, on the owner's note that only the horizontal one dripped.
+    // That composition pictures two threads running off the drainage table into the tub; the right-hand one is the
+    // brighter and the longer, and it was traced on `portrait.jpg`: it leaves the table's lower edge at (.6965,
+    // .5405), falls dead straight at x .6939 to .6950 across the tub's two hoop bands, and passes behind the near
+    // rim at (.6945, .589). There is no pictured liquid surface at that end — the rim hides it — so the portrait
+    // takes no splash ring and the drops simply fade out at the rim. The left thread at x .672 stays outside the box.
+    { kind: 'drip', wide: [.292, .632, .322, .786], phone: [.686, .5405, .706, .589], color: '#f1e7cf', period: 1.8,
+      splash: [true, false],
+      paths: [[[[.45, 0], [.46, .48], [.47, .96]]], [[[.53, 0], [.45, .20], [.40, .51], [.40, 1]]]] },   // the whey off the draining table, into the tub in wide and behind its rim in portrait
   ],
   es_sidreria: [
     // Both painted strings run off the left edge of their frame — the portrait one sits outside the slice a phone

@@ -195,7 +195,7 @@ Clusters and their ground tints:
 | Cluster | Centre | Tint | Holds |
 | --- | --- | --- | --- |
 | La Plaza Mayor | [-44, -4] | `#d9c9a8` paving inside the square, 14 x 10 | `plancha` [-40, -2] on the south side, `jamonEs` [-51.5, -5.5] in the iron hall on the north-west corner, `tortillaEs` [-46, -1] on the south lane, `churrosEs` [-33, 0] in a passage off the main street where it leaves the square; an equestrian statue at [-43.5, -8.8]. The four free-standing granite arcades that ringed the square were removed on 2026-09-16 and the square keeps its light on iron lamp posts. It has no decorative house since 2026-09-17: four stands and the statue leave no ground behind them |
-| La Albufera y el Puerto | [-28, 8] | `#c9c08a` dry gold around the huerta; paddies as flooded squares | `paellaEs` [-28, 13] under a reed shade, `fishMed` [-20, -2] on the bay, `albuferaRice` [-24, 14], `huertaEs` [-30, 16], `oranges` [-34, 11]; a pine sandbar along the bay shore at x -19 from z 10 to 12. The decorative barraca that stood at [-22.2, 9.0] was removed on 2026-09-16 and the rice fire's own on 2026-09-17; the Albufera has no barraca now. One Valencian house, at [-21, 25.5] |
+| La Albufera y el Puerto | [-28, 16] | `#c9c08a` dry gold, widened to 20 x 20 in 2026-09-17; paddies as flooded squares | Re-laid on 2026-09-17 so the four field stands stop sharing ground, in two ranks with the lane round them: north `oranges` [-32.5, 12] and `albuferaRice` [-22, 12] under its sluice, south `huertaEs` [-32.2, 22] and `paellaEs` [-23, 20] in front of its own paddies; `fishMed` [-20, -2] on the bay. The decorative barraca at [-22.2, 9.0] went on 2026-09-16 and the rice fire's own on 2026-09-17. The pine sandbar, both bay pines, the last southern cypress and the Valencian house went with the re-lay: the cluster reads from its own stands |
 | El Patio y la Bodega | [-50, 14] | `#e5dcc6` lime-washed lanes on a low hill, widened east to x -39 in 2026-09-17 | `gazpachoEs` [-41.5, 10] at the hill's east foot, `bodegaJerez` [-46, 16], `flamenco` [-42, 20], `oliveEs` [-61.5, 6] on olive terraces to the west, `alhambraEs` [-56, 22] on a terrace 1.2 high with stairs at its north side. One Andalusian house, single-storey, at [-65.6, 21] on the Alhambra road |
 | El Secano Manchego | [-72, 4] | `#c2a473` dry plain, widened east and north in 2026-09-17 | `manchegoEs` [-69, 5], `ovejaManchega` [-70.5, 10.5], `azafranEs` [-71, -7] between the threshing floor and the ridge, `molinosMancha` [-76, -8] on a ridge 0.8 high, `dehesaEs` [-78, 16], `pimentonVera` [-72, 20]. One Manchegan house at [-75, 5] |
 | La Ría | [-50, -18] | `#9fb08a` wet green with granite outcrops | `pulpoEs` [-51, -16.5] under a granite arcade facing the ría, `pementoHerbon` [-58, -13], `sidreriaEs` [-40, -20] with its apple orchard on the coast slope north-west of it since 2026-09-17. One Galician house at [-63.3, -14.6] |
@@ -760,6 +760,133 @@ Not verified in this pass: the rooms, the portrait rooms in a displayed pane, an
 touched a room or the publish path. The recipe mapping was checked and is unaffected: the two recipes that
 point into Spain use `place: "fishMed"` and `place: "plancha"`, and neither stand moved.
 
+## Fifth pass, 2026-09-17: stands that share ground
+
+> "The rice farm and the huerta beds are overlapped a bit and show both in a section, and it's strange."
+
+### What a footprint is, and what the measurement found
+
+A stand's **footprint** is the ground-plane box of everything it is made of that stands on the ground. A bird,
+a puff of steam and a lantern over head height are not part of it, so a mesh that begins above 2.5 units is left
+out. Measured that way on 2026-09-17, the twenty-six stands range from 4.8 by 4.4 (the pepper drying house) to
+12.2 by 14.1 (the Alhambra on its terrace), and **twenty-six pairs had under a unit of clear ground between
+them, twenty-three of them overlapping**, the worst by 5.8 units.
+
+Eight of those twenty-six were in La Albufera y el Puerto, which is what the owner was looking at: the orange
+grove, the paddies, the huerta beds and the rice fire were stacked on one another inside a pocket the blueprint
+gave them, bounded by the river to the north, the patio hill to the west, the bay to the east and Morocco to
+the south.
+
+### The Albufera, re-laid
+
+The four stands are 6.8, 7.0, 9.2 and 9.6 units across; two of them cannot stand side by side in the pocket, so
+they are laid in two ranks, north and south, and the lane and the sluice follow them.
+
+| Object | Was | Now | Why there |
+| --- | --- | --- | --- |
+| `oranges` the orange grove | [-34, 11] | **[-32.5, 12]** | North rank, west: a unit clear of the courtyard kitchen's footprint and clear of the river |
+| `albuferaRice` the paddies | [-24, 14] | **[-22, 12]** | North rank, east, straight under the sluice that feeds them |
+| `huertaEs` the huerta beds | [-30, 16] | **[-32.2, 22]** | South rank, west, a unit clear of the flamenco stage |
+| `paellaEs` the rice fire | [-28, 13] | **[-23, 20]** | South rank, east, directly in front of its own paddies — the dish is cooked beside the water that grows it |
+
+Three pieces of the Builder's own work moved with them:
+
+- **`valencia-lane`** is re-laid from ten points to thirteen: it now runs down the east side to the paddies and
+  the rice fire, round the bottom of the cluster and back up the west side past the huerta beds and the orange
+  grove. Both river crossings keep their bridges at [-28, 5.0] and [-34, 5.6], and the walker loop takes the
+  same first four segments it did before.
+- **The acequia** was shortened from `[-22.6, 5.4] [-22.8, 9] [-23.2, 11]` to
+  `[-22.6, 5.4] [-22.7, 6.1] [-22.8, 6.8]`, and its earth bund moved from [-23.4, 12.1] to [-22.9, 8.4]. The
+  paddies moved north to meet the channel instead of the channel running south to them, so it is now the short
+  sluice cut between the river and the field, with its posts and gate still on it.
+- **The dry-gold ground tint** grew from `(-28, 8, 12 x 9)` to `(-28, 16, 20 x 20)` to carry all four.
+
+Three pieces of decoration went, because the ground they stood on is now field:
+
+- **The pine sandbar** along the bay shore and its two pines. The paddies took its ground, and the strip left
+  between the paddies' pad and the water is inside the port's own camera-side wedge, so no three-metre pine can
+  stand there without hiding a clickable object.
+- **The last southern cypress** and **both bay pines**, for the same reason.
+- **The Valencian house** at [-21, 25.5], which the rice fire's new place put it in front of. Like the Plaza
+  Mayor, La Albufera y el Puerto now reads from its own stands; the house cap drops from five to four and the
+  harness names Valencia beside Castile as a region with no decorative house.
+
+All eight Albufera pairs are closed: **twenty-six crowded pairs become eighteen**, and every remaining one is in
+another cluster.
+
+### The eighteen that are left, and why they are not a pass
+
+Every one of them comes from the Stage B blueprint. It set cluster centres five to eight units apart while the
+stands as built are five to twelve units across, so a cluster of five or six stands overlaps itself whatever the
+Builder does with the positions — the plain cannot hold the saffron plot clear of the windmill ridge, and the
+searches confirm it: of the whole dry plain, exactly one position for the saffron plot satisfies the other
+rules at all, the one it already has. Closing these is a re-blueprint of the area, not a pass.
+
+They are therefore recorded in `spain-world.mjs` as a dated table with the overlap measured on the day, and the
+table is a **ceiling, not a licence**: a listed pair may not get worse by more than .05, and an unlisted pair may
+not appear at all. The worst are `azafranEs/molinosMancha` 4.93, `bodegaJerez/flamenco` 3.35 and
+`paTomaquet/gaudiEs` 3.13; the full list is in the harness.
+
+### The two rules that could not be written as asked
+
+- **"No stand footprint crosses a road" cannot hold, and should not.** Every door must be within 2.6 units of a
+  road and the stands are five to twelve units across, so **25 of the 26 have their own road under them by
+  construction**, and ten more sit where two roads meet — the churrería, for one, stands where the main street,
+  the Valencia lane and its own passage come together, which is what a town looks like. The harness therefore
+  asserts the part that could silently break: every stand has a road centreline under or beside its footprint,
+  so a stand can never be stranded from the network.
+- **A stand footprint over water** is real but rare. Only two boxes touch it: the fishing port at 41.6 per cent,
+  which is moored in the bay on purpose, and the ham counter at 3.4 per cent, where a box corner overhangs the
+  river bank although no vertex does. Both are held at a ceiling; every other stand is at zero, and the
+  per-vertex rule above is unchanged.
+
+### Verification of this pass
+
+| Check | Result |
+| --- | --- |
+| `npm run typecheck` | Passes |
+| `npm test` | 16 harnesses pass |
+| `node scripts/audit/objects.mjs` | `spain: rooms=12 card-only-with-prop=14`, unchanged |
+| Footprints | 26 crowded pairs to 18; the eight Albufera pairs closed; no stand footprint over water beyond the two ceilings; every stand has a road at its footprint |
+| Ray test, live, fresh load | **25 of 26 stands 10 of 10.** The paddies lose one ray, and not to anything Spanish: see below |
+| Screens | La Albufera at approach zoom on the contact sheet, with the five named stands, the rice fire, the whole area at 130 and both 215 overviews |
+
+**One ray, and it is Morocco's.** The paddies are covered on one of their ten rays by `souk`, whose footprint
+runs from x -24 to x -8 — **six units west of the x -18 line Spain owns to**, over ground the Albufera now uses.
+It is the last Moroccan item on Spanish soil after the three of Stage C and the two riads of 2026-09-17. It
+cannot be fixed from the Spanish side: every arrangement of the four Albufera stands that clears that ray puts
+the orange grove inside the courtyard kitchen's footprint, because the corridor between them is 14.1 units and
+the two stands need 17.2.
+
+### Why the souk cannot simply move east
+
+Taken up as a hand-off the same day, with `SK` and its six child hit-objects in `graph.ts` in scope. It does not
+close, and the measurements are here so nobody repeats the search.
+
+- The souk's footprint is **16 by 10** and `SK` sits at its centre, so for the whole footprint to lie east of
+  x -18 with a unit clear, `SK.x` must be **-9 or east**.
+- It is 10 deep and Morocco is a strip between the sea and the table edge, so `SK.z` must be between **17 and
+  23**; there is no northern or southern band to slip into.
+- In that band the ground east of x -9 is taken. **Jemaa el-Fna** stands at [-2, 18] with a 10.6 by 8 footprint
+  (x -7.3 to 3.3) and the **riad kitchen** at [7, 21] with 6 by 6.1 (x 4.1 to 10.1); the sea reaches x 13 at
+  z 20. A 16-wide souk placed at `SK.x` -9 covers Jemaa el-Fna from x -7.3 to -1. **Every position in the band
+  that satisfies the boundary overlaps a Moroccan stand**, and a grid search at half-unit steps over
+  x -12 to 14, z 13 to 26 returns no free cell.
+- The arithmetic behind that: the souk 16, Jemaa el-Fna 10.6 and the riad kitchen 6 want 32.6 units plus two
+  gaps in the 30 units between the Spanish line and the water. Morocco is one stand too wide for its strip,
+  exactly as five of Spain's six clusters are.
+- Small eastward moves were tried live for the one ray rather than the footprint. They do clear it at some
+  offsets — `SK` [-14, 20] and [-13, 20] both read zero — but not monotonically: [-14.5, 20] reads three and
+  [-13.5, 20] reads six. The souk is lanes under reed shade, so a ray threads between two awnings at one offset
+  and meets a post at the next. A zero that comes from alignment rather than clearance would break on any later
+  change, so none was taken.
+
+**It stays with the Lead.** Closing it means moving Jemaa el-Fna and the riad kitchen east as well, and
+probably narrowing the souk's own prop, which is a Morocco blueprint decision and not a Builder's. The
+alternative is to accept the one ray, which is what stands today.
+
+Not verified in this pass: the rooms and the portrait rooms in a displayed pane; nothing in it touched a room.
+
 ## Retrospective, 2026-09-16
 
 Spain was declared done at two in the morning: Stage E passed, sixteen harnesses green, the definition of done
@@ -785,6 +912,53 @@ next area does not repeat them.
 The pattern under all twelve: every one was visible in ten minutes of looking, and none was visible to a harness
 that did not yet exist. Harnesses keep a fixed defect fixed; they do not find the next one. Looking does.
 
+## Retrospective, second day, 2026-09-17
+
+The owner walked the **live site** the next morning and found nine more, across Spain and Turkey. All nine are
+fixed in the dated sections above and in [Spain rooms](spain-rooms.md) and the
+[Turkey world](turkey-world.md). As with the twelve of 2026-09-16, each one is now a rule rather than a pass
+note, so the next area does not repeat it. The pattern this time: the first walkthrough was on the dev server,
+and a published world is a different thing to look at.
+
+| # | What the owner saw | Cause | Rule now lives in |
+| --- | --- | --- | --- |
+| 1 | Stands hid other stands: the family kitchen covered the ham counter, the churrería the pintxo bar, the Alhambra and the bodega the courtyard kitchen | The wedge rule guards the ground in front of a stand, and cluster neighbours sit inside each other's wedges, so it cannot express this case at all | [Definition of done](agent-team-playbook.md#5-definition-of-done-the-china-standard), every clickable object fully visible under a ten-ray occlusion test; [Methodology: build a believable community](new-area-methodology.md#build-a-believable-community); [Stage E2](agent-team-playbook.md#stage-e2-owner-walkthrough-reviewer-then-lead) step 3, run live and treated as the authority |
+| 2 | The whole Mediterranean table rendered white at the 215 zoom limit | The scene fog was a hand-written 90/200 pair per world while the zoom limit came from `worldZoomLimit`; the table sat past the far plane | [Definition of done](agent-team-playbook.md#5-definition-of-done-the-china-standard) and [Methodology: build a believable community](new-area-methodology.md#build-a-believable-community), fog derived by `worldFogRange`; [Stage E2](agent-team-playbook.md#stage-e2-owner-walkthrough-reviewer-then-lead) step 2, one shot at the maximum zoom-out |
+| 3 | "A strange red bar house in front of the rice fire" — the barraca the `paellaFire` stand built for itself, reading from above as a white block with a folded roof and a red bar | Decor a stand builds for itself was never read from the overview, and a stand's own buildings were not counted as blockers | [Definition of done](agent-team-playbook.md#5-definition-of-done-the-china-standard) and [Methodology: build a believable community](new-area-methodology.md#build-a-believable-community); the silhouette review is [Stage C](agent-team-playbook.md#stage-c-parallel-build-builder-stand-maker-room-maker-researcher) acceptance for the Stand maker |
+| 4 | The cider glint began above the bottle's lip, "so it looks fake", and stopped short of the cider; the sherry thread the same at its lower end | The box tops and bottoms were set near the thread rather than on the painted lip and the painted surface, and were never checked against the lit pixels | [Definition of done](agent-team-playbook.md#5-definition-of-done-the-china-standard) and [Methodology: live-image motion standard](new-area-methodology.md#live-image-motion-standard), both endpoints measured per orientation and read back off the effect canvas |
+| 5 | The cheese farm steamed although the room's own text describes no hot process | "Every pictured hot vessel steams" was applied to a cold copper caldero; nobody read the room's touches and story against it | [Definition of done](agent-team-playbook.md#5-definition-of-done-the-china-standard) and [Methodology: live-image motion standard](new-area-methodology.md#live-image-motion-standard), a hot vessel *and* a hot process, the `drip` variant where the painting shows liquid without heat, and the motion floor re-measured |
+| 6 | The coffee-house's rain signature was invisible on a phone | The phone box sat on the lower-right sash, outside the x .094–.906 band a 390-wide viewport shows of that painting; the harness checked only `phone[1]` and `phone[3]` | [Methodology: live-image motion standard](new-area-methodology.md#live-image-motion-standard), the phone band beside the measurement rule; [Definition of done](agent-team-playbook.md#5-definition-of-done-the-china-standard); [Stage E2](agent-team-playbook.md#stage-e2-owner-walkthrough-reviewer-then-lead) step 5, zero lit pixels at phone width fails |
+| 7 | "Sumac has too few explanations": the Turkish market's sumac card was two sentences where its neighbours have three paragraphs | Card-only blurbs were never measured against the file's own length band, and the owner opens cards | [Methodology: give story cards depth](new-area-methodology.md#give-story-cards-depth), [Stage A check](agent-team-playbook.md#stage-a-research-and-brief-researcher-lead) and the [definition of done](agent-team-playbook.md#5-definition-of-done-the-china-standard); a thin card is a walkthrough defect at [Stage E2](agent-team-playbook.md#stage-e2-owner-walkthrough-reviewer-then-lead) step 4 |
+| 8 | The lead read "the Turkish market: sumac" as the kebab room's sumac touch; she meant the market's own card, and the market had no sumac touch either | The confirm-the-object rule covered which object to remove, not how far a named subject reaches | [Communication rules](agent-team-playbook.md#7-communication-rules), extended: a place and a subject cover every object that subject appears in there, and the report says which |
+| 9 | A Sonnet auditor ended its turn twice to "wait" for a capture batch, and the lead had to resume it | Nothing in the brief format said an agent finishes its own measurements inside its turn, and the brief left the command sequence to the agent | [Which model does which step](agent-team-playbook.md#6-which-model-does-which-step): an agent drives its captures synchronously and never ends its turn to wait, and a Sonnet brief names the exact commands and the expected files |
+
+Seven of the nine were visible on the live site in a few minutes of looking, and two — the phone rain and the
+sumac card — only by opening the thing itself on a phone and reading it. None was visible to a harness. The rule
+added for that is [Stage E2](agent-team-playbook.md#stage-e2-owner-walkthrough-reviewer-then-lead) step 10: the
+walkthrough repeats after every publish, on the live site, and each repeat gets its own dated heading here.
+
 ## What happens next
 
-Stage F waits on two owner decisions: whether the whole Mediterranean world goes live with Greece, Morocco and Dalmatia still at the card-only level, or those areas are dimmed first; and what to do about the stands that stand in front of other stands. The 2026-09-17 pass cleared every house and tree from in front of every clickable object, which leaves that second question as the only thing still hiding a stand: the family kitchen covers the ham counter, the churrería covers the pintxo bar, and the Alhambra and the bodega together cover the courtyard kitchen. Those are positions in `spain-objects.ts` and geometry in `props-spain.ts`, so the fix is the Researcher's and the Stand maker's, not the Builder's, and it is a question of how far the blueprint's cluster centres can move. A second independent review pass after that, then publish.
+The Mediterranean is **published**: it went into `PUBLISHED_WORLDS` on 2026-09-16 with Spain at the China
+standard, and the second deploy of 2026-09-17 carried the visibility, fog and room fixes. Greece, Morocco and
+Dalmatia are live beside it at the card-only level, which the owner accepted when the world went out.
+
+All twenty-six of Spain's clickable objects are clear of every house, tree and neighbouring stand from the
+arrival camera, and the four Albufera stands no longer share ground. What is open:
+
+- **The Moroccan souk's footprint on Spanish ground.** It runs to x -24, six units west of the line Spain owns
+  to, and takes one of the paddies' ten rays. It was taken up as a hand-off on 2026-09-17 and **does not close
+  by moving the souk**: the fifth pass above has the measurements. Morocco's three stands want 32.6 units in a
+  30-unit strip, and a 16-wide souk placed far enough east to clear the Spanish line lands on Jemaa el-Fna.
+  Closing it means moving Jemaa el-Fna and the riad kitchen too, and probably narrowing the souk's prop — a
+  Morocco blueprint decision.
+- **The eighteen crowded stand pairs** outside the Albufera, held at their measured ceiling in
+  `spain-world.mjs`. Closing them means revisiting the Stage B cluster centres, which put five and six stands
+  five to eight units apart when the stands as built are five to twelve across. That is a blueprint decision.
+- **Still unverified, from every pass so far**: the site on a physical phone rather than an emulated viewport;
+  the site on a large screen; and reduced motion for the cues added on 2026-09-17, the cheese farm's whey drip
+  and the coffee-house rain.
+
+The next owner walkthrough is on the live site, under its own dated heading here, as
+[Stage E2](agent-team-playbook.md#stage-e2-owner-walkthrough-reviewer-then-lead) now requires after every
+publish.

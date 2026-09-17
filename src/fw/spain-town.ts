@@ -26,7 +26,12 @@ export const SPAIN_ROADS: Road[] = [
   { id: 'north-road', width: 1.8, points: [[-45.2, -8.2], [-46, -14], [-50, -18]] },
   { id: 'pepper-spur', width: 1.6, points: [[-50, -18], [-53, -15.5], [-58, -12]] },
   { id: 'coast-lane', width: 1.8, points: [[-50, -18], [-44, -21], [-40, -22], [-34, -22], [-28, -21], [-24, -18], [-22.6, -14], [-22.2, -10], [-21.4, -6], [-20.6, -2]] },
-  { id: 'valencia-lane', width: 1.6, points: [[-28, -2], [-28, 3], [-28, 8], [-24, 12], [-24, 14], [-30, 16], [-34, 12], [-34, 10], [-34, 4], [-36, -3]] },
+  // Owner feedback, 2026-09-17: "the rice farm and the huerta beds are overlapped a bit and show both in a
+  // section". The four Albufera stands were stacked on one another; they are now spread over the open ground
+  // between the river and the southern table edge, and the lane follows them: down the east side to the
+  // paddies and the rice fire, round the bottom and back up the west side past the huerta beds and the orange
+  // grove. Both river crossings keep their bridges at [-28, 5.0] and [-34, 5.6].
+  { id: 'valencia-lane', width: 1.6, points: [[-28, -2], [-28, 3], [-28, 8], [-24, 11], [-22.5, 14], [-23, 18], [-25, 22], [-30, 23], [-33, 21], [-33, 14], [-34, 10], [-34, 4], [-36, -3]] },
   // The spur used to run from the coast lane out to the trencadis terrace at [-21.4, -19.8]. The mosaic
   // balustrade moved north on 2026-09-17, out from under the bread terrace's own roof, and the spur followed:
   // it now leaves the coast lane at the strait and runs west along the terrace's landward side to its door.
@@ -206,10 +211,10 @@ function equestrian(): P {
  *  count. See docs/spain-world.md, "Third pass".
  */
 const HOUSES: [SpainStyle, number, number, number, number, number, number][] = [
-  // La Albufera y el Puerto: lime wash and a reed shade on the bay's southern shore, the one piece of ground in
-  // Valencia that is behind no stand. The two houses by the port stood in front of the port, the bread terrace
-  // and the mosaic bench and were removed.
-  ['valencian', -21.0, 25.5, -.2, 3.0, 2.4, 1],
+  // La Albufera y el Puerto has no decorative house since 2026-09-17. Two by the port stood in front of the
+  // port, the bread terrace and the mosaic bench; the last one, on the bay's southern shore, stood in front of
+  // the rice fire once the four Albufera stands were spread over that ground to stop them overlapping. Like
+  // Castile, the cluster now reads from its own stands.
   // El Patio y la Bodega: the last white house on the road to the Alhambra, west of the terrace. The two on the
   // patio hill stood in front of the courtyard kitchen and the oil mill; the one above the bodega stood in
   // front of the bodega and three units in front of the flamenco stage. It came down from two storeys to one
@@ -286,6 +291,7 @@ export function spainTown(ctx: LayoutCtx) {
   // Two of the four Alhambra cypresses stood in front of the courtyard kitchen and the oil mill and came out;
   // the third moved north-west to the foot of the terrace, where the oil mill's wedge ends.
   for (const [x, z] of [[-62.8, 17.4], [-64, 18.5]]) place(cypress(.95), x, z, x).name = 'alhambra-cypress';
-  // The southernmost sandbar pine stood nine units in front of the port and was removed.
-  for (const [x, z] of [[-19.2, 10.6], [-19.0, 12.4]]) place(umbrellaPine(.95), x, z, x).name = 'sandbar-pine';
+  // The pine sandbar along the bay shore is gone, 2026-09-17. The paddies moved west onto the ground it stood
+  // on, and the strip left between the paddies' pad and the water is inside the port's own camera-side wedge,
+  // so there is nowhere on that shore a three-metre pine can stand without hiding a clickable object.
 }

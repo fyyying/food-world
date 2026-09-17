@@ -76,7 +76,7 @@ Check: Type check and all harnesses pass, the baseline numbers hold, and the lea
 2. Write the area brief and the object list. Ten to fifteen objects with rooms, five to ten ingredient stops, three to six landmarks
 3. Write the image brief from `docs/examples/spain-scene-generation-prompt.md` and the art direction. When pictures do not exist yet, hand the owner the final brief with the exact file names and the folder to drop them in, then stop and wait. Do not start Stage B on guessed pictures
 
-Check: The object list has unique ids, every object has a `kind`, an `area` and a purpose, and every historical claim has a source.
+Check: The object list has unique ids, every object has a `kind`, an `area` and a purpose, and every historical claim has a source. A card-only object's blurb is accepted at the same length as its neighbours': it sits in the file's own length band, which is three paragraphs — identity, record, and a route out — with sources. The Turkish market's sumac card shipped at two sentences in a file whose other stall cards run to three paragraphs, and the owner found it by opening it. A thin card goes back at this check, not at the walkthrough.
 
 ### Stage B: Blueprint and assets (Lead, Room maker)
 
@@ -101,6 +101,7 @@ Stand maker:
 1. Build the main stands first, then ingredient stops, then details
 2. Follow the stand standard in the handbook: modelled food, always-on loop, six to nine people, click chain food first and speech last, ambient chat, `ownReaction`
 3. Write `<id>-reactions.mjs` as the stands grow. Every stand appears in it
+4. Look at each stand's silhouette from the arrival camera before handing it over. A stand that builds its own decor — a field house, a shelter, a shade — owns that decor's read from above exactly as the town's decor does, and the stand's own buildings count as blockers in the visibility check. The Albufera rice fire built itself a barraca behind the pan; from above it read as a white block with a folded roof and a red bar, and the owner asked for it to be removed
 
 Room maker:
 
@@ -136,13 +137,17 @@ Failures return to the owning role. The stage repeats until every line passes.
 Required before Stage F. Stage E checks the area through harnesses, audits and the definition of done. This stage checks it the way the owner does, by looking at it. Spain passed Stage E at two in the morning with chilli strings cut out of the paintings, a glint across a pourer's face, a straight cut across a sunbeam, a pour that crawled, dry cups and bowls, twenty-four houses hemming in the stands, arcades that read from above as a bridge half in the water, people sliding without moving their legs, a mule circling tail-first, static fountains and smoke born inside the roofs. Ten minutes of the owner looking found all of it. The harnesses are not the review; they are what keeps a fixed defect fixed.
 
 1. A reviewer who did not build the area opens **every room for ten seconds in both orientations**, 390 x 844 and 1280 x 720, watching before clicking. Ten seconds is long enough to see a pour crawl, a glint miss its stream, a string swing with its cut edge, a cup that should steam and does not
-2. The reviewer flies the whole table at the **overview zoom**, then visits **every cluster at approach zoom**, and looks at each decor type from above for what it reads as
-3. The reviewer writes down **everything that looks odd**, in plain words, in one list in `docs/<id>-world.md`, without first deciding whether it is a defect. "The thing by the river looks like a bridge half in the water" is a valid entry
-4. The **lead does the same walkthrough on a fresh page load**. Restart the dev server through the preview tool; a running page can hold a stale world after HMR and show a defect that is already fixed, or hide one that is not. Never start a second copy on the port
-5. Every open item becomes a fix brief for an agent on Opus. Any change to a room's cues re-runs the motion capture (a Sonnet task) before the item is closed
-6. The walkthrough repeats after the repairs, on a fresh page load, until the list has no open item
+2. The reviewer flies the whole table at the **overview zoom**, then visits **every cluster at approach zoom**, and looks at each decor type from above for what it reads as. One shot is taken at the world's **maximum zoom-out**, not at a comfortable overview distance: the fog is derived from that limit, and a table that reads at 130 can still render flat in the paper colour at 215. At the limit the table must read, with only a light haze at the far corner
+3. The reviewer runs the visibility check **on the live page, after a fresh load**: ten rays per clickable object along the arrival direction, and the first thing each ray meets must be that object. The offline harness builds a slightly different world — no recipes, so some cue and label meshes differ — so the live page is the authority and the harness is what keeps a fixed defect fixed
+4. The reviewer opens **every card**, not only every room. A card-only object whose blurb is visibly shorter than its neighbours' is a walkthrough defect and goes on the list; the owner opens cards, and a two-sentence blurb among three-paragraph ones is what she reads
+5. At **390 x 844 the reviewer checks that every cue actually draws**. A phone shows only the middle band of a wide painting after the fit, so a patch measured outside that band draws nothing at all. A cue that draws zero lit pixels at phone width fails, however well it reads on the desktop. Read the room's own effect canvas rather than trusting the configuration
+6. The reviewer writes down **everything that looks odd**, in plain words, in one list in `docs/<id>-world.md`, without first deciding whether it is a defect. "The thing by the river looks like a bridge half in the water" is a valid entry
+7. The **lead does the same walkthrough on a fresh page load**. Restart the dev server through the preview tool; a running page can hold a stale world after HMR and show a defect that is already fixed, or hide one that is not. Never start a second copy on the port
+8. Every open item becomes a fix brief for an agent on Opus. Any change to a room's cues re-runs the motion capture (a Sonnet task) before the item is closed
+9. The walkthrough repeats after the repairs, on a fresh page load, until the list has no open item
+10. **After every publish the walkthrough repeats on the live site itself**, not only on the dev server. The published site is what the owner opens, and the second day's walkthrough of Spain and Turkey — nine items, none of them caught by the dev-server passes — was made on it. Each repeat's list goes into `docs/<id>-world.md` under its own dated heading, as Spain's "Third pass" and "Fourth pass" sections do, so the passes stay separately readable instead of being folded into the first list
 
-Check: the walkthrough list is written down, every item is closed, and the motion capture has been re-run since the last room change. Nothing is handed over to Stage F while the list has an open item.
+Check: the walkthrough list is written down, every item is closed, and the motion capture has been re-run since the last room change. Nothing is handed over to Stage F while the list has an open item. After publication the same check applies to each repeat's dated list.
 
 ### Stage F: Publish (Lead)
 
@@ -164,7 +169,9 @@ World:
 - At least three walker loops or lanes with residents in the area's traditional clothing, steps matched to distance
 - Small details in every cluster: hanging produce that sways, stacks, racks, crocks, animals in pens
 - Decorative houses are capped: 12 to 16 in the area, 1 to 3 per style. Nothing solid stands on a road centreline. Every stand keeps a clear corridor from the nearest road with 2.5 units clear in front of it, and no house stands on the arrival camera's line to a stand (`<id>-world.mjs`)
-- Every decor type was looked at from the overview camera and reads as what it is. A free-standing arcade, a granary on stilts or a slab on piers that reads as a bridge half in the water fails, however correct it is close up
+- Every clickable object is fully visible from the arrival camera. Ten rays per object are cast along the arrival direction — nine at the object's camera-facing front face at three heights, one at the diamond cue over its anchor — and the first thing each ray meets must be that object. Decorative houses, trees and farmhouses count as blockers, and so does another stand: a stand that hides a neighbouring stand fails exactly as a house does, and a wedge rule cannot express that case, because neighbours inside a cluster sit five to eight units apart and every pair would fall inside every other pair's wedge. The check runs on the live page after a fresh load, and that run is the authority; the harness in `<id>-world.mjs` builds a slightly different world and is what keeps a fixed defect fixed
+- Every decor type was looked at from the overview camera and reads as what it is. A free-standing arcade, a granary on stilts or a slab on piers that reads as a bridge half in the water fails, however correct it is close up. This covers the decor a stand builds for itself as well as the town's: a field house, a shelter or a shade that belongs to a stand is read from above under the same rule, and it counts in the visibility check above like any other building
+- The table reads at the world's own zoom-out limit. The scene fog is derived from that limit and the table's half-diagonal (`worldFogRange` in `world-camera.ts`), never hand-set per world, and a screenshot at the maximum zoom-out shows the table with only a light haze at the far corner. The Mediterranean rendered entirely white at its 215 limit because its fog was a hand-written 90/200 pair while the limit came from elsewhere
 - Every figure that translates swings its legs in step with its speed; a figure that should stand still does not translate; a figure carried by a moving vehicle is seated. Animals face their travel, and their hooves plant and push backward under the body (the gait and gait-direction checks in `<id>-world.mjs`)
 - Every water feature ticks. Chimney smoke uses the tinted, denser variant, its anchor computed from each style's ridge height plus the cap, and it is visible in a screenshot at the default overview zoom, not only close up
 - Every motion was watched for ten seconds and reads as physically plausible: a pour falls, a flag flaps, a string barely moves
@@ -183,9 +190,12 @@ Rooms:
 - Every room has two paintings at the required sizes that pass the art-direction check
 - Every room is alive on entry with three or four always-on loops in both orientations, and every pictured hot food steams. `room-loops.mjs` passes
 - Every hot cup, bowl, plate, pan, pot and oven mouth has its own measured steam source, not only the big vessels. Frying oil and boiling pots also get a pot ellipse. Cold food and a cup held in a hand stay dry, and each orientation is measured separately
+- A steam source needs a pictured hot vessel **and** a hot process in the room's own text. Where the painting shows a liquid but no heat — whey, brine, oil — the liquid drips or runs instead, with the `drip` glint variant, and the room's motion floor is re-measured after the swap. The cheese farm steamed over a cold copper caldero while its own touches and story described pressing and draining, and the owner read the text and asked why it was steaming
+- A traced liquid path starts exactly at the pictured lip or spout and ends exactly at the pictured liquid surface. Both endpoints are measured on the pixels of each orientation and checked live by reading the room's own effect canvas. Nothing glints on the vessel's glass above the lip, and nothing glints below the surface the liquid lands on
 - Hanging motion is a sprite over a clean painting. No colour-keyed crop is cut out of a finished painting in a new area; where the painting already carries the object, it is painted out offline and the sprite hangs from the painted hook
 - Every delivered motion sprite is used, or the room doc says why it is not
 - Every traced path and every box was measured on a gridded crop of that orientation's painting and verified on an overlay contact sheet before hand-over. Every patch box edge that falls inside the painting was looked at at 100 percent zoom
+- Every phone patch box and every phone sprite lies inside the band a phone actually shows. A 390-wide viewport fits a wide painting to about x .094 to .906 of its width, so a box outside that band draws nothing; measure the band for the room's own painting and check the lit pixels live. The coffee-house's rain signature sat on a sash outside it and had never been visible in portrait
 - The motion capture was re-run after the last change to any room's cues, and the quality baseline carries the new numbers
 - The loops can be seen: `scripts/audit/room-motion.py` shows 3 percent or more of the frame changing in two seconds, or the room carries a medium crisp cue (birds at scale 1.4, six or more leaves, a swinging bunch) and scores at least 2.5 percent
 - Every room has two or three touches that name something visible in both orientations, each with a fact and, where the fact is specialist, a source
@@ -195,6 +205,7 @@ Rooms:
 Cards and stories:
 
 - Every object has a tagline and a three-to-five-paragraph blurb with dated eras and local-script names
+- A card-only object's blurb sits in its file's own length band, beside the blurbs of the objects around it: three paragraphs of identity, record and a route out, with sources. A card that is a fraction of its neighbours' length fails, because the owner opens cards
 - Every room object has story depth with sources and two `NEXT` links
 - The world intro passes `world-intros.mjs`
 - Legends are labelled as legends
@@ -230,8 +241,11 @@ Mechanical work never goes to a higher tier because the higher tier is already a
 - The task, with the ids, coordinates, sizes and names it needs, so it never has to guess a contract
 - The verification steps, by command: what to run, what to measure, what to look at and at which sizes
 - The report format: what was changed per file, what was measured with the numbers, one contact sheet, and an explicit list of what was *not* verified
+- For a mechanical task, the **exact command sequence and the files it is expected to produce**. A Sonnet brief leaves nothing to the agent's judgement: the commands in order, the arguments, and the output files by name
 
 A report without the "not verified" list is incomplete and goes back.
+
+**An agent drives its own work to the end of its turn.** It runs its captures and measurements synchronously — it starts the batch, waits inside its own turn, and reports the numbers — and it never ends its turn to wait for a capture, a render or a build to finish. Nothing resumes an agent but the lead, so an agent that stops to wait has handed its bookkeeping back to the most expensive session in the team; a Sonnet auditor did this twice in one pass. A report that says it is waiting is incomplete and goes back, exactly like a report without its "not verified" list.
 
 Model names change. Before a kick-off, check each provider's current list and take the newest model in the same tier. Model ids in this section were checked against the providers' model pages on 2026-09-15. GPT-6 Astra was released on 2026-09-04 and is rolling out; when an organisation does not have it yet, GPT-5.6 Sol takes the lead session's rows.
 
@@ -268,6 +282,6 @@ Rules:
 - Post a one-paragraph status at the end of each stage: what is done, what failed, what is next
 - Report a blocker the moment it appears: a missing picture, a wrong size, a conflicting id, a helper that does not exist
 - Never invent a source, a date or a food identity. Write "unverified" and ask the researcher
-- When the owner points at something, confirm which object it is before removing anything. Take a screenshot from the owner's own view, or read the position out of the built world, and say which object you believe is meant. The lead removed Spain's hórreo because the owner had said "the yellow bridge-looking thing which is half in the water"; the owner meant a free-standing plaza arcade thirty units away. A guess costs an object and a card chain
+- When the owner points at something, confirm which object it is before removing anything. Take a screenshot from the owner's own view, or read the position out of the built world, and say which object you believe is meant. The lead removed Spain's hórreo because the owner had said "the yellow bridge-looking thing which is half in the water"; the owner meant a free-standing plaza arcade thirty units away. A guess costs an object and a card chain. And when the owner names a place and a subject, the fix covers **every object that subject appears in at that place**, and the report says which: "the Turkish market: sumac" was read as the kebab room's sumac touch, but she meant the market's own sumac card, and the market had no sumac touch at all. Both were rewritten, and both were named back to her
 - Never widen the scope. A missing helper is built in the owning file, not in `props.ts`, unless two areas need it
 - When the docs and the China code disagree, follow the China code and report the difference in the status

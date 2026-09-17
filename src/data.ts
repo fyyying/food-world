@@ -53,6 +53,29 @@ export const STATIC = import.meta.env.VITE_STATIC === "1";
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 export const imageUrl = (id: string) => (STATIC ? `${BASE}/static/images/${id}.jpg` : `/api/image/${id}`);
 
+// ---------- the recipe add-on ----------
+// Recipes are an optional layer over the world, not part of it: off by default, switched on in the settings
+// panel, and never fetched while it is off. The preference is a single localStorage key. Storage can be
+// missing or refused (private windows, blocked site data), so every access is wrapped and the layer simply
+// stays off for that visit.
+const RECIPE_LAYER_KEY = "food-tour:recipes";
+let recipeLayer = false;
+try { recipeLayer = localStorage.getItem(RECIPE_LAYER_KEY) === "on"; } catch { recipeLayer = false; }
+const recipeLayerListeners = new Set<(enabled: boolean) => void>();
+
+/** Is the recipe add-on showing? Everything that draws a dish asks this first. */
+export const isRecipeLayerEnabled = () => recipeLayer;
+
+/** Called whenever the add-on is switched on or off, so open cards and rooms can change without a reload. */
+export function onRecipeLayerChange(listener: (enabled: boolean) => void) { recipeLayerListeners.add(listener); }
+
+export function setRecipeLayerEnabled(enabled: boolean) {
+  if (enabled === recipeLayer) return;
+  recipeLayer = enabled;
+  try { localStorage.setItem(RECIPE_LAYER_KEY, enabled ? "on" : "off"); } catch { /* Keep the choice for this visit. */ }
+  for (const listener of recipeLayerListeners) listener(enabled);
+}
+
 export async function fetchRecipes(refresh = false): Promise<{ recipes: Recipe[]; stale: boolean }> {
   const res = await fetch(STATIC ? `${BASE}/static/recipes.json` : `/api/recipes${refresh ? "?refresh=1" : ""}`);
   if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error ?? `Recipes failed (${res.status})`);

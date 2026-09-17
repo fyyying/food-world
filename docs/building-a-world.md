@@ -15,7 +15,8 @@ The China world is the reference. When this handbook and the China code disagree
 | Detail | A small 3D miniature with no card: hanging chillies, a cabbage stack | `northDetail`, `xjDetail`, `jnDetail`, `foodDetail` |
 | Room | A living painting that opens when the visitor clicks an object with `scene:` | `scenes-<id>.ts`, `public/scenes/<room>/` |
 | Touch | A diamond marker inside a room. It gives a small effect and a short discovery | `hotspots` of a room |
-| Card | The text panel for an object: tagline, blurb, dishes | `ui.ts` renders it from the object |
+| Card | The text panel for an object: tagline, blurb, flavours, partners | `ui.ts` renders it from the object |
+| Recipe add-on | The optional layer of matched dishes on cards and in rooms. Off by default, switched on under **Recipes** in the settings panel | `isRecipeLayerEnabled` in `src/data.ts`; gated in `ui.ts`, `scene.ts` and `main.ts` |
 | Story depth | Optional long reading with dates and sources under a card | `<id>-stories.ts` |
 | Discovery cue | The small ivory-and-brass diamond over every clickable object in the 3D world | `discoveryCues: true` in `buildWorld` |
 
@@ -94,12 +95,12 @@ Do these steps in order. Steps 1 to 7 apply to a new area inside an existing wor
 6. Spread `<ID>_SCENES` into `SCENES` in `main.ts`
 7. Hook card art: `cardArt()` in `ui.ts` maps object ids to files. Extend the branch for your world, as `TURKEY_CARD_ART` does
 8. New world only: add the id to `WorldId`, `WORLDS`, `MAP_REGIONS` (with `built: true`, `cuisines`, `pos`, `size`, `color`, `emoji`)
-9. New world only: add `is<World>Recipe` and extend `worldRecipes` and `enrich` in `graph.ts`; add `ENRICH` rows so each recipe has `area`, `core`, `techniques`, `place`
+9. New world only, and only when the recipe add-on is being extended to the world: add `is<World>Recipe` and extend `worldRecipes` and `enrich` in `graph.ts`; add `ENRICH` rows so each recipe has `area`, `core`, `techniques`, `place`. This is a separate, later task and never blocks the area (see section 6.1)
 10. New world only: add the `build<World>` branch to `getWorld` in `main.ts`
 11. New world only: add `<ID>_ICONS` and `<ID>_PROPS` to the lookup in `snapshot.ts`, and `ICON_KEYS` entries in `ui.ts` for objects whose card badge is a rendered prop
 12. New world only: add an atlas preview branch in `map.ts`
 13. New world only: add a `WORLD_INTROS` entry in `world-intros.ts`. Summary 60 to 180 characters, three to six beats, each body 420 characters maximum. The test `world-intros.mjs` enforces this
-14. New world only: add the recipe filter to `scripts/export-static.mjs`
+14. New world only, with step 9: add the recipe filter to `scripts/export-static.mjs`
 15. New world only: add the id to `PUBLISHED_WORLDS` in `world-availability.ts` when the world is finished. Without this the public page shows it asleep. Update `world-availability.mjs`
 16. Add one line to `README.md` and write `docs/<id>-world.md`
 
@@ -234,7 +235,7 @@ Each `WorldObject` has these fields:
 | `scene` | The room id this object opens |
 | `tagline` | One sentence, under 80 characters |
 | `blurb` | Three to five paragraphs separated by `\n\n`. See the standard below |
-| `match(r)` | Which recipes live here. Use `has(r.core, /regex/)` or `r.place === id` |
+| `match(r)` | Which recipes live here, when the recipe add-on is on. Use `has(r.core, /regex/)` or `r.place === id`. Never evaluated while the add-on is off |
 
 The China blurb standard (see `hotpot`, `dumpling`, `teahouse` in `graph.ts`):
 
@@ -248,6 +249,39 @@ The China blurb standard (see `hotpot`, `dumpling`, `teahouse` in `graph.ts`):
 Story depth (`<ID>_STORY_DEPTH`) adds three paragraphs of dated history with sources for objects that open rooms. `<ID>_NEXT` links each card to two related objects.
 
 Card art: `<ID>_CARD_ART` maps an object id to a WebP in `public/scenes/<id>-food/`. Objects without art show a rendered snapshot of the prop.
+
+### 6.1 Recipes are an add-on, not part of an area
+
+Recipes are a layer over a finished world, not a property of it. The switch lives in the settings panel as
+**Recipes**, with the line "Show the family recipes that match each place" under it. It is **off by default**,
+remembered in `localStorage` under `food-tour:recipes`, and off whenever storage is unavailable.
+
+The owner asked for this on 2026-09-17: "remove the recipe layer, make it something like an add-on which people
+can turn on and off. It's too much to also perfect them while I'm creating the world, and the dishes are random
+currently and distracting on the cards."
+
+What that means for an area:
+
+- **Build and review every area with the add-on off.** That is the picture the owner opens and the definition of
+  done in the playbook applies to it. A card ends at "Often paired with"; a room's actions hold only "The story"
+- **Matching recipes to an area is a separate, later task** and is never part of an area's definition of done. A
+  card whose dishes are wrong or random is a recipe task, not an area defect
+- Leave `match(r)` on every object. The predicates stay in the data files and are simply not evaluated while the
+  add-on is off. Do not delete one and do not add one to finish an area
+
+Where it is gated:
+
+| Surface | Gate |
+| --- | --- |
+| The fetch | `main.ts` calls `fetchRecipes()` only when the add-on is on — at boot when it was already on, otherwise at the moment it is switched on. Nothing is requested while it is off |
+| Card "Related recipes" | `ui.ts` `showObject` drops the recipes it is handed, so the heading and `.dishes` rows are absent, not empty |
+| Room "FROM THIS KITCHEN" | `scene.ts` `sceneDishRowHtml` returns the empty string, so `.scene-actions` holds only the story button |
+| The recipe preview and page | Unreachable: nothing renders a `[data-recipe]` button. Switching off closes an open one |
+| The atlas | `map.ts` takes no recipe counts at all; an island's clouds and signpost follow `region.built` |
+| Live switching | `onRecipeLayerChange` in `data.ts`. `main.ts` refetches, redraws the open card and calls `livingScene.setDishes`, so the open card or room changes without a reload |
+
+The 3D world, its stands, rooms, discovery cues and stories are identical with the add-on on and off. Only the
+dish rows differ. `scripts/tests/recipe-addon.mjs` holds that line.
 
 ## 7. Rooms
 
@@ -391,6 +425,7 @@ npm test
 | `turkey-world.mjs` | Zoom limits; stairs are continuous flights; no coplanar overlapping faces; a 240-second route and support simulation |
 | `camel-gait.mjs` | A foot is always planted; joint reach; loop continuity |
 | `world-availability.mjs`, `world-intros.mjs` | The public page shows only finished worlds; every world has a complete intro |
+| `recipe-addon.mjs` | The recipe add-on is off by default; a card with it off carries no `.dishes` and no "Related recipes" heading even when the object matches recipes; both come back with it on; a room's dish row is nothing at all with it off |
 
 Add `<id>-reactions.mjs` and `<id>-world.mjs` for a new area. Copy the nearest harness and change the ids.
 

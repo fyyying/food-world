@@ -2,8 +2,8 @@ import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { CSS2DObject, CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer.js";
-import { fetchRecipes, STATIC } from "../data";
-import { MAP_REGIONS, AREAS, WORLDS, areasOf, objectsOf, worldRecipes, enrich, isChinaRecipe, isItalyRecipe, isKoreaRecipe, isMexicoRecipe, isMideastRecipe, isMedRecipe, isIndiaRecipe, isSeasiaRecipe, isNamericaRecipe, isJapanRecipe, isCeuropeRecipe, objectById, type Area, type EnrichedRecipe, type MapRegion, type WorldId, type WorldObject } from "./graph";
+import { fetchRecipes, isRecipeLayerEnabled, onRecipeLayerChange, STATIC } from "../data";
+import { MAP_REGIONS, AREAS, WORLDS, areasOf, objectsOf, worldRecipes, enrich, objectById, type Area, type EnrichedRecipe, type MapRegion, type WorldId, type WorldObject } from "./graph";
 import { buildMap, type MapWorld, type PlacedRegion } from "./map";
 import { buildChina } from "./world-china";
 import { buildItaly } from "./world-italy";
@@ -135,6 +135,7 @@ let allRecipes: EnrichedRecipe[] = [];
 let china: EnrichedRecipe[] = [];   // recipes of the current world
 let livingScene: LivingScene | null = null;   // the illustrated interior we stepped into, if any
 let sceneReturn: { pos: THREE.Vector3; target: THREE.Vector3 } | null = null;   // exactly where the camera was before
+let sceneObject: WorldObject | null = null;   // the object whose room is open, so its dish row can be redrawn
 const OBJECTS_NOW = () => objectsOf(world);
 let hoveredRegion: PlacedRegion | null = null;
 let hoveredThing: Placed | DishMarker | null = null;
@@ -164,28 +165,54 @@ const worldIntro = mountWorldIntro({
   }),
 });
 
+// ---------- the recipe add-on ----------
+// An optional layer over the finished world: the world, its stands, rooms, cues and stories are the same with
+// it on or off, and only the dish rows on cards and in rooms come and go. Nothing is fetched until it is on.
+let recipesLoaded = false;
+async function loadRecipes() {
+  if (recipesLoaded) return;
+  const { recipes } = await fetchRecipes();
+  allRecipes = recipes.map(enrich);
+  recipesLoaded = true;
+}
+/** The current world's recipes, or nothing at all while the add-on is off. */
+const worldRecipesNow = () => (isRecipeLayerEnabled() ? worldRecipes(world, allRecipes).map(enrich) : []);
+/** The recipes an object claims, or nothing at all while the add-on is off. */
+const recipesFor = (o: WorldObject) => (isRecipeLayerEnabled() ? china.filter((r) => o.match(r)) : []);
+/** What a room puts on its table, and the heading over it. Empty while the add-on is off. */
+function sceneDishes(obj: WorldObject, recipes: EnrichedRecipe[]): { dishes: EnrichedRecipe[]; label?: string } {
+  if (!isRecipeLayerEnabled()) return { dishes: [] };
+  // Turkish rooms only show recipes belonging here; coffee and tea do not inherit the area's kebab.
+  const dishes = recipes.length || world === 'middle-east' ? recipes : china.filter((r) => r.area === obj.area).slice(0, 5);
+  return { dishes, label: recipes.length ? "On the table" : obj.id === "hotpot" ? "More Sichuan cooking" : "From this kitchen" };
+}
+
+onRecipeLayerChange(async (enabled) => {
+  if (enabled) {
+    try { await loadRecipes(); }
+    catch (e) { toast(`Couldn't load the recipes: ${(e as Error).message}`, "err"); }
+  }
+  china = worldRecipesNow();
+  // whatever is open changes with it, without a reload
+  const shown = ui.shown;
+  if (shown?.kind === "object") ui.showObject(shown.obj, recipesFor(shown.obj), shown.allObjects);
+  else if (shown?.kind === "recipe" && !enabled) { ui.hide(); diorama?.highlight(null, null); diorama?.pin(null); }
+  if (!enabled) document.getElementById("recipe")!.hidden = true;
+  if (livingScene && sceneObject) {
+    const { dishes, label } = sceneDishes(sceneObject, recipesFor(sceneObject));
+    livingScene.setDishes(dishes, label);
+  }
+});
+
 // ---------- boot ----------
 async function boot() {
   const status = document.getElementById("home-status")!;
   const enter = document.getElementById("enter") as HTMLButtonElement;
   enter.disabled = true;
   try {
-    const { recipes } = await fetchRecipes();
-    allRecipes = recipes.map(enrich);
-    const counts = new Map<string, number>();
-    for (const region of MAP_REGIONS) counts.set(region.id, recipes.filter((r) => region.cuisines.includes(r.cuisine ?? "")).length);
-    counts.set("china", recipes.filter(isChinaRecipe).length);
-    counts.set("italy", recipes.filter(isItalyRecipe).length);
-    counts.set("korea", recipes.filter(isKoreaRecipe).length);
-    counts.set("mexico", recipes.filter(isMexicoRecipe).length);
-    counts.set("middle-east", recipes.filter(isMideastRecipe).length);
-    counts.set("mediterranean", recipes.filter(isMedRecipe).length);
-    counts.set("india", recipes.filter(isIndiaRecipe).length);
-    counts.set("southeast-asia", recipes.filter(isSeasiaRecipe).length);
-    counts.set("north-america", recipes.filter(isNamericaRecipe).length);
-    counts.set("japan", recipes.filter(isJapanRecipe).length);
-    counts.set("central-europe", recipes.filter(isCeuropeRecipe).length);
-    mapWorld = buildMap(counts, (region) => isWorldAvailable(region.id, STATIC));
+    // The recipe add-on is off by default, and while it is off nothing asks the server for recipes at all.
+    if (isRecipeLayerEnabled()) await loadRecipes();
+    mapWorld = buildMap((region) => isWorldAvailable(region.id, STATIC));
     mapScene.add(mapWorld.group);
     for (const r of mapWorld.regions) if (r.available) r.labelEl.addEventListener("click", () => { if (level !== "map" || flight) return; if (r.region.built) enterRegion(r.region); else ui.showRegion(r.region); });
     status.textContent = "";
@@ -472,7 +499,7 @@ function showChapter() {
 function getWorld(id: WorldId): Diorama {
   let d = worlds[id];
   if (!d) {
-    const recipes = worldRecipes(id, allRecipes).map(enrich);
+    const recipes = isRecipeLayerEnabled() ? worldRecipes(id, allRecipes).map(enrich) : [];
     d = id === "china" ? buildChina(recipes) : id === "italy" ? buildItaly(recipes) : id === "korea" ? buildKorea(recipes) : id === "mexico" ? buildMexico(recipes) : id === "middle-east" ? buildMideast(recipes) : id === "mediterranean" ? buildMed(recipes) : id === "india" ? buildIndia(recipes) : id === "southeast-asia" ? buildSeasia(recipes) : id === "north-america" ? buildNamerica(recipes) : id === "japan" ? buildJapan(recipes) : buildCeurope(recipes);
     worlds[id] = d;
     for (const p of d.placed) p.labelEl.addEventListener("click", () => { if (p.labelEl.classList.contains("pinned")) openObject(p); });
@@ -488,7 +515,7 @@ function enterRegion(region: MapRegion) {
   world = id; currentArea = id === 'middle-east' ? 'istanbul' : null;
   diorama = getWorld(id);
   const enteringDiorama = diorama;
-  china = worldRecipes(id, allRecipes).map(enrich);
+  china = worldRecipesNow();
   worldScene.add(enteringDiorama.group);
   const placed = mapWorld!.regions.find((r) => r.region.id === region.id)!;
   const c = placed.group.position;
@@ -550,6 +577,7 @@ const later = (fn: () => void, ms: number) => ((window as unknown as { __fwInsta
 
 function enterLivingScene(p: Placed, obj: WorldObject, recipes: EnrichedRecipe[]) {
   if (livingScene) return;
+  sceneObject = obj;
   clearTimeout(cardTimer); clearTimeout(revealTimer);
   ui.hide();
   diorama!.highlight(new Set([obj.id]), new Set(recipes.map((r) => r.id)), true);
@@ -573,21 +601,20 @@ function enterLivingScene(p: Placed, obj: WorldObject, recipes: EnrichedRecipe[]
     fade.classList.add("on");
     later(() => {
       controls.enabled = false;
-      // Turkish rooms only show recipes belonging here; coffee and tea do not inherit the area's kebab.
-      const dishes = recipes.length || world === 'middle-east' ? recipes : china.filter((r) => r.area === obj.area).slice(0, 5);
+      const { dishes, label } = sceneDishes(obj, recipes);
       // a place with stands inside (the market): each stand is a button in the scene that opens its own card
       const stalls = OBJECTS_NOW().filter((o) => o.parent === obj.id).map((st) => {
         const target = st.alias ? objectById(st.alias) : st;
-        return { label: `${st.emoji} ${st.name}`, onClick: () => ui.showObject(target, china.filter((r) => target.match(r)), OBJECTS_NOW()) };
+        return { label: `${st.emoji} ${st.name}`, onClick: () => ui.showObject(target, recipesFor(target), OBJECTS_NOW()) };
       });
       if (obj.id === "hotpot") {
         for (const [id, label] of [["pepper", "Broth · Sichuan pepper"], ["garlic", "Dipping sauce · garlic"], ["tofu", "Into the pot · tofu"], ["mushroom", "Into the pot · mushrooms"]]) {
           const ingredient = objectById(id);
-          stalls.push({ label, onClick: () => ui.showObject(ingredient, china.filter((r) => ingredient.match(r)), OBJECTS_NOW()) });
+          stalls.push({ label, onClick: () => ui.showObject(ingredient, recipesFor(ingredient), OBJECTS_NOW()) });
         }
       }
       livingScene = openLivingScene(SCENES[obj.scene!](), {
-        dishes, label: recipes.length ? "On the table" : obj.id === "hotpot" ? "More Sichuan cooking" : "From this kitchen", stalls,
+        dishes, label, stalls,
         stallsLabel: obj.id === "hotpot" ? "Build the pot" : undefined,
         onDish: (r) => ui.showRecipePreview(r),
         onStory: () => ui.showObject(obj, recipes, OBJECTS_NOW()),
@@ -601,7 +628,7 @@ function enterLivingScene(p: Placed, obj: WorldObject, recipes: EnrichedRecipe[]
 
 function dropScene() {
   if (!livingScene) return;
-  livingScene.destroy(); livingScene = null;
+  livingScene.destroy(); livingScene = null; sceneObject = null;
   controls.enabled = true; flight = null; controls.maxPolarAngle = OVERVIEW_MAX_POLAR;   // nothing pending may carry the camera away from where it was
   if (sceneReturn) { camera.position.copy(sceneReturn.pos); controls.target.copy(sceneReturn.target); sceneReturn = null; }
   diorama?.highlight(null, null);
@@ -632,7 +659,7 @@ let cardTimer: number | undefined, revealTimer: number | undefined;
 function openObject(p: Placed) {
   const obj = p.obj.alias ? objectById(p.obj.alias) : p.obj;   // a market stall opens its ingredient's card
   diorama?.pin(null);
-  const recipes = china.filter((r) => obj.match(r));
+  const recipes = recipesFor(obj);
   if (obj.scene && SCENES[obj.scene]) { enterLivingScene(p, obj, recipes); return; }
   if (p.obj.open === "reveal") { revealPlace(p); return; }
   // the world answers first: the object reacts, and only then does the card come (dishes stay in the card)
@@ -649,7 +676,7 @@ function openObject(p: Placed) {
 
 /** A place (market, noodle shop, dumpling stall…) zooms in and shows what's inside; you pick a plate or a stall from there. */
 function revealPlace(p: Placed) {
-  const recipes = china.filter((r) => p.obj.match(r));
+  const recipes = recipesFor(p.obj);
   const stalls = OBJECTS_NOW().filter((o) => o.parent === p.obj.id);
   ui.hide();
   diorama!.highlight(new Set([p.obj.id]), null);

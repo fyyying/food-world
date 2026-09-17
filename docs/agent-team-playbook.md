@@ -44,6 +44,7 @@ Agree these before parallel work starts. The lead writes them into `docs/<id>-wo
 | Contract | Content | Written by |
 | --- | --- | --- |
 | Object list | `id`, `name`, `kind`, `area`, `pos`, `prop`, `scene`, one-line purpose | Researcher proposes, lead fixes positions |
+| Recipe matching | Not a contract for the area. Recipes are an optional add-on, built and agreed separately after the area ships | Nobody, during the area |
 | Layout blueprint | Table size, area centres, clusters, road list with endpoints, water curves, landmark positions, walker loops | Lead |
 | Palette | Named colours for walls, roofs, trim, paving, ground tints, water | Builder |
 | Resident styles | Six to eight clothing profiles as data | Builder |
@@ -67,6 +68,8 @@ The lead runs this before any other work, in every new session, including a sess
 4. Run `uv run --with pillow --with numpy --with scipy scripts/audit/breeze-masks.py <out dir>` when any mask changed since the baseline, and look at the grey panels
 5. Open the dev server and look at the live world for two minutes: the China clusters, the Turkish town, one room in each orientation. Anything that floats, flickers or crosses a wall goes on the task list before the kick-off work
 6. Post the baseline result as the first status. The lead is accountable for every number in the baseline until the session ends and updates the baseline file when the numbers change
+
+Look at the world with the **Recipes** add-on off, which is its default. That is the picture every area is built and reviewed against.
 
 Check: Type check and all harnesses pass, the baseline numbers hold, and the lead has seen the live world.
 
@@ -138,14 +141,15 @@ Required before Stage F. Stage E checks the area through harnesses, audits and t
 
 1. A reviewer who did not build the area opens **every room for ten seconds in both orientations**, 390 x 844 and 1280 x 720, watching before clicking. Ten seconds is long enough to see a pour crawl, a glint miss its stream, a string swing with its cut edge, a cup that should steam and does not
 2. The reviewer flies the whole table at the **overview zoom**, then visits **every cluster at approach zoom**, and looks at each decor type from above for what it reads as. One shot is taken at the world's **maximum zoom-out**, not at a comfortable overview distance: the fog is derived from that limit, and a table that reads at 130 can still render flat in the paper colour at 215. At the limit the table must read, with only a light haze at the far corner
-3. The reviewer runs the visibility check **on the live page, after a fresh load**: ten rays per clickable object along the arrival direction, and the first thing each ray meets must be that object. The offline harness builds a slightly different world — no recipes, so some cue and label meshes differ — so the live page is the authority and the harness is what keeps a fixed defect fixed
-4. The reviewer opens **every card**, not only every room. A card-only object whose blurb is visibly shorter than its neighbours' is a walkthrough defect and goes on the list; the owner opens cards, and a two-sentence blurb among three-paragraph ones is what she reads
-5. At **390 x 844 the reviewer checks that every cue actually draws**. A phone shows only the middle band of a wide painting after the fit, so a patch measured outside that band draws nothing at all. A cue that draws zero lit pixels at phone width fails, however well it reads on the desktop. Read the room's own effect canvas rather than trusting the configuration
-6. The reviewer writes down **everything that looks odd**, in plain words, in one list in `docs/<id>-world.md`, without first deciding whether it is a defect. "The thing by the river looks like a bridge half in the water" is a valid entry
-7. The **lead does the same walkthrough on a fresh page load**. Restart the dev server through the preview tool; a running page can hold a stale world after HMR and show a defect that is already fixed, or hide one that is not. Never start a second copy on the port
-8. Every open item becomes a fix brief for an agent on Opus. Any change to a room's cues re-runs the motion capture (a Sonnet task) before the item is closed
-9. The walkthrough repeats after the repairs, on a fresh page load, until the list has no open item
-10. **After every publish the walkthrough repeats on the live site itself**, not only on the dev server. The published site is what the owner opens, and the second day's walkthrough of Spain and Turkey — nine items, none of them caught by the dev-server passes — was made on it. Each repeat's list goes into `docs/<id>-world.md` under its own dated heading, as Spain's "Third pass" and "Fourth pass" sections do, so the passes stay separately readable instead of being folded into the first list
+3. The reviewer runs the visibility check **on the live page, after a fresh load**: ten rays per clickable object along the arrival direction, and the first thing each ray meets must be that object. The offline harness builds the world without the browser around it, so the live page is the authority and the harness is what keeps a fixed defect fixed
+4. The walkthrough is done with the **Recipes add-on off**, which is how it ships. A card ends at its last chip and a room's actions hold only "The story"; a wrong or random dish belongs to the recipe task, not to this list
+5. The reviewer opens **every card**, not only every room. A card-only object whose blurb is visibly shorter than its neighbours' is a walkthrough defect and goes on the list; the owner opens cards, and a two-sentence blurb among three-paragraph ones is what she reads
+6. At **390 x 844 the reviewer checks that every cue actually draws**. A phone shows only the middle band of a wide painting after the fit, so a patch measured outside that band draws nothing at all. A cue that draws zero lit pixels at phone width fails, however well it reads on the desktop. Read the room's own effect canvas rather than trusting the configuration
+7. The reviewer writes down **everything that looks odd**, in plain words, in one list in `docs/<id>-world.md`, without first deciding whether it is a defect. "The thing by the river looks like a bridge half in the water" is a valid entry
+8. The **lead does the same walkthrough on a fresh page load**. Restart the dev server through the preview tool; a running page can hold a stale world after HMR and show a defect that is already fixed, or hide one that is not. Never start a second copy on the port
+9. Every open item becomes a fix brief for an agent on Opus. Any change to a room's cues re-runs the motion capture (a Sonnet task) before the item is closed
+10. The walkthrough repeats after the repairs, on a fresh page load, until the list has no open item
+11. **After every publish the walkthrough repeats on the live site itself**, not only on the dev server. The published site is what the owner opens, and the second day's walkthrough of Spain and Turkey — nine items, none of them caught by the dev-server passes — was made on it. Each repeat's list goes into `docs/<id>-world.md` under its own dated heading, as Spain's "Third pass" and "Fourth pass" sections do, so the passes stay separately readable instead of being folded into the first list
 
 Check: the walkthrough list is written down, every item is closed, and the motion capture has been re-run since the last room change. Nothing is handed over to Stage F while the list has an open item. After publication the same check applies to each repeat's dated list.
 
@@ -209,6 +213,7 @@ Cards and stories:
 - Every room object has story depth with sources and two `NEXT` links
 - The world intro passes `world-intros.mjs`
 - Legends are labelled as legends
+- **Recipes are not on this list.** They are an optional add-on, off by default, and the area is built, reviewed and signed off with it off. Matching an area's objects to recipes is a separate task raised after the area ships; a card whose dishes look random is a recipe task, never an area defect, and it never holds up a publish
 
 Verification record:
 
@@ -263,6 +268,7 @@ Which tier each step belongs to, and why:
 | Room configs: coordinates, touches, steam, fire, sprites hung over cleaned paintings | Room maker | Agents, with image input | Measuring points on the actual paintings and writing data |
 | Ambience patches and signature motion | Room maker, approved by lead | Agents, with image input | A patch that moves a face or a wall passed pixel tests before; only careful visual inspection catches it |
 | Blurbs, story depth, discoveries, speech lines, world intro | Researcher | Agents, with web search | Sourced, dated prose to the China blurb standard |
+| Recipe matching for a shipped area (the `match` predicates and the `ENRICH` rows behind the Recipes add-on) | Researcher | Agents | A separate task after the area ships, never part of its definition of done. The add-on is off while the area is built and reviewed |
 | Repairs from the review and the owner walkthrough | Fix agent | Agents | A one-line fix is still a code change in someone's file, and the lead does not make it |
 | Import scripts, cutter runs, paint-out runs, registration checklist, `docs/<id>-world.md` draft | Any role | Agents for the draft, Mechanical for the script runs | Drafting is writing; running a script with named arguments is not |
 | `npm test`, `npm run typecheck`, motion captures, screenshots at both sizes, contact sheets, baseline bookkeeping, status posts | Auditor | Mechanical | Execution and reporting against a named expected output |

@@ -2,7 +2,7 @@ import { TURKEY_SOURCES } from './turkey-stories';
 import { SPAIN_SOURCES } from './spain-stories';
 import { SPAIN_CARD_ART, SPAIN_NEXT } from './spain-objects';
 import { escapeHtml as esc } from "./plates";
-import { fetchBody, minutesLabel, type RecipeBody } from "../data";
+import { fetchBody, isRecipeLayerEnabled, minutesLabel, type RecipeBody } from "../data";
 import { imageUrl } from "../data";
 import { AREAS, SPICE, objectById, type Area, type EnrichedRecipe, type MapRegion, type WorldObject } from "./graph";
 import { snapshot } from "./snapshot";
@@ -86,6 +86,9 @@ function partnerObject(p: string, self: WorldObject, all: WorldObject[]): WorldO
 }
 const thumb = (r: EnrichedRecipe) => (r.imageUrl ? `style="background-image:url(${imageUrl(r.id)})"` : "");
 
+/** What the card is currently showing. `null` when it is closed. */
+export type Shown = { kind: "object"; obj: WorldObject; allObjects: WorldObject[] } | { kind: "recipe" } | { kind: "region" } | null;
+
 function dishRows(recipes: EnrichedRecipe[]): string {
   return `<div class="dishes">${recipes.map((r) => `<button class="dish" data-recipe="${r.id}"><span class="th" ${thumb(r)}></span><span class="tx"><b>${esc(r.title)}</b><small>${r.zh ? `<span class="zh">${r.zh}</span> · ` : ""}${esc(minutesLabel(r))}${r.spice ? ` · ${"🌶️".repeat(r.spice)}` : ""}</small></span></button>`).join("")}</div>`;
 }
@@ -102,8 +105,13 @@ export function mountUi(h: UiHandlers) {
   });
 
   const current: { recipes: EnrichedRecipe[] } = { recipes: [] };
+  /** what the card is showing, so the app can redraw it when the recipe add-on is switched on or off */
+  let shown: Shown = null;
 
   function showObject(o: WorldObject, recipes: EnrichedRecipe[], allObjects: WorldObject[]) {
+    shown = { kind: "object", obj: o, allObjects };
+    // With the recipe add-on off the card never asks what matches: no heading, no rows, no gap where they were.
+    recipes = isRecipeLayerEnabled() ? recipes : [];
     current.recipes = recipes;
     const kindLabel = { ingredient: "Ingredient", flavour: "Signature flavour", technique: "Technique", landmark: "Place", place: "Place", dish: "Dish" }[o.kind];
     const partnerObjs = (o.partners ?? []).map((p) => ({ p, obj: partnerObject(p, o, allObjects) }));
@@ -134,6 +142,7 @@ export function mountUi(h: UiHandlers) {
   }
 
   function showRecipePreview(r: EnrichedRecipe) {
+    shown = { kind: "recipe" };
     current.recipes = [r];
     el.className = "preview";
     el.innerHTML = `
@@ -161,6 +170,7 @@ export function mountUi(h: UiHandlers) {
   }
 
   function showRegion(region: MapRegion) {
+    shown = { kind: "region" };
     current.recipes = [];
     el.className = "";
     el.innerHTML = `
@@ -175,9 +185,9 @@ export function mountUi(h: UiHandlers) {
     el.querySelector("#enter")?.addEventListener("click", () => h.onEnterRegion(region));
   }
 
-  function hide() { el.hidden = true; }
+  function hide() { el.hidden = true; shown = null; }
 
-  return { showObject, showRecipePreview, showRegion, hide, get open() { return !el.hidden; } };
+  return { showObject, showRecipePreview, showRegion, hide, get open() { return !el.hidden; }, get shown() { return el.hidden ? null : shown; } };
 }
 
 // ---------- full recipe page ----------

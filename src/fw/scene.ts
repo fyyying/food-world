@@ -10,7 +10,7 @@
 import { animateRoomTouch, type RoomInteraction } from "./scene-props";
 import { paintingFrame } from "./scene-ambience";
 import { playRoomSound, preloadCatSound } from "./room-sound";
-import { imageUrl } from "../data";
+import { imageUrl, isRecipeLayerEnabled } from "../data";
 import { type EnrichedRecipe } from "./graph";
 import { escapeHtml as esc } from "./plates";
 
@@ -67,10 +67,22 @@ export type SceneOpts = {
 export type LivingScene = {
   el: HTMLElement;
   tick: (t: number, dt: number) => void;
+  /** replace the room's dish row while it is open (the recipe add-on being switched on or off) */
+  setDishes: (dishes: EnrichedRecipe[], label?: string) => void;
   destroy: () => void;
   /** composite the layers to a canvas (for the dev screenshot hook) */
   snapshot: () => Promise<HTMLCanvasElement>;
 };
+
+/**
+ * The room's dish row ("FROM THIS KITCHEN" and its chips). The recipe add-on owns it: with the layer off this
+ * is the empty string, so the room's actions hold only its story button — no heading and no gap where the
+ * chips were.
+ */
+export function sceneDishRowHtml(dishes: EnrichedRecipe[], label?: string): string {
+  if (!isRecipeLayerEnabled() || !dishes.length) return "";
+  return `<span class="lbl" data-dishes>${esc(label ?? "On the table")}</span><span class="plates" data-dishes>${dishes.map((r) => `<button class="dish" type="button" data-recipe="${r.id}" title="${esc(r.title)}" aria-label="${esc(r.title)}"><span class="th" ${r.imageUrl ? `style="background-image:url(${imageUrl(r.id)})"` : ""}></span></button>`).join("")}</span>`;
+}
 
 /** small smooth noise for flicker: three incommensurate sines */
 export const flickerNoise = (t: number, seed = 0) => 0.5 + (Math.sin(t * 7.3 + seed) * 0.45 + Math.sin(t * 13.1 + seed * 2.1) * 0.3 + Math.sin(t * 2.7 + seed * 0.7) * 0.25) * 0.5;
@@ -109,7 +121,7 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
         <div class="scene-actions">
           ${hasCatSound ? `<a class="scene-sound-credit" href="${import.meta.env.BASE_URL}audio/CREDITS.txt" target="_blank" rel="noopener">Purr recording credit</a>` : ''}
           <button class="story" type="button">📖 The story</button>
-          ${opts.dishes.length ? `<span class="lbl">${esc(opts.label ?? "On the table")}</span><span class="plates">${opts.dishes.map((r) => `<button class="dish" type="button" data-recipe="${r.id}" title="${esc(r.title)}" aria-label="${esc(r.title)}"><span class="th" ${r.imageUrl ? `style="background-image:url(${imageUrl(r.id)})"` : ""}></span></button>`).join("")}</span>` : ""}
+          ${sceneDishRowHtml(opts.dishes, opts.label)}
         </div>
       </div>
     </div>`;
@@ -193,7 +205,17 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
   el.querySelector(".scene-back")!.addEventListener("click", close);   // Escape is handled by the app, after cards
   el.querySelector(".story")!.addEventListener("click", () => opts.onStory());
   el.querySelectorAll<HTMLButtonElement>(".stall").forEach((b) => b.addEventListener("click", () => opts.stalls?.[Number(b.dataset.i)]?.onClick()));
-  el.querySelectorAll<HTMLButtonElement>(".dish").forEach((b) => b.addEventListener("click", () => { const r = opts.dishes.find((x) => x.id === b.dataset.recipe); if (r) opts.onDish(r); }));
+  let dishes = opts.dishes;
+  const bindDishes = () => el.querySelectorAll<HTMLButtonElement>(".dish").forEach((b) => b.addEventListener("click", () => { const r = dishes.find((x) => x.id === b.dataset.recipe); if (r) opts.onDish(r); }));
+  bindDishes();
+  const actions = el.querySelector<HTMLElement>(".scene-actions")!;
+  /** the recipe add-on switched while this room is open: drop the old row and draw the new one, or none */
+  function setDishes(next: EnrichedRecipe[], label?: string) {
+    dishes = next;
+    actions.querySelectorAll("[data-dishes]").forEach((node) => node.remove());
+    const html = sceneDishRowHtml(dishes, label);
+    if (html) { actions.insertAdjacentHTML("beforeend", html); bindDishes(); }
+  }
 
   const feedback = el.querySelector<HTMLElement>(".scene-feedback");
   let activeHotspot: HTMLButtonElement | null = null;
@@ -341,5 +363,5 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
     return c;
   }
 
-  return { el, tick, destroy, snapshot };
+  return { el, tick, setDishes, destroy, snapshot };
 }

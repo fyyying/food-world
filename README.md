@@ -3,8 +3,10 @@
 An explorable miniature world of every recipe in the Notion **Recipes** database. Level 1 is a paper atlas of
 cuisine regions; each region is a handcrafted diorama on a wooden plinth, and the world itself is the interface:
 a cow is where the beef dishes live, the smokehouse is where the ribs are, the ramen shop is where the ramen is.
-Every object has a card with grounded, dated food history; every card ends in dishes; every dish opens the full
-recipe from Notion.
+Every object has a card with grounded, dated food history. Recipes are an optional add-on, off by default and
+switched on under **Recipes** in the settings panel: with it on, cards and rooms end in the dishes that match the
+place and every dish opens the full recipe from Notion; with it off nothing is fetched and the world is exactly
+the same picture, which is how an area is built and reviewed.
 
 Live at https://fyyying.github.io/food-world/.
 
@@ -40,7 +42,8 @@ builds a static bundle; `.github/workflows/pages.yml` publishes it on every push
 - `server/index.mjs` — Express API. Reads active recipes from Notion (cached 10 min in `.data/recipes.json`),
   fetches a recipe page's ingredients and steps on demand, and caches photos on disk (`/api/image/:id`) so the
   browser never hot-links recipe sites. In development `POST /api/debug/shot` saves a canvas frame to `.data/shots/`.
-- `src/data.ts` — the recipe types and fetchers (live API or the exported static files).
+- `src/data.ts` — the recipe types and fetchers (live API or the exported static files), and the recipe add-on's
+  on/off state (`food-tour:recipes` in localStorage; off whenever storage is unavailable).
 - `src/fw/graph.ts` — the knowledge graph: worlds, areas, world objects with their blurbs and `match()` rules,
   the per-recipe enrichment (local name, spice, flavours, core ingredients, technique, home object) and the atlas.
   New recipes appear automatically at their world's fallback place; give them an enrichment row to place them properly.

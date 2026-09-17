@@ -22,7 +22,6 @@ export type PlacedRegion = {
   group: THREE.Group;
   hit: THREE.Mesh;
   labelEl: HTMLElement;
-  count: number;
   clouds: THREE.Group | null;
   awake: boolean;
 };
@@ -67,7 +66,7 @@ function mute(root: THREE.Object3D) {
   });
 }
 
-export function buildMap(counts: Map<string, number>, isAvailable: (region: MapRegion) => boolean = () => true): MapWorld {
+export function buildMap(isAvailable: (region: MapRegion) => boolean = () => true): MapWorld {
   const group = new THREE.Group();
 
   // paper ocean
@@ -90,7 +89,10 @@ export function buildMap(counts: Map<string, number>, isAvailable: (region: MapR
     const g = new THREE.Group();
     g.position.set(region.pos[0], 0, region.pos[1]);
     const available = isAvailable(region);
-    const count = counts.get(region.id) ?? 0;
+    // A built region is a settled one: fewer, smaller clouds and a signpost. This used to read the region's
+    // recipe count, which made the atlas depend on the recipe add-on; every built region had recipes, so the
+    // islands look exactly as before and now look the same whether the add-on is on or off.
+    const settled = region.built;
     const h = region.built ? 1.4 : 0.8;
     const geo = new THREE.ExtrudeGeometry(blob(region.size, region.seed), { depth: h, bevelEnabled: true, bevelThickness: 0.4, bevelSize: 0.45, bevelSegments: 2, curveSegments: 4 });
     geo.rotateX(-Math.PI / 2);
@@ -210,10 +212,10 @@ export function buildMap(counts: Map<string, number>, isAvailable: (region: MapR
       g.userData.tick = (t: number, dt: number) => { dr.userData.tick?.(t, dt); ls.userData.tick?.(t, dt); tp.userData.tick?.(t, dt); };
     } else {
       clouds = new THREE.Group();
-      const n = count ? 2 + Math.floor(region.size / 3) : 3 + Math.floor(region.size / 2);
+      const n = settled ? 2 + Math.floor(region.size / 3) : 3 + Math.floor(region.size / 2);
       for (let i = 0; i < n; i++) {
         const c = new THREE.Mesh(sphere, cloudMat);
-        const sc = region.size * (count ? 0.16 + Math.random() * 0.12 : 0.22 + Math.random() * 0.16);
+        const sc = region.size * (settled ? 0.16 + Math.random() * 0.12 : 0.22 + Math.random() * 0.16);
         c.scale.set(sc * 1.4, sc * 0.6, sc);
         c.position.set((Math.random() - 0.5) * region.size * 1.4, 2.2 + Math.random() * 0.6, (Math.random() - 0.5) * region.size * 1.1);
         c.castShadow = true;
@@ -222,7 +224,7 @@ export function buildMap(counts: Map<string, number>, isAvailable: (region: MapR
       clouds.userData.baseY = 0;
       g.add(clouds);
       // a small signpost peeking out
-      if (count > 0) { const tr = tree("round", region.size / 9); tr.position.set(region.size * 0.5, h, region.size * 0.3); g.add(tr); }
+      if (settled) { const tr = tree("round", region.size / 9); tr.position.set(region.size * 0.5, h, region.size * 0.3); g.add(tr); }
     }
 
     if (!available) mute(g);
@@ -240,7 +242,7 @@ export function buildMap(counts: Map<string, number>, isAvailable: (region: MapR
     g.add(label);
 
     group.add(g);
-    const placed: PlacedRegion = { region, available, group: g, hit, labelEl, count, clouds, awake: false };
+    const placed: PlacedRegion = { region, available, group: g, hit, labelEl, clouds, awake: false };
     hit.userData.region = placed;
     land.userData.region = placed;
     return placed;

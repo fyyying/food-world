@@ -1,7 +1,7 @@
 /** Continuous, painting-aligned motion. Coordinates belong to each supplied composition. */
 export type PaintingRect = [left: number, top: number, right: number, bottom: number];
 export type AmbientPatch = {
-  kind: 'leaves' | 'birds' | 'stream-glint' | 'waterfall-glint' | 'dust' | 'rain' | 'mist' | 'light' | 'sunray' | 'breeze' | 'snow' | 'embers';
+  kind: 'leaves' | 'birds' | 'stream-glint' | 'waterfall-glint' | 'drip' | 'dust' | 'rain' | 'mist' | 'light' | 'sunray' | 'breeze' | 'snow' | 'embers';
   wide?: PaintingRect;
   phone?: PaintingRect;
   color?: string;
@@ -14,7 +14,9 @@ export type AmbientPatch = {
   count?: number;
   size?: number;
   angles?: [wide: number, phone: number];
-  /** Orientation-specific paths traced inside the patch rectangle, in local 0..1 coordinates. */
+  /** Orientation-specific paths traced inside the patch rectangle, in local 0..1 coordinates.
+   * `drip` uses the same traced path: the first point is the lip the liquid leaves, the last is the surface it
+   * lands on, and the drops fall between them. */
   paths?: [wide: Point[][] | undefined, phone: Point[][] | undefined];
   /** Maximum top-pivot rotation for a tightly cropped source layer. */
   sway?: [wide: number, phone: number];
@@ -68,7 +70,18 @@ export const PAINTED_SIGNATURES: Record<string, AmbientPatch> = {
   wheat_harvest: {kind:'sunray',wide:[.25,0,.90,.75],phone:[.10,0,.90,.68],angles:[-.45,.38],sway:[.04,.04]},
   tr_simit: {kind:'birds',wide:[.75,.02,.96,.20],phone:[.59,.045,.95,.18],period:8,scale:1.5},
   tr_tea: {kind:'birds',wide:[.66,.02,.94,.18],phone:[.66,.04,.98,.20],period:8,scale:1.4},
-  tr_coffee: {kind:'rain',wide:[.808,.09,.923,.30],phone:[.903,.164,.991,.306]},
+  // The panes were re-measured on the pixels on 2026-09-17 with the new rain. Wide: the left jamb ends at x .776
+  // and the mullion between the sashes runs x .930 to .956, the head rail ends at y .028 and the near drinker's cap
+  // reaches y .345, so the centre pane's clear glass is [.795, .045, .925, .325].
+  // Phone: the box used to be [.903, .164, .991, .306], on the lower-right sash — and **that sash is off the screen
+  // on a phone**. `paintingFrame` fits the portrait painting at 512.2 stage units and a 390-wide viewport shows only
+  // 415.9 of them, so the visible slice of this painting is x .094 to .906 and the old box drew nothing at all: the
+  // room's signature loop was invisible in portrait. Measured live on 2026-09-17 (zero lit effect pixels right of
+  // x .88 on the room's own effect canvas at 390 x 844). The signature moves to the clear column of the lower-LEFT
+  // sash, which is inside the slice: its glass runs x .718 to .846 with the transom ending at y .152 and the near
+  // drinker's cap starting at y .298, and the potted plant inside the room crosses the pane only left of x .800
+  // (no green pixel between x .800 and .846 from y .155 to .300), so [.802, .158, .843, .294] is clean glass.
+  tr_coffee: {kind:'rain',wide:[.795,.045,.925,.325],phone:[.802,.158,.843,.294]},
   tr_market: {kind:'breeze',wide:[0,0,.075,.275],phone:[0,0,.05,.18],period:6.4,sway:[.075,.095]},
   tr_fish: {kind:'light',wide:[.40,.72,.50,.88],phone:[.70,.58,.82,.72],color:'#f3a34b'},
   tr_kebab: {kind:'breeze',wide:[.292,.0,.335,.235],phone:[.13,.0,.22,.18],period:6.8,sway:[.052,.072]},
@@ -93,9 +106,22 @@ export const PAINTED_SIGNATURES: Record<string, AmbientPatch> = {
   es_gazpacho: {kind:'leaves',wide:[.02,.02,.42,.22],phone:[.55,.02,.98,.24],leaf:'olive',color:'#5f7f3b',count:8,size:1.6},   // the orange tree canopy over the courtyard, in both compositions
   es_pulpo: {kind:'birds',wide:[.372,0,.532,.056],phone:[.33,.005,.56,.10],period:4.5,scale:1.7},   // the clean grey opening between the arcade piers, above the trees and the hórreo
   es_pa_tomaquet: {kind:'leaves',wide:[.38,.02,.84,.32],phone:[.30,.02,.97,.28],count:8,size:1.4},   // the plane tree canopy
-  es_manchego: {kind:'birds',wide:[.52,.025,.74,.085],phone:[.19,.03,.45,.095],period:5.5,scale:1.6},   // the sky over the windmill ridge, and the doorway sky in the portrait
-  es_sidreria: {kind:'stream-glint',wide:[.508,.062,.534,.585],phone:[.606,.090,.652,.553],color:'#f6e3a8',
-    paths:[[[[.42,.02],[.58,.5],[.70,.98]]],[[[.30,.02],[.48,.5],[.72,.98]]]]},   // the escanciado: the painted cider thread, bottle to glass, traced on the pixels of each composition
+  // Re-measured 2026-09-16 on wide.jpg: the old wide box sat on the wooden lintel above the door, not in the sky.
+  // The band below is the open sky inside the doorway, between the fig canopy above and the windmill sails below.
+  // Widened to the full clean span on 2026-09-17, because this room's wide painting measured under its floor: the
+  // door's inner jambs are x .524 and .727, the fig branch hangs to y .135 above and the near windmill's sails reach
+  // y .152, so the two rows (.45 and .67 of the box) fly at y .1423 and .1542 and cross from x .565 to .707, clear
+  // of both, over a longer path than before. `scale` and `period` are shared with the phone box, whose portrait
+  // measures 8.0 per cent and was not to be touched, so they stay at 1.6 and 5.5 and the wide box alone changed.
+  es_manchego: {kind:'birds',wide:[.552,.118,.720,.172],phone:[.19,.03,.45,.095],period:5.5,scale:1.6},   // the sky over the windmill ridge, and the doorway sky in the portrait
+  // Re-measured 2026-09-17 on both files, because the owner saw the pale thread moving above the bottle: the phone
+  // box started at y .090, which is the green body of the tilted bottle — the lip is at y .112 — so the glint ran
+  // over the glass of the bottle itself. Both boxes now start at the lip the cider leaves and stop at the surface of
+  // the cider in the glass, and the clip rectangle is those two points, so nothing can glint outside them.
+  // Wide: lip (.5156, .042), the thread through (.5191, .136), (.5221, .277), (.5245, .419), surface (.5251, .607).
+  // Portrait: lip (.6206, .112), through (.6259, .215), (.6312, .339), (.6376, .463), surface (.6415, .566).
+  es_sidreria: {kind:'stream-glint',wide:[.508,.042,.534,.607],phone:[.606,.112,.652,.566],color:'#f6e3a8',
+    paths:[[[[.29,0],[.43,.17],[.54,.42],[.63,.67],[.67,1]]],[[[.32,0],[.43,.23],[.55,.50],[.69,.77],[.77,1]]]]},   // the escanciado: the painted cider thread, bottle lip to the cider in the glass, traced on the pixels of each composition
   es_bodega: {kind:'sunray',wide:[.40,0,1,.72],phone:[.28,0,1,.64],angles:[.60,.50],sway:[.09,.085]},   // the shaft from the high shutter
 };
 
@@ -143,6 +169,10 @@ export function paintingFrame(portrait: boolean, visibleWidth: number) {
   return { x: (1600 - width) / 2, y: -5 + (910 - height) / 2, width, height };
 }
 const fraction = (n: number) => n - Math.floor(n);
+/** "#e8f1ef" → "232,241,239", so an effect can fade its own configured colour out to nothing. */
+const hexTint = (hex: string) => { const n = parseInt(hex.replace('#',''),16); return `${(n>>16)&255},${(n>>8)&255},${n&255}`; };
+/** A stable per-index scatter, so a stateless draw still looks unrepeating. */
+const scatter = (n: number) => fraction(Math.sin(n*12.9898)*43758.5453);
 
 /** A deliberately narrow colour key for a source-observed hanging subject. */
 export function isBreezePixel(subject: AmbientPatch['source']='chilli', r: number, g: number, b: number) {
@@ -344,11 +374,39 @@ export function drawAmbience(ctx: CanvasRenderingContext2D, t: number, portrait:
       light.addColorStop(1, 'rgba(255,176,72,0)');
       ctx.globalCompositeOperation = 'screen'; ctx.fillStyle = light;
       ctx.fillRect(-1, -1, 2, 2);
-    } else if (patch.kind === 'stream-glint' || patch.kind === 'waterfall-glint') {
+    } else if (patch.kind === 'stream-glint' || patch.kind === 'waterfall-glint' || patch.kind === 'drip') {
       // Trace only verified liquid already present in this exact composition. There is deliberately
       // no generic centreline or evenly distributed fallback: an untraced rectangle draws nothing.
       const paths=patch.paths?.[portrait?1:0];
-      if(paths?.length){
+      if(paths?.length&&patch.kind==='drip'){
+        // A pictured drip, not a pour: the painting shows separate drops leaving a lip and landing in a vessel, so
+        // the code releases separate drops instead of running a dash down a thread. Each drop starts at the first
+        // traced point, accelerates along the path under gravity and disappears at the last point, where a small
+        // ring opens on the surface and fades. Colour and alpha stay modest: this sits on a finished painting that
+        // already draws the drops, and it must read as the same liquid moving, not as a new object.
+        const tint=hexTint(patch.color??'#f3ead6');
+        for(const [pathIndex,path] of paths.entries()){
+          if(path.length<2)continue;
+          const point=(k: number) => {
+            const span=(path.length-1)*Math.min(1,Math.max(0,k)),seg=Math.min(path.length-2,Math.floor(span)),f=span-seg;
+            return [x+w*(path[seg][0]+(path[seg+1][0]-path[seg][0])*f), y+h*(path[seg][1]+(path[seg+1][1]-path[seg][1])*f)] as const;
+          };
+          const period=patch.period??1.9, drops=3, radius=Math.max(1.3,Math.min(w*.10,h*.027,3.6));
+          for(let i=0;i<drops;i++){
+            // phase^1.55 is the gravity: the drop leaves the lip slowly and is quickest as it reaches the surface
+            const phase=fraction((t+pathIndex*.37)/period+i/drops), fall=Math.pow(phase,1.55);
+            const [dx,dy]=point(fall);
+            ctx.globalAlpha=opacity*.54*Math.min(1,phase*7,(1-phase)*5);
+            ctx.fillStyle=`rgba(${tint},.85)`;
+            ctx.beginPath();ctx.ellipse(dx,dy,radius*.72,radius*(1+fall*.55),0,0,Math.PI*2);ctx.fill();
+          }
+          // one ring per released drop, opening where the last traced point sits on the painted surface
+          const splash=fraction((t+pathIndex*.37)/period*drops),[sx,sy]=point(1);
+          ctx.globalAlpha=opacity*.34*Math.max(0,1-splash);
+          ctx.strokeStyle=`rgba(${tint},.9)`;ctx.lineWidth=1;
+          ctx.beginPath();ctx.ellipse(sx,sy,radius*(.6+splash*3.4),radius*(.22+splash*1.1),0,0,Math.PI*2);ctx.stroke();
+        }
+      } else if(paths?.length){
         ctx.globalCompositeOperation='screen';ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle=patch.color??'#e8f8ed';
         ctx.lineWidth=patch.kind==='waterfall-glint'?(portrait?4.2:3.4):Math.max(1,Math.min(2,w*.16));
         const unit=Math.max(3,h*(patch.kind === 'waterfall-glint' ? .20 : .30));ctx.setLineDash([unit,unit*1.7]);
@@ -405,14 +463,60 @@ export function drawAmbience(ctx: CanvasRenderingContext2D, t: number, portrait:
         ctx.quadraticCurveTo(span * .4, -span * .25, span, wing); ctx.stroke(); ctx.restore();
       }
     } else if (patch.kind === 'rain') {
-      // A few readable beads follow the existing rain on the glass. The window frame and room stay still.
-      ctx.strokeStyle = '#e8f1ef'; ctx.lineWidth = portrait ? 2.2 : 1.8; ctx.lineCap='round';
-      for (let i = 0; i < 6; i++) {
-        const phase = fraction(t * (.16 + i % 3 * .018) + i * .173);
-        const px = x + w * (.12+.76*fraction(i*.417+.08)), py = y + phase * Math.max(1,h-26);
-        const trail=(portrait?22:18)+(i%3)*3;
-        ctx.globalAlpha = opacity * (.68+.20*Math.sin(Math.PI*phase)); ctx.beginPath();
-        ctx.moveTo(px,py);ctx.lineTo(px-2,Math.min(y+h,py+trail));ctx.stroke();
+      // Rain on a measured pane of glass. Two things happen on a wet window and the old six identical strokes did
+      // neither: rain falls past the glass in thin streaks of different length, speed and opacity, and a few drops
+      // cling to the pane itself, run down it leaving a wet trail, and swallow the drop waiting below them. Every
+      // mark fades out at both ends through its own gradient, so nothing ends in a hard tick, and the patch
+      // rectangle is the pane, so the clip keeps all of it off the mullions, the frame and the wall.
+      const tint = hexTint(patch.color ?? '#e8f1ef');
+      const seed = index * 7.13;
+      const lean = Math.min(w * .07, 10);   // the wind's slant across the whole fall
+      const streaks = Math.max(6, Math.min(12, Math.round(w * h / 2400)));
+      const bead = Math.max(1.2, Math.min(w * .05, h * .028, 4.4));
+      ctx.lineCap = 'round';
+      for (let i = 0; i < streaks; i++) {
+        // roughly one streak in five falls much faster and much longer, and swells in and out over its own slow
+        // cycle, so a quick streak reads as an occasional gust rather than as one permanently different drop
+        const quick = scatter(i + seed + .31) > .80;
+        const gust = quick ? Math.max(.12, Math.sin(Math.PI * fraction(t / (6.5 + scatter(i + seed + .41) * 5.5)))) : 1;
+        const speed = quick ? .74 + scatter(i + seed + .19) * .3 : .22 + scatter(i + seed + .11) * .22;
+        const phase = fraction(t * speed + scatter(i + seed + .57));
+        const len = h * (quick ? .24 + scatter(i + seed + .05) * .13 : .06 + scatter(i + seed + .29) * .08);
+        const px = x + w * (.02 + .96 * scatter(i + seed + .83)) + lean * (phase - .5);
+        const py = y - len + phase * (h + len * 2);
+        const slant = lean * .30 * (len / h);
+        const alpha = (quick ? .30 : .12 + scatter(i + seed + .67) * .16) * gust;
+        const fade = ctx.createLinearGradient(px, py, px + slant, py + len);
+        fade.addColorStop(0, `rgba(${tint},0)`);
+        fade.addColorStop(.42, `rgba(${tint},${alpha.toFixed(3)})`);
+        fade.addColorStop(1, `rgba(${tint},0)`);
+        ctx.strokeStyle = fade; ctx.lineWidth = quick ? 1.5 : 1; ctx.globalAlpha = opacity;
+        ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px + slant, py + len); ctx.stroke();
+      }
+      const runners = Math.max(2, Math.min(5, Math.round(w / 46)));
+      for (let j = 0; j < runners; j++) {
+        const period = 5.4 + scatter(j + seed + 1.7) * 5.2;
+        const phase = fraction(t / period + scatter(j + seed + 2.3));
+        const hold = .28 + scatter(j + seed + 3.1) * .26;   // the drop gathers on the glass before it lets go
+        const run = phase <= hold ? 0 : (phase - hold) / (1 - hold);
+        const cx = x + w * (.08 + .84 * scatter(j + seed + 4.7));
+        const top = y + h * (.03 + .12 * scatter(j + seed + 5.3)), foot = y + h * .99;
+        const by = top + (foot - top) * Math.pow(run, 1.8);   // gravity: slow off the mark, quickest at the sill
+        const waiting = top + (foot - top) * (.42 + .28 * scatter(j + seed + 6.1));
+        const merged = by >= waiting;
+        const r = bead * (.72 + .5 * scatter(j + seed + 6.9)) * (merged ? 1.35 : 1);
+        const wet = ctx.createLinearGradient(cx, top, cx, by);
+        wet.addColorStop(0, `rgba(${tint},0)`);
+        wet.addColorStop(1, `rgba(${tint},${(.20 * Math.min(1, run * 6)).toFixed(3)})`);
+        ctx.strokeStyle = wet; ctx.lineWidth = Math.max(.8, r * .62); ctx.globalAlpha = opacity;
+        ctx.beginPath(); ctx.moveTo(cx, top); ctx.lineTo(cx, by); ctx.stroke();
+        ctx.fillStyle = `rgba(${tint},.5)`; ctx.globalAlpha = opacity * (run > 0 ? 1 : .7);
+        ctx.beginPath(); ctx.ellipse(cx, by, r * .8, r * (1 + run * .5), 0, 0, Math.PI * 2); ctx.fill();
+        if (!merged) {
+          // the drop sitting lower on the pane, until the runner reaches it and the two become one
+          ctx.fillStyle = `rgba(${tint},.42)`; ctx.globalAlpha = opacity * .9;
+          ctx.beginPath(); ctx.ellipse(cx, waiting, r * .62, r * .74, 0, 0, Math.PI * 2); ctx.fill();
+        }
       }
     } else if (patch.kind === 'mist') {
       const mistAlpha = patch.alpha ?? .40;

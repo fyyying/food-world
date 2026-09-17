@@ -75,7 +75,10 @@ function layoutMed(ctx: LayoutCtx) {
   const kt = koutoubia(); place(kt, -3, 25.2, 0.1).scale.setScalar(0.75); tickers.push(kt.userData.tick!);
   // The fourth riad stood at [-34, 26], four units west of the Moroccan tint and on Spanish green ground with
   // Andalusian houses beside it; it now stands inside the cluster, east of the x -18 line Spain owns to.
-  for (const [x, z, rot, st, tw] of [[-21, 25, 0.1, 1, true], [-27, 26, -0.1, 2, false], [-8, 26.5, 0.1, 1, false], [-13, 23.5, 0.2, 1, false], [9, 26.5, -0.1, 1, true]] as [number, number, number, number, boolean][]) place(riad(3.0, 2.6, 2.2, { storeys: st, tower: tw }), x, z, rot);
+  // Two more still stood on Spanish ground on 2026-09-17, at [-21, 25] and [-27, 26]; the second of them was a
+  // two-storey riad nine units in front of the huerta beds, which is a Spanish stand, so both crossed the line
+  // as well. Nothing Moroccan now stands west of x -18.
+  for (const [x, z, rot, st, tw] of [[-17.6, 26.4, 0.1, 1, true], [-11.5, 26.6, -0.1, 2, false], [-8, 26.5, 0.1, 1, false], [-13, 23.5, 0.2, 1, false], [9, 26.5, -0.1, 1, true]] as [number, number, number, number, boolean][]) place(riad(3.0, 2.6, 2.2, { storeys: st, tower: tw }), x, z, rot);
   place(atlas(), -17, 24.5, 0.2).scale.setScalar(0.8);
   for (const [x, z, s] of [[-15, 14, 0.9], [2, 13.5, 1.0], [-10, 13, 0.8], [11, 17, 0.9]] as [number, number, number][]) { const p = datePalm(s); place(p, x, z, x); tickers.push(p.userData.tick!); }
   // The Moroccan loop used to run west to x -26, across Spanish ground and the edge of the Valencian huerta.

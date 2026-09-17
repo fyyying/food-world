@@ -156,15 +156,17 @@ const rooms: Record<string, Room> = {
     // hook at y .022 to .044 stay, and each sprite's rope loop sits on its own. The second, empty wall hook in the
     // wide painting is untouched, which is what makes the swing read as wind rather than as a shifting picture.
     hung: {
-      wide: [{ name: 'es-pepper-ristra', fx: .7565, fy: .0960, fw: .0474, sway: 2.8, tone: .75 }],
+      wide: [{ name: 'es-pepper-ristra', fx: .7565, fy: .0960, fw: .0474, sway: 4.4, tone: .75 }],
       phone: [{ name: 'es-pepper-ristra', fx: .7670, fy: .0235, fw: .0831, sway: 2.6, tone: .78 }],
     },
-    heat: {
-      // the copper caldero of warmed milk the man stirs with his paddle, wide only: the portrait composition
-      // shows the press, the moulds and the jug of raw milk but no heated vessel, so it carries no steam, the
-      // way the wide octopus painting carries no fire. The cheese, the curd and the milk are cold.
-      steam: { wide: [[.377, .432, 110, 7, .24]] },
-    },
+    // No steam in either orientation. The copper caldero in the wide painting carried a plume until 2026-09-17,
+    // when the owner said the farm has hot steam although nothing in it is read as a hot process. That is right:
+    // the painting shows no fire under the caldero, no boil on its surface and no wisp of its own, and the room's
+    // three touches and its story are about curd, the esparto band and the press, not about heating. Manchego milk
+    // is warmed to about 30 degrees, which is blood heat and steams no more than a bucket of milk does. The whey
+    // the painting really does show falling from the draining table into the tub took the freed slot, as a `drip`
+    // in spain-ambience.ts. The portrait shows the press and the moulds and had no steam to lose.
+    heat: {},
     touches: [
       ['The rind', 'The zig-zag on the side is the print of the plaited esparto band called a pleita, and the flower on each flat face is the print of the pressing board; the Denominación de Origen requires both.', 'detail', [.655, .73], [.75, .71], card('manchego')],
       ['The milk vessel', 'The milk may come only from Manchega sheep, whose milk runs 7 to 8 per cent fat.', 'detail', [.08, .78], [.12, .76]],

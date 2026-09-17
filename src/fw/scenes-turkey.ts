@@ -70,7 +70,7 @@ const rooms: Record<string, Room> = {
     touches: [
       ['Turn the şiş', 'The coals crackle beneath the skewers. Turning them lets each side meet the heat.', 'sizzle', [.40,.66], [.47,.55]],
       ['Bread catches the juices', 'Tear warm bread to accompany the grill. It picks up the meat juices and makes a good wrap for onion, herbs and a piece of grilled pepper.', 'detail', [.86,.73], [.20,.744]],
-      ['Onion, sumac and herbs', 'Thin onion and fresh herbs bring crunch and freshness beside the charcoal grill. Tart sumac is a familiar seasoning for an onion salad.', 'detail', [.56,.827], [.40,.815]],
+      ['Onion, sumac and herbs', 'Sumac is the dried, ground fruit of Rhus coriaria, a shrub of dry Anatolian hills. It is sour, not hot, and goes on onion beside the grill, in çoban salad and over lahmacun.', 'detail', [.56,.827], [.40,.815]],
     ],
   },
   tr_baklava: {

@@ -19,11 +19,22 @@ try {
   const {SEA_SHORE,seaOutline,offsetOutline,inPolygon,riverOutline,channelOutline,RIVER_POINTS,RIVER_WIDTH,TABLE}=await import(pathToFileURL(join(temp,'landscape.mjs')));
   const {SPAIN_ROADS,SPAIN_BRIDGES,SPAIN_LANES,PLAZA,BRIDGE_SPAN}=await import(pathToFileURL(join(temp,'town.mjs')));
   const {SPAIN_OBJECTS}=await import(pathToFileURL(join(temp,'objects.mjs')));
-  const {worldZoomLimit}=await import(pathToFileURL(join(temp,'camera.mjs')));
+  const {worldZoomLimit,worldFogRange}=await import(pathToFileURL(join(temp,'camera.mjs')));
 
   // ---------- the table and the camera ----------
   for(const [w,h] of [[390,844],[430,932],[720,1024],[667,375]]) assert.equal(worldZoomLimit('mediterranean',w,h),90,'phone worlds share one zoom-out limit');
   assert.equal(worldZoomLimit('mediterranean',1280,720),215,'the Mediterranean shares the Middle East desktop overview since Spain grew the table to 120 wide');
+  // The overview has to be readable at that limit. Until 2026-09-17 the Mediterranean used the default 90/200
+  // haze, so at maximum zoom-out its whole table was past the far plane and came out flat in the paper colour,
+  // with only the sea left, because the water shader ignores fog. The far plane is now computed from the limit
+  // plus half the table's diagonal.
+  const MED_HALF=Math.hypot(120,56)/2, MED_REACH=215+MED_HALF;
+  const [fogNear,fogFar]=worldFogRange('mediterranean',1280,720,MED_HALF);
+  const haze=d=>Math.min(1,Math.max(0,(d-fogNear)/(fogFar-fogNear)));
+  assert.ok(haze(215)<.1,`the table centre at the zoom limit is ${(haze(215)*100).toFixed(0)} percent hazed`);
+  assert.ok(haze(MED_REACH)<.4,`the far corner of the table at the zoom limit is ${(haze(MED_REACH)*100).toFixed(0)} percent hazed`);
+  assert.deepEqual(worldFogRange('china',1280,720,Math.hypot(112,84)/2),[90,200],'a world inside the old far plane keeps 90 and 200 exactly');
+  assert.deepEqual(worldFogRange('mediterranean',390,844,MED_HALF),[90,200],'a phone keeps 90 and 200: its limit is 90');
 
   // ---------- the sea is one continuous shape with square caps at the table edge ----------
   const sea=seaOutline(), rim=offsetOutline(sea,1.2);
@@ -197,6 +208,90 @@ try {
   }
   assert.deepEqual([...shut],[],'a stand has no open approach from a road');
 
+  // ---------- nothing decorative stands between a stand and the camera ----------
+  // Owner feedback, 2026-09-17: "the houses are still too crowded, there should be no house in front of a
+  // clickable object". The 2026-09-16 pass only tested the single line from the arrival camera to a stand,
+  // which is a ray; five stands were still hidden behind something a hand's width off that ray.
+  //
+  // Where the camera is. main.ts drops the visitor into the Mediterranean at the target plus (2, 48, 60) and
+  // every later move keeps that offset direction: glideTo copies the current offset, a pan carries camera and
+  // target together and a zoom only changes its length. So the camera always looks from azimuth
+  // atan2(2, 60) = 0.033 rad, 38.7 degrees above the ground: from the south, give or take two degrees. The
+  // visitor may swing it, but not freely: configureControls clamps the world azimuth to -0.75 .. +0.75 rad,
+  // an 86-degree fan. The wedge is that fan plus seven degrees either side for the width of the obstacle
+  // itself: 100 degrees centred on the direction from the stand to the default camera, out to 9 units.
+  const CAM_AZIMUTH=Math.atan2(2,60), TO_CAMERA=[Math.sin(CAM_AZIMUTH),Math.cos(CAM_AZIMUTH)];
+  const WEDGE_COS=Math.cos(Math.PI*100/360);
+  // A lamp post, a sluice post or a bunch of reeds is under .6 of a unit across either way. At this camera
+  // pitch it hides nothing, so a slender thing is exempt and the square keeps its light on the ground.
+  const slender=d=>(d.b.max.x-d.b.min.x)<.6&&(d.b.max.z-d.b.min.z)<.6;
+  // A building hides a stand at any height: a house, the Basque farmhouse, a walled pen, the statue's plinth
+  // and horse, an arcade if one ever comes back. So does anything else over two units tall, which is the
+  // Builder's definition of a big tree.
+  const BUILDING=/^(spanish-house|baserri|dehesa-pen|plaza-arcade|plaza-statue)$/;
+  const wedgeReach=(sx,sz,d)=>{
+    let near=Infinity;
+    for(const x of [d.b.min.x,(d.b.min.x+d.b.max.x)/2,d.b.max.x])
+      for(const z of [d.b.min.z,(d.b.min.z+d.b.max.z)/2,d.b.max.z]){
+        const vx=x-sx,vz=z-sz,l=Math.hypot(vx,vz);
+        if(l<1e-6) return 0;
+        if((vx*TO_CAMERA[0]+vz*TO_CAMERA[1])/l>=WEDGE_COS) near=Math.min(near,l);
+      }
+    return near;
+  };
+  const hiding=new Set();
+  for(const p of spain){
+    const [x,z]=p.obj.pos;
+    for(const d of solidDecor){
+      if(slender(d))continue;
+      const near=wedgeReach(x,z,d);
+      if(!Number.isFinite(near))continue;
+      if(BUILDING.test(d.name)||d.b.max.y>2){
+        if(near<=9) hiding.add(`${p.obj.id}: ${d.name} [${d.x.toFixed(1)}, ${d.z.toFixed(1)}] stands ${near.toFixed(1)} in front of it, ${d.b.max.y.toFixed(1)} tall`);
+      } else if(d.b.max.y>1.2&&near<=5) hiding.add(`${p.obj.id}: ${d.name} [${d.x.toFixed(1)}, ${d.z.toFixed(1)}] is ${near.toFixed(1)} in front of it and ${d.b.max.y.toFixed(1)} tall`);
+    }
+  }
+  assert.deepEqual([...hiding],[],'something decorative stands between a stand and the camera');
+
+  // ---------- and no stand stands in front of another stand ----------
+  // Owner feedback, 2026-09-17: the rule is that every clickable object is visible from the camera, so a stand
+  // that hides another stand fails exactly as a house does. A wedge cannot express this one: the stands as
+  // built are 4 x 4 to 12 x 14 and neighbours inside a cluster are five to eight units apart, so every pair
+  // would be inside every other pair's wedge. What the owner actually sees is settled by occlusion, so that is
+  // what is measured: ten rays per stand along the arrival direction, nine at its camera-facing front face at
+  // three heights and one at the diamond cue over its anchor, and the first stand each ray meets must be the
+  // stand itself. This is the same test the Builder runs in the browser against the live page.
+  const CAM_RAY=new THREE.Vector3(2,48,60).normalize();
+  const ownerOf=new Map();
+  const standMeshes=[];
+  for(const p of spain){
+    p.group.updateMatrixWorld(true);
+    p.group.traverse(o=>{
+      if(!o.isMesh||o.isSprite||!o.geometry)return;
+      if(o.material&&(o.material.visible===false||o.material.opacity===0))return;
+      ownerOf.set(o,p.obj.id); standMeshes.push(o);
+    });
+  }
+  const ray=new THREE.Raycaster(); ray.far=400;
+  const back=CAM_RAY.clone().multiplyScalar(70), into=CAM_RAY.clone().negate();
+  const covered=[];
+  for(const p of spain){
+    const b=new THREE.Box3().setFromObject(p.group);
+    const floor=Math.max(b.min.y,0), [sx,sz]=p.obj.pos, aim=[];
+    for(const fx of [.2,.5,.8]) for(const dy of [.8,1.5,2.2]) aim.push(new THREE.Vector3(b.min.x+(b.max.x-b.min.x)*fx, floor+dy, b.max.z-.2));
+    aim.push(new THREE.Vector3(sx,b.max.y+.7,sz));
+    const by={};
+    for(const t of aim){
+      ray.set(t.clone().add(back),into);
+      const hit=ray.intersectObjects(standMeshes,false).find(h=>h.distance<69.8);
+      if(!hit)continue;
+      const id=ownerOf.get(hit.object);
+      if(id!==p.obj.id) by[id]=(by[id]||0)+1;
+    }
+    for(const [id,n] of Object.entries(by)) covered.push(`${p.obj.id}: ${id} covers it on ${n} of 10 rays from the camera`);
+  }
+  assert.deepEqual(covered,[],'a stand stands in front of another stand');
+
   // ---------- the bridges carry the lanes over the river ----------
   const bridges=world.group.children.filter(o=>o.name==='spanish-bridge');
   assert.equal(bridges.length,SPAIN_BRIDGES.length);
@@ -216,23 +311,31 @@ try {
     if(ox>1.2&&oz>1.2) clashes.add(`${solids[i].name} [${solids[i].x.toFixed(1)}, ${solids[i].z.toFixed(1)}] inside ${solids[j].name} [${solids[j].x.toFixed(1)}, ${solids[j].z.toFixed(1)}]`);
   }
   assert.deepEqual([...clashes],[],'two Spanish buildings stand in the same place');
-  for(const name of ['plaza-statue','plaza-lamp','baserri','dehesa-pen','threshing-floor','apple-tree','granite-outcrop','olive-terrace-tree','dehesa-oak','saffron-flower','north-broadleaf','sandbar-pine'])
+  for(const name of ['plaza-statue','plaza-lamp','dehesa-pen','threshing-floor','apple-tree','granite-outcrop','olive-terrace-tree','dehesa-oak','saffron-flower','north-broadleaf','sandbar-pine'])
     assert.ok(world.group.getObjectByName(name),`${name}: missing from the Spanish land`);
   // Removed on the owner's word, 2026-09-16, and kept removed: the four free-standing arcades that ringed the
   // square (a tan slab on grey piers, read from above as a bridge half in the water), the barraca in the rice
   // fields and the horreo over the ria. The pulperia's arcade is part of a stand and is not touched here.
-  for(const gone of ['plaza-arcade','barraca','horreo'])
+  // Removed on the owner's word and kept removed: the barraca in the rice fields and the horreo over the ria
+  // (2026-09-16), the four free-standing plaza arcades (2026-09-16), and the Basque farmhouse, which stood in
+  // front of four clickable objects at once (2026-09-17).
+  for(const gone of ['plaza-arcade','barraca','horreo','baserri'])
     assert.equal(world.group.getObjectByName(gone),undefined,`${gone}: the owner asked for this to be gone`);
-  // Every cluster is built in its own regional style.
-  const styles=new Set(world.group.children.filter(o=>o.name==='spanish-house').map(o=>o.userData.houseStyle));
-  for(const style of ['castile','valencian','andalus','mancha','galician','catalan']) assert.ok(styles.has(style),`${style}: no house in that style`);
-  // Owner feedback, 2026-09-16: twenty-four decorative houses hemmed the stands in. Fourteen are left, one or
-  // two per style, and the count is now bounded at both ends so nobody quietly refills the clusters.
+  // Owner feedback, 2026-09-16 and again 2026-09-17: twenty-four decorative houses hemmed the stands in, then
+  // fourteen still did. The wedge rule above decides where a house may stand at all, and on this table it
+  // leaves room for five: one Valencian, one Andalusian, one Manchegan, one Galician, one Catalan. Castile has
+  // none, because the Plaza Mayor's four stands and its statue leave no wedge-free ground inside the square or
+  // on any of its four sides. The cap is bounded at both ends so nobody quietly refills the clusters, and the
+  // styles that are left are named so nobody quietly drops the last house of a region. See the quality
+  // baseline for the numbers and docs/spain-world.md for why each one went.
   const houses=world.group.children.filter(o=>o.name==='spanish-house');
-  assert.ok(houses.length>=12&&houses.length<=16,`the six clusters need one or two houses per style, found ${houses.length}`);
-  for(const style of ['castile','valencian','andalus','mancha','galician','catalan']){
+  assert.ok(houses.length>=5&&houses.length<=8,`the wedge rule leaves room for five to eight houses, found ${houses.length}`);
+  const styles=new Set(houses.map(o=>o.userData.houseStyle));
+  for(const style of ['valencian','andalus','mancha','galician','catalan']) assert.ok(styles.has(style),`${style}: no house in that style`);
+  assert.ok(!styles.has('castile'),'a Castilian house is back in the Plaza Mayor: check it against the wedge rule first');
+  for(const style of styles){
     const n=houses.filter(o=>o.userData.houseStyle===style).length;
-    assert.ok(n>=1&&n<=3,`${style}: ${n} houses, the cluster wants one to three`);
+    assert.ok(n>=1&&n<=2,`${style}: ${n} houses, a cluster wants one or two`);
   }
   // The lamps hung under the arcade beams; with the arcades gone they stand on iron posts, so each one must
   // still reach the ground rather than float where its beam used to be.

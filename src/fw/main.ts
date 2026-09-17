@@ -10,7 +10,7 @@ import { buildItaly } from "./world-italy";
 import { buildKorea } from "./world-korea";
 import { buildMexico } from "./world-mexico";
 import { buildMideast } from "./world-mideast";
-import { worldZoomLimit } from './world-camera';
+import { worldZoomLimit, worldFogRange } from './world-camera';
 import { isWorldAvailable } from './world-availability';
 import { buildMed } from "./world-med";
 import { buildIndia } from "./world-india";
@@ -212,7 +212,12 @@ function configureControls(l: Level) {
     controls.minAzimuthAngle = -0.6; controls.maxAzimuthAngle = 0.6;
   } else {
     controls.minDistance = 10; controls.maxDistance = worldZoomLimit(world, window.innerWidth, window.innerHeight);
-    worldScene.fog = new THREE.Fog('#e9e0cd', world === 'middle-east' ? 500 : 90, world === 'middle-east' ? 600 : 200);
+    // The haze is computed from the zoom limit and the table, not hand-set per world: at the Mediterranean's
+    // own 215 limit the old 90/200 pair put the entire table past the far plane and the overview came out blank.
+    const b = diorama?.bounds;
+    const halfDiagonal = b ? Math.hypot(b.max.x - b.min.x, b.max.z - b.min.z) / 2 : 70;
+    const [near, far] = worldFogRange(world, window.innerWidth, window.innerHeight, halfDiagonal);
+    worldScene.fog = new THREE.Fog('#e9e0cd', near, far);
     controls.minPolarAngle = 0.5; controls.maxPolarAngle = OVERVIEW_MAX_POLAR;
     controls.minAzimuthAngle = -0.75; controls.maxAzimuthAngle = 0.75;
   }

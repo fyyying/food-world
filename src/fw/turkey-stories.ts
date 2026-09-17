@@ -29,7 +29,9 @@ Watch the counter rather than just the skyline. A hot piece of fish meets bread,
 
 That nineteenth-century book is a useful glimpse of an Ottoman table, but the charcoal counter here represents living regional practice. Pieces on a şiş, a minced-meat kebab and meat shaved from a rotating döner stack involve different preparation and control of heat. Their names should not collapse into one generic dish.
 
-At an ocakbaşı, the hearth sits close to the meal. The cook judges coals, turns skewers and warms bread while vegetables need their own timing. Onion, herbs and tart sumac bring a fresh contrast to the grill. Watch the food react first, then compare the nearby döner stand or carry the flavours into the family supper.`,
+At an ocakbaşı the hearth sits close to the meal, and the raw onion beside the skewers is part of the cooking. The red on it is sumac, the dried and ground fruit of Rhus coriaria, a shrub of the cashew family that takes rocky, sunlit ground and will not grow in shade. The Ministry of Agriculture and Forestry calls Türkiye a gene centre for the species and records it from 500 to 2,000 metres in almost every region, thickest in the west and south.
+
+Its sourness is malic acid, the acid of a green apple, not heat, so sumac does the work a lemon does elsewhere: shaken over thin-sliced onion beside şiş, stirred through a çoban salad of tomato, cucumber and onion, scattered on lahmacun before it is rolled. Turkish work on the plant began with tanning and dyeing rather than with food. Watch the food react first, then compare the nearby döner stand or carry the flavours into the family supper.`,
   sweetShop: `An Ottoman palace kitchen account from 1473 mentions baklava. It is a valuable dated record, but not proof that someone invented the sweet that year. Layered pastry developed across a connected culinary region; today’s baklava belongs to both that wider history and the distinctive practices of particular places.
 
 Specialist kitchens made the repeated work of thin pastry into a craft. Rolling, buttering, arranging nuts, cutting and baking each require judgement. Gaziantep’s pistachio baklava has a particularly strong regional identity, while other places use different nuts, cuts and methods. A familiar name can therefore carry many local versions.
@@ -83,13 +85,18 @@ const cookbookContents = {title:'Museum collection · The 1844 cookbook and its 
 const neolithic = {title:'UNESCO · Neolithic Çatalhöyük',url:'https://whc.unesco.org/en/list/1405/'};
 const crops = {title:'Çatalhöyük Research Project · Archaeobotanical finds',url:'https://www.catalhoyuk.com/archive_reports/1995/ar95_12.html'};
 const ferries = {title:'Şehir Hatları · Şirket-i Hayriye, founded in 1851',url:'https://sehirhatlari.istanbul/en/corporate/sirketi-hayriye-overview-102'};
+// The charcoal counter's sumac facts, checked on 2026-09-17: the ministry's own guide gives the 1–3 m shrub, the
+// Anacardiaceae family, Türkiye as a gene centre, the 500–2,000 m range and malic acid as the source of the sourness.
+const sumacGuide = {title:'Ministry of Agriculture and Forestry · Sumak fizibilite raporu ve yatırımcı rehberi',url:'https://www.tarimorman.gov.tr/BUGEM/Belgeler/YATIRIMCI%20REHBER%C4%B0/SUMAK%20FIZIBILITE%20RAPORU.pdf'};
+const sumacPlant = {title:'Kew · Plants of the World Online: Rhus coriaria L.',url:'https://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:70477-1'};
 export const TURKEY_SOURCES: Record<string,{title:string;url:string}[]> = {
   simit:[{title:'Fahri Dikkaya · Simit in Evliya Çelebi and Ottoman records',url:'https://www.istanbulsimidi.com.tr/pdf/Evliya%20%C3%87elebi%20Seyahatnamesinde%20Simit.pdf'}],
   teaGarden:[teaHistory,teaFactory,{title:'UNESCO · Tea culture and hospitality',url:'https://ich.unesco.org/en/RL/culture-of-ay-tea-a-symbol-of-identity-hospitality-and-social-interaction-01685'}],
   turkishCoffee:[{title:'Ministry of Culture · Turkish coffee and early coffeehouses',url:'https://teda.ktb.gov.tr/Eklenti/6594%2Cturkishcoffeeculturepdf.pdf?0='},{title:'UNESCO · Turkish coffee culture',url:'https://ich.unesco.org/en/RL/turkish-coffee-culture-and-tradition-00645'}],
   bazaarTr:[{title:'Ministry of Culture · The Grand Bazaar',url:'https://kulturportali.gov.tr/turkiye/istanbul/gezilecekyer/kapalicarsi'}],
   balikEkmek:[ferries,{title:'GoTürkiye · Istanbul street food',url:'https://goturkiye.com/istanbul/street-food'}],
-  mangal:[cookbook,cookbookContents],
+  mangal:[cookbook,cookbookContents,sumacGuide,sumacPlant],
+  spicesMe:[sumacGuide,sumacPlant],   // the market's own sumac card carries the same two references as the room it points at
   sweetShop:[{title:'GoTürkiye · Baklava and its 1473 palace record',url:'https://goturkiye.com/de/branding/press-releases/baklava-turkiyenin-asirlari-asan-milli-tatlisi'}],
   pideTr:[{title:'Bafra Municipality symposium · Local pide history',url:'https://sempozyum.bafra.bel.tr/1incisempozyum/sempozyum/4/files/basic-html/page463.html'},{title:'Black Sea cultural inventory · Regional pide traditions',url:'https://karadeniz.gov.tr/yemek-kulturu-4/'}],
   yufkaTr:[neolithic,crops,{title:'UNESCO · Shared flatbread heritage',url:'https://ich.unesco.org/en/RL/flatbread-making-and-sharing-culture-lavash-katyrma-jupka-yufka-01181'}],

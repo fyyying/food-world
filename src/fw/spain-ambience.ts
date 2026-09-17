@@ -71,11 +71,21 @@ export const SPAIN_AMBIENCE: Record<string, AmbientPatch[]> = {
     { kind: 'leaves', wide: [.84, 0, 1, .33], leaf: 'olive', color: '#6c8a45', count: 5, size: 1.2 },   // the potted orange tree, wide only
   ],
   es_manchego: [
-    { kind: 'stream-glint', wide: [.298, .615, .315, .78], color: '#fff3d0', paths: [[[[.45, .02], [.5, .5], [.5, .98]]], undefined] },   // the painted whey drip from the draining table into the bucket, wide only
     { kind: 'leaves', phone: [.13, 0, .48, .16], leaf: 'yellow', color: '#c9a63a', count: 7, size: 1.4 },   // the tree over the farm door, portrait only
-    // The doorway beam is portrait-only now: the wide painting already carries the caldero's steam, the whey glint
-    // and the hung pepper string, and a beam is the one cue that stalls twice in every cycle.
-    { kind: 'sunray', phone: [.08, 0, .66, .52], angles: [-.30, .30], sway: [.085, .080] },   // daylight through the farm door
+    // The doorway beam is in the wide painting since 2026-09-17. Its wide box was measured on wide.jpg: the light
+    // enters the door and falls left across the tiles, which is the direction of the painted door-frame shadows on
+    // the floor at x .42 to .56, so the ray leans with its top to the right (angle +.30) and runs from the lintel at
+    // x .72 down to x .60 above the cheese wheel.
+    { kind: 'sunray', wide: [.42, 0, .90, .72], phone: [.08, 0, .66, .52], angles: [.30, .30], sway: [.100, .080] },   // daylight through the farm door
+    // The steam came off the copper caldero later the same day, on the owner's note that nothing in this room is
+    // heated: the cheese is made from warmed milk, but the painting shows no fire, no boil and no visible heat, and
+    // the touches and the story describe pressing and draining rather than cooking. The whey the room really does
+    // picture takes the slot the steam left. The wide painting draws it as separate drops, not a thread: the whey
+    // leaves the draining cloth at the table edge at (.3055, .632), falls as three beads at x .3055 and lands in the
+    // tub at (.3062, .780), where the painting itself draws the ring. Measured on wide.jpg on 2026-09-17; the
+    // earlier stream-glint on this drip was a dashed line and read as one, which is why this is a `drip`.
+    { kind: 'drip', wide: [.292, .632, .322, .786], color: '#f1e7cf', period: 1.8,
+      paths: [[[[.45, 0], [.46, .48], [.47, .96]]], undefined] },   // the whey from the draining table into the tub, wide only
   ],
   es_sidreria: [
     // Both painted strings run off the left edge of their frame — the portrait one sits outside the slice a phone
@@ -87,8 +97,12 @@ export const SPAIN_AMBIENCE: Record<string, AmbientPatch[]> = {
     { kind: 'birds', phone: [.18, .100, .36, .140], period: 6.0, scale: 1.2 },   // the clean sky between the door lintel and the mountain ridge, portrait only
   ],
   es_bodega: [
-    { kind: 'stream-glint', wide: [.486, .265, .514, .585], phone: [.667, .175, .697, .655], color: '#ffe6b0',
-      paths: [[[[.42, .02], [.43, .5], [.44, .98]]], [[[.48, .02], [.52, .5], [.54, .98]]]] },   // the painted sherry thread from venencia to copita
+    // Re-measured on the pixels on 2026-09-17 alongside the cider house, so this thread also starts at the lip and
+    // stops at the wine. Wide: the venencia's lip is at (.4955, .265) and the thread falls dead straight at x .4976
+    // into the copita, whose surface is at y .602 — the box used to stop at .585, in the air inside the bowl.
+    // Portrait: the lip is at (.6805, .168), the thread is vertical at x .6833 and the copita's surface is y .664.
+    { kind: 'stream-glint', wide: [.486, .265, .514, .602], phone: [.667, .168, .697, .664], color: '#ffe6b0',
+      paths: [[[[.41, 0], [.42, .55], [.40, 1]]], [[[.58, 0], [.54, .10], [.54, 1]]]] },   // the painted sherry thread from the venencia lip to the wine in the copita
     { kind: 'light', wide: [.610, .085, .676, .208], phone: [.848, .285, .952, .418] },   // the cellar lantern
   ],
 };

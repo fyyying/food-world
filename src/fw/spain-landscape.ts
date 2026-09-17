@@ -100,11 +100,11 @@ export function spainLandscape(ctx: LayoutCtx) {
   // Ground tints per cluster, laid before anything solid.
   tint(-43.5, -4, 11, 8, '#d9c9a8');          // the town around the Plaza Mayor
   tint(-28, 8, 12, 9, '#c9c08a', .05);        // dry gold round the huerta
-  tint(-50, 14, 10, 7, '#e5dcc6', -.05);      // lime-washed lanes on the low hill
-  tint(-72, 4, 13, 15, SP.tierraManchega);    // the dry plain
+  tint(-47, 13, 16, 9, '#e5dcc6', -.05);      // lime-washed lanes on the low hill, widened east on 2026-09-17 to carry the courtyard kitchen
+  tint(-70, 2, 19, 19, SP.tierraManchega);    // the dry plain, widened east and north on 2026-09-17 to carry the saffron plot
   tint(-52, -16, 12, 8, '#9fb08a', .1);       // wet green above the ria
   tint(-31, -20, 9, 5, '#a9b58a');            // the Cantabrian green
-  tint(-23, -17, 5, 6, '#d9cfae');            // turning to render and tile at the corner
+  tint(-24, -14, 7, 12, '#d9cfae');           // turning to render and tile at the corner, widened north on 2026-09-17 to carry the mosaic balustrade
   tint(-19.6, 10, 2.2, 3.2, '#e6d9b2');       // the pine sandbar along the bay
   tint(-56, 8, 6, 4, '#b3ad7e');              // the olive slope
 
@@ -124,7 +124,7 @@ export function spainLandscape(ctx: LayoutCtx) {
   // A low earth bund carries the water on from the head of the channel to the paddy bunds.
   const bund = add(group, new THREE.Mesh(new THREE.BoxGeometry(.5, .14, 2.2), mat('#a8956f')), -23.4, .07, 12.1); bund.rotation.y = .12; bund.name = 'acequia-bund';
   // Reeds and stones along the river, clear of the bridges and the lanes.
-  for (const [i, [x, z]] of ([[-52.0, 0.2], [-40.5, 6.4], [-32.5, 3.6], [-25, 3.6], [-20.5, 6.6], [-52.5, -0.4], [-60.2, -6.6], [-67, -10.2]] as Pt[]).entries()) {
+  for (const [i, [x, z]] of ([[-52.0, 0.2], [-40.5, 6.4], [-32.5, 3.6], [-25, 3.6], [-20.5, 6.6], [-52.5, -0.4], [-60.2, -6.6], [-65.4, -10.8]] as Pt[]).entries()) {
     if (i % 2) add(group, new THREE.Mesh(new THREE.DodecahedronGeometry(.22 + (i % 3) * .06, 0), mat('#a3a094')), x, .1, z);
     else for (let k = 0; k < 4; k++) add(group, cyl(.02, .03, .8, '#7f9d55', 4), x + (k - 1.5) * .16, .4, z + (k % 2) * .14);
   }

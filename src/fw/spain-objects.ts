@@ -90,7 +90,7 @@ const rooms: Room[] = [
   },
   {
     id: "jamonEs", kind: "dish", name: "The ham counter", placeName: "The ham counter", zh: "Jamón ibérico", emoji: "🍖",
-    pos: [-48, -6], rot: 0.3, prop: "jamonStall", scene: "es_jamon",
+    pos: [-51.5, -5.5], rot: 0.3, prop: "jamonStall", scene: "es_jamon",
     tagline: "A long thin knife, and slices you can see the light through.",
     blurb: "This is one specialist stall inside a cast-iron and glass market hall of the generation that opened between 1876 and 1889. Everything about the trade it carries on was written into law much later: Real Decreto 4/2014, of 10 January 2014, fixes four seal colours for Iberian ham by breed and by feed, black for bellota 100% ibérico, red for bellota ibérico, green for cebo de campo ibérico and white for cebo ibérico.\n\nA leg is salted, washed, dried and then left hanging in a cool store for months and often years before anybody cuts it. At the counter it is clamped into a jamonero and opened with a long flexible cuchillo jamonero and a short puntilla for working round the bone. The slices are taken against the grain and lifted away almost transparent, and when the cutter stops the cut face is covered again with its own tocino so it does not dry.\n\nPeople buy it by weight, cut to order, and eat it at room temperature with bread and nothing else, or standing at a bar beside a glass of fino. A plate of it is the first thing put on a table when visitors arrive, and the last thing that gets cleared.\n\nThe seals point back at a landscape rather than a factory. The black and the red ones mean the pig spent the montanera, from October to February, loose under the holm oaks of the dehesa, eating acorns and grass and walking between trees for them.",
     partners: ["bread", "sherry", "olives", "acorns"],
@@ -106,7 +106,7 @@ const rooms: Room[] = [
   },
   {
     id: "churrosEs", kind: "dish", name: "The churrería", placeName: "Churrería", zh: "Churrería", emoji: "🍩",
-    pos: [-34, -13], rot: 0, prop: "churreria", scene: "es_churros",
+    pos: [-33, 0], rot: 0, prop: "churreria", scene: "es_churros",
     tagline: "Ridged dough, hot oil, and chocolate thick enough to hold a spoon.",
     blurb: "A churrería is a shop with one job. Madrid's oldest working one, the Chocolatería de San Ginés, opened in 1894 in a passageway off Calle Arenal, in a building put up four years earlier as an inn, and it has fried by the same method since. The trade is older than that shop, but 1894 is where the paper trail in this city starts.\n\nThe dough is flour, water and salt, scalded so it holds together, and it is pushed through a star-shaped nozzle straight into hot clean oil. The ridges come from the nozzle and from nothing else. They fry fast, drain on a tray, and are handed over in paper with sugar or without. The thicker, softer porra beside them is a different dough carrying a raising agent, which is why it is spongier and takes more chocolate. The chocolate itself is chocolate a la taza, thickened until a churro will stand in the cup.\n\nThe hours are the strange part. A churrería belongs to very early morning, when people come out of the market or off a night shift, and to very late night, when they come out of everywhere else. A docena wrapped to take home is a Sunday habit in a lot of families.\n\nThe same fried dough answers to other names further south: calentitos in Seville and Huelva, tejeringos in Cádiz and Málaga, jeringos in Córdoba and tallos in Jaén. Legend puts its invention with shepherds who named it after the ridged horns of the churra sheep, and another legend brings it from China with Portuguese sailors. Neither has any documentary support.",
     partners: ["flour", "olive oil", "chocolate", "sugar"],
@@ -122,7 +122,7 @@ const rooms: Room[] = [
   },
   {
     id: "gazpachoEs", kind: "dish", name: "The courtyard kitchen", placeName: "The courtyard kitchen", zh: "Gazpacho andaluz", emoji: "🥣",
-    pos: [-50, 10], rot: -0.15, prop: "patioKitchen", scene: "es_gazpacho",
+    pos: [-41.5, 10], rot: -0.15, prop: "patioKitchen", scene: "es_gazpacho",
     tagline: "Bread, oil, garlic and vinegar, cold, in a hot patio.",
     blurb: "Gazpacho is older than its colour. The version Andalusian farm labourers carried into the fields was bread, garlic, olive oil, vinegar, water and salt, pounded by hand, and it was a whole meal rather than a first course. Tomato and green pepper had come from the Americas but only entered the bowl in the nineteenth century, which is also when the dish moved from the field to the town table.\n\nThe red version is ripe tomatoes, green pepper, cucumber, garlic and farmhouse bread soaked in water, worked with extra virgin olive oil, vinagre de Jerez, salt and cold water until it is smooth. The old tools are still the ones that explain it: a wooden dornillo to work the bread and a mortar for the garlic. Nothing in this kitchen is heated, so nothing here steams.\n\nIt is drunk from a glass as often as it is eaten from a bowl, straight from the well or the cold store, in the shaded patio at the hottest part of the day. The diced tomato, cucumber, pepper, onion, bread and hard-boiled egg come in separate little dishes so each person builds their own.\n\nThe same idea has neighbours. Salmorejo from Córdoba is thicker, with more bread and no cucumber or pepper, and ajoblanco is the white one, almonds and garlic and oil with grapes on top. The courtyards themselves were inscribed by UNESCO in 2012, as a festival and a shared practice of looking after them.",
     partners: ["tomato", "cucumber", "garlic", "sherry vinegar", "bread"],
@@ -138,7 +138,7 @@ const rooms: Room[] = [
   },
   {
     id: "paTomaquet", kind: "dish", name: "The bread terrace", placeName: "The bread terrace", zh: "Pa amb tomàquet", emoji: "🍞",
-    pos: [-26.5, -16], rot: -0.12, prop: "panTerrace", scene: "es_pa_tomaquet",
+    pos: [-26, -14], rot: -0.12, prop: "panTerrace", scene: "es_pa_tomaquet",
     tagline: "Rub the tomato in, then the oil, then the salt.",
     blurb: "Catalonia's everyday bread is usually explained as a way of rescuing a loaf. Farmhouses baked large rounds of pa de pagès that went dry before they were finished, and in the season when tomatoes were everywhere a halved tomato rubbed over the cut surface put the bread back into use. The written trail is thinner than the habit: the gastronome Néstor Luján placed the first reference in 1884, in a letter from Paris by Pompeu Gener describing bread with oil dressed with tomato.\n\nThe order matters more than the ingredients. Take yesterday's pa de pagès, toasted or not. Halve a ripe tomato and rub the cut side into the crumb so the pulp and the seeds go in and the skin stays in your hand. Then oli d'oliva, then sal, in that order. Tomato diced and heaped on top is a different thing and Catalans will tell you so.\n\nIt is breakfast, it is what comes while you wait, and it is the base of half the plates on a Catalan table: pernil salat, anxoves, botifarra, truita, or nothing at all. A basket of bread, a bowl of tomatoes, a cruet and salt go on the table and everyone makes their own.\n\nOne rival account is repeated often and is not established: that the habit came with Murcian and Andalusian workers who built the Barcelona metro in the early twentieth century and grew tomatoes on the sites. It is offered here as a competing story, not as history.",
     partners: ["bread", "tomato", "olive oil", "ham"],
@@ -146,7 +146,7 @@ const rooms: Room[] = [
   },
   {
     id: "manchegoEs", kind: "dish", name: "The cheese farm", placeName: "The cheese farm", zh: "Queso manchego", emoji: "🧀",
-    pos: [-68, 4], rot: -0.05, prop: "quesoFarm", scene: "es_manchego",
+    pos: [-69, 5], rot: -0.05, prop: "quesoFarm", scene: "es_manchego",
     tagline: "A zig-zag on the side, a flower on both faces.",
     blurb: "On the dry plateau of La Mancha the only animal that pays is a sheep, and the only cheese that may carry this name is made from her milk. The Denominación de Origen allows whole milk of the Manchega breed, salt, lactic ferments and rennet, and nothing else, which is why the flock in the doorway and the wheel on the table are the same subject.\n\nThe milk is set with cuajo, the curd is cut fine and lifted into a mould wrapped in a pleita, the plaited esparto band, and pressed between boards. The band prints a zig-zag round the side of the wheel and the board prints the flor, a flower or wheat ear, on both flat faces. The rule requires both marks. The wheel is then salted, turned every week in a cool store, and sold semicurado at a few months, curado at six or more, añejo after a year, the paste turning from ivory to deep gold and the small uneven eyes closing up.\n\nIt is cut in wedges with the rind left on, eaten off a board with bread and often with membrillo, quince paste, and it appears on every bar plate in the country beside the ham. A year-old wedge with a glass of red is a whole course in La Mancha.\n\nThe breed behind it is counted in the national catalogue: 556,363 breeding ewes in some 910 flocks, milk at 7 to 8 per cent fat, and no horns on either sex. La Mancha holds about 15.8 per cent of Spain's sheep and makes about 21 per cent of its sheep milk.",
     partners: ["sheep milk", "bread", "quince", "wine"],
@@ -211,7 +211,7 @@ SPAIN_OBJECTS.push(
   },
   {
     id: "oliveEs", world: "mediterranean", kind: "ingredient", name: "The grove and the oil mill", zh: "Olivar y almazara", emoji: "🫒",
-    area: "spain", pos: [-61.5, 8], rot: 0.1, elevation: 0, prop: "oliveMillEs",
+    area: "spain", pos: [-61.5, 6], rot: 0.1, elevation: 0, prop: "oliveMillEs",
     tagline: "Sixty-six million trees in one province.",
     blurb: "Spain is the largest olive oil producer in the world, and one province does most of the work. Jaén carries more than 550,000 hectares of grove and about 66 million trees, almost all of them the Picual variety, and produces roughly half of the country's oil. From a hill there the grove does not end; it goes over the next ridge and the one after.\n\nThe fruit is knocked or shaken down onto nets between November and January and taken to the almazara, the mill, the same day if the oil is to be good. It is washed, crushed stone and all, worked to a paste, and the oil separated out without heat. What comes off first is aceite de oliva virgen extra, green, bitter and peppery in the throat.\n\nNothing in this area happens without it. It softens the potatoes for the tortilla, fries the churros, dresses the octopus, goes into the cold soup and onto the rubbed bread, and is poured raw over everything else. A Spanish kitchen measures it by the glugg, not the spoon.",
     partners: ["bread", "garlic", "tomato", "salt"],
@@ -235,7 +235,7 @@ SPAIN_OBJECTS.push(
   },
   {
     id: "azafranEs", world: "mediterranean", kind: "flavour", name: "The saffron plot", zh: "Azafrán de La Mancha", emoji: "🌸",
-    area: "spain", pos: [-66, -3.5], rot: 0.1, elevation: 0, prop: "azafranField",
+    area: "spain", pos: [-71, -7], rot: 0.1, elevation: 0, prop: "azafranField",
     tagline: "Purple at dawn, crimson threads by noon.",
     blurb: "For two or three weeks in late October a dry brown plot in La Mancha turns purple overnight. Crocus sativus flowers before its leaves, opens at dawn and closes the same day, so the whole crop is picked by hand in the cold early hours and carried indoors in baskets.\n\nThen comes the monda. Sitting at a long table, the pickers open each flower and pinch out the three crimson stigmas where the style turns white, dropping them onto cloth. The threads are toasted over gentle heat until they lose most of their weight, which fixes the colour and the smell. It takes a very large number of flowers to fill a small jar, which is the whole explanation of the price.\n\nThe Denominación de Origen Protegida Azafrán de La Mancha was recognised in 1995, with its Consejo Regulador at Camuñas in Toledo. A pinch of the toasted threads, crushed and steeped, is what turns the rice in the Valencian pan yellow and gives it its smell.",
     flavour: ["floral", "honeyed", "bitter"],
@@ -252,7 +252,7 @@ SPAIN_OBJECTS.push(
   },
   {
     id: "ovejaManchega", world: "mediterranean", kind: "ingredient", name: "The Manchega flock", zh: "Oveja manchega", emoji: "🐑",
-    area: "spain", pos: [-72, 10], rot: 0.35, elevation: 0, prop: "manchegaFlock",
+    area: "spain", pos: [-70.5, 10.5], rot: 0.35, elevation: 0, prop: "manchegaFlock",
     tagline: "One breed, one milk, one cheese.",
     blurb: "The Manchega is a hardy white or black sheep bred for the dry plateau, and it is listed in Spain's official catalogue of native breeds. Both sexes are hornless, which is the quickest way to recognise the flock in a painting, and the census stands at 556,363 breeding ewes in some 910 flocks.\n\nWhat makes her worth keeping is the milk, not the meat. It runs 7 to 8 per cent fat and 5.7 to 6.3 per cent protein, roughly twice as rich as cow's milk, which is why a wheel of cheese comes out of comparatively little of it. La Mancha holds about 15.8 per cent of Spain's sheep and produces about 21 per cent of its sheep milk.\n\nThe rule that protects the cheese is a rule about her. Queso Manchego may be made only from whole Manchega milk, so the flock walking past the door and the wheel drying on the rack are the same animal at two stages.",
     partners: ["cheese", "milk", "esparto", "rennet"],
@@ -303,7 +303,7 @@ SPAIN_OBJECTS.push(
   },
   {
     id: "gaudiEs", world: "mediterranean", kind: "landmark", name: "The mosaic balustrade", zh: "Trencadís", emoji: "🎨",
-    area: "spain", pos: [-25.5, -17.5], rot: 0.8, elevation: 0, prop: "gaudiBench",
+    area: "spain", pos: [-27.5, -9], rot: 0.8, elevation: 0, prop: "gaudiBench",
     tagline: "Broken tile, laid back together in a curve.",
     blurb: "Trencadís means broken, and it is a way of tiling a shape that flat tiles will not fit. Ceramic is smashed, sorted by colour, and pressed into mortar over a curved surface, so a bench, a chimney or a roof can bend in two directions and still be covered. Much of the material was factory waste and broken crockery, which is part of why it was affordable at the scale it was used.\n\nThe curve is the reason for the technique and not the other way round. A balustrade that undulates seats people facing each other in some stretches and away from each other in others, and the sun moves across the broken glaze all day without ever lighting it evenly.\n\nUNESCO inscribed Park Güell, Palau Güell and Casa Milà in 1984 as the Works of Antoni Gaudí, and added Casa Vicens, Casa Batlló, the Nativity façade and crypt of the Sagrada Família and the crypt at the Colònia Güell in 2005. The terrace below this balustrade is where the bread and the tomato are eaten.",
     match: () => false,

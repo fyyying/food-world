@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { add, mat, tree, type P } from './props';
 import { cypress, umbrellaPine } from './props-italy';
 import { block, masonry } from './turkey-architecture';
-import { SP, spainHouse, baserri, type SpainStyle } from './spain-architecture';
+import { SP, spainHouse, type SpainStyle } from './spain-architecture';
 import { ROAD_LIFT, type Pt } from './spain-landscape';
 import type { LayoutCtx } from './worldkit';
 
@@ -27,16 +27,24 @@ export const SPAIN_ROADS: Road[] = [
   { id: 'pepper-spur', width: 1.6, points: [[-50, -18], [-53, -15.5], [-58, -12]] },
   { id: 'coast-lane', width: 1.8, points: [[-50, -18], [-44, -21], [-40, -22], [-34, -22], [-28, -21], [-24, -18], [-22.6, -14], [-22.2, -10], [-21.4, -6], [-20.6, -2]] },
   { id: 'valencia-lane', width: 1.6, points: [[-28, -2], [-28, 3], [-28, 8], [-24, 12], [-24, 14], [-30, 16], [-34, 12], [-34, 10], [-34, 4], [-36, -3]] },
-  { id: 'terrace-spur', width: 1.6, points: [[-24, -18], [-21.4, -19.8]] },
+  // The spur used to run from the coast lane out to the trencadis terrace at [-21.4, -19.8]. The mosaic
+  // balustrade moved north on 2026-09-17, out from under the bread terrace's own roof, and the spur followed:
+  // it now leaves the coast lane at the strait and runs west along the terrace's landward side to its door.
+  { id: 'terrace-spur', width: 1.6, points: [[-22.3, -11], [-24, -10.6], [-25.6, -10.2]] },
   // The churreria stood inside the square behind the tapas bar, where nothing of its reaction could be seen on
-  // the approach; it now stands up the lane off the north-east corner, and this ribbon carries its door.
-  { id: 'churro-lane', width: 1.6, points: [[-37, -9], [-35.8, -10.8], [-34.6, -12.6]] },
+  // the approach, so in Stage E it moved to a lane off the north-east corner, at [-34, -13]. That put its
+  // six-unit body directly between the camera and the pintxo bar, five units behind it. On 2026-09-17 it moved
+  // again, to [-33, 0] on the south side of the main street where it leaves the square, which is both clear of
+  // every other stand and where a churreria belongs: Madrid's oldest is in a pasadizo off Calle Arenal. This
+  // ribbon is now that passage, from the main street to its door.
+  { id: 'churro-lane', width: 1.6, points: [[-35.6, -2.2], [-34.4, -0.8], [-33.4, 0.2]] },
 ];
 /** Deck centres on the river. A road may touch the water only inside these. */
 export const SPAIN_BRIDGES: Pt[] = [[-42, 5.4], [-28, 5.0], [-34, 5.6]];
 /** The open paved square: x from -50.5 to -36.5, z from -9 to 1. Four objects stand on it. */
 export const PLAZA = { x: -43.5, z: -4, w: 14, d: 10 };
-export const PLAZA_STATUE: Pt = [-44, -9.2];
+/** Moved half a unit east and south on 2026-09-17: the plinth reached into the fair cauldron's wedge. */
+export const PLAZA_STATUE: Pt = [-43.5, -8.8];
 export const ROAD_Y = .036, SQUARE_Y = .027, PAVING_Y = .018;
 
 /** Straight walking segments cut from the road table, so a walker never rounds a corner into a wall.
@@ -187,31 +195,37 @@ function equestrian(): P {
 }
 
 /** Decorative houses: style, position, rotation, size and storeys. Object pads stay clear.
- *  Owner feedback, 2026-09-16: twenty-four houses hemmed the clickable stands in and stood on three lanes.
- *  Ten were removed, one moved and three lowered. What is left is one or two per cluster, enough to say which
- *  region this is, with the approach from the road to every stand left open. See docs/spain-world.md. */
+ *  Owner feedback, 2026-09-17: "there should be no house in front of a clickable object". The camera looks at
+ *  Spain from the south (azimuth .033 rad, 38.7 degrees up) and the visitor may swing it 43 degrees either way,
+ *  so every stand keeps a 100-degree wedge on its camera side clear for nine units. Twenty-six stands spread
+ *  over sixty by fifty units leave very little ground that is outside all twenty-six wedges, and almost none of
+ *  it is in the Plaza Mayor, where four stands and the statue stand within fourteen units of each other. Nine
+ *  of the fourteen houses were therefore removed and three moved to free ground in their own region; five are
+ *  left, one per region and none in Castile. The Plaza Mayor keeps no decorative house at all: its built
+ *  fabric is the market hall, the taberna, Casa Lola, the churreria, the statue and the lamp posts. `spain-world.mjs` holds both the wedge and the
+ *  count. See docs/spain-world.md, "Third pass".
+ */
 const HOUSES: [SpainStyle, number, number, number, number, number, number][] = [
-  // The Plaza Mayor: brick and granite on the west and north sides of the square. The east side lost its
-  // three-storey house, which stood on the diagonal between the camera and both the tapas bar and the churreria.
-  ['castile', -52.8, -10.6, -.1, 3.2, 2.4, 2],
-  ['castile', -43.1, -13.3, 0, 3.2, 2.4, 2],
-  // La Albufera y el Puerto: lime wash and reed shades. The house by the port moved
-  // two units north: its eave hung over the main street.
-  ['valencian', -24.6, 2.4, -.2, 3.0, 2.4, 2],
-  ['valencian', -24.9, -6.7, -.5, 2.8, 2.2, 1],
-  ['valencian', -24.4, 20.4, -.1, 3.0, 2.4, 1],
-  // El Patio y la Bodega: whitewashed Andalusian lanes on the hill, two on the lane and one on the Alhambra approach.
-  ['andalus', -55.8, 12.7, .2, 3.2, 2.4, 2], ['andalus', -55.5, 16.7, -.15, 3.0, 2.4, 2],
-  ['andalus', -43.4, 24.6, .05, 2.8, 2.2, 2],
-  // El Secano Manchego: single-storey lime wash with a straw-loft opening, three hamlet houses instead of six.
-  ['mancha', -75.0, -1.6, -.2, 3.0, 2.4, 1], ['mancha', -66.5, 11.5, -.1, 3.0, 2.4, 1],
-  ['mancha', -66.8, 18.0, .1, 3.0, 2.4, 1],
-  // La Ria: bare granite and slate, with a glazed gallery against the rain. The second one stood on the north road.
+  // La Albufera y el Puerto: lime wash and a reed shade on the bay's southern shore, the one piece of ground in
+  // Valencia that is behind no stand. The two houses by the port stood in front of the port, the bread terrace
+  // and the mosaic bench and were removed.
+  ['valencian', -21.0, 25.5, -.2, 3.0, 2.4, 1],
+  // El Patio y la Bodega: the last white house on the road to the Alhambra, west of the terrace. The two on the
+  // patio hill stood in front of the courtyard kitchen and the oil mill; the one above the bodega stood in
+  // front of the bodega and three units in front of the flamenco stage. It came down from two storeys to one
+  // on 2026-09-17: at 5.3 units its roof caught one ray to the Manchega flock eleven units behind it.
+  ['andalus', -65.6, 21.0, .05, 2.8, 2.2, 1],
+  // El Secano Manchego: one single-storey lime-washed house on the dry plain west of the cheese farm. The
+  // other two stood in front of the windmill ridge, the oil mill and the flock; the only other ground on the
+  // plain that is behind every stand is inside the dehesa's pig pen. It moved two units south on 2026-09-17,
+  // when the saffron plot moved to [-71, -7] and put the house in its camera-side wedge.
+  ['mancha', -75.0, 5.0, .15, 3.0, 2.4, 1],
+  // La Ria: bare granite and slate with a glazed gallery against the rain; it stands west of the fair, behind
+  // nothing, and did not move.
   ['galician', -63.3, -14.6, .2, 3.0, 2.4, 2],
-  // El Cantabrico i la Terrassa: dark timber over stone, then render and tile at the corner. The house on the
-  // coast lane went; the one behind the churreria's lane came down to one storey so the fryer stays in view.
+  // El Cantabrico i la Terrassa: render and tile at the corner. The house behind the churreria's lane stood in
+  // front of the churreria, the bread terrace and the mosaic bench, and was removed.
   ['catalan', -26.5, -23.0, .15, 3.0, 2.4, 2],
-  ['catalan', -28.6, -8.4, .2, 2.8, 2.2, 1],
 ];
 
 export function spainTown(ctx: LayoutCtx) {
@@ -244,8 +258,8 @@ export function spainTown(ctx: LayoutCtx) {
   }
 
   place(equestrian(), PLAZA_STATUE[0], PLAZA_STATUE[1]).name = 'plaza-statue';
-  place(fountain(), -52.4, 14.4).name = 'patio-fountain';
-  place(fountain(SP.calBlanca), -31.6, 1.4).name = 'valencia-fountain';
+  place(fountain(), -56, 12).name = 'patio-fountain';   // moved west off the courtyard kitchen's camera side, 2026-09-17
+  place(fountain(SP.calBlanca), -26, 2.2).name = 'valencia-fountain';   // moved east down the main street, 2026-09-17: it stood inside the churreria's new pad
   place(fountain(SP.granitoGalego), -46.2, -17.6).name = 'ria-fountain';
 
   for (const [style, x, z, rot, w, d, storeys] of HOUSES) {
@@ -253,16 +267,25 @@ export function spainTown(ctx: LayoutCtx) {
     h.name = 'spanish-house';
   }
   // The barraca that stood in the rice fields at [-22.2, 9.0] was removed on the owner's word, 2026-09-16.
-  // The Albufera still has one: the rice fire stand builds its own field house behind the pan.
-  // The Basque farmhouse keeps its place behind the pintxo quay, a size smaller: the quay, the churreria's new
-  // lane and the trencadis terrace leave it a narrower plot than the blueprint assumed.
-  place(baserri(), -28.2, -11.0, -.15, .78).name = 'baserri';
+  // The Basque farmhouse that stood at [-28.2, -11.0] went on 2026-09-17: at 5.1 by 4.6 it was the widest
+  // decoration on the table and it stood in front of four clickable objects at once, the bread terrace (2.8
+  // away), the mosaic bench, the pintxo bar and the churreria. The quay, the churreria's lane and the
+  // trencadis terrace leave no plot on that coast that is behind all four, so it was removed rather than moved.
+  // `baserri()` stays in spain-architecture.ts; nothing places one now.
 
   // Plane trees on the square edges and the Catalan terrace; cypresses at the Alhambra; pines on the sandbar.
-  for (const [x, z, s] of [[-31.0, -7.8, 1.2], [-50.4, 2.4, 1.15], [-30.4, -5.2, 1.05], [-33.6, -4.2, 1.1]]) {
+  // All four plane trees came down to a crown under two units on 2026-09-17, so they are no longer "big trees"
+  // in front of the market hall, the family kitchen and the churreria; the one at [-31.0, -7.8] was 4.9 from
+  // the churreria. All three east-side trees moved again on 2026-09-17, out of the churreria's new footprint
+  // at [-33, 0] and out of the mosaic balustrade's pad at [-27, -10]; they now line the lane that leaves the
+  // square's east side for the coast.
+  for (const [x, z, s] of [[-33, -11, .95], [-50.4, 2.4, .95], [-32.5, -5.8, .92], [-35, -7.4, .95]]) {
     add(group, block(1.4, .22, 1.4, SP.granitoGalego), x, .11, z);
     place(tree('round', s), x, z).name = 'plane-tree';
   }
-  for (const [x, z] of [[-62.8, 17.4], [-59.4, 14.6], [-55.0, 14.8], [-50.6, 16.2]]) place(cypress(.95), x, z, x).name = 'alhambra-cypress';
-  for (const [x, z] of [[-19.2, 8.4], [-19.2, 10.6], [-19.0, 12.4]]) place(umbrellaPine(.95), x, z, x).name = 'sandbar-pine';
+  // Two of the four Alhambra cypresses stood in front of the courtyard kitchen and the oil mill and came out;
+  // the third moved north-west to the foot of the terrace, where the oil mill's wedge ends.
+  for (const [x, z] of [[-62.8, 17.4], [-64, 18.5]]) place(cypress(.95), x, z, x).name = 'alhambra-cypress';
+  // The southernmost sandbar pine stood nine units in front of the port and was removed.
+  for (const [x, z] of [[-19.2, 10.6], [-19.0, 12.4]]) place(umbrellaPine(.95), x, z, x).name = 'sandbar-pine';
 }

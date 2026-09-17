@@ -114,7 +114,7 @@ Regression checks cover fixed dolma cookware, falling harvest fruit, repeated ta
 | --- | --- | --- |
 | Simit ferry | Gulls, leaves and samovar steam; the crowded water stays still | One simit rises, moves toward the visitor and tips before the seller follows |
 | Tea garden | Birds, dappled light, leaves and tray steam; boats and water stay still | Kettle tips, a connected tea stream fills one glass, and the glass lifts |
-| Coffeehouse | Readable beads move down exposed window panes; warm light and cezve steam continue | Cezve tips, a connected coffee stream reaches one grounded cup, and its coffee surface rises visibly |
+| Coffeehouse | Rain on the measured glass: thin streaks of varying length, speed and opacity, and a few beads that run down the pane leaving a trail and swallowing the drop below (rebuilt 2026-09-17); warm light and cezve steam continue | Cezve tips, a connected coffee stream reaches one grounded cup, and its coffee surface rises visibly |
 | Market | One isolated chilli braid sways; leaves and a broad sun ray move | Three vegetables hop above a grounded basket, then one vendor responds |
 | Fish quay | Grill steam, flame and a compact light pulse; the crowded quay water stays still | One fish flips above the grill and the cook follows |
 | Charcoal counter | One chilli braid sways, flour or spice dust lifts, grill heat breathes | Grounded skewers turn and the cook follows |
@@ -133,3 +133,110 @@ Regression checks cover fixed dolma cookware, falling harvest fruit, repeated ta
 The failed first pass treated movement as the goal instead of treating the painting and the visible work surface as constraints. Generic canvas shapes invented wakes, shadows, food, and pours that did not exist in the art. Water code scattered eighteen curves inside a rectangle without knowing that faces, boats, posts and banks shared that box. Liquid code interpreted another rectangle as a stream and drew a new line from its top to bottom. Broad colour-selected crops captured unrelated red details, including a market vendor's cap, so a person's head moved with the chillies. The 3D reactions also used tiny displacements that were technically non-zero but unreadable at the arrival camera; the cook's arm then became the strongest response.
 
 The prevention rule is semantic as well as technical. Every wide and portrait effect now needs an authored source and forbidden-overlap review, and every crop mask must be inspected in isolation rather than approved because pixels changed. A rectangular water or liquid box is never enough evidence: water needs isolated authored reflections, and a real painted stream may receive only a short highlight inside its silhouette. Each 3D stand needs a named food, tool, material, or water subject; that subject must move first by a minimum readable amount at the 1.6-second arrival, while its support remains fixed. The regression suite checks each important effect rather than accepting any changed pixels or any changed transform, but browser review at phone and large-screen sizes remains required because automated checks cannot prove natural motion.
+
+## Owner walkthrough, 2026-09-17: sumac explained, and rain that reads as rain
+
+Two of the four items from the morning walkthrough of the live site are Turkey's. The two Spanish ones are in
+[the Spain rooms document](spain-rooms.md).
+
+### "Sumac has too few explanations"
+
+**Which two things this is.** The walkthrough note named the Turkish market, and the market's own sumac subject is
+the card-only object `spicesMe` ("Sumac and pepper flakes", parented to `bazaarTr`), whose blurb lives in
+`turkey-objects.ts`. There is also no sumac *touch* in `tr_market`: its three touches are the season's vegetables,
+the olives and the leaves above the stalls, and the only sumac touch in `scenes-turkey.ts` is in the charcoal
+counter, `tr_kebab`, whose painting shows a bowl of thin-sliced onion under red powder. Both were rewritten — the
+market card because that is what she opened, the kebab touch and its story because that is where the text lived.
+
+**The touch.** It was: *"Thin onion and fresh herbs bring crunch and freshness beside the charcoal grill. Tart sumac
+is a familiar seasoning for an onion salad."* Two sentences that name the dish and say nothing about the thing. It
+is now:
+
+> Sumac is the dried, ground fruit of *Rhus coriaria*, a shrub of dry Anatolian hills. It is sour, not hot, and goes
+> on onion beside the grill, in çoban salad and over lahmacun.
+
+173 characters, inside the room's own band (Turkey's 46 touch texts run from 43 to 175 characters, median 125).
+
+**The story.** A touch is the short discovery; the depth belongs in the story card, which is where the sourced fact
+went. `TURKEY_STORY_DEPTH.mangal`'s third paragraph was one sentence about sumac inside a paragraph about the
+hearth. It is now two paragraphs of 449 and 446 characters — the file's own paragraphs run 300 to 435 — which makes
+`mangal` the one four-paragraph story in the set. They give the botanical identity and family, where the plant grows,
+why it tastes sour, the three places on a Turkish table it is used, and the fact that Turkish research on it began
+with tanning and dyeing rather than with food.
+
+**The market's own card, `spicesMe`.** It was one sentence about sumac and one about pul biber, 152 characters, in a
+file whose other card-only blurbs run 399 to 1,046 characters and whose market and ingredient stalls sit at 646 to
+782 in three paragraphs. It is now **781 characters in three paragraphs**, at the top of that stall band and in the
+same voice: what sumac is and how it differs from the pul biber beside it, how the stall sells them both, what the
+Turkish Food Codex allows to carry the name, that the crop is still gathered from the wild, what sumac does at the
+table, and a route on to the charcoal counter. `TURKEY_SOURCES.spicesMe` was added with the same two references as
+the kebab room. Checked in the browser at 1280 x 720 and 390 x 844: all three paragraphs and both sources render,
+and the card scrolls on the phone the way the other long cards do.
+
+**Sources.** Two were added to `TURKEY_SOURCES.mangal` beside the 1844 cookbook pair and to a new
+`TURKEY_SOURCES.spicesMe`, recorded the same way as every other Turkey source:
+
+- [Ministry of Agriculture and Forestry · *Sumak fizibilite raporu ve yatırımcı rehberi*](https://www.tarimorman.gov.tr/BUGEM/Belgeler/YATIRIMCI%20REHBER%C4%B0/SUMAK%20FIZIBILITE%20RAPORU.pdf) — the General Directorate of Plant Production's own guide. Fetched and read on 2026-09-17: it gives the 1–3 m shrub, the family Anacardiaceae and genus *Rhus*, Türkiye as a gene centre for *R. coriaria*, a range from 500 to 2,000 m in almost every region and densest in the west and south, rocky sunlit ground and no growth in shade, and malic acid as the source of the sourness. Every sourced claim in the new paragraphs comes from this document
+- [Kew · Plants of the World Online: *Rhus coriaria* L.](https://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:70477-1) — the accepted name and the native range, Macaronesia and the Mediterranean east to Afghanistan
+
+The facts are split between the two texts rather than repeated: the room's story takes the habitat, the range and the
+malic acid, and the market's card takes the Food Codex definition (the ripe fruit dried whole, or ground with at most
+six per cent table salt by weight) and the wild harvest, which went from three tonnes reaching trade in 2012 to about
+eighteen in 2019. Both come from the same ministry guide, pages 15, 16, 22 and 23.
+
+Checked in the running room at 1280 x 720 and 390 x 844: the discovery panel fits at both sizes and the four
+sources are listed under "Sources and further reading" on the story card.
+
+### The rain on the coffeehouse windows
+
+> "The strokes representing rain on the windows are too fake, make them better."
+
+The old `rain` in `scene-ambience.ts` drew six identical two-pixel strokes, all the same length, all at the same
+opacity, each falling at almost the same speed and each ending in a hard round cap — six little dashes sliding down
+a pane in step. It is replaced by two things that actually happen on a wet window:
+
+- **Rain falling past the glass.** Six to twelve streaks, the count scaled from the pane's own area. Each has its own
+  position, length, speed and opacity from a stable per-index scatter, so no two match; each is drawn with a
+  gradient along its own axis that fades to nothing at both ends, so nothing begins or ends in a tick; and each
+  leans with a shared wind slant that grows with the pane's width. About one in five falls much faster and three to
+  four times longer than the rest and swells in and out over its own six-to-twelve-second cycle, so a quick streak
+  reads as an occasional gust rather than as one permanently odd drop.
+- **Water on the glass itself.** Two to five beads, again scaled from the pane's width. Each gathers on the pane for
+  the first third of its cycle, then runs, its fall going as `phase^1.8` so it is slow off the mark and quickest at
+  the sill, stretching as it goes. Behind it a wet trail is drawn from where it started to where it is, through a
+  gradient that fades out upwards. Lower on the same track a second bead waits; when the runner reaches it the
+  waiting bead is gone and the runner is a third larger — the merge that a real pane does constantly.
+
+**The panes were measured on the pixels**, because the clip rectangle is what keeps all of this off the joinery.
+
+| | Box | How it was bounded |
+| --- | --- | --- |
+| `tr_coffee` wide, signature | [.795, .045, .925, .325] | Centre pane. Left jamb ends x .776; the mullion between the sashes runs x .930–.956; the head rail ends y .028; the near drinker's cap starts y .345 |
+| `tr_coffee` portrait, signature | [.802, .158, .843, .294] | Lower-left sash. Glass x .718–.846, transom ends y .152, cap starts y .298, and the potted plant inside the room crosses only left of x .800 (no green pixel between x .800 and .846 from y .155 to .300) |
+| `tr_coffee` portrait, ambience | [.721, .050, .843, .134] | Upper-left sash. Glass x .719–.845, transom begins y .140. Was [.715, .05, .846, .132]; the right edge was one pixel from the mullion and is now three |
+
+**The portrait signature was drawing nothing at all.** Its old box, [.903, .164, .991, .306], sat on the lower-right
+sash, and that sash is off the screen on a phone: `paintingFrame` fits the portrait painting at 512.2 stage units
+while a 390-wide viewport shows 415.9 of them, so the visible slice of this painting is x .094 to .906. Measured
+live on 2026-09-17 by reading the room's own effect canvas at 390 x 844: **zero lit pixels right of x .88**. The
+room's signature loop has been invisible in portrait since it was written. It now sits on the lower-left sash, which
+is inside the slice, and still satisfies the harness rule that the phone box start at or below y .15 and reach y .29.
+
+**Every other room that uses the `rain` kind.** Grepping `PAINTED_SIGNATURES`, `TURKEY_AMBIENCE`, `SPAIN_AMBIENCE`
+and `XINJIANG_AMBIENCE` for `kind: 'rain'` returns **two patches, both in `tr_coffee`** — the signature and the
+phone-only ambience patch listed above. No China, Xinjiang or Spain room uses it, so no other room could be affected
+by the change, and there was none to re-check.
+
+**Checked.** At 1280 x 720 through the world route, eight frames: the streaks are thin, soft-ended and of visibly
+different lengths and slants, the beads run down with a fading trail, and between two frames an upper bead reaches
+the one below it and the merged bead is larger. Nothing crosses the jamb, the mullion or the head rail. At
+390 x 844 the upper-left and lower-left panes both carry rain and the room reads as raining. `scene-ambience.mjs`
+still passes, including its budget of fewer than 150 canvas operations per signature draw (the wide rain uses about
+103) and its rule that every stroke respects the click-subordinated alpha.
+
+### Not verified
+
+- A physical phone or tablet; both sizes were emulated viewports
+- Reduced motion was not re-run. `makeFx` returns before `ambientPainter` under `prefers-reduced-motion: reduce`, so
+  the new rain stops with everything else, but that was reasoned from the code, not seen
+- The other thirteen Turkish rooms were not re-opened; nothing in them changed

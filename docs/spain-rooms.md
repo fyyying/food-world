@@ -169,28 +169,60 @@ the portrait carries its own single ellipse.
 
 | Field | Wide | Portrait |
 | --- | --- | --- |
-| Pictured source | The pepper string by the farm door, the painted whey drip from the draining table into the bucket, the sky over the windmill ridge, the daylight through the door | The pepper string by the door, the sky through the doorway, the tree over the door, the daylight through the door |
-| Boundary | Hung sprite at fx .7565, fy .0960, fw .0474, sway 2.8, tone .75, over wall the string was painted out of; steam (.377, .432) at 110 on the copper caldero's rim; stream glint [.298, .615, .315, .78] traced [[.45, .02], [.5, .5], [.5, .98]]; signature birds [.52, .025, .74, .085], scale 1.6, period 5.5. The doorway sunray is portrait-only now | Hung sprite at fx .7670, fy .0235, fw .0831, sway 2.6, tone .78, over wall the string was painted out of; signature birds [.19, .03, .45, .095]; leaves [.13, 0, .48, .16]; sunray [.08, 0, .66, .52], drift .08. No steam: the portrait shows no heated vessel |
-| Anchor | The glint runs inside the painted drip only, from the cloth edge to the whey surface; the sprite's twine loop sits on the painted iron bracket the string hangs from; the steam leaves the copper rim the man is stirring inside, not his paddle | The sprite's loop sits on the painted chain hook; the leaves fall inside the painted canopy |
-| Forbidden overlap | The empty second hook at x .805 left for the sprite, the bucket rim and the wooden frame either side of the drip, the windmills at y .09 to .15, the cheese wheel and the wedge | The windmills below y .10, the press and the maker's hands, the wheel and the wedge in the foreground |
-| Dominant cue | Two birds over the windmill ridge, scale 1.6, period 5.5, now the room's signature; the pepper string swings beside them as a sprite | The same birds in the doorway sky, and the same sprite measured on the portrait |
-| Supporting cues | Steam off the copper caldero, the travelling glint on the whey drip, the hung string | Seven yellow leaves at size 1.4, the doorway beam, the hung string |
-| Visibility | 3.65 per cent (1.3 to 5.4) | 6.00 per cent (2.1 to 8.6) |
-| Reduced motion | The sprite's rotation is removed and it hangs straight, the leaves stop, the glint stops travelling | Same |
-| Browser status | Checked through the world route at 1280 x 720. Frames two seconds apart show the glint moving down the painted drip and nowhere else | Checked at 390 x 844 in `rooms.html` on 2026-09-16 at rest and at both ends of the swing. The breeze crop that used to reach the wooden shelf is gone; the painted string is out of the picture and the sprite hangs from the painted chain hook over clean stone |
+| Pictured source | The pepper string by the farm door, the sky over the windmill ridge, the daylight through the door, and the painted whey falling from the draining table into the tub. The copper caldero carried a steam plume until 2026-09-17, when it was removed: see "The cheese farm loses its steam and gets its whey back, 2026-09-17" below | The pepper string by the door, the sky through the doorway, the tree over the door, the daylight through the door |
+| Boundary | Hung sprite at fx .7565, fy .0960, fw .0474, sway 4.4, tone .75, over wall the string was painted out of; signature birds [.552, .118, .720, .172], scale 1.6, period 5.5; doorway sunray [.42, 0, .90, .72], angle +.30, drift .100; whey `drip` [.292, .632, .322, .786] traced [[.45, 0], [.46, .48], [.47, .96]], period 1.8. No steam in either orientation since 2026-09-17 | Hung sprite at fx .7670, fy .0235, fw .0831, sway 2.6, tone .78, over wall the string was painted out of; signature birds [.19, .03, .45, .095]; leaves [.13, 0, .48, .16]; sunray [.08, 0, .66, .52], drift .08. No steam: the portrait shows no heated vessel |
+| Anchor | The birds fly in the open doorway sky, their two rows at y .1423 and .1542, above the near windmill's sails at y .152 and below the fig branch that hangs to y .135; the ray keeps the direction of the painted door-frame shadows on the tiles at x .42 to .56, leaning with its top to the right, and runs from the lintel at x .72 down to x .60, where it fades out above the cheese wheel; the sprite's twine loop sits on the painted iron bracket the string hangs from; the drops leave the draining cloth at the table edge at (.3055, .632), fall along the painted thread at x .3055 and land on the whey in the tub at (.3062, .780), where the painting draws its own ring | The sprite's loop sits on the painted chain hook; the leaves fall inside the painted canopy |
+| Forbidden overlap | The empty second hook at x .805 left for the sprite, the fig branch that hangs into the doorway to y .135 and the near windmill's sails from y .152 down (both re-measured on the pixels on 2026-09-17; the older note here said the windmills sat at y .09 to .15, which put the band on the lintel), the girl in the doorway and her face at x .55 to .58, the cheese wheel and the wedge below y .625 | The windmills below y .10, the press and the maker's hands, the wheel and the wedge in the foreground |
+| Dominant cue | Two birds over the windmill ridge, scale 1.6, period 5.5, the room's signature, crossing the full clean span of the doorway sky since 2026-09-17; the pepper string swings beside them as a sprite | The same birds in the doorway sky, and the same sprite measured on the portrait |
+| Supporting cues | The doorway beam at drift .100, the whey drip into the tub, the hung string | Seven yellow leaves at size 1.4, the doorway beam, the hung string |
+| Visibility | 4.15 per cent, the six-pair median of the 2026-09-17 evening run after the steam came off (2.7 to 4.9); it was 5.65 with the steam and 2.15 before the beam went back | 6.00 per cent (2.1 to 8.6) |
+| Reduced motion | The sprite's rotation is removed and it hangs straight and the beam stops drifting; the leaves stop in the portrait | Same |
+| Browser status | Watched again through the world route at 1280 x 720 on 2026-09-17 after the steam came off, ten frames apart. The copper caldero is dry, the birds cross clean sky above the windmills, the ristra swings on its twine over clean plaster, the beam reads as the doorway daylight shifting rather than as a band, and drops travel down the painted whey thread and open a small ring on the tub | Checked at 390 x 844 in `rooms.html` on 2026-09-16 at rest and at both ends of the swing. The breeze crop that used to reach the wooden shelf is gone; the painted string is out of the picture and the sprite hangs from the painted chain hook over clean stone |
 
-The portrait has no whey glint. The portrait composition shows the press and the bucket but not a clean drip
-silhouette, and the methodology forbids redrawing a stream that one orientation does not carry, so the `paths`
-entry for portrait is `undefined` and nothing is drawn there.
+The portrait carries no whey effect. It does picture whey — short threads running off the cheese mould onto the
+drainage table at y .480 to .520, and two longer ones from the table edge into the tub at x .672 and x .690 from
+y .540 — but their lower ends disappear behind the tub's rim, so there is no landing surface to end a drip on, and
+the portrait is already at four always-on loops (signature birds, leaves, doorway beam, hung sprite) with no slot
+free. Its `paths` entry stays `undefined` and nothing is drawn there. It never had steam either, so the 2026-09-17
+change took nothing away from it.
+
+**The cheese farm at its floor, 2026-09-17.** This was the one Spain cell left under its floor by the re-measurement
+below: `es_manchego` wide, a six-pair median of 2.15 per cent against the 3 per cent a heat room has to reach, with
+all six samples between 1.7 and 2.6. Under the four-loop ceiling the wide painting holds its signature, its steam,
+its hung sprite and exactly one ambience patch, so the fix was a choice of which cue takes that last slot:
+
+- The **wide bird band was widened** to the full clean span of the doorway sky, `[.552, .118, .720, .172]`, measured
+  on `wide.jpg`: the door's inner jambs are x .524 and .727, the fig branch hangs to y .135 and the near windmill's
+  sails reach y .152, so the two rows at y .1423 and .1542 cross from x .565 to x .707 with nothing under them.
+  `scale` and `period` are one patch shared with the phone box, and the portrait was not to be touched, so they stay
+  at 1.6 and 5.5 and the flock reads longer rather than larger. On its own this is worth a few tenths of a per cent:
+  two line silhouettes are a rounding error in a changed-pixel count, which an earlier attempt at exactly this
+  measured (six pairs at 1.5 to 2.3 per cent, no better than the room without it).
+- The **hung sprite's sway went from 2.8 to 4.4 degrees**. It hangs on bare plaster over a painting the string was
+  taken out of, so a wider swing shows no cut edge and no repair; 4.4 degrees moves the tail of the ristra about
+  fifteen pixels at 1280 x 720, which is still less than a dried string of that weight would move in a door draught.
+- The **doorway sunray came back to the wide painting** and took the ambience slot the whey glint held. That was the
+  smallest cue in the room and the only one that could be given up: the signature cannot leave an orientation
+  (`scene-ambience.mjs` requires a wide and a phone anchor on every signature), the steam is required of every
+  pictured hot vessel, and the sprite is the room's hanging motion. The glint's measured box and path were kept here,
+  `[.298, .615, .315, .78]` traced `[[.45, .02], [.5, .5], [.5, .98]]`, against the steam ever leaving. **It left the
+  next day.** The whey is back in that slot as a `drip` rather than a glint, on a box and a path re-measured on the
+  pixels: see "The cheese farm loses its steam and gets its whey back, 2026-09-17" at the end of this document.
+
+The ray is the same one the room shipped with until the steam pass took its slot on 2026-09-16, so it is a cue the
+owner has already seen in this room, and its box was re-read on the pixels before it went back: `[.42, 0, .90, .72]`,
+angle +.30 because the painted shadows of the door frame fall down and to the left across the tiles at x .42 to .56,
+drift .100, a little stronger than any other Spain beam. It enters over the lintel at x .72, crosses the doorway and
+fades out at x .60 above the cheese wheel, which the fade over the last fifth of the box keeps off the hero cheese.
 
 ### The cider house, `es_sidreria`
 
 | Field | Wide | Portrait |
 | --- | --- | --- |
 | Pictured source | The painted cider stream from the raised bottle to the tilted glass, the apple branch in the doorway, the daylight through the press-house door, the pepper string at the left edge | The same stream, the apple branch at the top left, the daylight through the door, the pepper string at the left edge |
-| Boundary | Signature stream glint [.508, .062, .534, .585] traced [[.42, .02], [.58, .5], [.70, .98]]; leaves [.09, .02, .33, .28]; sunray [.02, 0, .52, .76], drift .08; lantern light [.066, .170, .098, .232]. No string layer | Signature stream glint [.606, .090, .652, .553] traced [[.30, .02], [.48, .5], [.72, .98]]; leaves [0, .01, .26, .22]; sunray [0, 0, .46, .66], drift .075; birds [.18, .100, .36, .140], scale 1.2, period 6. No string layer |
-| Anchor | The glint runs inside the painted stream from the bottle mouth to the glass rim; the lantern glow sits on its own glass. The pepper string stays still: it runs off the left edge of the frame and its tip disappears behind an apple crate | Same, on the portrait's own slightly steeper stream path; the birds stay between the door lintel and the mountain ridge. That portrait string is left of the slice a 390-wide phone shows at all |
-| Forbidden overlap | The pourer's shirt and vest either side of the stream, his raised arm, the seated drinkers, the apple crates | The pourer's face and shirt, the second and third pepper strings on the timber posts at x .55 and x .70, the mountains |
+| Boundary | Signature stream glint [.508, .042, .534, .607] traced [[.29, 0], [.43, .17], [.54, .42], [.63, .67], [.67, 1]]; leaves [.09, .02, .33, .28]; sunray [.02, 0, .52, .76], drift .08; lantern light [.066, .170, .098, .232]. No string layer | Signature stream glint [.606, .112, .652, .566] traced [[.32, 0], [.43, .23], [.55, .50], [.69, .77], [.77, 1]]; leaves [0, .01, .26, .22]; sunray [0, 0, .46, .66], drift .075; birds [.18, .100, .36, .140], scale 1.2, period 6. No string layer |
+| Anchor | The glint begins at the lip of the bottle and ends on the surface of the cider in the glass, both re-measured on the pixels on 2026-09-17: lip (.5156, .042), thread through (.5191, .136), (.5221, .277), (.5245, .419), cider surface (.5251, .607). The lantern glow sits on its own glass. The pepper string stays still: it runs off the left edge of the frame and its tip disappears behind an apple crate | Same two endpoints measured on the portrait: lip (.6206, .112), thread through (.6259, .215), (.6312, .339), (.6376, .463), cider surface (.6415, .566). The birds stay between the door lintel and the mountain ridge. That portrait string is left of the slice a 390-wide phone shows at all |
+| Forbidden overlap | The green glass of the bottle above the lip, the splash of drops the painting draws below the glass from y .63, the pourer's shirt and vest either side of the stream, his raised arm, the seated drinkers, the apple crates | The pourer's face and shirt, the second and third pepper strings on the timber posts at x .55 and x .70, the mountains |
 | Dominant cue | The escanciado: the travelling glint on the painted cider stream, now the room's signature | The same glint, on the portrait's own traced path |
 | Supporting cues | Six olive leaves on the apple branch, the doorway beam, and the door-post lantern, which comes back into the free slot | Six olive leaves, the doorway beam, and two birds in the doorway sky, which come back into the free slot |
 | Visibility | 4.55 per cent (1.2 to 6.2) | 3.55 per cent (1.8 to 4.2) |
@@ -205,8 +237,8 @@ stream under the four-loop ceiling. The escanciado is what the room is for, so i
 | Field | Wide | Portrait |
 | --- | --- | --- |
 | Pictured source | The shaft of light from the high shutter, the painted wine thread from the venencia to the copita, the cellar lantern on the roof timbers | The same shaft from the shuttered window, the same thread, the cellar lantern on its bracket |
-| Boundary | Sunray [.40, 0, 1, .72], drift .09; stream glint [.486, .265, .514, .585] traced [[.30, .02], [.46, .5], [.62, .98]]; light [.610, .085, .676, .208] | Sunray [.28, 0, 1, .64], drift .085; stream glint [.662, .175, .690, .655] traced [[.40, .02], [.48, .5], [.56, .98]]; light [.848, .285, .952, .418] |
-| Anchor | The glint runs inside the painted thread from the venencia cup down to the copita; the beam keeps the painting's own diagonal | Same |
+| Boundary | Sunray [.40, 0, 1, .72], drift .09; stream glint [.486, .265, .514, .602] traced [[.41, 0], [.42, .55], [.40, 1]]; light [.610, .085, .676, .208] | Sunray [.28, 0, 1, .64], drift .085; stream glint [.667, .168, .697, .664] traced [[.58, 0], [.54, .10], [.54, 1]]; light [.848, .285, .952, .418] |
+| Anchor | The glint begins at the lip of the venencia and ends on the wine in the copita, re-measured on the pixels on 2026-09-17: wide lip (.4955, .265), thread dead straight at x .4976, wine surface y .602; portrait lip (.6805, .168), thread at x .6833, wine surface y .664. The beam keeps the painting's own diagonal | Same |
 | Forbidden overlap | The cellarman's hat and face left of the thread, the open butt and its film of flor, the two visitors, the plate on the butt head | The cellarman's face and sash, the stacked butts behind the thread, the copita and the guests' glasses |
 | Dominant cue | The shaft from the high shutter, sway .06 | The same shaft |
 | Supporting cues | The travelling glint on the wine thread, the cellar lantern | Same |
@@ -221,8 +253,9 @@ A hung sprite swings on its own timer, so it is an always-on loop and the harnes
 adds `cfg.hung` and `cfg.portrait.hung` entries that carry a `sway`, the same way it already counted a hand-laid
 `hang` sprite in an unsigned room. The engine's `choose` in `scene-painted.ts` slices the ambience list to
 `3 - heat`, so a steam source can never push a signed room above four; a sprite can, which is why `es_tortilla` gave
-its firebox light to the signature and emptied its ambience list, and why `es_manchego`'s doorway beam became
-portrait-only. The counts as they ship, wide then portrait: `es_paella` 4/4, `es_tapas` 4/3, `es_jamon` 4/3,
+its firebox light to the signature and emptied its ambience list, and why `es_manchego` held exactly one wide
+ambience patch beside its signature, its steam and its sprite. Since the steam came off on 2026-09-17 the wide
+orientation has two ambience slots instead of one, and they hold the doorway beam and the whey `drip`. The counts as they ship, wide then portrait: `es_paella` 4/4, `es_tapas` 4/3, `es_jamon` 4/3,
 `es_tortilla` 4/4, `es_churros` 4/4, `es_pintxos` 3/3, `es_gazpacho` 3/3, `es_pulpo` 4/4, `es_pa_tomaquet` 4/3,
 `es_manchego` 4/4, `es_sidreria` 4/4, `es_bodega` 3/3. The engine keeps one fire ellipse per orientation, so the second fire the
 paella wide painting shows at the left station is not configured. Every patch added in the Stage E fixes went into
@@ -238,15 +271,16 @@ should be smoke coming from the cups too, and the standard in the playbook is th
 food steams*. Every one of the twenty-four paintings was measured again for hot vessels; the full record is in
 [the last section](#owner-feedback-2026-09-16-steam-from-every-cup).
 
-Sixteen sources are configured now, across six rooms: the paella pans, the tortilla range and its cups and its cut
+Fifteen sources are configured now, across five rooms: the paella pans, the tortilla range and its cups and its cut
 tortilla, the churros fryer and chocolate pot and the customers' cup and plate, the octopus cauldron and its wooden
-plate, the tapas bravas and croquetas, the bakery oven behind the bread terrace, and the copper caldero on the cheese
-farm. Fire ellipses sit where flames are pictured: the paella fire, the tortilla firebox, the churros hearth and the
+plate, the tapas bravas and croquetas, and the bakery oven behind the bread terrace. The sixteenth was the copper
+caldero on the cheese farm, removed on 2026-09-17 because that room pictures no hot process (see the dated section
+at the end). Fire ellipses sit where flames are pictured: the paella fire, the tortilla firebox, the churros hearth and the
 pulpo cauldron fire in portrait only, with the wide pulpo list left empty because the serving table hides the fire.
 
 Nothing cold steams, and that is a deliberate list, not an oversight: the gazpacho courtyard (a cold soup, and the
-whole room is about its being cold), the sherry bodega, the cider house, the ham counter and the pintxos counter
-carry no steam at all, because no painting in those five rooms shows a hot vessel. Nor do the cheese, the curd, the
+whole room is about its being cold), the sherry bodega, the cider house, the ham counter, the pintxos counter and,
+since 2026-09-17, the cheese farm carry no steam at all, because no painting in those six rooms shows a hot vessel. Nor do the cheese, the curd, the
 milk, the olives, the boquerones, the wine, the vermouth, the cider, the sherry or the cured hams anywhere else.
 Vessels held in a hand are left dry too, which is the rule the paella room already stated: the bowl the paella cook
 holds, the cup in the grandmother's hand in the tortilla kitchen, the cup raised in the churrería and the plates the
@@ -388,6 +422,98 @@ that, and the rooms that lean on them (`es_tortilla`, `es_pulpo`, `es_churros`, 
 ranges in the table. Every such room here already carries at least one of those alongside its beam, which is why
 the medians hold; if the lead wants the floor raised as well as the median, the change belongs in `scene-ambience.ts`
 (a second, faster term on the beam drift), which is not a Spain file.
+
+## Re-measured motion, 2026-09-16: twelve rooms checked, nine cells taken to a six-pair median
+
+The table above is stale for every room whose signature changed after it was captured: the four rooms that took a
+hung `es-pepper-ristra` sprite or lost one (`es_tortilla`, `es_manchego`, `es_jamon`) and the four that kept their
+string painted and still (`es_gazpacho`, `es_tapas`, `es_pa_tomaquet`, `es_sidreria`), which `docs/quality-baseline.md`
+flagged as open. A first pass re-ran `scripts/audit/room-motion.py`'s own header-comment recipe — one `a`/`b` pair
+per room per orientation — over all twelve rooms. **A single pair cannot flag a room**, because a `sunray` beam or a
+`stream-glint` stalls twice every 22.4 s cycle (`sin(t * .28)` in `scene-ambience.ts` crosses zero twice a period),
+and a single two-second window can land on that stall by chance; the recorded method for this table, matching the
+one the table above uses, is a six-pair median. Nine cells came in under floor on that single pair: `es_jamon`
+portrait, `es_pintxos` wide, `es_pa_tomaquet` wide and portrait, `es_manchego` wide, `es_sidreria` wide and portrait,
+`es_bodega` wide and portrait. Each of those nine was re-measured with six `a`/`b` pairs, phased across the drift
+cycle rather than evenly spaced (the same reason the table above avoids even spacing), and the median of the six
+replaces the single sample below. The other fifteen cells were not flagged and were not re-measured to six pairs;
+their numbers below are still the single-pair reading from the first pass.
+
+Method for the nine re-measured cells: through the world route on the local dev server (`http://localhost:5180`),
+`window.__fwInstant = true`, `__fw.enter('mediterranean')`, `__fw.step(240)`, then per room `__fw.open('<object id>')`,
+about 100 frames of `__fw.step` for the 1.6 s approach flight to finish, then six pairs, each stepping a different
+number of frames before it so the pairs land at different points of the cycle — 60, 100, 140, 180, 220, 260 — as
+`__fw.step(<offset>)`, `__fw.sceneShot('rm-<tag>-<n>-a')`, `__fw.step(120)`, `__fw.sceneShot('rm-<tag>-<n>-b')`, then
+`__fw.closeScene()`. Wide at 1280 x 720, portrait at 390 x 844. `scripts/audit/room-motion.py` was run once over all
+six pairs together; the six per-cell values it printed were medianed by hand.
+
+| Room | Wide | Portrait | Floor |
+| --- | --- | --- | --- |
+| `es_paella` | 4.0% | 7.6% | 3% (heat) |
+| `es_tapas` | 8.6% | 13.9% | 3% (heat) |
+| `es_jamon` | 4.7% | 2.70% (median of 6: 0.5, 1.0, 1.2, 4.2, 4.2, 5.2) | 2.5% (no heat) |
+| `es_tortilla` | 5.1% | 10.4% | 3% (heat) |
+| `es_churros` | 3.9% | 16.9% | 3% (heat) |
+| `es_pintxos` | 3.55% (median of 6: 0.9, 2.9, 3.2, 3.9, 4.4, 4.6) | 4.6% | 2.5% (no heat) |
+| `es_gazpacho` | 3.7% | 4.2% | 2.5% (no heat) |
+| `es_pulpo` | 4.2% | 12.7% | 3% (heat) |
+| `es_pa_tomaquet` | 4.50% (median of 6: 3.1, 3.3, 4.1, 4.9, 5.5, 6.2) | 6.25% (median of 6: 1.9, 2.7, 5.4, 7.1, 8.0, 8.1) | 3% (heat) |
+| `es_manchego` | 2.15% — under floor on this pass (median of 6: 1.7, 1.7, 2.1, 2.2, 2.4, 2.6); **5.65% after the 2026-09-17 fix below** | 8.0% | 3% wide (heat) / 2.5% portrait (dry) |
+| `es_sidreria` | 3.65% (median of 6: 1.7, 2.4, 3.5, 3.8, 4.4, 4.5) | 2.50% (median of 6: 0.4, 1.7, 2.0, 3.0, 3.5, 4.0; exactly at floor) | 2.5% (no heat) |
+| `es_bodega` | 4.05% (median of 6: 0.3, 1.0, 3.5, 4.6, 5.6, 5.6) | 5.55% (median of 6: 0.6, 1.7, 5.4, 5.7, 8.3, 8.6) | 2.5% (no heat) |
+
+Eight of the nine flagged cells clear their floor on the six-pair median and the "under floor" flag is removed for
+them: the single-pair readings were exactly the stall the residual note above describes, not a real weakness.
+**One cell stayed under floor on this pass: `es_manchego` wide, median 2.15% against a 3% floor** (fixed on
+2026-09-17, below), and every one of its six samples (1.7 to 2.6%) sat under 3%, so this was not a stall artifact — the room's only two configured cues in wide
+are the doorway birds and the copper caldero's steam, and this measurement says that is not enough. It was not
+fixed; the instruction for this pass was to measure and list, not to strengthen weak rooms. `es_sidreria` portrait
+lands exactly on its 2.5% floor (median of 3.0 and 2.0, the two middle values of six), which this document reads as
+clearing, since the floor is stated as "at least 2.5 percent."
+
+Raw shots for the six-pair medians are `.data/shots/rm-ESw6-<id>-<1..6>-a/b.jpg` (wide) and
+`.data/shots/rm-ESp6-<id>-<1..6>-a/b.jpg` (portrait); the single-pair first pass is `rm-ESw-<id>-a/b.jpg` and
+`rm-ESp-<id>-a/b.jpg`. That one under-floor cell was fixed the next day; the section below replaces its number.
+
+## The cheese farm back over its floor, 2026-09-17
+
+`es_manchego` wide was the only Spain cell still under its floor after the six-pair medians above. What changed in
+the room, and why each change was the one available, is in [the cheese farm's own section](#the-cheese-farm-es_manchego):
+the wide bird band was widened to the full clean doorway sky, the hung ristra's sway went from 2.8 to 4.4 degrees,
+and the doorway sunray came back into the ambience slot the whey glint held. The room keeps four always-on loops in
+wide (signature birds, caldero steam, doorway beam, hung sprite) and four in portrait, unchanged: `room-loops.mjs`
+prints `es_manchego | sig=birds | wide: loops=4 steam=1 fire=0 hung=1 sunray | portrait: loops=4 steam=0 fire=0
+hung=1 leaves+sunray`. **Nothing in the portrait changed**, in the config or on the screen; `scale` and `period` are
+shared between the signature's two boxes, so they were left where they were and only the wide box moved.
+
+Measured again by the method above: dev server at `http://localhost:5180`, desktop viewport 1280 x 720,
+`window.__fwInstant = true`, `__fw.enter('mediterranean')`, then per pair `__fw.open('manchegoEs')`, `__fw.step(100)`
+for the approach flight, `__fw.step(<offset>)`, `__fw.sceneShot('rm-MCH2-<n>-a')`, `__fw.step(120)`,
+`__fw.sceneShot('rm-MCH2-<n>-b')`, `__fw.closeScene()`, with the six offsets 60, 100, 140, 180, 220, 260 phased
+across the drift cycle, then `scripts/audit/room-motion.py .data/shots` over all six pairs.
+
+| Pair | Step offset | Changed in two seconds |
+| --- | --- | --- |
+| 1 | 60 | 6.0% |
+| 2 | 100 | 5.6% |
+| 3 | 140 | 4.8% |
+| 4 | 180 | 4.8% |
+| 5 | 220 | 6.0% |
+| 6 | 260 | 5.7% |
+
+**Median 5.65 per cent against a 3 per cent floor**, and the weakest of the six is 4.8, so the room clears its floor
+at every phase of the cycle rather than only on the median. Before this pass the same six offsets on the same
+machine gave 1.9, 1.9, 1.9, 2.0, 2.0, 2.3 (`rm-MCH0-*`), a median of 1.95; widening the bird band and raising the
+sway alone gave 1.5, 1.6, 2.0, 2.3 (`rm-MCH1-*`, four pairs), which is why the beam was needed. Raw shots are
+`.data/shots/rm-MCH2-<1..6>-a/b.jpg`.
+
+Semantic check, because a changed-pixel count alone never approves a cue: the difference image between one pair's
+two frames has red in exactly three places and nowhere else — the ristra sprite, the plume over the copper caldero,
+and one soft diagonal band from the lintel at x .72 down to x .60 above the cheese wheel. Nothing moves on a face,
+on the curd table, on the cheese wheel or the wedge, or on the wall hook. The room was then watched for ten seconds
+at 1280 x 720, ten frames one second apart (`.data/shots/look-mch-0..9.jpg`): the birds cross clean sky above the
+windmills, the ristra swings gently on its twine with the painted bracket and the second, empty hook still behind
+it, and the beam reads as the doorway daylight shifting, not as a band travelling over the picture.
 
 ## Reduced motion
 
@@ -551,7 +677,10 @@ rooms. Two patches lost their slot:
   and comes back if the steam is ever removed.
 - `es_manchego` wide: the doorway sunray. The whey glint and the two birds remain beside the pepper string, and the
   residual note earlier in this document says a beam is the one cue that stalls twice per cycle, so trading it for a
-  plume should raise the floor as well as the median.
+  plume should raise the floor as well as the median. **This trade was wrong and was reversed on 2026-09-17**: the
+  room measured 2.15 per cent on a six-pair median against a 3 per cent floor, because a glint inside a box .017 of
+  the frame wide and two bird silhouettes cannot carry a painting between them. The beam is back in that slot and
+  the glint is off; the room now measures 5.65 per cent.
 
 `es_pa_tomaquet` lost nothing in either orientation and went from three loops to four.
 
@@ -831,3 +960,132 @@ Turning the preference back off in the same session restores both (`rotate(-2.36
 - A portrait tablet, a physical phone and a large screen, as before
 - The four cleaned JPGs were judged at 1280 x 720 and 390 x 844. On a much larger screen the inpainted patches are
   magnified along with everything else; the manchego portrait one, on mottled stone, is the one to look at first
+
+## Owner walkthrough, 2026-09-17: the pour starts at the lip, the cheese farm stops steaming
+
+Two of the four items from the morning walkthrough of the live site are Spain's. Both are recorded here with the
+numbers they were measured at; the two Turkish items are in [the Turkey world document](turkey-world.md).
+
+### The cider thread now begins at the bottle lip and ends on the cider, `es_sidreria`
+
+> "The movement of yellow liquid goes above the rim of the bottle, so it looks fake."
+
+She is right, and the fault was in the **portrait** box. Its top was `y .090`, and `y .090` on `portrait.jpg` is the
+green body of the tilted bottle: the lip, where the cider actually leaves, is at `y .112`. The pale glint therefore
+ran up the bottle's own glass for twenty-two thousandths of the painting's height, about thirty-seven pixels, which
+is exactly the reading "liquid moving above the rim". The wide box did not overshoot — its top at `y .062` was
+twenty thousandths *below* the lip at `y .042`, so that one had a gap instead — and both ends of both boxes stopped
+short of the cider in the glass.
+
+Every endpoint was re-measured on the pixels of each file, by finding the brightest pale-warm pixel in each row of a
+narrow window around the painted thread. The lip is where the free thread leaves the glass rim; the lower end is the
+frothy surface of the cider in the tilted glass, not the glass's rim and not the drops the painting scatters below
+it.
+
+| | Wide (1672 x 941) | Portrait (941 x 1672) |
+| --- | --- | --- |
+| Bottle lip | (.5156, .042) | (.6206, .112) |
+| Thread | (.5191, .136) · (.5221, .277) · (.5245, .419) | (.6259, .215) · (.6312, .339) · (.6376, .463) |
+| Cider surface in the glass | (.5251, .607) | (.6415, .566) |
+| Box, was | [.508, .062, .534, .585] | [.606, .090, .652, .553] |
+| Box, now | [.508, .042, .534, .607] | [.606, .112, .652, .566] |
+| Path, now | [[.29, 0], [.43, .17], [.54, .42], [.63, .67], [.67, 1]] | [[.32, 0], [.43, .23], [.55, .50], [.69, .77], [.77, 1]] |
+
+The box is the clip, so with its top on the lip and its bottom on the cider nothing can glint outside them however
+the dash phase falls. Verified three ways on 2026-09-17:
+
+- **Overlay sheet.** Both boxes and both paths drawn on their own painting, then each endpoint cropped at four times
+  magnification: the start ring sits in the mouth of the bottle, the end ring in the froth of the glass.
+- **Live, wide, 1280 x 720**, ten frames through the world route. At the top the beads appear at the lip with the
+  green bottle above them clean; at the bottom they stop at the froth and the painted splash under the glass stays
+  unlit.
+- **Live, both orientations**, by reading the room's own effect canvas and converting every lit pixel back into
+  painting fractions. Wide: lit pixels span x .5149 to .5254 and y **.0418 to .6066** (lip .042, surface .607).
+  Portrait: x .6187 to .6426 and y **.1115 to .5656** (lip .112, surface .566). The painted thread itself runs
+  x .5156–.5257 wide and x .6206–.6415 portrait, so the glint is on the thread to within two thousandths.
+
+**The sherry bodega was checked at the same time and had the same fault at the lower end**, though not at the upper.
+Wide, the venencia's lip is at (.4955, .265) — the box top was already there — but the wine in the copita is at
+`y .602` and the box stopped at `.585`, so the glint died seventeen thousandths in the air inside the bowl.
+Portrait, the lip is at (.6805, .168) against a box top of `.175`, and the wine is at `y .664` against a bottom of
+`.655`. Both threads are almost dead vertical, at x .4976 wide and x .6833 portrait, and the old wide path drifted
+to x .4983 at its foot, two pixels off the thread. Boxes are now [.486, .265, .514, .602] and [.667, .168, .697, .664]
+with paths [[.41, 0], [.42, .55], [.40, 1]] and [[.58, 0], [.54, .10], [.54, 1]]. Live canvas probe: wide lit pixels
+y .2648–.6011 at x .4963–.4981, portrait y .1678–.6635 at x .6811–.6853.
+
+### The cheese farm loses its steam and gets its whey back, 2026-09-17
+
+> "The cheese farm has hot steam but from reading there is no hot process, so maybe change the animation to dripping
+> cheese water, if you can make it natural."
+
+The reading is the right test and the room fails it. `wide.jpg` shows no fire under the copper caldero, no boil on
+its surface and no wisp of its own; the room's three touches are about the esparto band, the sheep's milk and the
+Manchega breed, and its story is about pressing and draining. Manchego milk is warmed to about blood heat, which
+steams no more than a bucket of milk does. **The steam source at (.377, .432) is removed, and `es_manchego` now
+carries no steam in either orientation.** The portrait never had any.
+
+In its place the wide painting's own whey drip is animated again — and as drops, not as a dashed line. The previous
+attempt used `stream-glint`, whose dash is a moving bar along a traced path; on a fall that the painting already
+draws as three separate beads it read as a dashed line, which is what it was. A `drip` variant was added to the glint
+branch of `scene-ambience.ts` instead. It uses the same traced path and reads the first point as the lip the liquid
+leaves and the last as the surface it lands on; three drops are in flight at a time, each moving along the path as
+`phase^1.55` so it leaves the cloth slowly and is quickest as it reaches the tub, stretching slightly as it falls;
+one small ring opens at the last point per released drop and fades. Colour `#f1e7cf`, drop peak alpha .54, ring peak
+alpha .34, ring radius up to about fourteen pixels at 1280 x 720 — the painted ring in the tub is five times wider,
+so the drawn one stays modest inside it.
+
+Measured on `wide.jpg` on 2026-09-17: the whey leaves the draining cloth at the table's edge at **(.3055, .632)**,
+falls as beads at x .3055 with bulges at y .680, .720 and .745, and lands on the whey surface in the tub at
+**(.3062, .780)**, where the painting draws its own rings out to x .275–.345. Box **[.292, .632, .322, .786]**, four
+thousandths of height below the impact so the ring fits inside the clip, path **[[.45, 0], [.46, .48], [.47, .96]]**,
+period 1.8 s. Live canvas probe: lit pixels span x .3014–.3100 and y **.6330–.7813** — inside the box, starting at
+the cloth and ending on the whey.
+
+The portrait keeps its other cues unchanged (see the note under its matrix row for why it gets no drip).
+
+**Loops.** `room-loops.mjs` prints `es_manchego | sig=birds | wide: loops=4 steam=0 fire=0 hung=1 sunray+drip |
+portrait: loops=4 steam=0 fire=0 hung=1 leaves+sunray`. Four in each orientation, at the ceiling, and all 66 rooms
+still pass. Losing the steam freed a slot in wide (`choose` slices the ambience list to `3 - heat`), which is what
+the drip took; the portrait is untouched.
+
+**Motion, six-pair median.** Same method as the two passes before it: dev server at `http://localhost:5180`, viewport
+1280 x 720, `window.__fwInstant = true`, `__fw.enter('mediterranean')`, then per pair `__fw.open('manchegoEs')`,
+`__fw.step(100)` for the approach flight, a settle, `__fw.step(<offset>)`, `__fw.sceneShot('rm-MCH5-<n>-a')`,
+`__fw.step(120)`, `__fw.sceneShot('rm-MCH5-<n>-b')`, `__fw.closeScene()`, with the six offsets 60, 100, 140, 180,
+220, 260 phased across the beam's 22.4 s drift cycle, then `scripts/audit/room-motion.py` over all six pairs. The
+Browser pane was hidden for the capture (one animation frame per 1.2 s of wall clock, so the only clock is
+`__fw.step`).
+
+| Pair | Step offset | Changed in two seconds |
+| --- | --- | --- |
+| 1 | 60 | 3.3% |
+| 2 | 100 | 4.7% |
+| 3 | 140 | 3.6% |
+| 4 | 180 | 4.7% |
+| 5 | 220 | 4.9% |
+| 6 | 260 | 2.7% |
+
+**Median 4.15 per cent against the 3 per cent floor**, so the room stays over it. Five of the six samples clear 3 per
+cent; the sixth, 2.7 at offset 260, is the `sunray` stall this document describes in the residual note above, and it
+still clears the 2.5 per cent a dry room owes — which, strictly, is now this room's floor, since it no longer
+pictures a hot vessel. The room measured 5.65 with the steam and 2.15 before the beam went back, so the steam was
+worth about 1.5 points and the drip gives a little of it back: a drip covers roughly a hundred lit pixels of a
+1616 x 910 frame, which a changed-pixel count barely sees, and the cue is there to be looked at rather than to be
+counted. Raw shots `.data/shots/rm-MCH5-<1..6>-a/b.jpg`; an earlier six-pair run on the same code before the drop
+size and period were raised (`rm-MCH3-*`) gave a median of 4.55, so the two runs agree inside the noise of the
+stall.
+
+**Semantic check.** Watched for ten seconds at 1280 x 720, frames 200 ms apart: the copper caldero is dry, drops
+travel down the painted whey thread and a small ring opens on the tub, the ristra swings on its twine, the birds
+cross the doorway sky and the beam shifts. Nothing moves on a face, on the curd table, on the cheese wheel or the
+wedge. At 390 x 844 the portrait is unchanged and shows no steam anywhere.
+
+### Not verified
+
+- A physical phone or tablet, and a screen larger than 1280 x 720
+- The other eight Spain rooms were not re-measured; nothing in them changed
+- `es_bodega` was checked live in wide only. Its portrait ends were verified by drawing the patch alone on a canvas
+  carrying the room's real portrait transform and converting the lit pixels back to painting fractions, not by
+  looking at the room at 390 x 844
+- Reduced motion was not re-run after this pass. The `drip` draws inside `drawAmbience`, which `makeFx` never reaches
+  under `prefers-reduced-motion: reduce`, so it should stop with everything else, but that was reasoned, not seen

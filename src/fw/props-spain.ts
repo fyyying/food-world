@@ -8,7 +8,7 @@
 import * as THREE from "three";
 import { add, mat, rnd, wear, bubble, ambientChat, tickChildren, type P } from "./props";
 import { citrusTree, oliveTree, cypress, umbrellaPine } from "./props-italy";
-import { arcade, barraca, baserri, bodegaNave, horreo as horreoBody, ironMarketHall, manchaWindmillBody, spainHouse, type SpainStyle } from "./spain-architecture";
+import { arcade, baserri, bodegaNave, horreo as horreoBody, ironMarketHall, manchaWindmillBody, spainHouse, type SpainStyle } from "./spain-architecture";
 import { spainResident } from "./spain-people";
 
 const group = (): P => new THREE.Group() as P;
@@ -386,7 +386,10 @@ function glassOf(g: THREE.Object3D, x: number, y: number, z: number, liquid: str
 /** The rice fire: a wide pan over vine wood under a reed shade beside the paddies. The rice surface lifts and the fire flares. */
 export function paellaFire(): P {
   const g = group();
-  add(g, barraca(), -1.7, 0, -3.7);   // the Albufera field house at the back, front wall facing the fire
+  // Owner feedback, 2026-09-17: "remove this strange red bar house in front of the rice fire". The Albufera
+  // field house stood at [-1.7, -3.7] behind the pan, and from the south it read as a white block with a
+  // book-shaped thatched gable and a dark ridge bar standing between the visitor and the rice. The reed shade,
+  // the fire, the pan and the long table are untouched; the rice fire now stands in the open by the paddies.
   // reed shade (canyís) on four posts, the front beam carries the lamps
   // The front posts stand outside the width of the pan, so neither of them crosses the line from the arrival
   // camera to the rice at either end of its azimuth range.

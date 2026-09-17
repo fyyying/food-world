@@ -200,17 +200,10 @@ export function ironMarketHall(): P {
   return masonry(g) as P;
 }
 
-/** The Albufera field house: mud-and-cane walls and a very steep thatched gable with a small cross on the ridge. */
-export function barraca(): P {
-  const g = new THREE.Group(), w = 2.2, d = 3.2, h = 1.5;
-  add(g, block(w, h, d, SP.calBlanca), 0, h / 2, 0);
-  door(g, 0, d / 2 + .01, SP.maderaCastano, .7, 1.3);
-  add(g, block(.4, .4, .05, '#35302b'), 0, h - .35, -d / 2 - .01);
-  const rise = 1.9;
-  const roof = gableRoof(w, d, h, rise, THATCH, .25, true, false); g.add(roof);
-  add(g, block(.05, .34, .05, '#3b2a1e'), 0, h + rise + .3, -d / 2 - .1); add(g, block(.2, .05, .05, '#3b2a1e'), 0, h + rise + .4, -d / 2 - .1);
-  return masonry(g) as P;
-}
+// The Albufera field house, `barraca()`, was removed on 2026-09-17: the town's own was taken out on the
+// owner's word the day before and the rice fire's was the "strange red bar house in front of the rice fire".
+// Nothing places one any more, so the builder went with it. The module contract in docs/spain-world.md records
+// the change.
 
 /** A Galician granary on staddle stones: a slatted chamber on granite feet, slate roof, cross on the gable.
  *  The chamber door is a separate group under userData.door so a stand can swing it open. */

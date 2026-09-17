@@ -43,7 +43,10 @@ export function spainCountryside(ctx: LayoutCtx) {
 
   // ---------- the dehesa: holm oaks over dry grass, with a stone-walled pen of pigs ----------
   tint(-77, 19, 7, 6, '#b9ae7c');
-  for (const [i, [x, z]] of [[-79.4, 10.4], [-76.0, 25.6], [-73.6, 25.0], [-69.4, 25.4], [-77.6, 9.2]].entries()) {
+  // Three of the five holm oaks stood south of the dehesa and of the pepper drying house, between them and the
+  // camera, the nearest 2.9 away. The dehesa between the pen and the drying house is only wide enough for one
+  // more tree that clears both stands' pads, so one moved to [-80.2, 7.0] and two came out, 2026-09-17.
+  for (const [i, [x, z]] of [[-79.4, 10.4], [-77.6, 9.2], [-80.2, 7.0]].entries()) {
     place(holmOak(1.0 + (i % 3) * .12), x, z, x).name = 'dehesa-oak';
   }
   const pen = new THREE.Group(); pen.name = 'dehesa-pen'; pen.position.set(-79.0, 0, 4.6); group.add(pen);
@@ -70,18 +73,20 @@ export function spainCountryside(ctx: LayoutCtx) {
   }
   const floor = new THREE.Mesh(new THREE.CircleGeometry(2.3, 28), mat('#d6c28a'));
   floor.rotation.x = -Math.PI / 2; floor.position.set(-70, .022, -1.2); floor.name = 'threshing-floor'; group.add(floor);
-  // The three sheaves stood across the windmill spur; they now lean on the north side of the threshing floor.
-  for (const [i, [x, z]] of [[-71.8, -.6], [-72.6, -1.2], [-72.2, .2]].entries()) {
+  // The three sheaves stood across the windmill spur; they now lean on the west side of the threshing floor,
+  // moved again on 2026-09-17 when the cheese farm's footprint reached over two of them.
+  for (const [i, [x, z]] of [[-72.8, -1.8], [-72.6, -1.2], [-73.4, -.5]].entries()) {
     const sheaf = add(group, new THREE.Mesh(new THREE.CylinderGeometry(.2, .38, .85, 10), mat(i % 2 ? '#c8a45c' : '#ddbd70')), x, .43, z);
     sheaf.name = 'grain-sheaf';
     add(group, new THREE.Mesh(new THREE.TorusGeometry(.22, .033, 5, 12), mat('#997346')), x, .48, z).rotation.x = Math.PI / 2;
   }
   // The first rock straddled the windmill spur; it moved a unit and a half off the lane.
-  for (const [x, z, r] of [[-74.5, -1.5, .55], [-63.0, 2.0, .42], [-75.0, 1.0, .6], [-66.8, 14.6, .38]]) {
+  for (const [x, z, r] of [[-74.5, -1.5, .55], [-64.0, -1.0, .42], [-75.0, 1.0, .6], [-64.5, 15.4, .38]]) {
     const rock = add(group, new THREE.Mesh(new THREE.DodecahedronGeometry(r, 0), mat('#bfae8c')), x, r * .42, z);
     rock.scale.set(1.3, .58, .95); rock.rotation.y = x; rock.name = 'mancha-rock';
   }
-  for (const [x, z] of [[-64.6, 12.4], [-78.6, 7.5], [-70.6, -10.6], [-80.4, -2.4]]) place(oliveTree(.95), x, z, x).name = 'scattered-olive';
+  // The first olive stood four units in front of the oil mill; it moved north-east past the end of that wedge, 2026-09-17.
+  for (const [x, z] of [[-65, 15], [-78.6, 7.5], [-70.6, -10.6], [-80.4, -2.4]]) place(oliveTree(.95), x, z, x).name = 'scattered-olive';
 
   // ---------- the olive terraces between the west road and the olive spur ----------
   for (const [i, [x, z]] of [[-55.6, 7.0], [-54.9, 7.0], [-55.5, 8.5], [-54.8, 8.5]].entries()) {
@@ -89,18 +94,27 @@ export function spainCountryside(ctx: LayoutCtx) {
   }
 
   // ---------- the wet north: chestnuts and oaks on the green slopes, the apple orchard by the cider house ----------
-  for (const [i, [x, z]] of [[-57.4, -7.0], [-60.4, -6.4], [-66.4, -17.6], [-39.0, -14.4]].entries()) {
+  // Two chestnuts stood in front of the Herbon peppers and one in front of the cider house, 2026-09-17: one
+  // moved west past the end of the peppers' wedge, the other two came out.
+  for (const [i, [x, z]] of [[-66, -8], [-66.4, -17.6]].entries()) {
     place(northTree(1.0 + (i % 3) * .1), x, z, x).name = 'north-broadleaf';
   }
-  // The pomarada climbs the slope behind the cider house; the blueprint's rectangle lay in the Cantabrian water.
+  // The pomarada used to climb the slope south of the cider house, which is the slope between the cider house
+  // and the camera: all six trees stood in front of it, the nearest 3.4 away. It moved to the coast slope
+  // north-west of the house, 2026-09-17, where it is behind the house from every angle the camera reaches and
+  // still on the cider house's own ground.
   for (let row = 0; row < 2; row++) for (let col = 0; col < 3; col++) {
-    place(appleTree(.95 + (col % 2) * .08), -44.0 + col * 1.4, -15.4 + row * 1.5, col).name = 'apple-tree';
+    place(appleTree(.95 + (col % 2) * .08), -47.4 + col * 1.4, -24.6 + row * 1.4, col).name = 'apple-tree';
   }
-  for (const [x, z] of [[-27.6, -11.4]]) place(northTree(.9), x, z, x).name = 'coast-broadleaf';
+  // The single chestnut on the Catalan coast stood three units in front of the bread terrace and five in front
+  // of the mosaic bench; it was removed, 2026-09-17.
 
   // ---------- the bay: umbrella pines on the sandbar and the shore behind the port ----------
-  for (const [x, z] of [[-19.2, 14.4], [-20.4, 6.4]]) place(umbrellaPine(.9), x, z, x).name = 'bay-pine';
-  for (const [x, z] of [[-21.4, 18.2], [-31.4, 21.4], [-37.4, 23.4]]) place(cypress(.85), x, z, x).name = 'southern-cypress';
+  // The pine behind the port stood seven units in front of it and was removed, 2026-09-17.
+  for (const [x, z] of [[-19.2, 14.4]]) place(umbrellaPine(.9), x, z, x).name = 'bay-pine';
+  // Of the three southern cypresses one stood in front of the paddies, one in front of the huerta beds and one
+  // in front of the flamenco stage. The first moved north of the paddies, the other two came out, 2026-09-17.
+  for (const [x, z] of [[-21.4, 11]]) place(cypress(.85), x, z, x).name = 'southern-cypress';
   // Dry scrub tufts fill the open ground between the huerta and the bodega hill.
   for (let i = 0; i < 16; i++) {
     const x = -38 - (i % 4) * 3.2 + Math.sin(i) * 1.2, z = 6 + Math.floor(i / 4) * 3.4 + Math.cos(i) * 1.1;

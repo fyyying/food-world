@@ -13,7 +13,9 @@ export const TURKEY_AMBIENCE: Record<string, AmbientPatch[]> = {
   tr_coffee: [
     { kind: 'light', wide: [.36, .015, .447, .16], phone: [.59, .07, .73, .21] },
     { kind: 'light', wide: [.67, .12, .728, .215] },
-    { kind: 'rain', phone: [.715, .05, .846, .132] },
+    // the upper-left sash, re-measured on portrait.jpg 2026-09-17: its glass runs x .719 to .845 and the transom
+    // begins at y .140, so the box stops two thousandths short of the mullion on the right rather than one pixel
+    { kind: 'rain', phone: [.721, .050, .843, .134] },
   ],
   tr_market: [
     { kind: 'leaves', wide: [.35, .02, .51, .35], phone: [.40, .012, .68, .32], count: 8, size: 1.5 },

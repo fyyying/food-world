@@ -66,7 +66,7 @@ The Researcher's delivery is [spain-research.md](spain-research.md): area brief,
 
 ### Shared contract: the object list
 
-Positions are in the expanded table frame proposed above (x from -80 to -18, z from -28 to 28) and are provisional until the Stage B blueprint. Every object has `world: "mediterranean"`, `area: "spain"`. Ids were checked against every world; none collides (`node scripts/tests/object-ids.mjs` guards this once they are registered).
+Positions are in the expanded table frame proposed above (x from -80 to -18, z from -28 to 28) and were provisional until the Stage B blueprint. **They are the Stage A proposal and are now out of date**: the blueprint moved several, the Stage E repairs moved nine off the water, and the 2026-09-17 pass moved nine more so that no stand hides another. `spain-objects.ts` is the record; the current positions are in the cluster table below. Every object has `world: "mediterranean"`, `area: "spain"`. Ids were checked against every world; none collides (`node scripts/tests/object-ids.mjs` guards this once they are registered).
 
 Objects that open rooms (12):
 
@@ -194,12 +194,12 @@ Clusters and their ground tints:
 
 | Cluster | Centre | Tint | Holds |
 | --- | --- | --- | --- |
-| La Plaza Mayor | [-44, -4] | `#d9c9a8` paving inside the square, 14 x 10 | `plancha` [-40, -2] on the south side, `jamonEs` [-48, -6] in the iron hall on the north-west corner, `tortillaEs` [-46, 2] on the south lane, `churrosEs` [-38, -8] in the lane off the north-east corner; an equestrian statue at the north edge; two brick houses behind. The four free-standing granite arcades that ringed the square were removed on 2026-09-16 and the square keeps its light on iron lamp posts |
-| La Albufera y el Puerto | [-28, 8] | `#c9c08a` dry gold around the huerta; paddies as flooded squares | `paellaEs` [-28, 8] under a reed shade, `fishMed` [-20, -2] on the bay, `albuferaRice` [-24, 14], `huertaEs` [-30, 16], `oranges` [-34, 10]; a pine sandbar along the bay shore at x -19 from z 8 to 12. The decorative barraca that stood at [-22.2, 9.0] was removed on 2026-09-16; the rice fire stand builds its own |
-| El Patio y la Bodega | [-50, 14] | `#e5dcc6` lime-washed lanes on a low hill | `gazpachoEs` [-50, 10], `bodegaJerez` [-46, 16], `flamenco` [-42, 20], `oliveEs` [-60, 8] on olive terraces to the west, `alhambraEs` [-56, 22] on a terrace 1.2 high with stairs at its north side |
-| El Secano Manchego | [-72, 4] | `#c2a473` dry plain | `manchegoEs` [-68, 4], `ovejaManchega` [-72, 10], `azafranEs` [-66, -6], `molinosMancha` [-76, -8] on a ridge 0.8 high, `dehesaEs` [-78, 16], `pimentonVera` [-72, 20] |
-| La Ría | [-50, -18] | `#9fb08a` wet green with granite outcrops | `pulpoEs` [-52, -18] under a granite arcade facing the ría, `pementoHerbon` [-58, -12], `sidreriaEs` [-40, -22] with an apple orchard on the slope behind it |
-| El Cantábrico i la Terrassa | [-28, -20] | `#a9b58a` green turning to `#d9cfae` at the corner | `pintxosEs` [-32, -23] on a stone quay on the Cantabrian strip, a baserri behind it at [-34, -18]; `paTomaquet` [-24, -16] on a terrace facing the strait, `gaudiEs` [-21, -20] behind it |
+| La Plaza Mayor | [-44, -4] | `#d9c9a8` paving inside the square, 14 x 10 | `plancha` [-40, -2] on the south side, `jamonEs` [-51.5, -5.5] in the iron hall on the north-west corner, `tortillaEs` [-46, -1] on the south lane, `churrosEs` [-33, 0] in a passage off the main street where it leaves the square; an equestrian statue at [-43.5, -8.8]. The four free-standing granite arcades that ringed the square were removed on 2026-09-16 and the square keeps its light on iron lamp posts. It has no decorative house since 2026-09-17: four stands and the statue leave no ground behind them |
+| La Albufera y el Puerto | [-28, 8] | `#c9c08a` dry gold around the huerta; paddies as flooded squares | `paellaEs` [-28, 13] under a reed shade, `fishMed` [-20, -2] on the bay, `albuferaRice` [-24, 14], `huertaEs` [-30, 16], `oranges` [-34, 11]; a pine sandbar along the bay shore at x -19 from z 10 to 12. The decorative barraca that stood at [-22.2, 9.0] was removed on 2026-09-16 and the rice fire's own on 2026-09-17; the Albufera has no barraca now. One Valencian house, at [-21, 25.5] |
+| El Patio y la Bodega | [-50, 14] | `#e5dcc6` lime-washed lanes on a low hill, widened east to x -39 in 2026-09-17 | `gazpachoEs` [-41.5, 10] at the hill's east foot, `bodegaJerez` [-46, 16], `flamenco` [-42, 20], `oliveEs` [-61.5, 6] on olive terraces to the west, `alhambraEs` [-56, 22] on a terrace 1.2 high with stairs at its north side. One Andalusian house, single-storey, at [-65.6, 21] on the Alhambra road |
+| El Secano Manchego | [-72, 4] | `#c2a473` dry plain, widened east and north in 2026-09-17 | `manchegoEs` [-69, 5], `ovejaManchega` [-70.5, 10.5], `azafranEs` [-71, -7] between the threshing floor and the ridge, `molinosMancha` [-76, -8] on a ridge 0.8 high, `dehesaEs` [-78, 16], `pimentonVera` [-72, 20]. One Manchegan house at [-75, 5] |
+| La Ría | [-50, -18] | `#9fb08a` wet green with granite outcrops | `pulpoEs` [-51, -16.5] under a granite arcade facing the ría, `pementoHerbon` [-58, -13], `sidreriaEs` [-40, -20] with its apple orchard on the coast slope north-west of it since 2026-09-17. One Galician house at [-63.3, -14.6] |
+| El Cantábrico i la Terrassa | [-28, -20] | `#a9b58a` green turning to `#d9cfae` at the corner, the corner tint widened north in 2026-09-17 | `pintxosEs` [-33, -18.5] on a stone quay on the Cantabrian strip; the baserri behind it was removed on 2026-09-17; `paTomaquet` [-26, -14] on a terrace facing the strait, `gaudiEs` [-27.5, -9] on the terrace's landward side. One Catalan house at [-26.5, -23] |
 
 Roads, one continuous ribbon each, every door on a road:
 
@@ -232,7 +232,7 @@ Every agent owns whole files. Stubs exist so the type check passes while files a
 
 | File | Owner | Exports (keep these names and signatures) |
 | --- | --- | --- |
-| `spain-architecture.ts` | Builder, first | `SP` palette constant with the twelve names from the research; `spainHouse(style, w, d, h, { storeys })` for styles `andalus`, `castile`, `mancha`, `catalan`, `basque`, `galician`, `valencian`; `arcade(bays, w)`; `ironMarketHall()`; `barraca()`; `horreo()`; `manchaWindmillBody()`; `bodegaNave()`; `baserri()` |
+| `spain-architecture.ts` | Builder, first | `SP` palette constant with the twelve names from the research; `spainHouse(style, w, d, h, { storeys })` for styles `andalus`, `castile`, `mancha`, `catalan`, `basque`, `galician`, `valencian`; `arcade(bays, w)`; `ironMarketHall()`; `horreo()`; `manchaWindmillBody()`; `bodegaNave()`; `baserri()` |
 | `spain-people.ts` | Builder, second | `spainResident(seed, working?)` and `spainWalk(person, from, to, range, seed)` following `turkey-people.ts`; profiles as data |
 | `spain-landscape.ts`, `spain-town.ts`, `spain-countryside.ts` | Builder | `spainLandscape(ctx)`, `spainTown(ctx)`, `spainCountryside(ctx)` |
 | `world-med.ts` | Builder in Stage C | Table growth, the new shore, `{ ...MED_PROPS, ...SPAIN_PROPS }`, the Spain layout calls; the existing Spain block is replaced |
@@ -503,6 +503,263 @@ stands against the sky, the water or dark slate, and softer over the single-stor
 pale grey column sits against pale orange tile at a similar brightness. Raising it further would start to look
 like a fire rather than a kitchen hearth.
 
+## Third pass, 2026-09-17: nothing in front of a stand
+
+> "The houses are still too crowded, there should be no house in front of a clickable object; at the moment the
+> ham counter, tapas bar, churrería, pintxo bar and the bread terrace are completely behind houses."
+
+The 2026-09-16 pass thinned the houses from twenty-four to fourteen and added a check that no house stands on
+the arrival camera's **line** to a stand. A line is a ray, and a house a hand's width off it passes. This pass
+replaces it with a rule about ground rather than about a ray.
+
+### The rule, and where the wedge comes from
+
+The camera is not a guess. `main.ts` enters the Mediterranean at the area target plus `(2, 48, 60)`, and every
+later move keeps that offset direction: `glideTo` copies the current offset before it flies, a pan carries the
+camera and the target together, and a zoom only changes the offset's length. So the camera always looks from
+azimuth `atan2(2, 60) = 0.033 rad` — from the south, two degrees east of due south — at 38.7 degrees above the
+ground. `__fw.cam()` at the settled arrival view returns exactly `[-2, 48, 62, -4, 0, 2]`, and at the 215
+overview `[-40.4, 134.8, 165.8, -46, 0.5, -2]`: the same direction, a longer offset.
+
+The visitor may swing it, but not freely. `configureControls('world')` clamps `minAzimuthAngle` to -0.75 and
+`maxAzimuthAngle` to +0.75 radians, so the camera can stand anywhere in an 86-degree fan south of a stand, and
+the pitch is clamped to 1.12 radians from vertical at the overview and 1.45 while approaching a room. The wedge
+is that whole fan plus seven degrees either side for the width of the obstacle itself:
+
+> **No decorative object stands in a 100-degree wedge centred on the direction from a stand to the default
+> camera, out to 9 units, and nothing over 1.2 units tall stands in that wedge within 5 units.** Anything with a
+> body counts as a blocker at any height: a house, the Basque farmhouse, an arcade, a walled pen, the equestrian
+> statue, and any decoration over 2 units tall, which is the Builder's definition of a big tree. A slender post
+> under .6 of a unit across in both directions is exempt — a lamp post, a sluice post or a bunch of reeds hides
+> nothing at this camera pitch, and the square keeps its light.
+
+The rule is applied to all 26 clickable objects, the twelve room stands and the fourteen card-only ones alike.
+
+### What that costs, and why the house cap fell
+
+Twenty-six wedges of 100 degrees and 9 units cover about 1,800 square units before the obstacle's own width is
+added; Spain is 62 by 52. Almost none of the ground that is outside all twenty-six wedges, dry, off the roads
+and clear of the stands' pads is anywhere near a cluster centre, and none of it at all is in or beside the Plaza
+Mayor, where four stands and the statue stand within fourteen units of each other. The cap could not be met, so
+it was lowered, as the brief allowed. **Fourteen houses become five: nine removed, three moved, two unchanged** —
+one Valencian, one Andalusian, one Manchegan, one Galician, one Catalan, and none in Castile.
+
+| Style | Was | Now | What happened |
+| --- | --- | --- | --- |
+| `castile` | [-52.8, -10.6], [-43.1, -13.3] | — | Both removed. The first stood 4.3 in front of the fair cauldron and 5.2 in front of the Herbón peppers; the second 5.4 in front of the cider house. Every candidate position in and around the square is inside the churrería's, the fair cauldron's or the cider house's wedge, and the ground west of the square is the river. **The Plaza Mayor keeps no decorative house**: its built fabric is now the market hall, the taberna, Casa Lola, the churrería, the statue, the three fountains and the lamp posts |
+| `valencian` | [-24.6, 2.4], [-24.9, -6.7], [-24.4, 20.4] | [-21.0, 25.5] | The port house stood 3.6 in front of the port; the coast house 7.3 in front of the bread terrace and 8.8 in front of the mosaic bench; both removed. The third moved from in front of the rice fire, the paddies and the huerta beds to the bay's southern shore, the one piece of Valencian ground outside every wedge |
+| `andalus` | [-55.8, 12.7], [-55.5, 16.7], [-43.4, 24.6] | [-65.6, 21.0] | The two on the patio hill stood 4.5 and 6.0 in front of the oil mill and the courtyard kitchen; the third stood 3.1 in front of the flamenco stage and 7.1 in front of the bodega. Two removed; one moved to the last clear ground on the Alhambra road, west of the terrace's slope (any further east and it stands on the raised terrace) |
+| `mancha` | [-75.0, -1.6], [-66.5, 11.5], [-66.8, 18.0] | [-75.0, 3.0] | [-75.0, -1.6] stood 4.7 in front of the windmill ridge and moved four and a half units south; the other two stood in front of the cheese farm, the oil mill and the Manchega flock and were removed. A second Manchegan house was tried beside the dehesa at [-79, 9] and dropped: the only wedge-free ground there is already taken by the pig pen and the holm oaks, and a house there stands inside both |
+| `galician` | [-63.3, -14.6] | [-63.3, -14.6] | Unchanged: it is behind nothing |
+| `catalan` | [-26.5, -23.0], [-28.6, -8.4] | [-26.5, -23.0] | [-28.6, -8.4] stood 5.0 in front of the churrería, 6.3 in front of the bread terrace and 7.9 in front of the mosaic bench; nowhere on the Catalan coast is outside all three wedges, so it was removed. The quay house is unchanged |
+
+Nothing was moved onto a road, into water, within 2.5 of a stand, onto a terrace slope or inside another
+building; each move is to ground that is behind its own cluster's stands or at the cluster's edge.
+
+### The Basque farmhouse, the big trees and the rest of the decor
+
+- **`baserri` at [-28.2, -11.0]: removed.** At 5.15 by 4.65 it was the widest decoration on the table and it
+  stood in front of four clickable objects at once — the bread terrace 2.8 away, the mosaic bench 4.2, the
+  churrería 5.4 and the pintxo bar 5.6. The quay, the churrería's lane and the trencadís terrace leave no plot on
+  that coast that is behind all four. `baserri()` stays in `spain-architecture.ts`; nothing places one.
+- **Plane trees** (4): all four came down from 2.1–2.3 units to under 2, so they are no longer big trees in front
+  of the market hall, the family kitchen and the churrería. The one at [-31.0, -7.8] was 4.9 from the churrería,
+  inside the 5-unit rule at any height, and moved to [-27.6, -7.2], onto the ground the Catalan house left.
+- **Alhambra cypresses** (4 → 2): [-55.0, 14.8] and [-50.6, 16.2] removed (6.5 and 5.8 in front of the courtyard
+  kitchen); [-59.4, 14.6] moved to [-64, 18.5], past the end of the oil mill's wedge and off the terrace slope;
+  [-62.8, 17.4] unchanged.
+- **Southern cypresses** (3 → 1): [-21.4, 18.2] moved to [-21.4, 11], north of the paddies; [-31.4, 21.4] and
+  [-37.4, 23.4] removed (in front of the huerta beds and the flamenco stage).
+- **Dehesa oaks** (5 → 3): [-76.0, 25.6], [-73.6, 25.0] and [-69.4, 25.4] all stood south of the dehesa and the
+  pepper drying house, the nearest 2.9 away. One moved to [-80.2, 7.0], the only spot in the dehesa that clears
+  both stands' pads; two removed.
+- **Northern chestnuts** (4 → 2): [-57.4, -7.0] moved to [-66, -8], past the end of the Herbón peppers' wedge;
+  [-60.4, -6.4] and [-39.0, -14.4] removed.
+- **Coast chestnut** [-27.6, -11.4] removed (3.2 in front of the bread terrace); **bay pine** [-20.4, 6.4] and
+  **sandbar pine** [-19.2, 8.4] removed (7.3 and 9.0 in front of the port); **scattered olive** [-64.6, 12.4]
+  moved to [-65, 15].
+- **Apple orchard** (6 trees): the pomarada climbed the slope *south* of the cider house, which is the slope
+  between the cider house and the camera; all six stood in front of it, the nearest 3.4 away. It moved from
+  x -44.0/-42.6/-41.2, z -15.4/-13.9 to x -47.4/-46.0/-44.6, z -24.6/-23.2, the coast slope north-west of the
+  house, where it is behind the house from every azimuth the camera reaches.
+- **Patio fountain** [-52.4, 14.4] → [-56, 12]: at 1.9 units tall it fell under the 5-unit rule, 3.6 in front of
+  the courtyard kitchen.
+- **Equestrian statue** [-44, -9.2] → [-43.5, -8.8]: its plinth reached 9.0 units into the fair cauldron's wedge.
+  Half a unit east and south clears it, and the plaza walking lines at z -7 and z -1 are still clear.
+- **Two Moroccan riads** at [-21, 25] and [-27, 26], in `world-med.ts`: both still stood on Spanish ground, and
+  the two-storey one was 8.6 in front of the huerta beds. They moved to [-17.6, 26.4] and [-11.5, 26.6].
+  Nothing Moroccan is now west of x -18.
+
+### The rice fire's barraca
+
+> "Remove this strange red bar house in front of the rice fire: the white building with a book-like roof and a
+> red bar in the middle, just south of the river, in front of the bridge."
+
+That is the Albufera field house the `paellaFire` stand built for itself at its local [-1.7, -3.7], about
+[-30.4, 9.7] on the table: a white block under a very steep thatched gable — the book-like roof — with a dark
+ridge bar and a cross. The town's own barraca went on 2026-09-16; this one is now gone too. The reed shade, the
+fire, the pan, the long table and every reaction are untouched, and the rice fire stands in the open with the
+river and two bridges behind it. `barraca()` was removed from `spain-architecture.ts` with it, because nothing
+places one any more — **a change to the module contract in Stage B, recorded here**. `spain-reactions.mjs` never
+named a barraca part and did not change.
+
+### The harness check
+
+`scripts/tests/spain-world.mjs` gained *nothing decorative stands between a stand and the camera*, after the
+road and approach checks and before the bridges. It reads the built world, so a house moved back in front of a
+stand fails it. It samples each decor bounding box on a three-by-three grid and takes the nearest sampled point
+that falls inside the wedge. Written against the world as it stood that morning it failed on **66 items across
+20 of the 26 stands**; it passes now. The house count is bounded at 5 to 8 with one or two per style, the five
+styles that must still have a house are named, and Castile is asserted to have none, so a Castilian house
+coming back is a failure that says to check the wedge first.
+
+### Verification of this pass
+
+| Check | Result |
+| --- | --- |
+| `npm run typecheck` | Passes |
+| `npm test` | 16 harnesses pass, including the extended `spain-world.mjs` |
+| `node scripts/audit/objects.mjs` | `spain: rooms=12 card-only-with-prop=14`, unchanged |
+| Ray test in the live world | 10 rays per stand (nine on the front face at three heights, one at the diamond cue) cast from the arrival direction at the built world: **no decorative object blocks any of the 26 stands**. Before the pass, decor blocked twelve of them |
+| Contact sheet | `stands-clear.png` in this session's scratchpad: the five named stands, the rice fire and two overviews |
+
+Still hidden, and not the Builder's to fix — the occluder is another **stand**, whose position lives in
+`spain-objects.ts` and whose geometry lives in `props-spain.ts`:
+
+| Stand | Covered by | Rays blocked |
+| --- | --- | --- |
+| `gazpachoEs` the courtyard kitchen | `alhambraEs` and `bodegaJerez` | 10 of 10 |
+| `jamonEs` the ham counter | `tortillaEs`, the family kitchen | 6 of 10 |
+| `pintxosEs` the pintxo bar | `churrosEs`, the churrería | 6 of 10 |
+| `azafranEs` the saffron plot | `manchegoEs`, the cheese farm | 6 of 10 |
+| `ovejaManchega` the flock | `dehesaEs` | 3 of 10 |
+| `sidreriaEs`, `oliveEs`, `gaudiEs`, `manchegoEs`, `bodegaJerez` | a neighbouring stand | 1 to 2 of 10 |
+
+The ham counter case has been open since Stage E. Three of the owner's five named stands — the tapas bar, the
+churrería and the bread terrace — are now completely clear; the ham counter and the pintxo bar are clear of
+every house and tree but still stand behind a neighbouring stand.
+
+Not verified in this pass: the rooms (nothing in it touched a room file), the portrait rooms in a displayed
+pane, and the Pages run. One thing found and not fixed: at the Mediterranean's own desktop zoom limit of 215 the
+table renders white, because the scene fog is near 90 and far 200 and everything at maximum zoom-out is past the
+far plane; only the sea reads, since its shader ignores fog. A Spain-wide overview has to be taken at about 130.
+
+## Fourth pass, 2026-09-17: no stand in front of another stand, and a readable overview
+
+Two follow-ups to the third pass, on the same day.
+
+### 1. The rule reaches the stands themselves
+
+The owner's rule is that **every clickable object is visible from the camera**, so a stand that hides another
+stand fails exactly as a house does. After the third pass cleared every house and tree, ten of the twenty-six
+were still behind a neighbouring stand.
+
+A wedge cannot express this one. The stands as built are 4 x 4 to 12 x 14 units and neighbours inside a cluster
+stand five to eight units apart, so every pair would sit inside every other pair's wedge and no arrangement
+could pass. What the visitor sees is settled by occlusion, so occlusion is what is measured: **ten rays per
+stand along the arrival direction — nine at its camera-facing front face at three heights, one at the diamond
+cue over its anchor — and the first stand each ray meets must be that stand.** It is the same test the Builder
+runs in the browser against the live page, moved into `spain-world.mjs` so it keeps.
+
+Written against the world as the third pass left it, the check failed on ten stands:
+
+| Covered | By | Rays |
+| --- | --- | --- |
+| `gazpachoEs` the courtyard kitchen | `alhambraEs` 4, `bodegaJerez` 4 | 8 of 10 |
+| `jamonEs` the ham counter | `tortillaEs` | 6 |
+| `pintxosEs` the pintxo bar | `churrosEs` | 6 |
+| `azafranEs` the saffron plot | `manchegoEs` | 6 |
+| `ovejaManchega` the flock | `dehesaEs` | 3 |
+| `manchegoEs` the cheese farm | `oliveEs` | 2 |
+| `oliveEs` the oil mill | `alhambraEs` | 2 |
+| `sidreriaEs` the cider house | `churrosEs` | 1 |
+| `gaudiEs` the mosaic balustrade | `paTomaquet` | 1 |
+
+### 2. The moves
+
+Eight object positions in `spain-objects.ts`. Every one keeps its cluster, its ground colour, a road at its
+door within 2.6 units, 2.5 clear in front, dry ground under every vertex, and at least five and a half units
+from every neighbouring stand. Nothing else in the object list changed: no id, no `NEXT` link, no blurb, no
+room, and `SPAIN_NEXT` still reads the same, because every moved stand keeps the same neighbours.
+
+| Object | Was | Now | Why that spot |
+| --- | --- | --- | --- |
+| `jamonEs` | [-48, -6] | **[-51.5, -5.5]** | Three and a half units west into the square's north-west corner, out of the family kitchen's screen column. Still the market hall on the square, and still on the square's own paving, which counts as its road |
+| `churrosEs` | [-34, -13] | **[-33, 0]** | Stage E moved the churrería out of the square to a lane off the north-east corner, and put its six-unit body five units in front of the pintxo bar. Nothing nearer would do: the ray to a stand climbs at 38.7 degrees, so to clear a four-unit counter the churrería's whole body has to be south of z -9.6, and the only ground there outside every other stand's line is the south side of the main street where it leaves the square. That is also where a churrería belongs — Madrid's oldest works out of a passageway off Calle Arenal — and `churro-lane` is now that passage |
+| `gazpachoEs` | [-50, 10] | **[-41.5, 10]** | Eight and a half units east, off the column the Alhambra terrace and the bodega share. It keeps the lime-washed hill: the patio paving runs to x -41 and the ground tint was widened east to meet it |
+| `oliveEs` | [-61.5, 8] | **[-61.5, 6]** | Two units north, out from under the Alhambra terrace's column |
+| `manchegoEs` | [-68, 4] | **[-69, 5]** | One unit west and one south, so it clears the saffron plot's new place |
+| `azafranEs` | [-66, -3.5] | **[-71, -7]** | The saffron plot and the cheese farm are each about ten units wide on a plain eighteen wide, so one has to sit clear of the other's column. Every position that solved it east of x -66 put the plot's own geometry into the river, which bulges west at the bend by [-57, -6]; the pair only came apart with the plot five units west and three and a half north, on the open ground between the threshing floor and the windmill ridge |
+| `ovejaManchega` | [-72, 10] | **[-70.5, 10.5]** | A unit and a half east and half a unit south, out of the dehesa's column |
+| `paTomaquet` | [-26.5, -16] | **[-26, -14]** | Two units south, so the mosaic balustrade is no longer under its roof |
+| `gaudiEs` | [-25.5, -17.5] | **[-27.5, -9]** | The balustrade's box is 9.8 by 10 and the bread terrace's 8.2 by 8.5, in a corner fifteen units wide: they overlapped, and the balustrade's own diamond cue was coming up under the terrace's roof from a third of a unit away. There is no room for both on the quay, so the balustrade moved inland to the landward side of the terrace, where the coast turns south — still the Catalan corner, with the tint widened north to carry it, and `terrace-spur` re-laid from the coast lane to its door |
+
+Three pieces of the Builder's own work moved with them, and four more followed:
+
+- **`churro-lane`** is re-laid from `[-37, -9] [-35.8, -10.8] [-34.6, -12.6]` to
+  `[-35.6, -2.2] [-34.4, -0.8] [-33.4, 0.2]`, a short passage from the main street to the churrería's door.
+- **`terrace-spur`** is re-laid from `[-24, -18] [-21.4, -19.8]` to `[-22.3, -11] [-24, -10.6] [-25.6, -10.2]`,
+  leaving the coast lane at the strait and running west along the terrace's landward side to the balustrade.
+- **The Valencia fountain** moved from [-31.6, 1.4] to [-26, 2.2]: it stood inside the churrería's new pad. It
+  is still on the main street between the square and the port.
+- **The Andalusian house** at [-65.6, 21] came down from two storeys to one. At 5.3 units its roof caught one
+  ray to the Manchega flock eleven units behind it — past the wedge's nine-unit reach, which is why only the ray
+  test found it. The **Manchegan house** moved from [-75, 3] to [-75, 5], out of the saffron plot's new wedge.
+- **The four plane trees** are re-placed at [-33, -11], [-50.4, 2.4], [-32.5, -5.8] and [-35, -7.4]: two were
+  inside the churrería's new footprint and one inside the balustrade's pad.
+- **Two grain sheaves** moved to [-72.8, -1.8] and [-73.4, -0.5], a **Mancha rock** to [-64, -1] and a **river
+  stone** to [-65.4, -10.8], each out of a moved stand's footprint.
+- **Three ground tints widened** so the stands that moved furthest keep their cluster's colour under them: the
+  lime-washed patio tint from `(-50, 14, 10 x 7)` to `(-47, 13, 16 x 9)`, the Manchegan dry plain from
+  `(-72, 4, 13 x 15)` to `(-70, 2, 19 x 19)`, and the Catalan corner from `(-23, -17, 5 x 6)` to
+  `(-24, -14, 7 x 12)`.
+
+### 3. The fog at the zoom limit
+
+The third pass found that at the Mediterranean's own desktop zoom-out limit of 215 the whole table rendered
+blank in the paper colour, with only the sea left, because the sea's shader ignores fog. The cause: `main.ts`
+set the world fog to a hand-written pair per world — `500/600` for the Middle East and `90/200` for everything
+else — while `worldZoomLimit` gives both the Middle East *and* the Mediterranean a 215 limit on desktop. At 215
+the Mediterranean's entire table was past the far plane.
+
+`world-camera.ts` now derives it. `worldFogRange(world, width, height, halfDiagonal)` takes the world's own
+zoom limit and half the table's diagonal, which together are the farthest thing the camera can see from the
+limit, and multiplies by 1.6, which leaves that far corner in a light haze rather than flat in the paper
+colour; the near plane keeps the original 90/200 ratio and the colour stays the paper. A world whose limit is
+inside the old far plane returns 90 and 200 exactly, so **China at its 90 limit, every other world and every
+phone view are unchanged, byte for byte**. `main.ts` reads the half-diagonal from `diorama.bounds`.
+
+| World | Limit | Half-diagonal | Fog before | Fog after | Haze at the limit / at the far corner |
+| --- | --- | --- | --- | --- | --- |
+| Mediterranean | 215 | 66.2 | 90 / 200 | **203 / 450** | 5% / 32% |
+| Middle East | 215 | 90.6 | 500 / 600 | **220 / 489** | 0% / 32% |
+| China | 90 | 70.0 | 90 / 200 | 90 / 200 | unchanged |
+
+The Middle East was never blank — its hand-set 500/600 meant no fog anywhere on its table — so this replaces a
+hand-set pair with a derived one and gives its far corner the same light haze the Mediterranean now has. Both
+were checked on screen at 215.
+
+`spain-world.mjs` holds the numbers: the table centre at the zoom limit must be under 10 percent hazed and the
+far corner under 40, China must still get exactly 90 and 200, and so must a phone.
+
+### Verification of this pass
+
+| Check | Result |
+| --- | --- |
+| `npm run typecheck` | Passes |
+| `npm test` | 16 harnesses pass |
+| `node scripts/audit/objects.mjs` | `spain: rooms=12 card-only-with-prop=14`, unchanged |
+| Ray test in the live world | **All 26 Spain stands are 10 of 10 clear**, of decor and of other stands alike, on a fresh page load |
+| Screens | The five stands the owner named, the rice fire, all 26 at distance 130, and the Mediterranean and the Middle East at their 215 limit, on the contact sheet |
+
+The offline harness and the live page do not build quite the same world — the harness builds with no recipes,
+so a few cue and label meshes differ — and three stands passed the harness at 9 of 10 in the browser before
+the last nudges. **The live page is the authority**; the harness is what keeps a fixed defect fixed.
+
+Not verified in this pass: the rooms, the portrait rooms in a displayed pane, and the Pages run; nothing in it
+touched a room or the publish path. The recipe mapping was checked and is unaffected: the two recipes that
+point into Spain use `place: "fishMed"` and `place: "plancha"`, and neither stand moved.
+
 ## Retrospective, 2026-09-16
 
 Spain was declared done at two in the morning: Stage E passed, sixteen harnesses green, the definition of done
@@ -530,4 +787,4 @@ that did not yet exist. Harnesses keep a fixed defect fixed; they do not find th
 
 ## What happens next
 
-Stage F waits on two owner decisions: whether the whole Mediterranean world goes live with Greece, Morocco and Dalmatia still at the card-only level, or those areas are dimmed first; and what to do about the ham counter's approach inside the square. A second independent review pass after the repairs, then publish.
+Stage F waits on two owner decisions: whether the whole Mediterranean world goes live with Greece, Morocco and Dalmatia still at the card-only level, or those areas are dimmed first; and what to do about the stands that stand in front of other stands. The 2026-09-17 pass cleared every house and tree from in front of every clickable object, which leaves that second question as the only thing still hiding a stand: the family kitchen covers the ham counter, the churrería covers the pintxo bar, and the Alhambra and the bodega together cover the courtyard kitchen. Those are positions in `spain-objects.ts` and geometry in `props-spain.ts`, so the fix is the Researcher's and the Stand maker's, not the Builder's, and it is a question of how far the blueprint's cluster centres can move. A second independent review pass after that, then publish.

@@ -181,7 +181,7 @@
   },
   {
     "source": "th11_muslim_wide.png",
-    "source_sha256": "a1c852cfa11cbf942e9303bbe2775b09024ffadc950bef98235b8c8558fb5e37",
+    "source_sha256": "cb364eb732a79cb46a0107b4eecbabc4cecbe9937ed0b86052d0008e470982b8",
     "path": "scenes/th_muslim/wide.jpg",
     "size": [
       1672,
@@ -190,7 +190,7 @@
   },
   {
     "source": "th11_muslim_portrait.png",
-    "source_sha256": "fd6814dc2e5641551dfc73fbcc8c6874bdda219668c204efea4bf23498ba5f33",
+    "source_sha256": "fa2cdab46a23d63e42661a0045c3832687df0df9163b3d53a22a553b3822ca19",
     "path": "scenes/th_muslim/portrait.jpg",
     "size": [
       941,

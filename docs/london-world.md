@@ -340,3 +340,113 @@ so **the thirteen Britain rooms cannot appear in it at Stage B, and nothing the 
 Neither file was written or edited here: `scenes-london.ts` is Stage C and the two test pages are not the Room maker's to touch. What was verified instead is everything the audit page would read once it can see the rooms: all 26 JPGs exist under the thirteen `public/scenes/uk_*` folders, open, and carry the dimensions recorded in `scenes-props.json`. The proof is one contact sheet of the 26 imported files, thirteen rows of wide then portrait, composed from the written JPGs rather than from the delivered PNGs.
 
 **Owner rulings, 2026-09-21.** The three rejects stand: `ld04_piemash_portrait.png`, `ld05_chippy_portrait.png` and `ld_card_dairy.png` are regenerated as instructed. The sunny light in the dairy, cockles, distillery and lascar windows is accepted rather than reworked toward the brief's rain.
+
+### Blueprint (fixed): Britain on the Central Europe table
+
+Britain (area id `london`, display name **Britain**) is an island in the west of a grown Central Europe table. The Alps, Hungary and Georgia keep the table they have. Every number below is held as data in `scratchpad/london-blueprint.py` and passes the paper check there — bands, water clearances, 2.5 between clickables, rooms on roads, nothing solid on a road centreline, blockers off every corridor, cluster separation — and the plan it draws is the contact sheet for this section.
+
+Table and frame:
+
+- `world-ceurope.ts` grows to `W: 120, D: 56, cx: -22`, identical to the Mediterranean. The table runs x from **-82 to 38** and z from **-28 to 28**. The `shore()` edge test becomes x at or beyond **-82 or 38**, z at or beyond **28** in either direction, so caps at the table edge stay square; the hand-written `Math.abs(x) >= 38` goes, and `coast()` takes the same two tests.
+- **Britain owns x -80 to -34, z -28 to 24.** Every Alpine, Hungarian and Georgian coordinate keeps its value except the two western Alpine peaks: `snowy(3.6, 6.5, false, -34.5, 12)` becomes **[-22.5, 16.5]** and `place(mountain(3.0, 5.5, true), -33, 4)` becomes **[-27.8, 2.6]**. Both are inside the lead's band x -33 to -7, both are clear of every Alpine pine, peak and clickable by their own radius plus one unit, and the second has its base 0.6 clear of the strait. The meadow tint itself is full — the nearest free point inside it is within 4.6 of an Alpine pine — so the lower peak sits on the foothills just south of the tint rather than in it.
+- Britain's arrival view is the Westminster street: **`AREAS.london.center` becomes [-48, 2]**, `name` **"Britain"**, `zh` **"Great Britain"**. The id `london` and the id `roastPub` do not change, and neither does the British recipe routing.
+- `worldZoomLimit` and `worldFogRange` in `world-camera.ts` gain **`central-europe` beside `mediterranean`**, so the 120-wide table gets the 215 desktop overview and the computed fog pair instead of the flat 90/200. Builder, Stage C; it is two words in one expression.
+
+Water. One continuous `seaWater()` shape wraps the island on all four sides. Its **outer ring** is the table's west, north and south edges and the continent's west coast, square at every edge:
+
+```
+[-82,-28] [-31.4,-28] [-31.4,28] [-82,28]
+```
+
+and the **island's coast is that shape's hole**, so the sea is one polygon, one rim and one shader. The ring, traced so the land stays inside it — the north coast with the Firth of Forth cut into it, then the strait's west shore with the river-mouth notch, then the south coast, then the west coast with the Bristol Channel cut into it:
+
+```
+[-79.4,-24] [-77,-25.4] [-73,-26] [-69,-25.6] [-65,-26.4] [-62,-26] [-58.6,-26.2]      the north coast
+[-58.4,-20.6] [-56.8,-20.8] [-56.6,-26]                                                 the Firth of Forth, cut south to z -20.6
+[-53,-26.2] [-49,-25.6] [-45,-26.2] [-41,-25.8] [-37.4,-26] [-35.8,-24]                 the north coast again, to the north-east cape
+[-35.6,-20] [-35.8,-14] [-35.6,-8] [-35.6,-2] [-36.2,2.6] [-36,5.6] [-35.8,10]          the strait's west shore, notched for the river mouth
+[-36,16] [-36.6,20] [-38,21.6]
+[-42,22] [-46,22] [-50,21.6] [-54,22] [-58,21.8] [-62,22] [-66,21.8] [-69,22]           the south coast
+[-72.6,22] [-76,21.4] [-79,20.2] [-79.6,18.8]
+[-76,17.8] [-71.8,16.6] [-71.4,14] [-73.5,12.6] [-77,11.8] [-79.6,10.8]                 the Bristol Channel, its head at x -71.4
+[-79.7,6] [-79.5,0] [-79.7,-6] [-79.4,-12] [-79.6,-18]                                  the west coast, back to the start
+```
+
+The rim (`#e6dfc4`) is an inset of both rings by 1.2, computed per vertex, not from a single centre as the Channel is now. **The strait** is the water between the island's east shore (x about -35.7) and the continent's west coast (x **-31.4**): four and a half units wide, running the table's full depth with a square cap at each edge. It is the existing Channel polygon, extended and squared. The Builder keeps the strait at least 4.0 wide after the `shore()` jitter, so both of its shores take at most 0.2 of jitter instead of the usual 0.35.
+
+Britain's own water:
+
+| Feature | Width | Points |
+| --- | --- | --- |
+| The river, `freshWater()` to x -42, then widening, with an `estuaryWater` blend from x -38 to the mouth | 2.6 to x -42, 4.0 to x -38, 5.2 at the mouth, each on a rim 1.6 wider | [-75,-6] [-70,-4.5] [-64,-2.5] [-58,-1] [-54,0] [-50,1.5] [-46,2.5] [-42,3.2] [-38,3.8] [-35.8,4.2] |
+| The Bristol Channel, part of the sea ring above; its head east of x -75.5 is **wet sand, not open water** — the sand tint under a low-alpha `estuaryWater`, ribbed and draining, with the cockle beds on it | the ring | head at [-71.4, 14] |
+| The Firth of Forth, part of the sea ring above | the ring | head at [-58.4, -20.6] to [-56.8, -20.8] |
+
+The river rises in the western hills at [-75, -6] — two units east of the Researcher's [-76, -6], so the west road can pass between its source and the west coast without a bridge — runs east past the Dales, through the Westminster cluster, widens past the Docks and reaches the strait at [-35.8, 4.2]. **The old Thames curve and its Westminster Bridge on the continent side are removed**, together with the `decks` entries at [-19,-22] and [-19.5,-9]; the Chain Bridge's [6.5,-4,6.5] stays and the two Britain decks are added.
+
+Clusters and their ground tints. Positions are final; every one of the twenty-nine objects appears exactly once.
+
+| Cluster | Centre | Tint | Holds |
+| --- | --- | --- | --- |
+| Westminster and the River | [-51, -4.5] | `#b8b4ad` wet paving along the street, 18 x 8 | The street runs east–west with the river behind it, four doors on its river side and three on its landward side: `bigBen` [-56, -3.4] on the river bank at the west end, `phoneBox` [-52.8, -3.4] (the Penfold pillar box and the lamp), `roastPub` [-49.6, -3.4], `redBus` [-46.8, -3.4] (the omnibus and the hansom stand) on the south side; `teaRoomUk` [-54.4, -7.1], `pastryCe` [-51.2, -7.1], `boroughUk` [-47.6, -7.1] on the north side. One decorative house: **`uk-westminster-terrace` [-53, -9.6]**, a brick terrace behind the tea room |
+| The Docks and the East End | [-39, 7] | `#a89c86` brown dock mud and stone, 14 x 10, no paving | `pieMashUk` [-42.8, 9.65], `breakfastUk` [-40.1, 9.65] under its naphtha flare, `lascarUk` [-37.4, 10.3] in a back room off the last wharf, all three on the dock road with the estuary in front of them; `towerBridge` [-39.4, 3.9] standing in the estuary, and `oystersUk` [-36, 4.3] as two smacks moored at the mouth — **the only two Britain objects in water**. One decorative house: **`uk-dock-warehouse` [-41, 12.4]**, a four-floor brick warehouse behind the shops |
+| The Weald | [-45, 18] | `#7fae5a` hop green in strings, running to `#5f7a46` under the wood, 16 x 12 | `hopKitchenUk` [-43.65, 13.35] at the bin end, `hopsUk` [-41.5, 17.5] in the garden with **its own oast at [-40.2, 19.2]**, `mushroomsCe` [-46.8, 20.2] in the wood at the south coast. One decorative house: **`uk-kentish-cottage` [-48.2, 16.2]**, tile-hung, one storey and a half |
+| The Dales and the Mill Towns | [-59, -14] | `#9fb08a` wet green cut by `#8a8a80` drystone walls, 16 x 14 | `chippyUk` [-58, -10.1] on the mill-town street at the dale's mouth, `dairyUk` [-56.9, -13.1] in its cold stone dairy, `sheepUk` [-61.5, -12.5] hefted on the fell above the road, `rhubarbUk` [-55, -16] with **its own forcing shed at [-53.8, -17.4]**. One decorative house: **`uk-dale-farmhouse` [-60.8, -16]** |
+| The West Country and the Bristol Channel | [-72, 10] | `#8fa06a` moor green over `#9a8f80` granite, `#d9cfae` wet sand at the channel head, 18 x 20 | `engineHouseUk` [-76, 2.7] on the cliff road with **its own engine house at [-74.6, 2.4]**, `pastyUk` [-74.1, 7.1] at the bakehouse, `orchardUk` [-77.5, 9.5] in the cider orchard above the channel's north shore, `cocklesUk` [-69.4, 14.5] on the sand at the channel head, `leeksUk` [-71, 20.2] in a cottage bed on the south side. **No decorative house**: five objects and three of their own buildings already fill the cluster, and Spain's Plaza Mayor set the precedent |
+| The Firths and the Herring Coast | [-64, -25] | `#93a884` cold green with `#8a8a80` rock, 16 x 8, raised 0.4 | `smokehouseUk` [-62.1, -23.7] with **its own smokehouse at [-61, -24.3]**, `distilleryUk` [-66.1, -20.9] under its pagoda vent, `oatsUk` [-69.5, -19] at the meal mill, `forthBridge` [-55.1, -22.5] on the firth's east shore, `herringUk` [-52.5, -23.6] on the quay east of the firth. One decorative house: **`uk-fife-cottage` [-64, -19]** |
+
+**`forthBridge` stands on land.** The rule is that nothing stands in water but the two London bridges and the oyster smacks, so the Forth Bridge is set on the east shore of the firth at [-55.1, -22.5], 1.6 clear of the water, with its first cantilever on the shore and its span reaching north-west over the inlet. No pier is set in the water. The paper check treats it as an ordinary land object.
+
+Roads, one continuous ribbon each, every door on a road and nothing solid on a centreline. The network is one walkable piece: CE-R1 meets CE-R2 at [-44.5,-4.9] and CE-R5 at [-59,-5.1]; CE-R2 meets CE-R3 and CE-R4 at [-44.2,7.9]; CE-R5 meets CE-R7 at [-60,-8.5] and CE-R6 and CE-R6b at [-59,-19.2].
+
+| Road | Width | Points |
+| --- | --- | --- |
+| CE-R1 Whitehall and the Strand | 2.4 | [-59,-5.1] [-55,-5.25] [-51,-5.25] [-47,-5.25] [-44.5,-4.9] [-42,-4.3] |
+| CE-R2 the bridge road | 1.8 | [-44.5,-4.9] [-44.3,-1.2] [-44,2.85] bridge [-44.1,5.6] [-44.2,7.9] |
+| CE-R3 the dock road | 2.2 | [-44.2,7.9] [-41,7.9] [-39,8.1] [-37.6,8.5] |
+| CE-R4 the hop road | 1.8 | [-44.2,7.9] [-45.2,11] [-45.6,14.6] [-45.2,18.6] [-44.6,20.2] |
+| CE-R5 the dale road | 1.8 | [-59,-5.1] [-60,-8.5] [-59.5,-12.2] [-57.5,-15.8] [-59,-19.2] |
+| CE-R6 the firth road | 1.8 | [-59,-19.2] [-61,-21.5] [-64.5,-22.5] [-68,-22.8] [-71,-21.5] |
+| CE-R6b the herring spur | 1.4 | [-59,-19.2] [-56.6,-19.4] [-54.8,-20.6] |
+| CE-R7 the west road | 1.8 | [-60,-8.5] [-65,-8] [-70,-8.6] [-74,-9] [-78,-9] [-78.2,-4] [-77.9,1] [-76.8,6] [-74.5,10] [-71,10.8] [-67.8,12.6] [-67.4,16] [-70,17.8] [-73.5,19.2] |
+
+CE-R7 passes north of the river's source and east of the Bristol Channel's head, so **no road but CE-R2 crosses water anywhere**. If a road point ever comes inside a bank, move the road, not the water.
+
+**Bridges.** `woodenBridge` as **Westminster Bridge at [-44, 2.85]**, where CE-R2 crosses the river: span 6.0, deck at the road height (`BRIDGE_DECK_Y` 0.9), ends on the banks, square to the water, and a `deckY` entry so walkers and the omnibus ride up onto it. **`towerBridge` at [-39.4, 3.9]** is the second bridge, built to stand in the estuary; it carries no road and no walker loop — it is the landmark, and its bascules lift.
+
+Walker loops, residents in the area's clothing from the eight profiles, steps matched to distance (`londonWalk`), speed 0.009 on the Westminster street and 0.007 elsewhere:
+
+1. **The street**, CE-R1 from the palace to the bridge road and back, six residents, one with a basket and one sweeping the crossing; **the in-period traffic runs here** — one 1907 motor omnibus and two hansom cabs, no red bus and no black cab anywhere on the table
+2. **The docks**, CE-R3 and the last stretch of CE-R2 as a circuit, five residents, one with a shoulder-borne tray, one porter with a barrow
+3. **The dale road**, CE-R5 between [-60,-8.5] and [-57.5,-15.8], four residents, one leading a pony with panniers
+4. **The west road**, CE-R7 between [-76.8,6] and [-70,17.8], five residents, two carrying cockle baskets at the channel end
+
+**Decor.** Five decorative houses in the whole of `london`, no more, each at a fixed coordinate and each a 1.5-radius blocker in the paper check: `uk-westminster-terrace` [-53, -9.6], `uk-dock-warehouse` [-41, 12.4], `uk-kentish-cottage` [-48.2, 16.2], `uk-dale-farmhouse` [-60.8, -16], `uk-fife-cottage` [-64, -19]. Four buildings belong to stands and are **not** extra houses, but they are blockers under exactly the same rule: the forcing shed [-53.8, -17.4], the oast [-40.2, 19.2], the engine house [-74.6, 2.4] and the smokehouse [-61, -24.3]. Every one of the nine is at least 2.5 from every clickable it does not own, clear of every road centreline by half that road's width plus 1.5, and out of the water. The old London rectangle — the closed road loop through [-30,-22] [-10,-22] [-10,-9] [-30,-9], the two `redBus()` and two `blackCab()` on it, the seven loop walkers, the two standing pairs, the four round trees and the pigeon flock at [-20,-15] — goes with the old paving tint.
+
+**Countryside between the clusters.** Hop strings twelve feet high from [-44,15] to [-39,20] with the bines on wire; oak and hornbeam wood along the south coast from [-50,19] to [-44,22]; hedged and ditched fields between the Weald and the river; drystone walls climbing the fell from [-63,-10] to [-55,-18] with the flock's own pen at the top; moor and bracken over the north-west from [-72,-16] to [-66,-22]; barley on the coastal strip behind the distillery; peat stacks cut in lines at [-68,-24]; granite hedgebanks and gorse over the West Country from [-78,0] to [-73,12]; apple orchard rows at [-77,9]; the channel's wet sand ribbed and draining, with a donkey and a cart on it at low tide; gulls over both coasts, rooks inland. Every crop or tree that carries an object responds to a click (the Stand maker's file); the rest is the Builder's.
+
+#### What this blueprint overrides in the Stage A object list
+
+Every id, kind, prop, purpose, cluster and reaction in the object list above is unchanged. The Stage A positions were written as provisional in a frame the lead had not yet fixed, and all twenty-nine move; the table of clusters here is the only positional record. Three changes go further than a coordinate and are the lead's to confirm at Stage D: the river rises at [-75, -6] rather than [-76, -6]; `forthBridge` stands on the firth's shore rather than in it; and the cockle ground is the head of the Bristol Channel — a true sea inlet at z 11 to 19, reaching x -71.4 — rather than a free-standing estuary at [-69, 14], because an estuary has to open to a sea.
+
+### Module contracts for Stage C
+
+Every agent owns whole files. Stubs exist so the type check passes while files are empty. Nobody edits another owner's file; a missing helper is built in the owning file. The Stand maker may import from `london-architecture.ts` and `london-people.ts` once they exist; until then a stand uses `person()` and `wear()` from `props.ts` and a local shelter.
+
+| File | Owner | Exports (keep these names and signatures) |
+| --- | --- | --- |
+| `london-architecture.ts` | Builder, first | `LD` palette constant with the twelve names from section 1.3 of the research (`londonStock`, `portlandStone`, `millstoneGrit`, `moorGranite`, `slateNorth`, `kentPeg`, `pubGreen`, `oxbloodTile`, `postRed`, `oakSmoke`, `hopGreen`, `northSea`); `britishHouse(style, w, d, h, { storeys, bay })` for styles `londonTerrace`, `dockWarehouse`, `kentishCottage`, `daleFarm`, `fifeCottage`, `cornishCob`, `welshLongHouse`; `oastCowl()`; `forcingShed()`; `engineHouseBob()`; `smokePitFrame()`; `maltingPagoda()`; `ironMarketRoof()` |
+| `london-people.ts` | Builder, second | `britishResident(seed, working?)` and `londonWalk(person, from, to, range, seed)` following `thailand-people.ts`; the eight clothing profiles from section 1.3 of the research as data; `pitPony()` and `followPony()` |
+| `london-landscape.ts`, `london-town.ts`, `london-countryside.ts` | Builder | `londonLandscape(ctx)`, `londonTown(ctx)`, `londonCountryside(ctx)`. The landscape owns the sea shape **with the island as its hole**, both rims, the strait, the river with its three widths and the estuary blend, the Bristol Channel's wet sand and the Firth of Forth, and exports `LD_LANES`, `LD_BRIDGES`, `BRIDGE_SPAN` (6.0), `BRIDGE_DECK_Y` (0.9) in the shape `spain-town.ts` and `thailand-landscape.ts` use |
+| `props-london.ts` | Stand maker | `LONDON_PROPS` keyed by every `prop` name in the object list — including the new `omnibus`, `pillarBox`, `forthBridge`, `engineHouse`, `oysterSmack`, `hopGarden`, `daleFlock`, `forcingShed`, `ciderOrchard`, `leekBed`, `oatMill`, `herringQuay` — plus `LONDON_ICONS` and `LD_LINES` keyed by object id; `hansomCab()`, `motorOmnibus()`, `costerBarrow()`, `cockleDonkey()` |
+| `london-objects.ts`, `london-stories.ts` | Researcher | `LONDON_OBJECTS`, `LONDON_CARD_ART`, `LONDON_NEXT`, `LONDON_STORY_DEPTH`, `LONDON_SOURCES`, written to the card blurb band set above (room objects 1,300–1,800 characters, card-only 750–1,000), **including rewritten blurbs for the five retained objects** |
+| `scenes-london.ts`, `london-ambience.ts` | Room maker | `LONDON_SCENES` keyed by the thirteen `uk_*` scene ids, each a `() => SceneDef` built with `paintedScene`; `LONDON_AMBIENCE`; hotspot labels and texts live in `scenes-london.ts`; `scene-ambience.ts` gains `PAINTED_SIGNATURES` entries only. `uk_dairy` is a cold room: the `drip` glint variant, no steam source anywhere in it |
+| `scripts/tests/london-world.mjs`, `scripts/tests/london-reactions.mjs` | Builder, Stand maker | Copies of the Thailand harnesses with Britain ids. `london-world.mjs` tests **every vertex of every stand against the sea ring, the island ring, the strait, the river at all three widths, the estuary, the Bristol Channel and the Firth of Forth from the first commit**, plus the 2.5 corridors, rooms-on-roads, the nine blockers, gait and gait direction. `london-reactions.mjs` carries all twenty-nine ids |
+| **shared** `world-ceurope.ts` | Builder, Stage C | Table growth to `W: 120, D: 56, cx: -22`; the new `shore()` and `coast()` edge tests; the two Alpine peaks moved to [-22.5, 16.5] and [-27.8, 2.6]; the old Thames curve, its Westminster Bridge, the London rectangle, its four vehicles, its walkers, its trees, its pigeons and its paving tint removed; the `decks` table reduced to the Chain Bridge plus the two Britain decks; `{ ...CEUROPE_PROPS, ...LONDON_PROPS }`; the Britain layout calls. **One owner for this file**; no other Britain agent opens it |
+| **shared** `world-camera.ts` | Builder, Stage C | `central-europe` added beside `mediterranean` in `worldZoomLimit`, and so through it in `worldFogRange`. Two words, one owner |
+| **shared** `graph.ts` | Lead, Stage D | `AREAS.london` becomes `{ world: "central-europe", name: "Britain", zh: "Great Britain", blurb: …, center: [-48, 2] }`; the twenty-three new objects registered with the positions in the cluster table; `mushroomsCe` and `pastryCe` re-sited; `redBus` loses `hitOnly` and `prop: "none"` for `omnibus`; `phoneBox` takes `pillarBox`; `roastPub` renamed "The public house" with `place: true` and the id unchanged; **`londonEye` removed from `CEUROPE_OBJECTS`**; `scripts/audit/objects.mjs` line 6 learns `central-europe` |
+| **shared** `world-intros.ts` | Researcher | The Central Europe intro gains Britain beats; `world-intros.mjs` must still pass |
+| **shared** `scripts/tests/room-audit.html`, `scripts/tests/rooms.html` | Lead, Stage D | Two edits each: `import {LONDON_SCENES} from '/src/fw/scenes-london.ts';` and `...LONDON_SCENES` in the `SCENES` merge |
+| `repertoire.ts`, `main.ts`, `ui.ts`, `README.md`, this file | Lead, Stage D | Registration only; `LONDON_REPERTOIRE` is merged in `repertoire.ts` so `scripts/tests/repertoire.mjs` covers its thirteen keys |
+
+

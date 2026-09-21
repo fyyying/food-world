@@ -1,0 +1,389 @@
+[
+  {
+    "source": "th01_khlong_wide.png",
+    "source_sha256": "6fd7e7f3e8528f9bcb940219c96b29544b0c7aa5db6502da258c7ada8e80dd03",
+    "path": "scenes/th_khlong/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "th01_khlong_portrait.png",
+    "source_sha256": "487690cc288539279e1c52b7082e4e6ddfef2713198633b83a309e91517efedd",
+    "path": "scenes/th_khlong/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "th02_noodleboat_wide.png",
+    "source_sha256": "37766efe856c9f19a9c4d37b36a24e7cfc723b4cfafd334a911ee92610effa2c",
+    "path": "scenes/th_noodleboat/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "th02_noodleboat_portrait.png",
+    "source_sha256": "42f3f43332e0aa116f813766860cc6db99c41dbbc8ee6014e35e47b308ae20df",
+    "path": "scenes/th_noodleboat/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "th03_wang_wide.png",
+    "source_sha256": "ed72373daf7ddb7cabcd32ead9c53af49b332888787c558a33536ff09b8aebf9",
+    "path": "scenes/th_wang/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "th03_wang_portrait.png",
+    "source_sha256": "80f42197645df20ad129ef095472585cbf6898145934a08473be744af290bab8",
+    "path": "scenes/th_wang/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "th04_curry_wide.png",
+    "source_sha256": "daa9a75ffc8ddd6fd22e4ac5fad38814104fe4ddc649e7468baec3d78e117c3d",
+    "path": "scenes/th_curry/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "th04_curry_portrait.png",
+    "source_sha256": "d8d3c837408647ac0deb51e5521201e192b03861f5edb51fc96b1bef9eabc60b",
+    "path": "scenes/th_curry/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "th05_sweets_wide.png",
+    "source_sha256": "6bd68713535c8cd31167640252a8c63c42d0b3973162043a5e4f8777be78ca9e",
+    "path": "scenes/th_sweets/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "th05_sweets_portrait.png",
+    "source_sha256": "f0c7c3740156284524cfaea07c1b67f84a17a6feca74aa800b5833954640cb09",
+    "path": "scenes/th_sweets/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "th06_shophouse_wide.png",
+    "source_sha256": "7e64d75f151acffcf89acaf862f5cc463a900a1c21fa24f4ff91b9dbcb1612a2",
+    "path": "scenes/th_shophouse/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "th06_shophouse_portrait.png",
+    "source_sha256": "d8f89b9d32dc014dff18e2e49c4d918ee533c9178261f439518da86b1c2da03d",
+    "path": "scenes/th_shophouse/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "th07_paddy_wide.png",
+    "source_sha256": "314f1af1f788a0037c3ad2b728c1a80ca6588e36c0c046394edd4ca650b69a29",
+    "path": "scenes/th_paddy/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "th07_paddy_portrait.png",
+    "source_sha256": "0e672849e1a945d999517fe7eed3595a9205560fac0fbbbf68946d0bb8a1f46e",
+    "path": "scenes/th_paddy/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "th08_isan_wide.png",
+    "source_sha256": "0bf4ab84b424867ae4ef4a8b4631227cad807b920eebc7911342972a1ac983e7",
+    "path": "scenes/th_isan/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "th08_isan_portrait.png",
+    "source_sha256": "d868e796e580ee0d78b5ab760156eb1ceeb260f18272319792e742a3db89ccba",
+    "path": "scenes/th_isan/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "th09_lanna_wide.png",
+    "source_sha256": "4ec611feaa01dbee13a6579c07ca949b0d648fe61aed34b30665027695248f24",
+    "path": "scenes/th_lanna/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "th09_lanna_portrait.png",
+    "source_sha256": "6770fb278d676b6e7afaf49e1f2ae37b22ea4e7a39dac3c577413aac755cca8a",
+    "path": "scenes/th_lanna/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "th10_andaman_wide.png",
+    "source_sha256": "1f8d2b6a410954a338b38e3048f71605adb7efe3f4d9e1c003b14ab516519ce5",
+    "path": "scenes/th_andaman/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "th10_andaman_portrait.png",
+    "source_sha256": "501b9c904e12a668c9e644ee577d1812fa6b0979ce17454e6655d7ba12198be0",
+    "path": "scenes/th_andaman/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "th11_muslim_wide.png",
+    "source_sha256": "a1c852cfa11cbf942e9303bbe2775b09024ffadc950bef98235b8c8558fb5e37",
+    "path": "scenes/th_muslim/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "th11_muslim_portrait.png",
+    "source_sha256": "fd6814dc2e5641551dfc73fbcc8c6874bdda219668c204efea4bf23498ba5f33",
+    "path": "scenes/th_muslim/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "th12_baba_wide.png",
+    "source_sha256": "9620829e68bb0b8cd3c21ed23bdf8687759719010128ca6b4bb7e8f1962f93dc",
+    "path": "scenes/th_baba/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "th12_baba_portrait.png",
+    "source_sha256": "ab004ccce9254ed8657263db1a257313318d652c9eaba3e44eb951baf5f107c8",
+    "path": "scenes/th_baba/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "th_card_khlong.png",
+    "source_sha256": "45e2a0c907c880cfee09fc0cdd08ff0107a4166abed5cdde2dd73d5091c57a85",
+    "path": "scenes/thailand-food/khlong.webp",
+    "size": [
+      960,
+      887
+    ]
+  },
+  {
+    "source": "th_card_noodleboat.png",
+    "source_sha256": "d7d2f6e6def5516b99d02e049803fd8fd8b3d6b44b25d62e2d9d271279d44602",
+    "path": "scenes/thailand-food/noodleboat.webp",
+    "size": [
+      960,
+      751
+    ]
+  },
+  {
+    "source": "th_card_wang.png",
+    "source_sha256": "29d36a288b24d0d724db1e98dc3ed2893c6d2392664bcad3a2621d7deaab2789",
+    "path": "scenes/thailand-food/wang.webp",
+    "size": [
+      960,
+      723
+    ]
+  },
+  {
+    "source": "th_card_curry.png",
+    "source_sha256": "e379dfcfe268f32c572b248761aadb452132a13b3e7d1438ed12e73717b19935",
+    "path": "scenes/thailand-food/curry.webp",
+    "size": [
+      954,
+      960
+    ]
+  },
+  {
+    "source": "th_card_sweets.png",
+    "source_sha256": "eeed1acd5bda44907da4778e85ddd0e20faab4d95624aa450db3224f68d0d11a",
+    "path": "scenes/thailand-food/sweets.webp",
+    "size": [
+      960,
+      693
+    ]
+  },
+  {
+    "source": "th_card_shophouse.png",
+    "source_sha256": "455244b779e2639dc137ee8ac42df11af9dfd1cbb5b8b165145165b8d21736b0",
+    "path": "scenes/thailand-food/shophouse.webp",
+    "size": [
+      960,
+      835
+    ]
+  },
+  {
+    "source": "th_card_paddy.png",
+    "source_sha256": "9a44d3a49b08f4f66dec143b9ca7477fd020d874f45e8532e2ec6bcac637a2bd",
+    "path": "scenes/thailand-food/paddy.webp",
+    "size": [
+      960,
+      703
+    ]
+  },
+  {
+    "source": "th_card_isan.png",
+    "source_sha256": "9c01d19180e4f85c30a2317ebcfc26fc6662b9fcab133c9fe524ca29852f439d",
+    "path": "scenes/thailand-food/isan.webp",
+    "size": [
+      960,
+      911
+    ]
+  },
+  {
+    "source": "th_card_lanna.png",
+    "source_sha256": "3f2595458640127dbf9b0353f400f9dc13313633a93631706394782593f2461d",
+    "path": "scenes/thailand-food/lanna.webp",
+    "size": [
+      960,
+      789
+    ]
+  },
+  {
+    "source": "th_card_andaman.png",
+    "source_sha256": "e4db207e3d360631c55699f2ac05152ac1bf73312008fd723cf673cd0383314d",
+    "path": "scenes/thailand-food/andaman.webp",
+    "size": [
+      941,
+      960
+    ]
+  },
+  {
+    "source": "th_card_muslim.png",
+    "source_sha256": "ac59d08eea6f909d19ccd8feeca2597dec80ef5c07bc4f4bd3f4e415a4f1e899",
+    "path": "scenes/thailand-food/muslim.webp",
+    "size": [
+      960,
+      778
+    ]
+  },
+  {
+    "source": "th_card_baba.png",
+    "source_sha256": "be539eada2ed164da00d2c2634eee1f2ba518d3621f854054970a2e1dca5682b",
+    "path": "scenes/thailand-food/baba.webp",
+    "size": [
+      960,
+      720
+    ]
+  },
+  {
+    "source": "th_motion_lantern.png",
+    "source_sha256": "de5d54363485bf93a091b18d082b0be69337c19984082dff51cab6b2c523401d",
+    "path": "scenes/props/th-lantern.webp",
+    "size": [
+      645,
+      960
+    ]
+  },
+  {
+    "source": "th_motion_garlic_string.png",
+    "source_sha256": "6f08f28a581adfa6769f5f935e961b47097ba28751f4dd09df6839caa30bbd10",
+    "path": "scenes/props/th-garlic-string.webp",
+    "size": [
+      342,
+      960
+    ]
+  },
+  {
+    "source": "th_motion_squid_line.png",
+    "source_sha256": "fb06eee1b8ce044f506971e003519244b28f8ee6186654cc8e692c1db23fdf5b",
+    "path": "scenes/props/th-squid-line.webp",
+    "size": [
+      960,
+      879
+    ]
+  },
+  {
+    "source": "th_motion_sai_ua.png",
+    "source_sha256": "5d20a6913c4e3781b62ada7cf2f93b2e319ee2cd1e6a338992507ed45d56d4b6",
+    "path": "scenes/props/th-sai-ua.webp",
+    "size": [
+      712,
+      960
+    ]
+  },
+  {
+    "source": "th_motion_egret.png",
+    "source_sha256": "2e6448d025b23cf480a124998a6aeec6428bbdb4f6039728807ae5a8cc8af020",
+    "path": "scenes/props/th-egret.webp",
+    "size": [
+      960,
+      927
+    ]
+  },
+  {
+    "source": "th_motion_pla_tapian.png",
+    "source_sha256": "5c5457a896cf2467fc96fa6aba425246f7449fd995e56c89a7c7e61ffe0aa2cd",
+    "path": "scenes/props/th-pla-tapian.webp",
+    "size": [
+      817,
+      960
+    ]
+  },
+  {
+    "source": "th00_concept.png",
+    "source_sha256": "6e077c1fe168853d8e60f6de8fc022192327a37fe062b614d117d4248dba6028",
+    "path": "scenes/th_concept.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  }
+]

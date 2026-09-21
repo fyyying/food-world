@@ -238,3 +238,105 @@ Before the files arrive, three things are open and none of them belongs to the R
 - **The Central Europe table's blueprint.** Britain does not fit the 76 x 56 table as it stands, and the frame proposed above grows the table west, makes Britain an island, re-lays the Thames and moves two Alpine peaks. **That is the Lead's Stage B decision, not the Researcher's.** The object list's ids, kinds, clusters, purposes and reactions are unaffected by whichever way it goes; only the provisional positions move. The lead should also settle at Stage B whether the grown area keeps one area id with six clusters, as Spain did, or splits into sub-areas as Turkey did — the recipe routing needs `london` to exist either way.
 
 Two smaller items for whoever opens Stage B: teach `scripts/audit/objects.mjs` the `central-europe` world so this area can have baseline numbers, and decide with the owner whether publishing Britain means publishing the whole Central Europe world — Budapest, the Alps and Georgia are at the card-only level and would go live beside it, as Greece, Morocco and Dalmatia did beside Spain.
+
+## Stage B: pictures and blueprint, 2026-09-21
+
+### Picture acceptance
+
+All 46 files arrived in `~/Downloads/additional game asset/london/` with two inventories (`ld_inventory.txt`, `ld00_concept_inventory.txt`). The inventories are the generator's claims; every file was opened and judged against [art direction](art-direction.md) section 8 and Part E of the [image brief](london-image-brief.md). Sizes were measured from the PNG headers, not read out of the inventory: **all 13 wide files are exactly 1672 x 941, all 13 portraits exactly 941 x 1672**, the concept is 1671 x 941 (no size is required for the concept), and every sprite and card is opaque RGB with a white ground whose short side stays above 400 px after the importer's trim and 960 px long-side cap (smallest: `uk-hanging-lamp` 535 x 960, `chippy` card 960 x 459).
+
+**43 accepted, 3 rejected.** After the regeneration of 2026-09-21 all three rejects pass, so the set stands at **46 accepted, 0 outstanding**; the three rows below carry their own pass reasons.
+
+| File | Verdict | Reason / regeneration instruction |
+| --- | --- | --- |
+| `ld00_concept.png` | Accepted | One island in one sea, square at the table edge; six neighbourhoods in the brief's order; one river widening to a brown estuary; the four landmarks small and behind their food; nothing standing in water but the two bridges |
+| `ld01_pub_wide.png` | Accepted | Sirloin part-carved with the cut face pink and crusted, knife mid-stroke in a clear area, flat batter pudding cut in squares, open gravy copper, both empty hooks present (iron sign bracket on plain brick outside, plain nail on the beam over the bar), coal fire clear |
+| `ld01_pub_portrait.png` | Accepted | Recomposed, not cropped; joint, pudding tin and beer engine all inside the middle 80 per cent; beam hook and street bracket both empty |
+| `ld02_tearoom_wide.png` | Accepted | Pot tilted with a clear spout lip, an unbroken thread through the strainer and the cup standing on the table; empty brass ceiling chain and ring over plain plaster; bread and butter and the cut cake clear |
+| `ld02_tearoom_portrait.png` | Accepted | Same pour recomposed, all three subjects inside the band, chain ring still empty |
+| `ld03_market_wide.png` | Accepted | Wire drawn down the truckle with the wedge falling, butter and ribbed pats on the marble, apples in the chip basket; empty S-hook on the stall rail against plain canvas, the bacon side on a separate hook well away; cold food carries no steam |
+| `ld03_market_portrait.png` | Accepted | Truckle, butter and apples inside the band; empty hook on the post at the right, hung meat on a different hook |
+| `ld04_piemash_wide.png` | Accepted | Ladle tipped with a clear lip, a green fall and a clear landing on pie and mash; broken-open pie; green and white glazed dado; empty brass hook on the plain counter panel |
+| `ld04_piemash_portrait.png` | **Pass (regenerated 2026-09-21)** | It is the same shop as its wide again: green-and-white glazed tile on the back wall, and the window gives a wet dock street with masts, a crane, a gas lamp and rain — no clock tower and no Westminster building anywhere. The ladle is tipped with a clear lip, a green fall and a clear landing on the pie and mash, the pie is broken open on the beef, and both eel trays are there, the stewed tray steaming and the jellied tray cold and not. No text, nothing modern, nothing hot painted over cold food. The empty brass hook has moved to the right-hand counter panel at about x .90, just inside the middle 80 per cent, and this room has no sprite, so the hook is decorative either way |
+| `ld05_chippy_wide.png` | Accepted | Both pans open and bubbling, basket lifted with fat in visible threads back to the fat surface, draining rack, bench chipper and raw chips, paper being folded; mill chimneys and rain outside; empty iron hook on a plain painted panel beside the range |
+| `ld05_chippy_portrait.png` | **Pass (regenerated 2026-09-21)** | The window is now a wet northern mill-town street: terraced brick, two mill chimneys with smoke off one, gas lamps, umbrellas and rain on the glass, no clock tower and no London landmark. The basket is lifted clear with fat in threads back to the fat surface, the draining rack of fish and chips fills the foreground, the lad works the bench chipper over raw chips and a crate of potatoes at the right, and the empty iron hook is still on a plain cream panel at about x .84. Fried food steams, the raw chips do not; no text and nothing modern. The lit hanging lamp at upper left is painted, not the `uk-hanging-lamp` sprite, which belongs to the tea room and the lascar kitchen, not here |
+| `ld06_breakfast_wide.png` | Accepted | The only night picture and it reads as one: naphtha light on faces, black street; open griddle, open-topped boiler, bacon curling, bread and butter board; empty hook under the canopy edge against plain dark canvas; clean black sky over the market roof for the gull |
+| `ld06_breakfast_portrait.png` | Accepted, with a note | Tap lip, falling stream and landing in the mug are all clear, but the mug is **held in a hand** where the brief asked for it standing on the board. The pour is physically right and the glint still has its lip and its landing, so this is not worth a regeneration; the room maker anchors the glint on the mug rim as painted |
+| `ld07_lascar_wide.png` | Accepted | Spice sliding off the tilted slab into the open pan with the cook's hand following; rice pan with its lid lifted and resting beside it; open curry pot; Sylheti dress from the brief's profile, no turbans, no costume; empty chain and S-hook over the range end against plain lime wash |
+| `ld07_lascar_portrait.png` | Accepted | Slab, curry pot and rice pan inside the band; chain hook still empty; fire and window both open cues. The window light is a warm sunset rather than the area's grey — taste, not a defect |
+| `ld08_hopkitchen_wide.png` | Accepted | Pot open on its chain over the fire with the ladle lifting and pouring back, kettle, loaf and clasp knife on the crate, canvas bin of green cones, strung bines, oast and cowl behind; the empty wire line between two poles has nothing on it, plain grey sky behind |
+| `ld08_hopkitchen_portrait.png` | Accepted | Same pour recomposed, all three subjects inside the band, empty line across the top against plain sky |
+| `ld09_dairy_wide.png` | Accepted | **Cold room honoured: no fire, no range, no kettle, no steam anywhere.** Whey runs from the press spout into the pail as one unbroken thread; curd drains on the slatted rack; the cut truckle shows a white close crumb; empty wooden peg beside the door on plain lime wash |
+| `ld09_dairy_portrait.png` | Accepted | Cold, again with nothing hot in it; press, pail, rack and cut truckle all inside the band; peg empty |
+| `ld10_pasty_wide.png` | Accepted | Pasties crimped along the side and not over the top, swede and potato sliced and not diced, no carrot, one broken open, oven mouth open with the peel entering; empty iron hook beside the oven on a plain pale panel |
+| `ld10_pasty_portrait.png` | Accepted | Crimping thumb and forefinger close and correct, broken pasty showing the layers, glowing oven mouth; hook still empty |
+| `ld11_cockles_wide.png` | Accepted | Riddle shaken with a continuous fall of wet sand and a clear landing; pint measure filling a paper cone; laverbread dark in its dish; copper open and steaming on the shore while nothing on the sand steams; nobody and no donkey stands in the channel; empty peg on the stall upright |
+| `ld11_cockles_portrait.png` | Accepted, with a note | All three subjects inside the band and the fall is clean, but the empty peg sits on the right-hand upright at about x .93, outside the middle 80 per cent, so a phone crops it. No sprite hangs there — this room's sprite is the gull, which crosses the clean sky band — so the hook is decorative and the crop costs nothing |
+| `ld12_smokehouse_wide.png` | Accepted | Speet of tied pairs going over the open pit with the fire below, opened smokie showing the flakes, kippers and a Findon on a separate rail, salt barrel and brine tub; the upper cross-bar of the right-hand frame is bare against plain grey sky; clean sky band for the gull |
+| `ld12_smokehouse_portrait.png` | Accepted, with a note | Tied pair, opened smokie and pit fire all inside the band. The pair is lowered on a twine loop rather than over a wooden stick; the `uk-smoke-speet` sprite carries its own stick, so the painted version reads as a second, still pair and does not clash |
+| `ld13_distillery_wide.png` | Accepted | Green barley and the shiel on the malting floor, peat fire under the kiln arch, two dull copper stills, open washback with a foaming head, spirit safe, cask with the bung open, oatcakes and a dram on the barrel head; empty iron hook on the whitewash beside the safe |
+| `ld13_distillery_portrait.png` | Accepted, with a note | The spirit's lip, thread and landing bowl inside the safe are the clearest pour in the set. The empty wall hook sits at about x .94, outside the middle 80 per cent; no sprite hangs in this room, so it is decorative and the crop costs nothing. The peat fire runs to the left frame edge but still reads from x .094 inward |
+| `ld_motion_pub_sign.png` | Accepted | Painted fox device, **no lettering**, iron frame, iron eye at the top, on white |
+| `ld_motion_hop_bine.png` | Accepted | Cut stem at the top, about twenty pale cones, composed near square so the long-side cap leaves 923 x 960 |
+| `ld_motion_game_brace.png` | Accepted | Cock and hen pheasant hung by the feet, heads down, twisted cord with a loop at the top |
+| `ld_motion_gull.png` | Accepted | One herring gull gliding, three-quarter, wings and tail whole, grey mantle |
+| `ld_motion_smoke_speet.png` | Accepted | Two split haddock tied by the tails over a short stick with both ends clear, copper-brown skins |
+| `ld_motion_hanging_lamp.png` | Accepted | Brass lamp, glass chimney, shade, **unlit**, chain and ring at the top |
+| 12 card illustrations | Accepted | One food each, on white, at the texture the brief asked for: the carved sirloin and a square of flat batter pudding, the cup and split scone, the cloth-bound Cheddar wedge, the plate of pie, mash and liquor, the battered fish on paper, the bacon and black pudding with a tin mug, the fish curry and ground spice, the mutton and barley with green cones, the side-crimped and broken pasties, the paper cone of cockles with oatmeal laverbread, the tied smokies with one opened, the dram with sprouted barley |
+| `ld_card_dairy.png` | **Pass (regenerated 2026-09-21)** | One cut wedge on pure white with nothing else in the frame: the paste is a pale ivory white with an open crumbling texture that flakes and breaks away along the cut edge, and the rind is cloth-bound, the weave readable on the side and the top. It no longer reads as a second Cheddar — sampled over the cut face it is R236 G215 B176 against `ld_card_market`'s R236 G195 B125, so the blue channel is 50 points higher and the yellow is gone. Delivered 1536 x 1024 on opaque white; it cuts to 960 x 791, short side well over 400 |
+
+Two observations that belong to the set rather than to any one file, and that the lead should rule on rather than the room maker:
+
+- **Style.** The rooms are digital painting with a slick, evenly-lit finish rather than the visible brushwork of the hotpot and Turkey references; the cards are near-photographic product shots. The card style is exactly what Spain shipped and was accepted (`public/scenes/spain-food/*.webp` was compared side by side), so it is treated as the house style for cards here too. If the lead wants the rooms rougher, that is a whole-set regeneration, not a per-file reject.
+- **Weather.** The brief asked for Britain in the rain. The dairy's meadow, the cockle sands, the distillery window and the lascar kitchen's window are painted in sun or a warm sunset. Nothing about them fails an acceptance line; it is noted so the lead can decide whether the area's look is consistent enough.
+
+### Import
+
+`scripts/scenes/import-london.py` copies the thirteen room pairs to `public/scenes/<room scene id>/wide.jpg` and `portrait.jpg` at their native 1672 x 941 and 941 x 1672 with no crop and no upscale, keys the thirteen cards off their white grounds into trimmed, edge-bled, transparent WebP in `public/scenes/london-food/<name>.webp`, keys the six sprites the same way into `public/scenes/props/uk-<name>.webp` with the long side capped at 960 px, saves the concept as `public/scenes/uk_concept.jpg`, registers the sizes in `src/fw/scenes-props.json` and writes `public/scenes/london-assets.json`: 46 manifest rows, each with the source file name, its SHA-256, the written path and the written size. The keying is the same `key_white` used by `scripts/scenes/cut-props.py` and by the Spain importer, so the Britain sprites cut exactly as Spain's did. There is no paint-out step: every moving object was delivered as its own sprite and every room was painted with its hook empty, so nothing has to be taken out of a finished painting.
+
+Command, the same style as the Spain one:
+
+```
+uv run --with pillow --with numpy --with scipy scripts/scenes/import-london.py "$HOME/Downloads/additional game asset/london"
+```
+
+It was run twice. The second run produced byte-identical room JPGs, card and sprite WebPs, `scenes-props.json` and `london-assets.json`, so it is safe to re-run after a regeneration. It adds only its own keys: it re-reads `scenes-props.json` immediately before writing and merges the `uk_*` and `uk-*` keys into whatever is on disk at that moment, so a key another agent appends while it runs is kept.
+
+Keys added to `src/fw/scenes-props.json` — thirteen rooms, each `{"wide": [1672, 941], "portrait": [941, 1672]}`:
+
+`uk_pub`, `uk_tearoom`, `uk_market`, `uk_piemash`, `uk_chippy`, `uk_breakfast`, `uk_lascar`, `uk_hopkitchen`, `uk_dairy`, `uk_pasty`, `uk_cockles`, `uk_smokehouse`, `uk_distillery`
+
+and six props, with their cut sizes:
+
+| Prop key | Size after trim and cap | From |
+| --- | --- | --- |
+| `uk-pub-sign` | 960 x 869 | `ld_motion_pub_sign.png` |
+| `uk-hop-bine` | 923 x 960 | `ld_motion_hop_bine.png` |
+| `uk-game-brace` | 712 x 960 | `ld_motion_game_brace.png` |
+| `uk-gull` | 960 x 863 | `ld_motion_gull.png` |
+| `uk-smoke-speet` | 960 x 856 | `ld_motion_smoke_speet.png` |
+| `uk-hanging-lamp` | 535 x 960 | `ld_motion_hanging_lamp.png` |
+
+The thirteen card files land at `public/scenes/london-food/{pub, tearoom, market, piemash, chippy, breakfast, lascar, hopkitchen, dairy, pasty, cockles, smokehouse, distillery}.webp`. They carry no entry in `scenes-props.json`, exactly as Spain's cards do not; the scene config addresses them by folder and stem.
+
+**The three rejected files were imported too**, so the pipeline is complete and every room already has both orientations on disk. When they are regenerated under the same names, re-running the importer overwrites `public/scenes/uk_piemash/portrait.jpg`, `public/scenes/uk_chippy/portrait.jpg` and `public/scenes/london-food/dairy.webp` and updates their three rows in `public/scenes/london-assets.json` with the new hashes. **Any portrait coordinates measured on `uk_piemash` or `uk_chippy` before the regeneration have to be measured again afterwards**, as Spain's three regenerated portraits did.
+
+### Room audit
+
+`scripts/tests/room-audit.html` does not discover rooms from `scenes-props.json` or from the folders on disk. It builds its list from three static imports and one spread:
+
+```js
+import {SCENES as CHINA_SCENES} from '/src/fw/scenes-china.ts';
+import {TURKEY_SCENES} from '/src/fw/scenes-turkey.ts';
+import {SPAIN_SCENES} from '/src/fw/scenes-spain.ts';
+const SCENES={...CHINA_SCENES,...TURKEY_SCENES,...SPAIN_SCENES};
+```
+
+so **the thirteen Britain rooms cannot appear in it at Stage B, and nothing the Room maker owns can make them appear.** Two things are missing, both of them Stage C work:
+
+1. `src/fw/scenes-london.ts` must exist and export a `LONDON_SCENES` record keyed by the thirteen room scene ids, each a `() => SceneDef` built with `paintedScene`, as `src/fw/scenes-spain.ts` does for `SPAIN_SCENES`.
+2. `scripts/tests/room-audit.html` needs `import {LONDON_SCENES} from '/src/fw/scenes-london.ts';` added to its three imports and `...LONDON_SCENES` added to the `SCENES` spread — and the same two lines in `scripts/tests/rooms.html`, which `room-audit.html` loads in each iframe and which builds its room picker the same way.
+
+Neither file was written or edited here: `scenes-london.ts` is Stage C and the two test pages are not the Room maker's to touch. What was verified instead is everything the audit page would read once it can see the rooms: all 26 JPGs exist under the thirteen `public/scenes/uk_*` folders, open, and carry the dimensions recorded in `scenes-props.json`. The proof is one contact sheet of the 26 imported files, thirteen rows of wide then portrait, composed from the written JPGs rather than from the delivered PNGs.
+
+**Owner rulings, 2026-09-21.** The three rejects stand: `ld04_piemash_portrait.png`, `ld05_chippy_portrait.png` and `ld_card_dairy.png` are regenerated as instructed. The sunny light in the dairy, cockles, distillery and lascar windows is accepted rather than reworked toward the brief's rain.

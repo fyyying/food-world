@@ -82,6 +82,7 @@ Do not crop, stretch or upscale one to make the other. Report the delivered dime
 - Short side at least 400 pixels after trimming. The cutter limits the long side to 960 pixels
 - Sprites exist only for motion or layering: a hanging lantern, a chilli string, a leaf, a gull, an awning fringe
 - Card illustrations show one food close enough to read its texture: three folded slices of ham, one complete gilda, one wedge of cheese
+- Card illustrations are accepted in either a painted or a rendered near-photographic register — the shipped Turkey and Spain cards already hold both. Motion sprites must always be painted with visible brushwork, because they hang over painted walls
 - Do not generate steam, ripples, flour clouds, liquid streams, glows or markers as sprites. The code draws them
 
 ## 8. Acceptance check

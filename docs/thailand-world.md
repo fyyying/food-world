@@ -255,3 +255,192 @@ Before the files arrive, three things are open and none of them belongs to the R
 - **The Southeast Asia table's blueprint.** Thailand at Spain's scale does not fit the 76 x 56 table as it stands, and the frame proposed above grows the table west to `W: 116, cx: -20`, wraps a sea round Thailand's south and west, cuts a khlong grid off the river, and moves the karsts, the boats and the beach from the eastern sea to the new coast. It also has to settle whether the Mekong delta is extended west or moved. **That is the Lead's Stage B decision, not the Researcher's.** The object list's ids, kinds, clusters, purposes, reactions and repertoire are unaffected by whichever way it goes; only the provisional positions move. The lead should settle at the same time whether the grown area keeps one area id with six clusters, as recommended above and as Spain did, or splits into two as it is today — the recipe routing needs `bangkok` to exist either way, and `andaman` is referenced only in `graph.ts` and `world-intros.ts`.
 
 Three smaller items for whoever opens Stage B: teach `scripts/audit/objects.mjs` the `southeast-asia` world so this area can have baseline numbers; resolve whether one object may carry both `open: "reveal"` and `scene`, which the floating market needs; and decide with the owner whether publishing Thailand means publishing the whole Southeast Asia world — Hanoi and the Mekong delta are at the card-only level and would go live beside it, as Greece, Morocco and Dalmatia did beside Spain.
+
+## Stage B: pictures and blueprint, 2026-09-21
+
+### Picture acceptance
+
+All 43 files arrived in `~/Downloads/additional game asset/thailand/` with the exact names from the [image brief](thailand-image-brief.md), plus `th_inventory.txt` and `th00_concept_inventory.txt`. Every picture was read once at reduced size against the [art direction](art-direction.md) section 8 and the brief's Part E, with full-resolution crops of eight details that could not be judged at frame scale (the concept's hats, `th03` wide's nail, `th05`'s wall in both orientations, `th07`'s hats in both orientations, `th08` wide's rail). Delivered sizes were measured from the PNG headers, not taken from the inventory: **24 room files exactly 1672 x 941 and 941 x 1672 as required, concept 1672 x 941, all 6 sprites and all 12 cards 1254 x 1254 square on opaque white.**
+
+**42 accepted, 1 rejected.** After the regeneration of 2026-09-21 the one reject passes, so the set stands at **43 accepted, 0 outstanding**; its row below carries the pass reason.
+
+| File | Verdict | Reason |
+| --- | --- | --- |
+| `th00_concept.png` | Accepted | Six neighbourhoods in the brief's positions, one river with a canal grid, sea round the south and west, landmarks small and behind. The hats in the orchard and the paddy are the wide flat `ngob`, not the Vietnamese `nón lá`; the old-city street carries the pulled rickshaw and no tuk-tuk |
+| `th01_khlong_wide.png` | Accepted | Cleaver, opened coconut and a falling stream with a clear lip and landing; empty bamboo cross-pole on the canopy frame against plain sky; fruit and vegetables cold; nobody in the canal |
+| `th01_khlong_portrait.png` | Accepted | Recomposed, not cropped; coconut, cleaver-and-husks and the mangosteen boat all readable; pole empty over plain sky |
+| `th02_noodleboat_wide.png` | Accepted | Ladle lip, unbroken fall and a bowl resting on a board; open charcoal fire; empty iron hook on the ridge pole against plain canvas; raw noodles and greens dry |
+| `th02_noodleboat_portrait.png` | Accepted | Same pour recomposed; strainer, handed bowl and the stack of used bowls all inside the band |
+| `th03_wang_wide.png` | Accepted | Massaman open and steaming, `khao chae` iced and dry, carved pomelo and chilli flower with two correct hands, manuscript and inkpot present; empty iron nail on the carved post |
+| `th03_wang_portrait.png` | Accepted | Empty nail against plain white plaster; three subjects readable |
+| `th04_curry_wide.png` | Accepted | Granite mortar with a half-made paste, cream splitting in an open pan, grater stool with grated flesh; empty bamboo rail under the floor joists against the plain dark underside |
+| `th04_curry_portrait.png` | Accepted | Same three subjects stacked, rail still empty, aromatics and mortar dry |
+| `th05_sweets_wide.png` | Accepted | **Cone broad end up, perforated tip down**, unbroken threads falling onto an open syrup pan; `thong yip`, `thong yot`, the cake rack and the yolk bowl all present and cool; empty wooden peg on plain lime wash; open door to the lane and the church tower |
+| `th05_sweets_portrait.png` | **Pass (regenerated 2026-09-21)** | The pipes and the round fitting are gone: the plaster at upper left is plain lime wash carrying only a wooden shelf on brackets with baskets on it, checked at full resolution. The composition and the action are the same — cone broad end up with the perforated tip down, unbroken threads falling onto the open syrup pan and landing on a nest of threads; `thong yip`, `thong yot`, the cake rack and the yolk bowl are all present and cool, and the door still gives the lane, the church tower and the river. Nothing modern anywhere: the cart is an ox-cart on wooden wheels and the boat carries a sail and no engine. The empty hook on plain plaster at about x .52 is decorative, this room having no sprite, and there is no text in any script |
+| `th06_shophouse_wide.png` | Accepted | Wok toss with the noodles clear of the pan, flame round the rim, congee open, steamer lid lifted and resting beside the stack, duck and pork on hooks at the block; empty brass hook under the arcade beam against plain evening sky; the street vehicle is the pulled rickshaw; no lettering anywhere |
+| `th06_shophouse_portrait.png` | Accepted | Same three subjects; the empty brass hook sits at about x .90, just inside the middle 80 per cent |
+| `th07_paddy_wide.png` | Accepted | Banana leaf peeled back off the fish on the straw fire, mortar of `nam phrik`, open rice basket; empty bamboo pole and cross-piece against plain sky; only the buffalo is in water. The hats are the broad flat `ngob` |
+| `th07_paddy_portrait.png` | Accepted | Same three subjects inside the band. The empty pole sits at about x .93, outside the band, which costs nothing because this room's sprite is the egret and it crosses sky, not the pole |
+| `th08_isan_wide.png` | Accepted | Three flattened chickens in split-bamboo clamps over the trough, clay mortar of papaya with pestle and spoon, open sticky-rice baskets, `pla ra` jars against the posts and dry. The empty bamboo rail here is the garden fence rail against paddy rather than a rail between the house posts; it is empty and evenly lit, so the garlic string can hang, but the portrait's rail is the better model |
+| `th08_isan_portrait.png` | Accepted | Clean empty bamboo rail across the top with nothing on it; three subjects inside the band |
+| `th09_lanna_wide.png` | Accepted | Open khao soi pot with the oil split orange, crisp noodle nest on the bowl, `sai ua` coil on the grill, lacquered `khantoke` on the floor, `thua nao` discs drying and dry; empty iron hook on a pale teak plank; cooler, bluer light than any other room |
+| `th09_lanna_portrait.png` | Accepted | Ladle pour with lip, stream and landing in the bowl; empty hook at about x .90, inside the band |
+| `th10_andaman_wide.png` | Accepted | Turmeric fish on the green-stick grill, open `kaeng som`, drying squid dry; the second line between the poles is completely empty against plain sky; boats are plain hulls with furled sails, no engine and no long tail; nobody in the sea |
+| `th10_andaman_portrait.png` | Accepted | Same three subjects; the painted squid line runs out to the left edge, so a marker belongs on the squid at about x .2 rather than on the end of the line |
+| `th11_muslim_wide.png` | Accepted | Roti thrown thin between two correct hands over the open plate, `khao mok` pot open with the lid resting against it, `budu` jar with its ladle and no steam, `nasi kerabu` cold; empty wooden peg on plain planking; mosque roof tiered and pyramidal; no pork |
+| `th11_muslim_portrait.png` | Accepted | Same three subjects, peg empty at about x .16 |
+| `th12_baba_wide.png` | Accepted | Open clay pot of `moo hong`, tiffin tier lifted clear of the stack with both hands, `o-tao` on the flat iron plate; porcelain and young mango cold; empty iron hook under the airwell beam against plain pale plaster; tin sluice and spoil heap on the hill |
+| `th12_baba_portrait.png` | Accepted | Airwell shaft clean, hook empty on the beam at mid-width, three subjects stacked and readable |
+| 6 sprites | Accepted | One object each on opaque white, clean edges, no ground plane; the lantern is unlit and carries its wire loop, the `sai ua` its S-hook, the squid line both twine ends, the `pla tapian` its thread |
+| 12 cards | Accepted | One food each on opaque white, textures readable at phone scale; food identity matches the brief's line for every card |
+
+Four notes that belong to the Room maker's own Stage C work rather than to regeneration:
+
+- **`th-garlic-string` measures 342 x 960 px after trimming and the 960 long-side cap**, below the 400 px short side the art direction asks for. The delivered subject is about 2.8:1 and the brief warned that a long thin sprite would land here. It is sharp enough to hang small on a rail and is kept; if it is ever wanted large, it is regenerated composed closer to square, not upscaled. Every other sprite clears 400: lantern 645, squid line 879, `sai ua` 712, egret 927, `pla tapian` 817.
+- **The lantern sprite carries a gold `壽` longevity roundel** on each side. It is authentic ornament on a period Chinese lantern rather than invented signage, so it is accepted here, but rule (e) says no characters in any script and the lead should confirm it rather than discover it at the walkthrough.
+- **`th03_wang_wide`'s empty nail sits high on a carved teak post with garden foliage beside it**, not on the plain whitewashed plaster the brief also asked for; the brief asked for both and they conflict. Nothing has to be keyed, because the `th-pla-tapian` sprite arrives already cut, and pale straw over dark teak separates well enough. The portrait's nail is on plain plaster and is the cleaner of the two.
+- **`th03_wang_portrait`'s inkpot sits at about x .93**, just outside the middle 80 per cent; the manuscript beside it is inside, so the third discovery marker goes on the manuscript.
+
+One question for the lead rather than for the image tool: the women in `th11` wear a wrapped scarf that covers hair and neck completely, where the brief asked for a `selendang` laid over the hair. It is the right region and the right religion and it is not out of period enough to burn a regeneration on, but it is a clothing decision and it is hers, not the Room maker's.
+
+### Import
+
+`scripts/scenes/import-thailand.py` copies the twelve room pairs to `public/scenes/th_*/wide.jpg` and `portrait.jpg` at their native sizes with no crop and no upscale, keys the twelve cards from their white backgrounds into trimmed, edge-bled, transparent WebP in `public/scenes/thailand-food/`, keys the six sprites into `public/scenes/props/th-*.webp` under the 960 px long-side cap, saves the concept as `public/scenes/th_concept.jpg`, registers sizes in `src/fw/scenes-props.json` and writes `public/scenes/thailand-assets.json` with a SHA-256 of every source file.
+
+```
+uv run --with pillow --with numpy --with scipy scripts/scenes/import-thailand.py "$HOME/Downloads/additional game asset/thailand"
+```
+
+It ran clean twice: the 45 written files and `scenes-props.json` hash identically after the second run. It re-reads `scenes-props.json` immediately before writing rather than at start-up, so an importer for another area running in the same minute is not overwritten — the Vietnam Room maker's twelve `vn_*` room keys and six `vn-*` prop keys were added while this one was cutting sprites and survived intact.
+
+Keys added to `src/fw/scenes-props.json`, and nothing else in that file touched:
+
+- `rooms`: `th_khlong`, `th_noodleboat`, `th_wang`, `th_curry`, `th_sweets`, `th_shophouse`, `th_paddy`, `th_isan`, `th_lanna`, `th_andaman`, `th_muslim`, `th_baba`, each `{"wide": [1672, 941], "portrait": [941, 1672]}`
+- `props`: `th-lantern` [645, 960], `th-garlic-string` [342, 960], `th-squid-line` [960, 879], `th-sai-ua` [712, 960], `th-egret` [960, 927], `th-pla-tapian` [817, 960]
+
+Card art lands at `public/scenes/thailand-food/{khlong, noodleboat, wang, curry, sweets, shophouse, paddy, isan, lanna, andaman, muslim, baba}.webp`. The manifest holds all 43 entries.
+
+**The rejected picture was imported too, so the pipeline is complete and Stage C can measure on real files.** `public/scenes/th_sweets/portrait.jpg` is the file that will be overwritten after regeneration; it is the only one. Drop the new `th05_sweets_portrait.png` into the same folder under the same name and re-run the command above — the JPG and its manifest hash are replaced, every other output is byte-identical, and the Room maker re-measures only that one portrait coordinate set.
+
+### Room audit
+
+`scripts/tests/room-audit.html` discovers rooms by merging three module exports — `SCENES` from `scenes-china.ts`, `TURKEY_SCENES` and `SPAIN_SCENES` — and renders each id twice through `rooms.html?audit&room=<id>`, once in a 16:9 frame and once in a 35 per cent wide 9:17 frame, so the painted scene picks its own orientation from the frame's aspect. `rooms.html` builds its picker from the same three imports.
+
+**No Thailand room shows in that page yet, and no picture is at fault.** The page has no fourth import to make, because the module it would import does not exist. What Stage C has to write, precisely:
+
+1. `src/fw/scenes-thailand.ts`, exporting `THAILAND_SCENES` as a `Record<string, () => SceneDef>` on the model of `scenes-spain.ts`, with one entry per room id: `th_khlong`, `th_noodleboat`, `th_wang`, `th_curry`, `th_sweets`, `th_shophouse`, `th_paddy`, `th_isan`, `th_lanna`, `th_andaman`, `th_muslim`, `th_baba`, each built through `paintedScene` with `folder` set to the same id.
+2. One line added to `scripts/tests/room-audit.html` — `import {THAILAND_SCENES} from '/src/fw/scenes-thailand.ts';` — and `...THAILAND_SCENES` added to the `SCENES` merge on the next line; the same two edits in `scripts/tests/rooms.html`.
+
+Both files are tests and neither is this role's to edit, so neither was touched. What was verified instead: all 24 imported JPGs decode at the right orientation and size and are shown side by side as one contact sheet, and `scenes-props.json` carries a `wide` and a `portrait` size for every one of the twelve rooms, which is the Stage B check the playbook asks for.
+
+**Owner rulings, 2026-09-21.** `th05_sweets_portrait.png` is regenerated to remove the piped plumbing. The lantern sprite's gold `壽` roundel is accepted as period ornament on a Chinese lantern, not lettering. `th-garlic-string`'s 342 px short side is accepted: the long side is full at 960 px and it hangs fine small on a rail. The `th11` headscarf question is left to the owner as an optional regeneration, not required. The floating market keeps its room and drops `open: "reveal"`; its four stall children stay ordinary clickable siblings rather than a reveal, because `src/fw/main.ts`'s `openObject` checks `obj.scene` before `p.obj.open === "reveal"` (lines 666–667) and returns on the scene branch first, so the reveal would never run.
+
+### Blueprint (fixed): the Southeast Asia table
+
+This table carries two areas built to the China standard at once: Thailand (`bangkok`, twelve rooms) and the Vietnam package (`hanoi` and `mekong`, twelve rooms). The table frame, the sea and the band rule below are shared and are stated once, here; [vietnam-world.md](vietnam-world.md) points back to this section rather than repeating them. Every number in both blueprints is held as data in `scratchpad/seasia-blueprint.py` and passes the paper check there: bands, water clearances, 2.5 between clickables, rooms on roads, nothing on a road centreline, cluster separation.
+
+Table and frame:
+
+- `world-seasia.ts` grows to `W: 120, D: 56, cx: -22`, identical to the Mediterranean. The table runs x from **-82 to 38** and z from **-28 to 28**. The `shore()` edge test becomes x at or beyond -82 or 38, z at or beyond 28 in either direction, so caps at the table edge stay square; the hand-written `Math.abs(x) >= 38` goes.
+- **Thailand owns x -82 to -14. Vietnam owns x -12 to 38.** Nothing of one area crosses into the other's band. The two-unit strip at x -14 to -12 carries ground only — no object, no road, no cluster, no decor. The sea's south margin crosses it, because the sea belongs to the table and not to either area.
+- Thailand's arrival view is the khlongs: `AREAS.bangkok.center` becomes **[-44, 0]**. The display name of `bangkok` becomes **Thailand**; `andaman` is retired.
+- `worldZoomLimit` and `worldFogRange` in `world-camera.ts` gain `southeast-asia` beside `mediterranean`, so the 120-wide table gets the 215 desktop overview and the computed fog pair instead of the flat 90/200. Builder, Stage C.
+
+Water, one continuous `seaWater()` shape wrapping three edges — the Andaman on the west, the Gulf of Thailand becoming the South China Sea on the south, Vietnam's coast on the east. The north edge is land: Lanna's mountains, the Isan plateau and the Red River hills. Points from the west edge, along the coast, then back round the table edges:
+
+```
+[-82,-6] [-78,-4] [-76,2] [-75,8] [-74,14] [-73,19]                     the Andaman coast, Thailand's west
+[-70,22] [-64,23] [-58,22.5] [-52,22] [-46,21] [-40,21.5]               the Gulf of Thailand
+[-34,22] [-28,22.5] [-22,23] [-16,23] [-14,23] [-12,23]                 the Gulf across the no-man's strip
+[-6,23.5] [0,24] [6,23.5] [12,23] [18,22] [24,21]                       the delta and Saigon coast
+[28,18] [30,12] [33,6] [34,0] [34,-4] [33,-10] [34,-16]                 Vietnam's east coast
+[32,-21] [29,-23.5] [24,-25.5] [24.5,-28]                                the Red River bight, to the north edge
+[38,-28] [38,28] [-82,28]                                               table edges, square caps
+```
+
+The rim (`#eadfbd`) is an inset of the same polygon by 1.2, computed per vertex, not from a single centre as now. Hạ Long-style karsts stand as decor in the north-east sea between x 28 and 36, z -27 to -23; they carry no card. Thailand's `karsts` object moves to the Andaman shore at the west. Nothing stands in water except the objects named on-water below.
+
+Thailand's own water:
+
+| Feature | Width | Points |
+| --- | --- | --- |
+| The Chao Phraya, `estuaryWater` blend from z 18 to the mouth | 4.5 on a 6.4 rim | [-52,-27] [-51,-21] [-50,-15] [-49,-9] [-47,-3] [-45,2] [-44,7] [-43,13] [-42,18] [-41,21.5] |
+| Khlong 1, straight off the west bank into the paddy | 1.6 | [-46.4,-1.5] [-58,-1.5] |
+| Khlong 2 | 1.6 | [-45,2] [-57,2] |
+| Khlong 3 | 1.6 | [-44.4,5] [-56,5] |
+| Khlong 4, the cross canal that closes the grid | 1.6 | [-56,-1.5] [-56,5] |
+| The mooring basin, the river widening where the floating market lies | circle r 3.8 | centre [-43, 4.5] |
+
+The river rises in the Lanna hills at the north edge, runs south through the central plain and the khlongs and reaches the Gulf at [-41, 21.5] with an estuary blend. The khlong grid is cut **early**, with the landscape, not added at the end: the canals are what makes this area look like nowhere else on the atlas. The existing circular basin shrinks from r 6.8 to r 3.8 and moves to [-43, 4.5], where it becomes the floating market's mooring instead of a pond the stands sit in.
+
+Clusters and their ground tints. Positions are final; every one of the thirty-two objects appears exactly once.
+
+| Cluster | Centre | Tint | Holds |
+| --- | --- | --- | --- |
+| The khlongs | [-44, 1] | `#b9a98a` wet brown mud on the banks, 16 x 16, no paving | `floatingMarket` [-40.5, 4.5] moored against the quay, on the water; its four stalls as ordinary clickable siblings on the basin — `stall-fruit` [-43.5, 1.6], `stall-noodles` [-45.5, 4.2], `stall-herbs-th` [-44.8, 7.4], `stall-coconut` [-41.8, 7.6]; `kuaitiaoRuea` [-41.6, 10.5] moored at the east bank with its stage on the quay; `sweetsTh` [-49.5, 7.6] on dry ground west of khlong 3; `wat` [-36.5, -3.4] at the head of the old city street; `almsRound` [-41, -8] on the quay. One decorative house: **`th-khlong-house` [-37, 8.5]**, a stilt house on the east bank above the quay |
+| The old city and Sampheng | [-31, -4] | `#c4bba6` new brick paving inside the street, 14 x 10 | `wangKitchenTh` [-34.5, -7] behind the compound wall, `curryPaste` [-30, -2] on Sampheng lane, `chilliesSea` [-29.6, -5.4] at the lane's corner, `shophouseTh` [-27, -5] on the street, `tukTuk` [-26.5, -1.5] as the rickshaw stand at the lane's east end. One decorative house: **`th-shophouse-row` [-31.8, -11.4]**, a terrace of three fronts south of the street, counted as one |
+| The central plain | [-57, -10] | `#8fb86a` flooded green in bunded squares, running to `#c9c08a` dry gold at the south-west | `naKhaoTh` [-57, -11] on the bund, `naPaddyTh` [-61, -7], `plaTh` [-53, -6] beside khlong 1, `suanTh` [-54, -15] on ridged orchard beds, `tanTh` [-63.6, -13.6] in the toddy palms, `kluaTh` [-53.6, 14.2] on the salt pans at the plain's coastal end — the cluster runs from the hills to the Gulf and the pans are its seaward corner. **No decorative house**: the field shelter behind `naKhaoTh` is that stand's own and is read from above under the same rule |
+| Isan | [-24, -21] | `#c2a473` dry sandy plateau, 14 x 10, raised 0.6 | `isanGrillTh` [-25, -21] on the track's south side, `plaRaTh` [-21.5, -18.5] in the jar yard. One decorative house: **`th-isan-house` [-22.5, -23]**, on posts |
+| Lanna | [-58, -23] | `#9fb08a` cool valley green with `#8a7f6a` earth terraces | `khaoSoiTh` [-57, -24], `miangTh` [-62, -22] under the forest canopy, `chinHawTh` [-57.5, -20] where the caravan road enters. One decorative house: **`th-lanna-house` [-60.2, -19.8]**, low and wide-roofed |
+| The southern peninsula and the Andaman | [-68, 14] | `#7fb86a` wet green, `#eadfbd` sand along the west shore | `talayTh` [-70, 10] on the sand under the limestone, `babaTh` [-70, 16], `muslimKitchenTh` [-64, 18.5] on the Gulf side, `coconutSea` [-66.2, 11.4] in the groves, `khamminTh` [-63.5, 14.5] on the turmeric beds, `karsts` [-73, 4] standing on the shore at the Andaman, `longtail` [-76, 12] as two `kabang` on their mooring in the sea — the only Thai object in open water besides the market and the noodle boat. One decorative house: **`th-kampong-house` [-61, 16.2]**, on the Gulf side |
+
+Roads, one continuous ribbon each, every door on a road and nothing solid on a centreline:
+
+| Road | Width | Points |
+| --- | --- | --- |
+| TH-R1 the khlong quay | 2.2 | [-38.2,-9.4] [-38.6,-4.6] [-39.6,0.2] [-38.8,4.5] [-40.4,9.6] [-40,13.6] [-39.2,17.4] [-38.4,20.6] |
+| TH-R2 the west bank lane | 1.8 | [-51,-6.8] [-50.2,-1.5] bridge [-50,2] bridge [-49.8,5] bridge [-51.4,7.6] [-50.6,11] [-52,16.6] [-53.4,19.6] |
+| TH-R3 the old city street | 2.4 | [-38.6,-4.6] [-36.2,-8.2] [-33.6,-9] [-30.8,-7.6] [-28.4,-6.8] [-26,-6.8] [-24.2,-4.6] |
+| TH-R3b Sampheng lane | 1.8 | [-30.8,-7.6] [-31.8,-3.8] [-31.4,-0.4] [-27.8,0.8] |
+| TH-R4 the plain road | 1.8 | [-39.6,0.2] [-42.5,-2.4] [-45,-5.4] bridge [-48,-6.2] [-51,-6.8] [-53,-7.6] [-56.4,-9.4] [-60.4,-8.8] [-62.4,-12.4] [-60.8,-15.4] [-57.6,-16.6] [-54,-16.6] [-52.5,-18.5] |
+| TH-R5 the Lanna road | 1.6 | [-52.5,-18.5] [-55.4,-19.8] [-57.2,-22.2] [-59.4,-24.6] [-63.2,-23.4] [-64,-20.6] |
+| TH-R6 the Isan track | 1.6 | [-24.2,-4.6] [-27.4,-8.6] [-26.6,-13.4] [-27,-19] [-24,-19.2] [-20.8,-20.2] |
+| TH-R7 the peninsula road | 1.8 | [-52,16.6] [-57.2,17] [-62.8,20.2] [-65.4,20.4] [-67.8,18.4] [-68.4,12.6] [-68.2,8.6] [-71,6.4] [-73,5.8] |
+| TH-R7b the turmeric path | 1.4 | [-68.4,12.6] [-65.8,13.4] [-62.2,12.6] |
+
+The network is one walkable piece. TH-R1 meets TH-R3 at the wat corner [-38.6,-4.6] and TH-R4 at [-39.6,0.2]; TH-R3 meets TH-R3b at [-30.8,-7.6] and TH-R6 at [-24.2,-4.6]; TH-R4 meets TH-R2 at [-51,-6.8] and TH-R5 at [-52.5,-18.5]; TH-R2 meets TH-R7 at [-52,16.6], and TH-R7b hangs off TH-R7 at [-68.4,12.6]. No road point comes inside a river or khlong bank; if one ever does, move the road, not the water.
+
+**Bridges.** `woodenBridge` at [-50.2,-1.5], [-50,2] and [-49.8,5] where the west bank lane crosses the three khlongs, and at [-48,-6.2] where the plain road crosses the Chao Phraya. Decks at the road height, ends on the banks, span square to the water.
+
+Walker loops, residents in the area's clothing, steps matched to distance (`thailandWalk`), speed 0.008 on the quay and 0.006 elsewhere:
+
+1. **The quay**, TH-R1 from the wat corner to the estuary and back, six residents, two carrying a shoulder pole with baskets, one monk walking north at dawn
+2. **Sampheng**, TH-R3 and TH-R3b as a circuit through the old city, five residents, one pulling the rickshaw, one pushing a barrow of charcoal
+3. **The plain**, TH-R4 between [-53,-7.6] and [-60.8,-15.4], four residents and one buffalo led on a halter, the buffalo's hooves planting and pushing back
+4. **The peninsula**, TH-R7 between [-65.4,20.4] and [-71,6.4], five residents, two carrying fish trays
+
+**Decor.** Five decorative houses in the whole of `bangkok`, no more, each at a fixed coordinate and each a 1.5-radius blocker in the paper check: `th-khlong-house` [-37, 8.5], `th-shophouse-row` [-31.8, -11.4], `th-isan-house` [-22.5, -23], `th-lanna-house` [-60.2, -19.8], `th-kampong-house` [-61, 16.2]. Every one is at least 2.5 from every clickable, clear of every road corridor by half the road's width plus 1.5, and out of the water. The field shelter behind `naKhaoTh` and any shade a stand builds for itself are that stand's own, not extra houses, but they count as blockers in the arrival-camera visibility check exactly as these five do. The three decor `tukTuk()` vehicles become **rickshaws and one ox cart** on TH-R3 and TH-R3b; the three `longtail()` boats become **kabang**; the beach parasols, the loungers and the beach tint are removed.
+
+**Countryside between the clusters.** Bunded paddy squares, flooded and mirror-bright, from [-64,-4] to [-50,-18], with white egrets standing in them; toddy palms in a line along the plain road from [-63,-12] to [-66,-16]; river orchards on ridged beds at [-54,-15]; teak and bamboo on the Lanna slopes from [-66,-26] to [-54,-20]; dry dipterocarp and sandy scrub over Isan from [-30,-24] to [-19,-15]; coconut groves from [-70,8] to [-62,16]; mangrove along the Andaman shore from [-75,6] to [-73,18]; rubber and turmeric beds behind the Gulf shore. Every crop or tree that carries an object responds to a click (the Stand maker's file); the rest is the Builder's.
+
+#### Amendments, 2026-09-21 (lead)
+
+The lead accepted the blueprint above with three amendments. The tables in this section are the fixed record and already carry them; this note says what moved and why.
+
+1. **SG1 gains two objects.** Vietnam's Saigon cluster was two objects. It gains `caPheVn` (flavour, "The coffee filter") and `benThanhVn` (landmark, "Bến Thành market", opened 1914), both card-only and both in the 1900–1931 band, for the Researcher to write at Stage C. Vietnam goes to **28 objects**. Thailand is unaffected.
+2. **The Red River no longer runs the whole north edge.** It keeps its source in the north-west of the Vietnamese band and now enters the sea at **[24.3, -26.2]**, north of Huế, so Hội An's sea stays its own. Vietnam's east coast gains a bight for it — the sea polygon above ends `[34,-16] [32,-21] [29,-23.5] [24,-25.5] [24.5,-28]` instead of `[32,-22] [30,-28]` — and the Hạ Long karst decor moves with it, to x 28 to 36, z -27 to -23. No Thai coordinate changed. No road crossing had to move: only `VN-R2c` crosses the river, at [2, -24.4], which is west of the change.
+3. **Decorative houses are fixed coordinates, not counts.** The cap stands at **five per area id**, so Thailand's 5, `hanoi`'s 4 and `mekong`'s 2 are unchanged in number. Each house now has a coordinate in the cluster table and is a **1.5-radius blocker in the paper check**: at least 2.5 from every clickable, clear of every road centreline by half that road's width plus 1.5, and out of the water like any other solid thing. Thailand's two khlong raft houses became one stilt house on the bank (`th-khlong-house`), because a raft house is a building standing in water and the rule says nothing stands in water; the central plain's farmhouse was reclassified as `naKhaoTh`'s own shelter so the count stays at five, and the southern kampong house became a real decorative house at [-61, 16.2].
+
+All six checks pass on the amended numbers, first run, with no further nudges to any clickable.
+
+### Module contracts for Stage C
+
+Every agent owns whole files. Stubs exist so the type check passes while files are empty. Thailand's set; Vietnam's is in [vietnam-world.md](vietnam-world.md) and the shared files are marked.
+
+| File | Owner | Exports (keep these names and signatures) |
+| --- | --- | --- |
+| `thailand-architecture.ts` | Builder, first | `TH` palette constant with the twelve names from the research; `thaiHouse(style, w, d, h, { storeys, posts })` for styles `central`, `raft`, `shophouse`, `isan`, `lanna`, `kampong`, `sinoPortuguese`; `watChedi()`; `salaPavilion()`; `riceBarn()`; `sugarPalmRig()`; `saltPanShed()` |
+| `thailand-people.ts` | Builder, second | `thaiResident(seed, working?)` and `thailandWalk(person, from, to, range, seed)` following `spain-people.ts`; the seven clothing profiles as data; `thaiBuffalo()` and `followBuffalo()` |
+| `thailand-landscape.ts`, `thailand-town.ts`, `thailand-countryside.ts` | Builder | `thailandLandscape(ctx)`, `thailandTown(ctx)`, `thailandCountryside(ctx)`. The landscape owns the sea polygon, the rim, the Chao Phraya, the estuary blend, the khlong grid and the mooring basin, and exports `TH_LANES`, `TH_BRIDGES`, `BRIDGE_SPAN`, `BRIDGE_DECK_Y` in the shape `spain-town.ts` uses |
+| `props-thailand.ts` | Stand maker | `THAILAND_PROPS` keyed by every `prop` name in the object list, `THAILAND_ICONS`, `TH_LINES` keyed by object id; `rickshaw()`, `kabang()`, `noodleBoat()`, `oxCart()` |
+| `thailand-objects.ts`, `thailand-stories.ts` | Researcher | `THAILAND_OBJECTS`, `THAILAND_CARD_ART`, `THAILAND_NEXT`, `THAILAND_STORY_DEPTH`, `THAILAND_SOURCES` |
+| `scenes-thailand.ts`, `thailand-ambience.ts` | Room maker | `THAILAND_SCENES`, `THAILAND_AMBIENCE`; hotspot labels and texts live in `scenes-thailand.ts`; `scene-ambience.ts` gains `PAINTED_SIGNATURES` entries only |
+| `scripts/tests/thailand-world.mjs`, `scripts/tests/thailand-reactions.mjs` | Builder, Stand maker | Copies of the Spain harnesses with Thai ids. `thailand-world.mjs` tests **every vertex of every stand against the sea polygon, the river, all four khlongs, the basin and the estuary from the first commit**, plus corridors, gait and gait direction |
+| **shared** `world-seasia.ts` | Builder, Stage C | Table growth to `W: 120, D: 56, cx: -22`, the new `shore()` edge test, `{ ...SEASIA_PROPS, ...THAILAND_PROPS, ...VIETNAM_PROPS }`, and the two areas' layout calls. **One owner for this file across both areas**; Thailand and Vietnam do not both edit it |
+| **shared** `world-camera.ts` | Builder, Stage C | `southeast-asia` added beside `mediterranean` in `worldZoomLimit` and, through it, `worldFogRange`. Two words, one owner |
+| **shared** `graph.ts` | Lead, Stage D | `AREAS.bangkok` renamed to Thailand with `center: [-44, 0]`; `andaman` removed from `AREAS` and from the `Area` union; `coconutSea`, `karsts` and `longtail` move to `area: "bangkok"`; `floatingMarket` drops `open: "reveal"`; the four stalls lose `hitOnly` and `parent` and become ordinary siblings; the nineteen new objects registered. `bangkok` and `curryPaste` do not change |
+| **shared** `world-intros.ts` | Researcher | The Southeast Asia intro gains Thai beats; `["hanoi","andaman"]` becomes `["hanoi","bangkok"]` and `andaman` drops out of the third beat. `world-intros.mjs` must still pass |
+| **shared** `scripts/tests/room-audit.html`, `scripts/tests/rooms.html` | Lead, Stage D | Two edits each: `import {THAILAND_SCENES} from '/src/fw/scenes-thailand.ts';` and `...THAILAND_SCENES` in the `SCENES` merge, beside Vietnam's |
+| `main.ts`, `ui.ts`, `README.md`, this file | Lead, Stage D | Registration only |
+
+The Stand maker may import from `thailand-architecture.ts` and `thailand-people.ts` once they exist; until then a stand uses `person()` and `wear()` from `props.ts` and a local shelter. Nobody edits another owner's file; a missing helper is built in the owning file. Proposed `AREAS` row for the lead to confirm: `bangkok: { world: "southeast-asia", name: "Thailand", zh: "ประเทศไทย", blurb: "the khlongs, the curry mortar, the plain, Lanna and the Andaman", center: [-44, 0] }`.

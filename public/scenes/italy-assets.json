@@ -1,0 +1,416 @@
+[
+  {
+    "source": "it01_trattoria_wide.png",
+    "source_sha256": "a4ff18a6bcf14c4d5a8136b66be4af7ca9e502cc032c53f5eb2671f51f690e24",
+    "path": "scenes/it_trattoria/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "it01_trattoria_portrait.png",
+    "source_sha256": "fb50ce39b2d2c94a4cc53d1208b994fbe9d3ea9b910ea85a308a1163d3b5a299",
+    "path": "scenes/it_trattoria/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "it02_market_wide.png",
+    "source_sha256": "ec8c7db769b3bc762dc988cfbe8dd28123fee0bbaea52f3af7aa5f4336282691",
+    "path": "scenes/it_market/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "it02_market_portrait.png",
+    "source_sha256": "b3a238205e0c480373c54c4206d620bc7fc5ea720f84fee464f8f7036dae09eb",
+    "path": "scenes/it_market/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "it03_pasta_wide.png",
+    "source_sha256": "92ab5b5d9d9ba24f61b92d574f2c7dfa9f0374b46588d7f8a890929aee0481ab",
+    "path": "scenes/it_pasta/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "it03_pasta_portrait.png",
+    "source_sha256": "13c2f3fa4515da5c4358a41478b4ea3fb0c75442451bd568499b8a86b5267921",
+    "path": "scenes/it_pasta/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "it04_forno_wide.png",
+    "source_sha256": "c644bc7dc9cb3516a24fcf0ebbd8c140a84532db36cf80d134aff92543abcd99",
+    "path": "scenes/it_forno/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "it04_forno_portrait.png",
+    "source_sha256": "7d026ca934da3d727904177927f5685467132752d4f58bf34771239afeb4eb8d",
+    "path": "scenes/it_forno/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "it05_casale_wide.png",
+    "source_sha256": "a1a789b01b0919c3d3cd0a478ad1e069624fa3f9fba5b290ebfa2c4b28368b07",
+    "path": "scenes/it_casale/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "it05_casale_portrait.png",
+    "source_sha256": "0e9b1af4edd9fa5acd7dc0bf1e6676c59fa4413a2457be74916f0ad0e35c2c43",
+    "path": "scenes/it_casale/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "it06_pescaria_wide.png",
+    "source_sha256": "47c479149a192f3c5ec6c44077155100996a9451e93f2cc1ea648e494c7c60be",
+    "path": "scenes/it_pescaria/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "it06_pescaria_portrait.png",
+    "source_sha256": "b56f9b9e1cc50bc8d497058123a361e6fb19a1d39bf106b42923814cf896d383",
+    "path": "scenes/it_pescaria/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "it07_bacaro_wide.png",
+    "source_sha256": "b1762d2b6073dded48715955aa4043d4135af0f4ce2b00a88e3b9ab2317d03b4",
+    "path": "scenes/it_bacaro/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "it07_bacaro_portrait.png",
+    "source_sha256": "af60c6a98c8eaeb2da3996d8e8e40fe1bc27f186285dcad01ea029160fb504f6",
+    "path": "scenes/it_bacaro/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "it08_laguna_wide.png",
+    "source_sha256": "9b22128c95b8d9b6166b8332d609c96bca6ae8d340767ac48e400c15b6b78387",
+    "path": "scenes/it_laguna/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "it08_laguna_portrait.png",
+    "source_sha256": "41aded8b78ea77b2f5487f1cdd05795723614dcc030c4f60fca87e5c66b625da",
+    "path": "scenes/it_laguna/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "it09_veneto_wide.png",
+    "source_sha256": "1056ee04547bde2badd36d6936f6aee89c8951acfab691ea683f54d6cb7346e3",
+    "path": "scenes/it_veneto/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "it09_veneto_portrait.png",
+    "source_sha256": "d60f8bec43b8504e41313b5151ebb640059526f21b7ac3de7ddf026e9933388d",
+    "path": "scenes/it_veneto/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "it10_friggitoria_wide.png",
+    "source_sha256": "5922f28b6f01317149f0b3015c155b0507f4ba2a1b3d5dad56647e65f82cfaa4",
+    "path": "scenes/it_friggitoria/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "it10_friggitoria_portrait.png",
+    "source_sha256": "e34664c7e43f24f4c914b72457a6d72df0f606229a6e9d70d0d9a71147020f6c",
+    "path": "scenes/it_friggitoria/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "it11_ballaro_wide.png",
+    "source_sha256": "6778c176653afe6e3272471e33393eec3b33a15182a292eb48f6784aa3c1e015",
+    "path": "scenes/it_ballaro/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "it11_ballaro_portrait.png",
+    "source_sha256": "825a27fbc0a5921e01be1d9e279aa231a44dbc9c0528a8540cedf4142e723594",
+    "path": "scenes/it_ballaro/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "it12_pasticceria_wide.png",
+    "source_sha256": "980c283ab45cf88fd1900388e3f9ffaa33f8d8f07e7d5153aa2689c4074e883d",
+    "path": "scenes/it_pasticceria/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "it12_pasticceria_portrait.png",
+    "source_sha256": "d668ecff0b9d813ffb4001c6345433f6fab45fa283f88fe24615f27369297eee",
+    "path": "scenes/it_pasticceria/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "it13_tonnara_wide.png",
+    "source_sha256": "e1c5925072b6ef2e9e0668c4428bb892d51e13e3ed17c839bb0b0148af9b4627",
+    "path": "scenes/it_tonnara/wide.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  {
+    "source": "it13_tonnara_portrait.png",
+    "source_sha256": "43b3dc30d057beb20a1e55513402e0124aea6eed580d6322ba92a551a68ff653",
+    "path": "scenes/it_tonnara/portrait.jpg",
+    "size": [
+      941,
+      1672
+    ]
+  },
+  {
+    "source": "it_card_trattoria.png",
+    "source_sha256": "54cd473b0ac20fcc652915608d5eff197787c2b0325b25cac222c6d8aecf01f0",
+    "path": "scenes/italy-food/trattoria.webp",
+    "size": [
+      960,
+      784
+    ]
+  },
+  {
+    "source": "it_card_market.png",
+    "source_sha256": "e8a004b677f29f9dd5492278684d5950956995439ff64bb87d04273436652b87",
+    "path": "scenes/italy-food/market.webp",
+    "size": [
+      960,
+      959
+    ]
+  },
+  {
+    "source": "it_card_pasta.png",
+    "source_sha256": "5fbb693f7e34712d93efed290d91fbc448940c6b7c14f7b836f795f360ec9423",
+    "path": "scenes/italy-food/pasta.webp",
+    "size": [
+      960,
+      801
+    ]
+  },
+  {
+    "source": "it_card_forno.png",
+    "source_sha256": "cbe633f235a10c3d856ee1f21f20f2a44d2c79b0d481873ca602da6908c5dc00",
+    "path": "scenes/italy-food/forno.webp",
+    "size": [
+      960,
+      769
+    ]
+  },
+  {
+    "source": "it_card_casale.png",
+    "source_sha256": "173ee612b4a591ca6c4a7610262884c68e29494363bea7e7a5d62958dfba8016",
+    "path": "scenes/italy-food/casale.webp",
+    "size": [
+      960,
+      761
+    ]
+  },
+  {
+    "source": "it_card_pescaria.png",
+    "source_sha256": "bcddac85841b55a02ea4a0e5ef715200cf2d38dfb292dae20621c0d6180ae0ab",
+    "path": "scenes/italy-food/pescaria.webp",
+    "size": [
+      960,
+      764
+    ]
+  },
+  {
+    "source": "it_card_bacaro.png",
+    "source_sha256": "fb0a7dc231271575a480605328b7ba343a7a658def18e8b5eec72321ee7c7620",
+    "path": "scenes/italy-food/bacaro.webp",
+    "size": [
+      960,
+      794
+    ]
+  },
+  {
+    "source": "it_card_laguna.png",
+    "source_sha256": "4620f57c3edce188611c60838a3133dcd107be4ae714b0821f1c656d7472d096",
+    "path": "scenes/italy-food/laguna.webp",
+    "size": [
+      960,
+      855
+    ]
+  },
+  {
+    "source": "it_card_veneto.png",
+    "source_sha256": "2d199e182ba13f2d12fe01451aeef528afa96804808604e4b5cd2214c059c94a",
+    "path": "scenes/italy-food/veneto.webp",
+    "size": [
+      960,
+      669
+    ]
+  },
+  {
+    "source": "it_card_friggitoria.png",
+    "source_sha256": "4e05156d957000cecab73fb4c6bf2190e61694039912fd4361086b529ff0b35c",
+    "path": "scenes/italy-food/friggitoria.webp",
+    "size": [
+      960,
+      828
+    ]
+  },
+  {
+    "source": "it_card_ballaro.png",
+    "source_sha256": "f6efdd4d5e3abfdc015e214f919195919f60a528185550f714dfe40e67604689",
+    "path": "scenes/italy-food/ballaro.webp",
+    "size": [
+      960,
+      885
+    ]
+  },
+  {
+    "source": "it_card_pasticceria.png",
+    "source_sha256": "8e56be4b4fc4d8ecaad31d26d857d56114454638149c37e0cd4c85e6e1c1ca9e",
+    "path": "scenes/italy-food/pasticceria.webp",
+    "size": [
+      960,
+      620
+    ]
+  },
+  {
+    "source": "it_card_tonnara.png",
+    "source_sha256": "3edcebbb9431655f731340e22a025a7c3de8e5eb1a1e55a95e2094b10cbc5e33",
+    "path": "scenes/italy-food/tonnara.webp",
+    "size": [
+      960,
+      809
+    ]
+  },
+  {
+    "source": "it_motion_awning.png",
+    "source_sha256": "244d111354b108d64a0abd404fd526e3dda96541b3a8e8af7a5702053916e332",
+    "path": "scenes/props/it-awning.webp",
+    "size": [
+      960,
+      460
+    ]
+  },
+  {
+    "source": "it_motion_salumi.png",
+    "source_sha256": "5110384d9ae26e66cb5de4b613e6946ee47e0d158efb3b3e532404b118155ef5",
+    "path": "scenes/props/it-salumi.webp",
+    "size": [
+      218,
+      960
+    ]
+  },
+  {
+    "source": "it_motion_pasta_cane.png",
+    "source_sha256": "71882b53af9e86575f04daaec0d2ad2fc3573b344bd42e1f069e7a21dd556b20",
+    "path": "scenes/props/it-pasta-cane.webp",
+    "size": [
+      960,
+      686
+    ]
+  },
+  {
+    "source": "it_motion_garlic_braid.png",
+    "source_sha256": "74d56e4955db49c23c21d2ad91d66f2f108bccdb55c5b4b7fb7866d9d8a9b6a9",
+    "path": "scenes/props/it-garlic-braid.webp",
+    "size": [
+      475,
+      960
+    ]
+  },
+  {
+    "source": "it_motion_gull.png",
+    "source_sha256": "65e877002aed1c32bcf5028ad3dfb90923d4179467168097486bef6a499272d6",
+    "path": "scenes/props/it-gull.webp",
+    "size": [
+      960,
+      777
+    ]
+  },
+  {
+    "source": "it_motion_lamp.png",
+    "source_sha256": "34d60328212820dbdc951b79f195dee5f3ba24ea66f0bd645aeb4e4bc24246f9",
+    "path": "scenes/props/it-lamp.webp",
+    "size": [
+      548,
+      960
+    ]
+  },
+  {
+    "source": "it00_concept.png",
+    "source_sha256": "8df374eb8453ab09a9eb134cc49397a0f03bc36668f2b564edb47ab449194ff8",
+    "path": "scenes/it_concept.jpg",
+    "size": [
+      1672,
+      941
+    ]
+  }
+]

@@ -297,3 +297,106 @@ Before the files arrive, three things are open and none of them belongs to the R
 **Whether the Italy table needs a blueprint change at all is the Lead's Stage B decision.** The Researcher's reading is that it does, and the reasons are density, the lagoon and the strait rather than taste; but a lead who decides to keep 76 x 56 and build a tighter Italy changes nothing above except the numbers in two columns.
 
 Three smaller items for whoever opens Stage B: teach `scripts/audit/objects.mjs` every world rather than a third hard-coded id, so Italy, Britain and Thailand all get baseline numbers; take the two Vespas off the Roman loop in the same pass as the object recast; and decide whether the nine decorative monuments the world file already builds are removed where an object now carries them, or kept and the object placed elsewhere — four of them become clickable landmarks in this list and the same mesh must not stand twice.
+
+## Stage B: pictures and blueprint, 2026-09-21
+
+### Picture acceptance
+
+All 46 files arrived in `~/Downloads/additional game asset/italy/` with `italy_concept_layout_note.md`, which is the generator's own claim about the concept and was not treated as evidence. Every picture was inspected against [art direction](art-direction.md) section 8 and Part E of the [image brief](italy-image-brief.md), at reduced size for the whole frame and at full resolution where a detail decided a verdict. Sizes were read out of the PNG headers rather than from the note.
+
+**45 accepted, 1 rejected.** The one reject is a portrait whose first discovery subject falls outside the phone band. Three portraits delivered one pixel short (941 x 1671) are accepted: the importer pads a shortfall of at most 2 px to the exact target by replicating the last row or column, so all three now land at 941 x 1672. Nothing was rejected on taste.
+
+| File | Verdict | Reason |
+| --- | --- | --- |
+| `it00_concept.png` | Accepted | Six neighbourhoods in their briefed positions, one continuous sea square at the table edge, lagoon behind a barrier, a river below Rome, a strait with a sailing boat and no bridge, landmarks small and behind their neighbourhood |
+| `it01_trattoria_wide.png` | Accepted | Open oxtail pot, cheese-and-pepper pasta, cut pecorino with its knife; wine from the ringed glass carafe with lip, thread and a tumbler standing on the marble; empty iron hook on plain lime wash, not ochre; no red-check cloth, no flask, no carbonara |
+| `it01_trattoria_portrait.png` | Accepted | Same three subjects inside the middle 80 per cent, hook at x ≈ .41, pour intact |
+| `it02_market_wide.png` | Accepted | Artichoke pyramid with one turned against the knife, ricotta in its drained basket, brass balance; empty S-hook on the stall rail against plain canvas; nothing hot, seasonal winter produce, statue behind and smaller |
+| `it02_market_portrait.png` | Accepted | Three subjects inside the band, hook at x ≈ .33, clean sky over the house fronts |
+| `it03_pasta_wide.png` | Accepted | Folded sheet under the knife, lifted nest of ribbons, guitar frame with its wires; bare cane between two brackets with nothing over it; open copper the only hot vessel; no crank machine |
+| `it03_pasta_portrait.png` | Accepted | Three subjects inside the band, bare cane at x ≈ .43 to .78, shaft of light kept clean |
+| `it04_forno_wide.png` | Accepted | Long white pizza on the peel, open glowing oven mouth, cut loaf showing its crumb; empty iron hook on plain grey-white plaster beside the oven; no round mozzarella pizza |
+| `it04_forno_portrait.png` | Accepted | Three subjects inside the band, hook at x ≈ .63, oven mouth unobstructed |
+| `it05_casale_wide.png` | Accepted | **Cold, as required**: no fire, no range, no steam anywhere. Whey runs off the draining-table lip in one unbroken thread and lands on the whey in the pail; cut curd in the copper; cut wheel on the shelf; empty wooden peg on plain lime wash |
+| `it05_casale_portrait.png` | Accepted | Cold, same three subjects inside the band. **Stage C note**: the empty peg sits at x ≈ .90, on the edge of the phone band, so `it-garlic-braid` hung there is half-cropped at 390 wide; hang it in the wide only, or ask for the peg nearer the centre when this pair is next regenerated |
+| `it06_pescaria_wide.png` | Accepted | Plain iron canopy on cast-iron columns, not the neo-Gothic loggia; sardines sliding along wet marble, live green crabs, cuttlefish with the ink sac; empty hook on a column against plain grey; no steam, nobody in the water. Caveat for the researcher: the big crab on the near slab reads closer to a king crab than to a granseola |
+| `it06_pescaria_portrait.png` | Pass (padded 1 px by the importer) | Delivered 941 x 1671, one pixel short of 941 x 1672; the importer pads the shortfall to size by replicating the last row, so the file on disk is now 941 x 1672. Sardines-on-marble foreground and the empty hook on the iron column are unaffected |
+| `it07_bacaro_wide.png` | Accepted | An osteria, not a cicchetti bar: six dishes and no more, wine drawn from the cask's brass tap into a small glass standing on the counter, half full; empty brass chain with a ring over a clear part of the counter; no toothpick row, no display case, no spritz, no labels |
+| `it07_bacaro_portrait.png` | Accepted | Salt cod on polenta, sardines under onions, cask and tap all inside the band; chain and ring at x ≈ .51 |
+| `it08_laguna_wide.png` | Accepted | Soft crab lifted out of the beaten egg with the egg running back into the bowl, floating cage at the step, frying pan and rice the only hot vessels; empty iron hook on plain render; nobody in the canal |
+| `it08_laguna_portrait.png` | **Rejected** | Discovery subject one, the floating cage of soft crabs, sits at x ≈ .00 to .17 and is cut by the phone band; the purple artichokes are also whole rather than cut in half. *Regenerate `it08_laguna_portrait.png` at 941 x 1672: move the floating crab cage and the boy at the step inward so the whole cage sits between x .094 and .906 of the width, and show two of the small purple artichokes cut in half with their cut faces toward the viewer; keep the crab lifted dripping out of the beaten egg, the empty iron hook on the plain painted wall and the open door onto the canal.* |
+| `it09_veneto_wide.png` | Accepted | Polenta turning in the copper over the fire, board with the cutting thread across it, split red chicory; second bare chain with an empty S-hook beside the pot's chain; the salami hangs still on a separate beam; a poor table, not a feast |
+| `it09_veneto_portrait.png` | Accepted | Three subjects inside the band, bare chain at x ≈ .48, fire under the copper clean |
+| `it10_friggitoria_wide.png` | Accepted | Chickpea squares sliding off the knife into the lard which lifts and closes, copper of spleen with its tongs, split sesame roll being packed; empty iron hook on the bare stone jamb; no modern fryer, no printed wrapper |
+| `it10_friggitoria_portrait.png` | Accepted | Three subjects inside the band, hook at x ≈ .73, hard white sky over the lane kept clean |
+| `it11_ballaro_wide.png` | Accepted | Water thrown across the swordfish and running off the slab edge onto wet cobbles, wild fennel bundle, board of dark pressed tomato paste; empty hook on the cane frame against plain sky; nothing hot anywhere. Caveat: the cut steak rests on the fish rather than opening a gap in it, so the pale wheel reads as a steak on a whole fish |
+| `it11_ballaro_portrait.png` | Pass (padded 1 px by the importer) | Delivered 941 x 1671, one pixel short of 941 x 1672; the importer pads the shortfall to size by replicating the last row, so the file on disk is now 941 x 1672. Swordfish and cut face in the foreground and the empty hook on the awning's cane frame are unaffected |
+| `it12_pasticceria_wide.png` | Accepted | Ricotta piped from the cloth bag into the pastry tube, cut cassata showing its layers, ice tub with its brass canister and crank; empty brass chain and ring from the ceiling; **no steam anywhere**, no refrigerated case, no electric light |
+| `it12_pasticceria_portrait.png` | Accepted | Three subjects inside the band, chain and ring at x ≈ .50, lamp and doorway glare both clean |
+| `it13_tonnara_wide.png` | Accepted | Loin lowered on the hooked pole into a boiling open copper, oil poured from the copper jug into an open tin with lip, thread and landing, pressed roe with its cut slice; empty iron hook on the whitewashed pier; nobody in the sea |
+| `it13_tonnara_portrait.png` | Pass (padded 1 px by the importer) | Delivered 941 x 1671, one pixel short of 941 x 1672; the importer pads the shortfall to size by replicating the last row, so the file on disk is now 941 x 1672. Loin entering the copper in the foreground and the empty hook in the arch are unaffected |
+| `it_motion_awning.png` | Accepted | Straight attachment edge, three scallops, faded red stripe, one frayed corner, no poles or rope; 960 x 460 after the cut |
+| `it_motion_salumi.png` | Accepted | Twine loop at the top, cut end showing the grain, clean edge; 218 x 960 after the long-side cap, which no narrow hanging object can pass on its short side — the same note Spain's `es-pepper-ristra` carries |
+| `it_motion_pasta_cane.png` | Accepted | Horizontal cane with both ends clear, about twenty nests and ribbons, composed close to square; 960 x 686 |
+| `it_motion_garlic_braid.png` | Accepted | Loop at the top, garlic and small onions plaited round their own stems; 475 x 960 |
+| `it_motion_gull.png` | Accepted | Yellow-legged gull gliding, wings and tail fully visible, yellow bill and legs, pale grey mantle; 960 x 777 |
+| `it_motion_lamp.png` | Accepted | Brass lamp, clear chimney, shallow shade, **unlit**, short chain with a ring at the top; 548 x 960 |
+| `it_card_trattoria.png` | Accepted | One piece of stewed oxtail with the bone at the cut and two celery sticks; sauce texture reads at card size |
+| `it_card_market.png` | Accepted | Three round flat-topped artichokes with long stalks, one showing the pale trimmed heart |
+| `it_card_pasta.png` | Accepted | One floury nest of cut egg ribbons with a few falling away |
+| `it_card_forno.png` | Accepted | One long blistered white pizza, dimpled, oiled and salted, folded once |
+| `it_card_casale.png` | Accepted | Cut wedge of pale sheep's cheese with its close crumb and dry rind, beside fresh ricotta from a rush basket |
+| `it_card_pescaria.png` | Accepted | Five whole sardines laid overlapping, silver and blue-backed, wet |
+| `it_card_bacaro.png` | Accepted | Whipped salt cod on a grilled polenta finger with a small thick glass of red wine |
+| `it_card_laguna.png` | Accepted | Two whole fried soft-shell crabs, legs and claws fully visible |
+| `it_card_veneto.png` | Accepted | Polenta slab with the cutting thread still across it, beside liver and onions |
+| `it_card_friggitoria.png` | Accepted | Split sesame roll packed with fried chickpea squares, two loose squares showing their blistered surface |
+| `it_card_ballaro.png` | Accepted | Swordfish steak with the pale wheel and the dark line, beside a sprig of wild fennel |
+| `it_card_pasticceria.png` | Accepted | Filled pastry tube, ricotta at both ends, chopped pistachio pressed in. Caveat: the fruit beside it is a real fig, not one of the painted marzipan fruits the brief asked for, so the card text should not name martorana |
+| `it_card_tonnara.png` | Accepted | Cooked pale pink tuna loin flaking along its grain, beside three slices of dark amber pressed roe |
+
+Three findings that belong to the lead rather than to any one file:
+
+- **Faces run slightly sweeter than the reference set.** Several young women and children are painted with large, glossy eyes and very smooth skin, further from the Turkey rooms than the rest of the picture is. It is consistent across all thirteen rooms, so it is the set's house style rather than a defect in one file, and it is recorded here for the lead to rule on rather than rejected twenty-six times.
+- **Cards and sprites are rendered rather than brushed**, in exactly the register of Spain's shipped `spain-food` cards and `es-gull`, which were checked against these before any verdict was written. They match the canon, so they pass.
+- **No text, no marker, no collage, no modern object** was found in any of the 46 files: no Vespa, no motor boat, no three-wheeler, no stainless steel, no electric light, no printed packaging, no chalkboard, no wine label, no red-check tablecloth, no carbonara, no tiramisù, no spritz and no cicchetti counter.
+
+### Import
+
+`scripts/scenes/import-italy.py` copies the thirteen room pairs to `public/scenes/it_*/wide.jpg` and `portrait.jpg` at their native size, keys the thirteen cards from white into trimmed, edge-bled WebP in `public/scenes/italy-food/<name>.webp`, keys the six sprites into `public/scenes/props/it-<name>.webp`, saves the concept as `public/scenes/it_concept.jpg`, merges the sizes into `src/fw/scenes-props.json` and writes `public/scenes/italy-assets.json` with a SHA-256 of every source file.
+
+```
+uv run --with pillow --with numpy --with scipy scripts/scenes/import-italy.py "$HOME/Downloads/additional game asset/italy"
+```
+
+It runs clean twice: the second run leaves every output byte-identical and prints `scenes-props.json unchanged`. Three other area importers may be writing this file at the same time, so it never rewrites from a stale read — it re-reads `scenes-props.json` immediately before writing, merges only its own `it_` and `it-` keys, and retries when another process wrote in between. It adds no key it does not own and removed nothing: the diff is 596 insertions and 0 deletions.
+
+Keys added to `src/fw/scenes-props.json` — thirteen rooms, all `1672 x 941` wide and `941 x 1672` portrait:
+
+`it_trattoria`, `it_market`, `it_pasta`, `it_forno`, `it_casale`, `it_pescaria`, `it_bacaro`, `it_laguna`, `it_veneto`, `it_friggitoria`, `it_ballaro`, `it_pasticceria`, `it_tonnara`. Three portraits (`it_pescaria`, `it_ballaro`, `it_tonnara`) were delivered at 941 x 1671, one pixel short; the importer pads a shortfall of at most 2 px to the exact target by replicating the last row or column, so all three record `941 x 1672` like every other room.
+
+and six props: `it-awning` 960 x 460, `it-salumi` 218 x 960, `it-pasta-cane` 960 x 686, `it-garlic-braid` 475 x 960, `it-gull` 960 x 777, `it-lamp` 548 x 960.
+
+**The one rejected picture was imported too, so the pipeline is complete and Stage C can start measuring the twenty-five files that are final.** `public/scenes/it_laguna/portrait.jpg` will be overwritten when its regeneration arrives, and its row in `italy-assets.json` and `scenes-props.json` changes with it, so no coordinate should be measured on it yet — the only file whose composition changes, so its wide stays valid and its portrait must be re-measured from scratch.
+
+The three portraits delivered one pixel short (`it_pescaria`, `it_ballaro`, `it_tonnara`) needed no regeneration: the importer padded each to 941 x 1672 by replicating its last row, and their rows in `scenes-props.json` already read the padded size. Re-running the importer after the `it08_laguna_portrait.png` regeneration lands is enough; nothing else has to be touched.
+
+### Room audit
+
+`scripts/tests/room-audit.html` does not discover rooms from `public/scenes/` or from `scenes-props.json`. It builds its list from three module imports —
+
+```js
+import {SCENES as CHINA_SCENES} from '/src/fw/scenes-china.ts';
+import {TURKEY_SCENES} from '/src/fw/scenes-turkey.ts';
+import {SPAIN_SCENES} from '/src/fw/scenes-spain.ts';
+const SCENES={...CHINA_SCENES,...TURKEY_SCENES,...SPAIN_SCENES};
+```
+
+— and `scripts/tests/rooms.html`, which its iframes load, builds the same object the same way. **So no Italy room can appear on that page at Stage B, and none of the thirteen does.** Two things are needed, both of them Stage C work that this pass deliberately did not do:
+
+1. `src/fw/scenes-italy.ts`, exporting `ITALY_SCENES` as a `Record<string, () => SceneDef>` with all thirteen keys `it_trattoria`, `it_market`, `it_pasta`, `it_forno`, `it_casale`, `it_pescaria`, `it_bacaro`, `it_laguna`, `it_veneto`, `it_friggitoria`, `it_ballaro`, `it_pasticceria`, `it_tonnara`, in the shape `src/fw/scenes-spain.ts` uses.
+2. One import line and one spread in each of `scripts/tests/room-audit.html` and `scripts/tests/rooms.html`: `import {ITALY_SCENES} from '/src/fw/scenes-italy.ts';` added to the three existing imports, and `...ITALY_SCENES` added to the `SCENES` literal. Both files are tests and were not touched.
+
+What was confirmed instead, without that config: all twenty-six imported JPGs decode, sit at the folder and file names the room contract fixes, and carry the sizes recorded in `scenes-props.json`. The proof is one contact sheet of the thirteen rows, wide beside portrait, at `italy-rooms-sheet.png` in the Room maker's scratchpad.
+
+**Owner rulings, 2026-09-21.** Only `it08_laguna_portrait.png` is regenerated. The three short portraits (`it06_pescaria_portrait.png`, `it11_ballaro_portrait.png`, `it13_tonnara_portrait.png`) are padded by the importer rather than regenerated. The sweeter faces across all thirteen rooms are accepted as within the house style. The pasticceria card text must not name martorana, because the fruit beside the pastry tube is a real fig, not one of the painted marzipan fruits the brief asked for.

@@ -339,3 +339,7 @@ Every agent owns whole files. Stubs exist so the type check passes while files a
 | `mekong` | Saigon and the Mekong delta | Sài Gòn · Đồng bằng sông Cửu Long | bread and noodles in Chợ Lớn, the delta hearth, fish sauce and stilt houses | **[-5, 13]** — MK1's centre |
 
 The Stand maker may import from `vietnam-architecture.ts` and `vietnam-people.ts` once they exist; until then a stand uses `person()` and `wear()` from `props.ts` and a local shelter. Nobody edits another owner's file; a missing helper is built in the owning file.
+
+## State at the end of 2026-09-21
+
+Stage C started the same day the blueprint was fixed, and the weekly usage limit stopped it mid-run. Committed: the Researcher files (objects, story depth, discoveries, speech lines). Partial and uncommitted in the working tree: the Stand maker file `props-*.ts`. Not started: the Room maker files, the Builder modules and the shared `world-seasia.ts` growth. The Thailand Builder carries an owner rule received the same day: the dark-to-light blue water transition of this table is kept, same materials and estuary blends at every mouth. Stage D notes: re-point the `stall-herbs-th` alias to `chilliesSea`; the Southeast Asia intro is at its four-beat cap. Work resumes after the reset in the order Stand makers, Builders, Room makers, then Stage D.

@@ -444,3 +444,7 @@ Every agent owns whole files. Stubs exist so the type check passes while files a
 | `main.ts`, `ui.ts`, `README.md`, this file | Lead, Stage D | Registration only |
 
 The Stand maker may import from `thailand-architecture.ts` and `thailand-people.ts` once they exist; until then a stand uses `person()` and `wear()` from `props.ts` and a local shelter. Nobody edits another owner's file; a missing helper is built in the owning file. Proposed `AREAS` row for the lead to confirm: `bangkok: { world: "southeast-asia", name: "Thailand", zh: "ประเทศไทย", blurb: "the khlongs, the curry mortar, the plain, Lanna and the Andaman", center: [-44, 0] }`.
+
+## State at the end of 2026-09-21
+
+Stage C started the same day the blueprint was fixed, and the weekly usage limit stopped it mid-run. Committed: the Researcher files (objects, story depth, discoveries, speech lines). Partial and uncommitted in the working tree: the Stand maker file `props-*.ts`. Not started: the Room maker files, the Builder modules and the shared `world-seasia.ts` growth. The Thailand Builder carries an owner rule received the same day: the dark-to-light blue water transition of this table is kept, same materials and estuary blends at every mouth. Stage D notes: re-point the `stall-herbs-th` alias to `chilliesSea`; the Southeast Asia intro is at its four-beat cap. Work resumes after the reset in the order Stand makers, Builders, Room makers, then Stage D.

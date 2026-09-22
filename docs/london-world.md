@@ -450,3 +450,93 @@ Every agent owns whole files. Stubs exist so the type check passes while files a
 | `repertoire.ts`, `main.ts`, `ui.ts`, `README.md`, this file | Lead, Stage D | Registration only; `LONDON_REPERTOIRE` is merged in `repertoire.ts` so `scripts/tests/repertoire.mjs` covers its thirteen keys |
 
 
+
+## Stage D: integration, 2026-09-22
+
+### What was registered
+
+- **`graph.ts`**: `LONDON_OBJECTS` is imported and spread at the head of `CEUROPE_OBJECTS`. The seven old London objects on the continent are gone from that list (`roastPub`, `pastryCe`, `mushroomsCe`, `bigBen`, `towerBridge`, `redBus`, `phoneBox`), all redefined in `london-objects.ts` under the same ids, and `londonEye` is retired with no replacement. `AREAS.london` is `{ world: "central-europe", name: "Britain", zh: "Great Britain", center: [-48, 2] }`. The Beef Wellington recipe route to `roastPub` is unchanged. `object-ids.mjs`: 430 objects, every id unique, every alias and parent resolves.
+- **`main.ts`**: `LONDON_SCENES` is in the `SCENES` merge. Entering `central-europe` sets `currentArea` to `london` and arrives on Westminster at [-48, 0, 2], the same way Southeast Asia's branch does.
+- **`ui.ts`**: card art from `scenes/london-food/` on a `central-europe` + `london` branch (thirteen room cards), `LONDON_NEXT` for "Continue exploring" and `LONDON_SOURCES` for "Sources and further reading" on the same branch. `ICON_KEYS` loses the stale continental icons for the ids Britain redefined (`mushroomsCe`, `pastryCe`, `roastPub`, `bigBen`, `towerBridge`, `londonEye`, `redBus`), so a card-only object's badge is a snapshot of its new British prop.
+- **`snapshot.ts`**: `LONDON_ICONS` and `LONDON_PROPS` come before the `CEUROPE_*` tables, so a shared key (`pub`, `bigBen`, `towerBridge`, `bakeryCe`, `mushroomWood`) draws the British model.
+- **`repertoire.ts`**: `LONDON_REPERTOIRE` is merged, and `scripts/tests/repertoire.mjs` now covers its thirteen keys against `LONDON_SCENES`.
+- **`README.md`**: Central Europe's areas read "Britain, Budapest & the puszta, the Alps, Georgia".
+- The two test pages (`rooms.html`, `room-audit.html`), `room-loops.mjs` and `scripts/audit/objects.mjs` already carried Britain from Stage C.
+
+### The rotation rule, applied
+
+The world is only ever seen from +z: `main.ts` puts the camera there and clamps its orbit to plus or minus 0.75 radians. Stage B had turned each object toward its nearest road, which left 25 of 29 stands with their backs to the visitor. The rule from now on: **a stand's front faces the camera side within its swing; roads come to the door, the stand does not turn to the road.** Every `rot` in `london-objects.ts` now lies in [-0.75, 0.75]. No position moved.
+
+Inside that window each rotation was chosen against three measurements, not only the road:
+
+1. **The sight lines in `london-reactions.mjs`.** Stand rotation and camera azimuth add, and an open bay shows its gable past about a radian. So a stand leaning 0.6 one way fails from the camera's far swing. The pub, the chip shop, the seamen's kitchen, the hop cookhouse, the dairy, the bakehouse, the oyster smacks and the herring quay were each held to the range where all three azimuths see their reacting subject.
+2. **Water.** Turning a stand to +z moves its front toward the south coast, the river or the channel, so within the sight-line range the rotation with the least overhang was taken.
+3. **The door.** The door is the centre of the stand's solid front (figures excluded). It must be within 2.0 of a road edge.
+
+The five water-subject objects lean toward their water only where that keeps them dry enough. `forthBridge` -0.3 keeps its span reaching north-west over the firth (695 vertices over water, down from 3,414). `herringUk` -0.2 leans west toward the firth (98, down from 1,651). `towerBridge` is 0 and stands in the estuary. `oystersUk` -0.1 moors in the estuary. `cocklesUk` is 0 rather than turned west, because any westward lean put the stall over the open channel (1,771 to 4,972 vertices).
+
+| Object | Stage C `rot` | Stage D `rot` | Door to road |
+| --- | --- | --- | --- |
+| roastPub | 3.14 | -0.25 | 1.87, road behind |
+| teaRoomUk | 0 | 0 | on the road |
+| boroughUk | 0 | 0 | on the road |
+| pieMashUk | 3.14 | -0.55 | on the hop road |
+| chippyUk | -1.71 | -0.5 | 0.36 |
+| breakfastUk | 3.04 | 0 | 1.85, road behind |
+| lascarUk | -3.03 | -0.25 | **4.44, road behind** |
+| hopKitchenUk | -1.68 | -0.55 | 0.14 |
+| dairyUk | -2.08 | -0.35 | 1.16 |
+| pastyUk | -1.05 | 0.1 | 0.29 |
+| cocklesUk | -1.72 | 0 | on the road |
+| smokehouseUk | -0.28 | 0.15 | on the road |
+| distilleryUk | 3.06 | 0 | **2.77, road behind** |
+| pastryCe | 0 | 0 | on the road |
+| oystersUk | 2.96 | -0.1 | 1.60 |
+| hopsUk | -1.47 | -0.45 | 0.99 |
+| mushroomsCe | 1.93 | 0.45 | 1.62, road beside, sea in front |
+| sheepUk | 1.42 | 0.3 | 0.01 |
+| rhubarbUk | -1.49 | -0.75 | 0.61 |
+| orchardUk | 2.09 | 0.75 | 1.06, road beside, channel in front |
+| leeksUk | -2.76 | -0.75 | 1.94, road beside, sea in front |
+| oatsUk | -2.73 | -0.6 | 1.56, on the new road |
+| herringUk | 2.99 | -0.2 | 0.62 |
+| bigBen | -3.1 | -0.15 | **2.11, road behind** |
+| towerBridge | 2.99 | 0 | on the dock road |
+| redBus | 3.0 | 0.3 | 0.70, bridge road |
+| phoneBox | 3.14 | -0.3 | 1.69, road behind |
+| forthBridge | -1.61 | -0.3 | on the herring spur |
+| engineHouseUk | -1.35 | 0.3 | 0.80 |
+
+**Roads.** One road change was needed and possible. **LD-R6** used to stop behind the oat mill. It now runs on round the west side of the oat field, through [-74, -20.2] and [-74.2, -14.4], and north to meet the west road at its corner [-74, -9], so the mill (turned -0.6 toward it) has a road 1.6 from its door. A first route along the field's front at z -14 cost the flock's pen, two open-fell walls and a gas lamp, so the road keeps west of x -73. The moor's three gorse bushes did not survive either route: at x -73 to -72 they would now stand in the mill's arrival rays. Every road stays continuous and every end meets something (`london-world.mjs`).
+
+**What the rule could not fix without moving positions.** Six stands still have their road behind them, and three of those are more than 2.0 from any road. These are the shared-ground pass's first items:
+
+- **The Westminster river row**: `roastPub`, `bigBen`, `phoneBox`, and `redBus` next to it. The blueprint put four doors "on the river side" of Whitehall, 3.7 units from the landward row, with the river in front. Facing +z, their fronts look at the river and their house masses sit back across Whitehall's northern half and into the pastry board, tea room and market fronts (see the footprint table). There is no room for a road between them and the river bank. They need to move south across the river onto their own embankment, or north to a row behind the landward one.
+- **The dock row**: `breakfastUk` and `lascarUk`, with `pieMashUk` saved only by the hop road beside it. They stand south of the dock road with the estuary behind it, so facing +z puts their backs on the dock road and their roofs between the camera and Tower Bridge. The live check saw this: the bascules lift behind two dock roofs. The warehouse and the hop cookhouse fill the ground south of them.
+- **`distilleryUk`**: the Fife cottage [-64, -19] stands in front of its door, and the oat field is on its west side.
+
+`london-world.mjs` now asserts the band (every `rot` within 0.75) and the front door (within 2.0 of a road edge). `bigBen` 2.11, `lascarUk` 4.44 and `distilleryUk` 2.77 are listed as ceilings. `london-reactions.mjs` asserts that no stand turns more than a radian from +z, where it used to print a NOTE and fall back to measuring such stands from their own front.
+
+### The ceilings, re-measured
+
+Turning 25 stands moved their fronts and backs, so the three ceiling tables in `london-world.mjs` were taken again from the rotated stands. `LONDON_DUMP=1 node scripts/tests/london-world.mjs` reprints them. Compared with the Stage C tables:
+
+- **Over water, 12 ids** (Stage C: 12, 12,618 vertices; now 11,639). Worse: `orchardUk` 535 to 3,548, `mushroomsCe` 707 to 2,537, `leeksUk` 48 to 1,363, `roastPub` 126 to 1,188, `cocklesUk` 1,354 to 1,401, `engineHouseUk` 6 to 41. These are the south-coast and channel stands whose fronts now hang over the sea, and the pub, whose pavement walker now paces the river bank. Better: `lascarUk` 3,581 to 564, `forthBridge` 3,414 to 695, `herringUk` 1,651 to 98, `bigBen` 1,018 to 90, `smokehouseUk` 154 to 90. `hopsUk` is unchanged at 24.
+- **Stand on stand, 31 pairs** (Stage C: 30 pairs covering 98 rays; now 92 rays). New or worse: `oystersUk<lascarUk` 7, `engineHouseUk<pastyUk` 6, `pastryCe<roastPub` 6, `towerBridge<lascarUk` 5, `cocklesUk<leeksUk` 4, `dairyUk<chippyUk` 4, `boroughUk<redBus` 3, `chippyUk<bigBen` 3, `towerBridge<pieMashUk` 3, `redBus<towerBridge` 3. Gone or better: `phoneBox<bigBen` (was 7), `forthBridge<dairyUk` 8 to 1, `smokehouseUk<distilleryUk`, `pastyUk<orchardUk`, `redBus<roastPub` and fifteen more. `teaRoomUk<bigBen` 9 is unchanged and is the worst pair: Big Ben still hides the tea room from the arrival camera.
+- **Footprints, 61 pairs** (Stage C: 61, 44 of them overlapping; now 61, 48 overlapping, 115 units of overlap against 95). The largest: `dairyUk/rhubarbUk` 5.39, `chippyUk/dairyUk` 4.99, `chippyUk/sheepUk` 4.99, `herringUk/forthBridge` 4.87, `roastPub/redBus` 4.38, `pieMashUk/hopKitchenUk` 4.22, `pieMashUk/breakfastUk` 4.2, `oystersUk/towerBridge` 4.05, `pastyUk/orchardUk` 3.92, `bigBen/phoneBox` 3.76.
+
+For the shared-ground pass, all three lists come down to one diagnosis: the Westminster river row, the dock row and the Dales cluster (`chippyUk`, `dairyUk`, `sheepUk`, `rhubarbUk` inside 6 units of each other) need new positions, not new angles.
+
+### Live check, 2026-09-22 to 23
+
+The check ran on the running `food-tour-web` preview in a tab of its own, after a fresh page load. The server had been restarted by another agent three minutes earlier, after the last source change here, so it was not restarted a second time. The pane was hidden throughout, so the page was driven with the `__fw` hooks (`enter`, `step`, `look`, `open`, `shot`, `sceneShot`), with `window.__fwInstant` set.
+
+- **Arrival.** Entering `central-europe` lands on target [-48, 0, 2] with the camera at [-46, 48, 62] (the target plus (2, 48, 60)). The crumbs read "Central Europe · Britain · Budapest & the puszta · The Alps · Georgia".
+- **Fog.** On a fresh load the fog is the computed pair straight after entry: 203/450 at 1280 x 720, which is `worldFogRange('central-europe', 1280, 720, 66.2)`, and 90/200 on a fresh load at 390 x 844, whose limit is 90. No `main.ts` fix was needed: `enterRegion` calls `configureControls('world')`, which sets the fog, in the same step that places the camera. The 90/200 the Builder saw after `__fw.enter` was the hidden pane at work. The arrival hand-off runs on a timer and a flight that only advance when frames are stepped. Likewise, an emulated resize in a hidden tab does not fire `resize`: after switching the tab to 390 x 844 the fog stayed 203/450 until a `resize` event was sent by hand, and then it became 90/200.
+- **All 29 objects.** Opened at 1280 x 720. The thirteen room objects open their painted room (#scene in, 3 to 7 layers). The sixteen card-only objects open their card, each with its British name, 2 to 5 "Continue exploring" links and a sources block. `chippyUk` needed a longer wait than the others the first time, because its flight from the docks is the longest; on a second open it went straight into its room. The Recipes add-on was in its default state.
+- **All 13 rooms at 390 x 844.** Every one opens, with the stage filling 390 x 844 and 3 to 7 layers.
+- **Console.** No `error` events, no unhandled rejections and no `console.error` in any of the runs.
+- **Roads.** The roads were not walked by camera; `london-world.mjs` covers continuity, dry surfaces and ends. Two live views were checked by eye: the arrival (Westminster, the bridge road, the Strand to the river stairs) and the new LD-R6 round the oat field to the west road. The ribbon draws continuous from the firth road to the west-road corner.
+- **Seen and not fixed** (positions are fixed at Stage D): Tower Bridge's lifting bascules sit behind the pie shop's and the porters' stall's roofs from the approach camera. In the Dales, the fried fish shop, the flock, the dale farmhouse and the dairy crowd one another.
+
+Contact sheet: `scratchpad/london-stage-d.png` from this session (the arrival, the dale flock mid-reaction with the fried fish shop facing the camera, the public house room, and the 215 zoom limit), composed from `.data/shots/ld-d-*.jpg`.

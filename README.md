@@ -117,7 +117,7 @@ Busan, Jeju), Mexico (Mexico City, Oaxaca, Jalisco, Yucatán), the Middle East (
 Persia), the Mediterranean (Greece, Spain, Morocco, Dalmatia), India (Punjab & Delhi, Rajasthan, Mumbai, Kerala),
 Southeast Asia (Thailand, Vietnam's north and centre, Saigon & the Mekong delta), North America (New York & New England, the
 Midwest, Texas & the South, California), Japan (Tokyo, Kyoto, Fuji & the lake, Hokkaido) and Central Europe
-(London, Budapest & the puszta, the Alps, Georgia).
+(Britain, Budapest & the puszta, the Alps, Georgia).
 
 ## Food histories
 

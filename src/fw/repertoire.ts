@@ -13,6 +13,7 @@
 import { isRecipeLayerEnabled } from "../data";
 import { CHINA_REPERTOIRE } from "./china-repertoire";
 import { ITALY_REPERTOIRE } from "./italy-repertoire";
+import { LONDON_REPERTOIRE } from "./london-repertoire";
 import type { EnrichedRecipe } from "./graph";
 import { escapeHtml as esc } from "./plates";
 import { SPAIN_REPERTOIRE } from "./spain-repertoire";
@@ -30,7 +31,7 @@ import { VIETNAM_REPERTOIRE } from "./vietnam-repertoire";
 export type RepertoireEntry = { name: string; zh?: string; line: string; recipe?: string; art?: string };
 
 /** Every world's table, in the order they are searched. Ids are unique across worlds, so the order never matters. */
-export const REPERTOIRE_TABLES: Record<string, RepertoireEntry[]>[] = [CHINA_REPERTOIRE, TURKEY_REPERTOIRE, SPAIN_REPERTOIRE, THAILAND_REPERTOIRE, VIETNAM_REPERTOIRE, ITALY_REPERTOIRE];
+export const REPERTOIRE_TABLES: Record<string, RepertoireEntry[]>[] = [CHINA_REPERTOIRE, TURKEY_REPERTOIRE, SPAIN_REPERTOIRE, THAILAND_REPERTOIRE, VIETNAM_REPERTOIRE, LONDON_REPERTOIRE, ITALY_REPERTOIRE];
 
 const NONE: RepertoireEntry[] = [];
 

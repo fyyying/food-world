@@ -159,16 +159,14 @@ try{
   // the 34-degree lens as well as unblocked, because a thing above the roofline is off the top of the screen
   // when the flight ends. Five takes each, because the shared rnd() seed moves the figures a little every build.
   //
-  // **One blueprint conflict is recorded here rather than hidden.** The world is only ever looked at from the
-  // +z side: `main.ts` sets the overview camera on +z and clamps the orbit azimuth to plus or minus 0.75, so a
-  // stand's working front has to face +z. `london-objects.ts` turns each object toward the nearest road, and on
-  // the Westminster street the road runs along the landward side, which gives `roastPub`, `redBus`, `phoneBox`
-  // and `bigBen` rotations of about pi - their backs to the visitor - although the blueprint's own sentence puts
-  // "four doors on its river side", and the river is the +z side. The workable envelope is about a radian:
-  // an open-front bay four units wide whose work surface stands a unit inside it shows the visitor its gable
-  // once it is turned more than about 60 degrees, whatever the stand does. Every object turned further than
-  // that is measured from its own front here, until the Lead settles the rotations at Stage D; the rest are
-  // measured at the rotation they carry.
+  // The world is only ever looked at from the +z side: `main.ts` sets the overview camera on +z and clamps the
+  // orbit azimuth to plus or minus 0.75, so a stand's working front has to face +z. At Stage C the blueprint
+  // turned each object toward its nearest road and 25 of 29 showed the visitor their backs; at Stage D
+  // (2026-09-22) every rotation in `london-objects.ts` was brought inside [-0.75, 0.75] and roads were brought to
+  // the doors instead. Inside that window a stand is also turned no further than its own sight lines allow:
+  // stand rotation and camera azimuth add, and an open bay shows its gable past about a radian. The fallback
+  // below, which measured a stand turned more than a radian from its own front, now finds nothing to do, and
+  // the assertion after the loop keeps it that way.
   const rotOf=Object.fromEntries(LONDON_OBJECTS.map(o=>[o.prop,o.rot??0]));
   const facingAway=LONDON_OBJECTS.filter(o=>Math.abs(Math.atan2(Math.sin(o.rot??0),Math.cos(o.rot??0)))>1.0).map(o=>o.id);
   const testRot=id=>Math.abs(Math.atan2(Math.sin(rotOf[id]??0),Math.cos(rotOf[id]??0)))>1.0?0:(rotOf[id]??0);
@@ -373,6 +371,6 @@ try{
     assert.ok(riders.length>=5,`omnibus: the omnibus and the hansom carry their people seated, found ${riders.length}`);
   }
 
-  console.log(`NOTE: ${facingAway.length} of 29 Britain objects carry a blueprint rotation more than a radian from the +z the world is viewed from, so their doors turn away from the only camera there is: ${facingAway.join(', ')}. Their stands are measured from their own front here; the rotations are the Lead's to settle at Stage D.`);
+  assert.deepEqual(facingAway,[],'a Britain stand turns its front more than a radian from the +z camera side');
   console.log(`PASS: 29 Britain stands, food before speech, a clear sight line and a place in the 34-degree frame from the arrival camera at three azimuths, ${lampCount} lamps on real beams, falling pours on real lips, a cold dairy and a cold market, legs that match the distance covered, nothing outside the 1880-1914 band and an exact return to rest.`);
 }finally{await rm(temp,{recursive:true,force:true});}

@@ -37,36 +37,42 @@ const measured={overWater:{},hidden:{},crowded:{}};
  *  `london-objects.ts` (the Researcher's fixed positions) and `props-london.ts` (the Stand maker's sizes).
  *  The Builder owns neither end of any of them: closing one is a re-blueprint or a stand resize, and the
  *  Stage C report names every entry to the lead. A listed entry may not get worse, and an unlisted one may
- *  not appear. `LONDON_DUMP=1 node scripts/tests/london-world.mjs` prints the current measurements. */
+ *  not appear. `LONDON_DUMP=1 node scripts/tests/london-world.mjs` prints the current measurements.
+ *
+ *  Re-measured at Stage D (2026-09-22) after every rotation in `london-objects.ts` was brought inside the
+ *  camera's swing, [-0.75, 0.75]. Positions did not change; turning 25 stands to face +z moved their fronts
+ *  and backs, so the three tables were taken again from the rotated stands and are the ceilings from here.
+ *  docs/london-world.md, "Stage D", lists what got worse and what got better, for the shared-ground pass. */
 /** Vertices of a stand over water. `forthBridge` is by design: its span reaches north-west over the firth. */
 const OVER_WATER={
-  'roastPub':126, 'lascarUk':3581, 'cocklesUk':1354, 'smokehouseUk':154, 'hopsUk':24, 'mushroomsCe':707,
-  'orchardUk':535, 'leeksUk':48, 'herringUk':1651, 'bigBen':1018, 'forthBridge':3414, 'engineHouseUk':6,
+  'roastPub':1188, 'lascarUk':564, 'cocklesUk':1401, 'smokehouseUk':90, 'hopsUk':24, 'mushroomsCe':2537,
+  'orchardUk':3548, 'leeksUk':1363, 'herringUk':98, 'bigBen':90, 'forthBridge':695, 'engineHouseUk':41,
 };
 /** 'a<b': stand b is the first thing on n of stand a's ten arrival rays. */
 const HIDDEN={
-  'teaRoomUk<bigBen':9, 'boroughUk<roastPub':6, 'boroughUk<redBus':2, 'pieMashUk<hopKitchenUk':4, 'pieMashUk<hopsUk':4,
-  'chippyUk<teaRoomUk':3, 'breakfastUk<pieMashUk':3, 'breakfastUk<lascarUk':3, 'hopKitchenUk<hopsUk':1, 'dairyUk<chippyUk':3,
-  'dairyUk<bigBen':1, 'dairyUk<teaRoomUk':5, 'pastyUk<orchardUk':3, 'smokehouseUk<distilleryUk':3, 'pastryCe<bigBen':3,
-  'pastryCe<roastPub':4, 'oystersUk<lascarUk':1, 'oystersUk<towerBridge':1, 'rhubarbUk<chippyUk':5, 'rhubarbUk<dairyUk':3,
-  'rhubarbUk<teaRoomUk':1, 'rhubarbUk<forthBridge':1, 'herringUk<rhubarbUk':1, 'herringUk<forthBridge':2, 'redBus<roastPub':3,
-  'phoneBox<bigBen':7, 'phoneBox<roastPub':3, 'forthBridge<dairyUk':8, 'engineHouseUk<orchardUk':2, 'engineHouseUk<pastyUk':3,
+  'teaRoomUk<bigBen':9, 'boroughUk<redBus':3, 'boroughUk<roastPub':4, 'pieMashUk<mushroomsCe':1, 'pieMashUk<hopKitchenUk':3,
+  'pieMashUk<hopsUk':1, 'chippyUk<bigBen':3, 'breakfastUk<hopKitchenUk':2, 'lascarUk<hopsUk':2, 'hopKitchenUk<mushroomsCe':2,
+  'dairyUk<bigBen':1, 'dairyUk<chippyUk':4, 'dairyUk<teaRoomUk':3, 'cocklesUk<leeksUk':4, 'pastryCe<bigBen':2,
+  'pastryCe<roastPub':6, 'oystersUk<lascarUk':7, 'oystersUk<towerBridge':1, 'sheepUk<bigBen':2, 'rhubarbUk<chippyUk':4,
+  'rhubarbUk<teaRoomUk':2, 'rhubarbUk<pastryCe':2, 'rhubarbUk<dairyUk':1, 'towerBridge<pieMashUk':3, 'towerBridge<lascarUk':5,
+  'redBus<towerBridge':3, 'phoneBox<roastPub':1, 'forthBridge<dairyUk':1, 'forthBridge<rhubarbUk':2, 'engineHouseUk<orchardUk':2,
+  'engineHouseUk<pastyUk':6,
 };
 /** Footprint overlap in units, positive for an overlap, for pairs under a unit apart. */
 const CROWDED={
-  'roastPub/teaRoomUk':-0.5, 'roastPub/boroughUk':3.57, 'roastPub/pastryCe':1.58, 'roastPub/bigBen':-0.22, 'roastPub/redBus':5.01,
-  'roastPub/phoneBox':1.92, 'teaRoomUk/chippyUk':3.35, 'teaRoomUk/dairyUk':2.26, 'teaRoomUk/pastryCe':1, 'teaRoomUk/bigBen':1.46,
-  'teaRoomUk/redBus':-0.29, 'teaRoomUk/phoneBox':1.71, 'boroughUk/pastryCe':1.36, 'boroughUk/redBus':3.67, 'boroughUk/phoneBox':0.68,
-  'pieMashUk/breakfastUk':2.25, 'pieMashUk/lascarUk':-0.5, 'pieMashUk/hopKitchenUk':4.09, 'pieMashUk/hopsUk':0.1, 'pieMashUk/towerBridge':0.25,
-  'chippyUk/dairyUk':3.97, 'chippyUk/pastryCe':-0.43, 'chippyUk/sheepUk':3.1, 'chippyUk/rhubarbUk':0.68, 'breakfastUk/lascarUk':2.7,
-  'breakfastUk/hopKitchenUk':0.73, 'breakfastUk/oystersUk':1.12, 'breakfastUk/towerBridge':-0.12, 'lascarUk/hopKitchenUk':-0.31, 'lascarUk/oystersUk':1.46,
-  'lascarUk/hopsUk':0.94, 'lascarUk/towerBridge':0.18, 'hopKitchenUk/hopsUk':1.69, 'hopKitchenUk/mushroomsCe':-0.26, 'dairyUk/pastryCe':0.99,
-  'dairyUk/sheepUk':2.08, 'dairyUk/rhubarbUk':4.78, 'dairyUk/forthBridge':2.52, 'pastyUk/cocklesUk':-0.1, 'pastyUk/orchardUk':5.74,
-  'pastyUk/engineHouseUk':3.84, 'cocklesUk/orchardUk':0.03, 'cocklesUk/leeksUk':1.06, 'smokehouseUk/distilleryUk':2.7, 'smokehouseUk/oatsUk':-0.2,
-  'distilleryUk/sheepUk':-0.18, 'distilleryUk/oatsUk':3.47, 'pastryCe/bigBen':-0.39, 'pastryCe/redBus':1.66, 'pastryCe/phoneBox':-0.14,
-  'oystersUk/towerBridge':4.03, 'hopsUk/mushroomsCe':2, 'sheepUk/rhubarbUk':-0.46, 'rhubarbUk/herringUk':-0.77, 'rhubarbUk/forthBridge':4.18,
-  'orchardUk/engineHouseUk':2.32, 'herringUk/forthBridge':2.58, 'bigBen/redBus':-0.01, 'bigBen/phoneBox':3.13, 'towerBridge/redBus':-0.09,
-  'redBus/phoneBox':2.12,
+  'roastPub/teaRoomUk':0.8, 'roastPub/boroughUk':3.67, 'roastPub/pastryCe':2.46, 'roastPub/bigBen':1.24, 'roastPub/redBus':4.38,
+  'roastPub/phoneBox':2.89, 'teaRoomUk/chippyUk':2.66, 'teaRoomUk/dairyUk':1.95, 'teaRoomUk/pastryCe':1, 'teaRoomUk/sheepUk':-0.08,
+  'teaRoomUk/rhubarbUk':-0.49, 'teaRoomUk/bigBen':2.4, 'teaRoomUk/phoneBox':2.09, 'boroughUk/pastryCe':1.36, 'boroughUk/redBus':3.16,
+  'boroughUk/phoneBox':0.35, 'pieMashUk/breakfastUk':4.2, 'pieMashUk/lascarUk':2.09, 'pieMashUk/hopKitchenUk':4.22, 'pieMashUk/oystersUk':1.48,
+  'pieMashUk/hopsUk':-0.71, 'pieMashUk/towerBridge':3.56, 'chippyUk/dairyUk':4.99, 'chippyUk/sheepUk':4.99, 'chippyUk/rhubarbUk':2.55,
+  'breakfastUk/lascarUk':3, 'breakfastUk/hopKitchenUk':2.28, 'breakfastUk/towerBridge':-0.24, 'lascarUk/hopKitchenUk':0.18, 'lascarUk/oystersUk':0.78,
+  'lascarUk/hopsUk':0.26, 'lascarUk/towerBridge':2.86, 'hopKitchenUk/hopsUk':1.72, 'hopKitchenUk/mushroomsCe':-0.53, 'dairyUk/pastryCe':-0.33,
+  'dairyUk/sheepUk':3.73, 'dairyUk/rhubarbUk':5.39, 'pastyUk/orchardUk':3.92, 'pastyUk/engineHouseUk':3.81, 'cocklesUk/orchardUk':-0.15,
+  'cocklesUk/leeksUk':1.91, 'smokehouseUk/distilleryUk':2.19, 'smokehouseUk/rhubarbUk':-0.36, 'smokehouseUk/oatsUk':-0.15, 'smokehouseUk/forthBridge':1.72,
+  'distilleryUk/oatsUk':3.48, 'pastryCe/rhubarbUk':-0.59, 'pastryCe/bigBen':0.56, 'pastryCe/redBus':1.15, 'pastryCe/phoneBox':0.25,
+  'oystersUk/towerBridge':4.05, 'hopsUk/mushroomsCe':3.35, 'sheepUk/rhubarbUk':1.87, 'sheepUk/oatsUk':-0.09, 'rhubarbUk/herringUk':-0.25,
+  'rhubarbUk/forthBridge':1.49, 'orchardUk/engineHouseUk':1.31, 'herringUk/forthBridge':4.87, 'bigBen/redBus':-0.58, 'bigBen/phoneBox':3.76,
+  'redBus/phoneBox':1.06,
 };
 
 const temp=await mkdtemp(join(tmpdir(),'london-world-'));
@@ -241,6 +247,32 @@ try {
       else if(n>OVER_WATER[s.id]) soaked.push(`${s.id}: ${n} vertices over water where 2026-09-22 measured ${OVER_WATER[s.id]}; a listed overhang may not get worse`);
     }
     assert.deepEqual(soaked,[],'a stand hangs over the water');
+    // ---------- fronts face the camera side; roads come to the door ----------
+    // The world is only ever seen from +z (main.ts: camera on +z, orbit clamped to plus or minus 0.75), so every
+    // rotation lies in [-0.75, 0.75] and a stand never turns its back to find its road (Stage D, 2026-09-22).
+    // The door is the centre of the stand's solid front: the furthest +z reach, in the stand's own frame, of
+    // every mesh that is not a figure and stands above 0.35. It must meet a road edge within 2.0. The three
+    // below are more than 2.0 from any road with their fronts to the camera — Big Ben and the seamen's kitchen
+    // because the river or the strait is in front and their road is behind, the distillery because the Fife
+    // cottage stands in front of its door — and positions are fixed at Stage D. They are ceilings for the
+    // shared-ground pass: each may not get worse, and no other stand may join them.
+    const DOOR_BEHIND={ bigBen:2.11, lascarUk:4.44, distilleryUk:2.77 };
+    const isFigure=o=>{for(let p=o;p;p=p.parent)if(p.userData?.legs)return true;return false;};
+    const edgeOf=(x,z)=>Math.min(...LD_ROADS.map(r=>distToRoute(x,z,r.points)-r.width/2));
+    const turned=[], farDoors=[];
+    for(const o of objects) if(Math.abs(o.rot??0)>.75+1e-9) turned.push(`${o.id}: rot ${o.rot}`);
+    for(const s of stands){
+      const rot=s.group.rotation.y; s.group.rotation.y=0; s.group.updateMatrixWorld(true);
+      let front=-1e9;
+      s.group.traverse(m=>{ if(!m.isMesh||isFigure(m))return; const b=new THREE.Box3().setFromObject(m); if(b.max.y<.35)return; front=Math.max(front,b.max.z-s.obj.pos[1]); });
+      s.group.rotation.y=rot; s.group.updateMatrixWorld(true);
+      const d=edgeOf(s.obj.pos[0]+Math.sin(rot)*front, s.obj.pos[1]+Math.cos(rot)*front);
+      measured.doors??={}; measured.doors[s.id]=Number(d.toFixed(2));
+      const cap=DOOR_BEHIND[s.id]??2.0;
+      if(d>cap+.005) farDoors.push(`${s.id}: its front door is ${d.toFixed(2)} from a road, over the ${cap} allowed`);
+    }
+    assert.deepEqual(turned,[],'a stand turns its front away from the camera side');
+    assert.deepEqual(farDoors,[],'a road does not come to a stand\'s front door');
     // ---------- footprints: what ground each stand actually stands on ----------
     const foot=g=>{
       let b=null;

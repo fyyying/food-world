@@ -225,6 +225,12 @@ export type Road = { id: string; width: number; points: Pt[] };
  *    unit outside the 2.6 a door needs. The spur now runs the last stretch down to the quay
  *  - **LD-R4b**, the oast track, is new: 1.4 wide, from a point on the hop road to the hop garden's gate. The
  *    hop garden was 2.89 from the hop road, and a hop garden with an oast in it is reached by a track
+ *
+ *  One departure at Stage D (2026-09-22), when every stand's front was turned to the +z camera side: **LD-R6**
+ *  no longer stops behind the oat mill. It runs on round the west side of the oat field, [-74, -20.2]
+ *  [-74.2, -14.4], and north to meet the west road at its corner [-74, -9], so the mill, turned -0.6 toward
+ *  it, has a road 1.6 from its door on the side it faces. It keeps west of x -73 so the open-fell walls and
+ *  the flock's pen at x -71 to -64 keep their ground. Roads come to the door; the stand does not turn.
  */
 export const LD_ROADS: Road[] = [
   { id: 'LD-R1', width: 2.4, points: [[-59, -5.1], [-55, -5.25], [-51, -5.25], [-47, -5.25], [-44.5, -4.9], [-42, -4.3], [-41.6, -1.4], [-41.5, 0.9]] },
@@ -233,7 +239,7 @@ export const LD_ROADS: Road[] = [
   { id: 'LD-R4', width: 1.8, points: [[-44.2, 7.9], [-45.2, 11], [-45.6, 14.6], [-45.2, 18.6], [-44.6, 20.2]] },
   { id: 'LD-R4b', width: 1.4, points: [[-45.45, 16.1], [-42.6, 17]] },
   { id: 'LD-R5', width: 1.8, points: [[-59, -5.1], [-60, -8.5], [-59.5, -12.2], [-57.5, -15.8], [-59, -19.2]] },
-  { id: 'LD-R6', width: 1.8, points: [[-59, -19.2], [-61, -21.5], [-64.5, -22.5], [-68, -22.8], [-71, -21.5]] },
+  { id: 'LD-R6', width: 1.8, points: [[-59, -19.2], [-61, -21.5], [-64.5, -22.5], [-68, -22.8], [-71, -21.5], [-74, -20.2], [-74.2, -14.4], [-74, -9]] },
   { id: 'LD-R6b', width: 1.4, points: [[-59, -19.2], [-56.6, -19.4], [-54.8, -20.6], [-53.6, -22.4]] },
   { id: 'LD-R7', width: 1.8, points: [[-60, -8.5], [-65, -8], [-70, -8.6], [-74, -9], [-78, -9], [-78.2, -4], [-77.9, 1], [-76.8, 6], [-74.5, 10], [-71, 10.8], [-67.8, 12.6], [-67.4, 16], [-70, 17.8], [-73.5, 19.2]] },
 ];

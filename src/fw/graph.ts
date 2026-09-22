@@ -8,6 +8,7 @@ import { TURKEY_OBJECTS } from "./turkey-objects";
 import { SPAIN_OBJECTS } from "./spain-objects";
 import { THAILAND_OBJECTS } from "./thailand-objects";
 import { VIETNAM_OBJECTS } from "./vietnam-objects";
+import { LONDON_OBJECTS } from "./london-objects";
 import { ITALY_OBJECTS as ITALY_WORLD_OBJECTS } from "./italy-objects";
 
 export type Kind = "ingredient" | "flavour" | "technique" | "landmark" | "place" | "dish";
@@ -113,7 +114,7 @@ export const AREAS: Record<Area, AreaInfo> = {
   kyoto: { world: "japan", name: "Kyoto", zh: "京都", blurb: "the Golden Pavilion, the torii path, machiya, sakura on the Kamo river", center: [-24, 12] },
   fuji: { world: "japan", name: "Fuji & the lake", zh: "富士山", blurb: "the mountain, the lake, the onsen monkeys, the shinkansen", center: [6, 8] },
   hokkaido: { world: "japan", name: "Hokkaido", zh: "北海道", blurb: "the fishing port, salmon and cod, pumpkins and cabbages, the miso brewery", center: [-22, -16] },
-  london: { world: "central-europe", name: "London", zh: "England", blurb: "Big Ben on the Thames, Tower Bridge, the pub carvery, the patisserie, the woods", center: [-20, -15] },
+  london: { world: "central-europe", name: "Britain", zh: "Great Britain", blurb: "Westminster and the river, the docks, the Weald, the Dales, the West Country and the herring coast", center: [-48, 2] },
   budapest: { world: "central-europe", name: "Budapest & the puszta", zh: "Magyarország", blurb: "the Parliament on the Danube, the baths, goulash in the bogrács, grey cattle and csikós", center: [10, -4] },
   alps: { world: "central-europe", name: "The Alps", zh: "Die Alpen", blurb: "the chalet, the cable car, cows with bells and alpine cheese", center: [-20, 14] },
   georgia: { world: "central-europe", name: "Georgia", zh: "საქართველო", blurb: "old Tbilisi, the sulfur baths, the supra, qvevri wine, beans and walnuts", center: [27, 2] },
@@ -971,17 +972,17 @@ export const JAPAN_OBJECTS: WorldObject[] = [
 
 // ---------- the Central Europe world ----------
 
+/** Britain (`london`) comes from its own file, `london-objects.ts`, exactly as Thailand's and Spain's do: twenty-
+ *  nine objects at the Stage B blueprint positions on the island in the west of the grown table. The seven old
+ *  London objects that stood here on the continent are redefined there under the same ids (`roastPub`,
+ *  `pastryCe`, `mushroomsCe`, `bigBen`, `towerBridge`, `redBus`, `phoneBox`), and `londonEye` is retired with no
+ *  replacement (docs/london-world.md, Stage B owner rulings). */
 export const CEUROPE_OBJECTS: WorldObject[] = [
+  ...LONDON_OBJECTS,
   // --- ingredients ---
   { id: "beefCe", world: "central-europe", kind: "ingredient", name: "Beef: grey cattle & the fillet", zh: "Szürkemarha", emoji: "🐂", area: "budapest", pos: [13, 17], prop: "greyCattle", rot: 0.1,
     tagline: "Hungarian grey cattle on the plain, and the fillet wrapped in pastry in London.", blurb: "The Hungarian grey, with its metre-wide lyre horns, was driven from the puszta to the markets of Vienna and Nuremberg by the thousand in the 1500s and its lean meat is what the herdsmen stewed in their kettles: gulyás means cowherd. British beef went the other way, into the roasting tradition that gave the French the nickname rosbif; the fillet, the tenderest cut, is seared, coated with mushroom duxelles and baked in puff pastry for a Beef Wellington, named for the Duke sometime after Waterloo.",
     partners: ["paprika", "onion", "mushrooms", "puff pastry"], match: (r) => has(r.protein, /beef/) },
-  { id: "mushroomsCe", world: "central-europe", kind: "ingredient", name: "Mushrooms", zh: "The woods", emoji: "🍄", area: "london", pos: [-27, -26], prop: "mushroomWood", rot: 0,
-    tagline: "Field and forest mushrooms, chopped fine into duxelles.", blurb: "Duxelles is mushrooms, shallots and herbs minced and cooked down until dry, a preparation credited to the Marquis d'Uxelles' cook La Varenne in 1651; spread over the seared fillet under the pastry it keeps the crust crisp and flavours the beef. Britain forages field mushrooms and, in autumn, ceps and chanterelles; the Hungarians and Georgians dry them for winter stews.",
-    partners: ["beef fillet", "shallot", "puff pastry", "butter"], match: (r) => has(r.core, /mushroom|shallot/) },
-  { id: "pastryCe", world: "central-europe", kind: "ingredient", name: "Butter puff pastry", zh: "Pâte feuilletée", emoji: "🥐", area: "london", pos: [-13, -25.5], prop: "bakeryCe", rot: 0,
-    tagline: "Butter folded into dough thirty-two times, and it rises into a hundred leaves.", blurb: "Puff pastry, pâte feuilletée, is a block of butter enclosed in dough and rolled and folded six times so the layers multiply into the hundreds; in the oven the water in the butter turns to steam and lifts every leaf. The French perfected it in the 1600s and the English took it for their pies and the Wellington, brushing it with egg so it bakes to a lacquer. The croissant is the same dough with yeast.",
-    partners: ["beef fillet", "egg", "mushrooms", "prosciutto"], match: (r) => has(r.core, /pastry|egg|prosciutto|mustard/) },
   { id: "beansWalnut", world: "central-europe", kind: "ingredient", name: "Kidney beans & walnuts", zh: "ლობიო · ნიგოზი", emoji: "🫘", area: "georgia", pos: [26, 18], prop: "beanWalnut", rot: 0.05,
     tagline: "Georgia's two staples: beans in every pot, walnuts in every sauce.", blurb: "Lobio is both the Georgian word for beans and the dish: red kidney beans simmered with onion and garlic, mashed with ground walnuts, coriander and the herb blend khmeli suneli, and soured with pomegranate or vinegar, served in a clay pot with mchadi cornbread and pickles. Walnuts thicken half of Georgian cooking, from satsivi to pkhali; the trees line every village road, and the beans came from the Americas in the 1600s and were adopted at once.",
     partners: ["coriander", "garlic", "khmeli suneli", "pomegranate"], match: (r) => has(r.core, /bean|walnut|cornbread|mchadi/) },
@@ -1002,20 +1003,7 @@ export const CEUROPE_OBJECTS: WorldObject[] = [
   { id: "supra", world: "central-europe", kind: "technique", name: "The supra", zh: "სუფრა", emoji: "🍷", area: "georgia", pos: [25, 6], prop: "supra", rot: 0, place: true, placeName: "Supra table",
     tagline: "The Georgian feast: a tamada leading the toasts, lobio and khachapuri filling the table.", blurb: "A supra is a Georgian feast at a table that must never show its cloth, so plates are stacked on plates: lobio in clay pots, khachapuri boats of cheese and egg, pkhali, mtsvadi from the grill, pickles, and mchadi cornbread. The tamada, the toastmaster, raises the horn to God, to the country, to the dead, to the women, and nobody drinks between toasts. Polyphonic singing arrives with the third jug of wine. The tradition is on UNESCO's list.",
     partners: ["kidney beans", "walnuts", "khmeli suneli", "wine", "mchadi"], match: (r) => has(r.techniques, /supra|stew/) },
-  { id: "roastPub", world: "central-europe", kind: "technique", name: "The pub carvery", zh: "The Sunday roast", emoji: "🥩", area: "london", pos: [-16, -4], prop: "pub", rot: 0, place: true, placeName: "Pub carvery",
-    tagline: "Roast beef and Yorkshire puddings, and a Wellington carved at the board.", blurb: "The English roast is a Sunday institution: beef cooked before church, eaten after with Yorkshire puddings, roast potatoes, greens and gravy, in a pub with a pint of bitter. Beef Wellington is the roast dressed up: the fillet seared, spread with duxelles, wrapped in prosciutto and puff pastry and baked until the crust is gold and the middle is pink, then carved into slices at the table. The dish's name is a mystery; it is not in any book before 1939, and may be as American as it is British.",
-    partners: ["beef fillet", "puff pastry", "mushrooms", "mustard"], match: (r) => has(r.techniques, /roast|pastry/) },
   // --- landmarks ---
-  { id: "bigBen", world: "central-europe", kind: "landmark", name: "Big Ben & Westminster", zh: "The Palace of Westminster", emoji: "🕰️", area: "london", pos: [-27.5, -16], prop: "bigBen", rot: 0,
-    tagline: "The clock tower over the Thames, chiming since 1859.", blurb: "The Palace of Westminster burned in 1834 and was rebuilt in Gothic by Barry and Pugin; the Elizabeth Tower, whose great bell is Big Ben, first chimed in 1859 and its four dials are still lit at night while the Commons sits. The river terrace hosts the tea that the Victorians made an institution, and across the road the pubs of Westminster have served roast beef to members for two centuries.", match: () => false },
-  { id: "towerBridge", world: "central-europe", kind: "landmark", name: "Tower Bridge", zh: "The bascule bridge", emoji: "🌉", area: "london", pos: [-19, -22], prop: "towerBridge", rot: 0,
-    tagline: "Gothic towers and a road that lifts for the ships, since 1894.", blurb: "Tower Bridge opened in 1894 with steam engines that raised its two bascules a thousand times a year for the ships to the Pool of London, where the tea, sugar and spices came in. The towers are steel dressed in Cornish granite and Portland stone to match the Tower of London beside them. It still lifts about eight hundred times a year, and Borough Market, London's oldest food market, is a five-minute walk upstream.", match: () => false },
-  { id: "londonEye", world: "central-europe", kind: "landmark", name: "The London Eye", zh: "The millennium wheel", emoji: "🎡", area: "london", pos: [-13, -15], prop: "londonEye", rot: Math.PI / 2,
-    tagline: "The wheel on the South Bank, turning since the year 2000.", blurb: "The Eye was built for the millennium as a five-year attraction and never came down; its 32 capsules take half an hour to turn and carry more visitors than any paid attraction in Britain. Below it the South Bank food market and the old Borough stalls sell the pies, the sausage rolls and the roast-beef sandwiches of the city.", match: () => false },
-  { id: "redBus", world: "central-europe", kind: "landmark", name: "The red bus & the black cab", zh: "Routemaster", emoji: "🚌", area: "london", pos: [-12, -9], prop: "none", hitOnly: true,
-    tagline: "Double-deckers and cabs going round Westminster.", blurb: "London's buses have been red since 1907, when the General company painted its fleet to stand out from the competition; the Routemaster of 1956 with its open platform ran until 2005. The black cab's drivers pass the Knowledge, three years of memorising every street. Both stop outside the pub.", match: () => false },
-  { id: "phoneBox", world: "central-europe", kind: "landmark", name: "The phone box & the pillar box", zh: "The K6", emoji: "☎️", area: "london", pos: [-24, -11.5], prop: "phoneBox", rot: 0.2,
-    tagline: "Giles Gilbert Scott's red kiosk of 1935, and the post box that is older still.", blurb: "The K6 telephone kiosk was designed by Giles Gilbert Scott for George V's silver jubilee in 1935 and painted the same red as the buses and the pillar boxes, which have collected letters since 1852. Both are listed; most kiosks now hold defibrillators or tiny coffee stalls.", match: () => false },
   { id: "parliamentHu", world: "central-europe", kind: "landmark", name: "The Hungarian Parliament", zh: "Országház", emoji: "🏛️", area: "budapest", pos: [1, -15], prop: "parliamentHu", rot: Math.PI / 2,
     tagline: "The Gothic dome on the Danube bank, finished in 1904.", blurb: "Imre Steindl's Parliament was built for the millennium of the Magyar conquest in 1896 and finished in 1904, with 365 towers and a dome 96 metres high for the year 896; forty million bricks and forty kilos of gold went into it. The Danube embankment below it is where Budapest walks on Sunday and where the Great Market Hall, built the same decade, sells paprika by the kilo and lángos by the slice.", match: () => false },
   { id: "chainBridge", world: "central-europe", kind: "landmark", name: "The Chain Bridge", zh: "Lánchíd", emoji: "🦁", area: "budapest", pos: [6.5, -4], prop: "chainBridge", rot: 0,

@@ -8,6 +8,7 @@ import { TURKEY_OBJECTS } from "./turkey-objects";
 import { SPAIN_OBJECTS } from "./spain-objects";
 import { THAILAND_OBJECTS } from "./thailand-objects";
 import { VIETNAM_OBJECTS } from "./vietnam-objects";
+import { ITALY_OBJECTS as ITALY_WORLD_OBJECTS } from "./italy-objects";
 
 export type Kind = "ingredient" | "flavour" | "technique" | "landmark" | "place" | "dish";
 export type WorldId = "china" | "italy" | "korea" | "mexico" | "middle-east" | "mediterranean" | "india" | "southeast-asia" | "north-america" | "japan" | "central-europe";
@@ -75,9 +76,9 @@ export const AREAS: Record<Area, AreaInfo> = {
   northern: { world: "china", name: "Northern China", zh: "北方", blurb: "the wheat belt: dumplings, noodles, mantou, vinegar and the winter table", center: [28, -28] },
   xinjiang: { world: "china", name: "Xinjiang", zh: "Shinjang", blurb: "the oasis road west: lamb, nan, polo, grapes and the caravan", center: [-53, -8] },
   everyday: { world: "china", name: "Everyday table", zh: "家常菜", blurb: "home cooking that belongs to no province", center: [2, 4] },
-  rome: { world: "italy", name: "Rome", zh: "Roma", blurb: "trattorie, pasta, the piazza and the pizza oven", center: [-12, 0] },
-  venice: { world: "italy", name: "Venice", zh: "Venezia", blurb: "canals, gondolas, seafood and risotto", center: [16, -8] },
-  sicily: { world: "italy", name: "Sicily", zh: "Sicilia", blurb: "Etna, lemons, tomatoes and street food", center: [12, 14] },
+  rome: { world: "italy", name: "Rome", zh: "Roma", blurb: "trattorie, pasta, the piazza and the pizza oven", center: [-19, -6] },
+  venice: { world: "italy", name: "Venice", zh: "Venezia", blurb: "canals, gondolas, seafood and risotto", center: [27, -20] },
+  sicily: { world: "italy", name: "Sicily", zh: "Sicilia", blurb: "Etna, lemons, tomatoes and street food", center: [-8, 22] },
   seoul: { world: "korea", name: "Seoul", zh: "서울", blurb: "palace, market alleys, barbecue smoke and kimchi jars", center: [-10, -10] },
   jeonju: { world: "korea", name: "Jeonju", zh: "전주", blurb: "hanok village, rice paddies and the home of bibimbap", center: [-16, 12] },
   busan: { world: "korea", name: "Busan", zh: "부산", blurb: "the port: fish market, beach and boats", center: [10, 6] },
@@ -524,72 +525,10 @@ export const OBJECTS: WorldObject[] = [
 
 // ---------- the Italy world ----------
 
-const RMKT: [number, number] = [-14, 4];
-export const ITALY_OBJECTS: WorldObject[] = [
-  // --- ingredients ---
-  { id: "tomato", world: "italy", kind: "ingredient", name: "Tomatoes", zh: "Pomodori", emoji: "🍅", area: "sicily", pos: [-10, 14.5], prop: "tomatoField", rot: 0.2,
-    tagline: "The fruit Italy waited two hundred years to trust.", blurb: "Tomatoes came from the Americas in the 1500s and were grown as ornamentals for two centuries; Italians only started cooking them around 1700, first in Naples. Sicily and Campania grow the sweet plum tomatoes for sauce, sun-dried on rooftops or bottled as passata every August. Raw with mozzarella, simmered into sugo, or roasted into soup.",
-    partners: ["basil", "olive oil", "garlic", "mozzarella"], match: (r) => has(r.core, /tomato/) },
-  { id: "pasta", world: "italy", kind: "ingredient", name: "Pasta", zh: "Pasta", emoji: "🍝", area: "rome", pos: [-22, -6], prop: "pastaWorkshop", rot: 0.4, place: true,
-    tagline: "Durum wheat, water, and a nonna's rolling pin.", blurb: "Dried pasta was made in Sicily under the Arabs by the 1100s, long before Marco Polo, and Naples industrialised it in the 1800s. Fresh egg pasta is the north's tradition: sheets rolled thin for lasagne and tagliatelle. Pasta is always cooked al dente and finished in its sauce, never drowned in it. Bread and pizza dough rise slowly in the same workshop, sometimes for a day, which is where their flavour and blistered crust come from.",
-    partners: ["parmesan", "tomato", "olive oil", "ragù"], match: (r) => has(r.core, /pasta|lasagn/) },
-  { id: "olive", world: "italy", kind: "ingredient", name: "Olive oil", zh: "Olio d'oliva", emoji: "🫒", area: "rome", pos: [-2.5, 13], prop: "oliveGrove", rot: 0.1,
-    tagline: "The fat Italy cooks with.", blurb: "Olives have been pressed in Italy since the Greeks planted them in the south around 700 BC. Trees live for centuries; some in Puglia and Sicily are over a thousand years old. Extra-virgin oil is used raw over salads and bread and as the base of almost every sauce, where garlic goes in first.",
-    flavour: ["grassy", "peppery", "fruity"], partners: ["garlic", "tomato", "basil", "bread"], match: (r) => has(r.core, /olive oil|vinaigrette/) },
-  { id: "cheese", world: "italy", kind: "ingredient", name: "Cheese", zh: "Formaggio", emoji: "🧀", area: "rome", pos: [-34.5, -7], prop: "dairy", rot: -0.3,
-    tagline: "Parmesan for the pan, mozzarella for the oven.", blurb: "Parmigiano-Reggiano has been made the same way around Parma since the 1200s: wheels aged at least a year, grated over pasta or stirred into ragù. Mozzarella is the opposite, made and eaten within a day, from buffalo milk in Campania or cow's milk elsewhere. Pecorino, salty sheep's cheese, is Rome's own.",
-    partners: ["pasta", "tomato", "basil", "cream"], match: (r) => has(r.core, /parmesan|mozzarella|provolone|cheese|pecorino/) || has(r.protein, /cheese/) },
-  { id: "basil", world: "italy", kind: "flavour", name: "Basil & herbs", zh: "Basilico", emoji: "🌿", area: "rome", pos: [-13, 9.5], prop: "herbGarden", rot: 0.2,
-    tagline: "Torn, never chopped, added last.", blurb: "Basil arrived from India by way of the ancient trade routes and became Liguria's signature, pounded with pine nuts and pecorino into pesto. Oregano and rosemary grow wild across the south. Italian cooking uses one or two herbs at a time, added at the end so they stay bright.",
-    flavour: ["sweet", "peppery", "fresh"], partners: ["tomato", "olive oil", "garlic", "pine nuts"], match: (r) => has(r.core, /basil|pesto|parsley|herb|oregano/) },
-  { id: "italyBeef", world: "italy", kind: "ingredient", name: "Beef & pork", zh: "Carne", emoji: "🐄", area: "rome", pos: [-20, 12], prop: "cow", rot: 0.5,
-    tagline: "Minced and simmered for hours.", blurb: "Emilia's ragù is the reason: beef and pork minced together and simmered with soffritto, wine and milk for half a day. The same mince makes polpette. Pork also goes into prosciutto, cured for two years in Parma's dry hill air, and the guanciale that Rome's carbonara depends on.",
-    partners: ["tomato", "soffritto", "red wine", "parmesan"], match: (r) => has(r.protein, /beef|pork/) || has(r.core, /salami|beef|pork/) },
-  { id: "italyChicken", world: "italy", kind: "ingredient", name: "Chicken", zh: "Pollo", emoji: "🐓", area: "rome", pos: [-18, 14], prop: "chicken",
-    tagline: "Roasted with lemon and rosemary, or breaded and baked.", blurb: "Italian chicken is simple: pollo arrosto with rosemary and garlic, or chicken alla parmigiana, the breaded-and-baked dish that Italian emigrants made famous in America. Most of the family's pasta-and-chicken dinners come from that second tradition.",
-    partners: ["lemon", "rosemary", "tomato", "mozzarella"], match: (r) => has(r.protein, /chicken/) },
-  { id: "mushrooms", world: "italy", kind: "ingredient", name: "Mushrooms", zh: "Funghi", emoji: "🍄", area: "rome", pos: [-25, 0.5], prop: "porciniWood", rot: 0.3,
-    tagline: "Porcini from the chestnut woods.", blurb: "Autumn in the Apennines means porcini, foraged under chestnut and oak and sold fresh at market or dried for the year. Dried porcini give a cream sauce its depth; fresh ones are sliced thin over pasta.",
-    partners: ["cream", "garlic", "parmesan", "parsley"], match: (r) => has(r.core, /mushroom|porcini/) || has(r.mainIngredient, /Mushroom/) },
-  { id: "lemon", world: "italy", kind: "ingredient", name: "Lemons & citrus", zh: "Limoni", emoji: "🍋", area: "sicily", pos: [23, 18], prop: "citrusGrove", rot: -0.2,
-    tagline: "Sicily's gold.", blurb: "The Arabs planted citrus in Sicily in the 900s and built the irrigation that still waters the groves around Palermo and Catania. Lemons go over fish and into granita; blood oranges, the island's own, into winter salads. No recipe in the cookbook uses them yet.",
-    partners: ["fish", "olive oil", "sugar", "almonds"], match: (r) => has(r.core, /lemon|orange|citrus/) },
-  { id: "seafood", world: "italy", kind: "ingredient", name: "Fish & seafood", zh: "Pesce", emoji: "🦐", area: "venice", pos: [22, -4], prop: "fishMarket", rot: 0.3, place: true,
-    tagline: "The lagoon's catch, sold at dawn by the Rialto.", blurb: "Venice's fish market has stood by the Rialto bridge for a thousand years. Sardines marinated in onion and vinegar, cuttlefish cooked in their own ink over polenta, clams tossed with spaghetti. Sicily's tuna and swordfish come from the other end of the country.",
-    partners: ["garlic", "white wine", "parsley", "lemon"], match: (r) => has(r.protein, /fish|prawn|shrimp|seafood|clam/) },
-  { id: "riceIt", world: "italy", kind: "ingredient", name: "Rice", zh: "Riso", emoji: "🍚", area: "venice", pos: [2, -24], prop: "riceFieldItaly", rot: 0.1,
-    tagline: "Risotto country.", blurb: "The Po valley has grown short-grain rice since the 1400s, in flooded fields around Vercelli and Pavia. Arborio and carnaroli release their starch slowly, which is what makes a risotto creamy without cream: stock added a ladle at a time, stirred, finished with butter and parmesan.",
-    partners: ["stock", "butter", "parmesan", "saffron"], match: (r) => has(r.core, /risotto|\brice\b/) },
-  // --- techniques ---
-  { id: "oven", world: "italy", kind: "technique", name: "Wood-fired oven", zh: "Forno a legna", emoji: "🔥", area: "rome", pos: [-6, -4], prop: "pizzeria", rot: 0.15, place: true, placeName: "Pizzeria",
-    tagline: "Ninety seconds at 450 degrees.", blurb: "Naples' bakers were selling flatbreads with tomato by the 1700s; the Margherita, with its tomato, mozzarella and basil, is dated to 1889. A domed brick oven burning oak or beech bakes a pizza in under two minutes. The same ovens bake lasagne, meatballs and stuffed peppers on a gentler heat.",
-    partners: ["pizza dough", "tomato", "mozzarella"], match: (r) => has(r.techniques, /oven/) },
-  { id: "ragu", world: "italy", kind: "technique", name: "Slow ragù", zh: "Ragù", emoji: "🍲", area: "rome", pos: [-14, -6], prop: "trattoria", rot: 0.1, place: true, placeName: "Trattoria",
-    tagline: "Soffritto, mince, wine, and four hours.", blurb: "A ragù starts with soffritto, onion, carrot and celery softened in oil, then mince browned slowly, wine cooked off, tomato and stock added and the pot left to barely bubble for hours. Bologna's chamber of commerce registered the official recipe in 1982. Trattorie are the family-run restaurants that serve it.",
-    partners: ["beef", "pork", "tomato", "pasta"], match: (r) => has(r.techniques, /ragu|pasta/) },
-  // --- places ---
-  { id: "romeMarket", world: "italy", kind: "place", name: "Campo de' Fiori market", zh: "Mercato", emoji: "🧺", area: "rome", pos: RMKT, prop: "italyMarket", rot: 0, place: true, open: "reveal",
-    tagline: "Rome's morning market since 1869.", blurb: "Tomatoes, artichokes, cheese, cured meats and flowers on the piazza where the market has run every morning since 1869.", match: () => false },
-  { id: "stall-tomato", world: "italy", kind: "ingredient", name: "Tomatoes", zh: "Pomodori", emoji: "🍅", area: "rome", pos: [RMKT[0] - 4.2, RMKT[1] - 2.2], prop: "none", hitOnly: true, parent: "romeMarket", alias: "tomato", tagline: "", blurb: "", match: () => false },
-  { id: "stall-cheese", world: "italy", kind: "ingredient", name: "Cheese", zh: "Formaggio", emoji: "🧀", area: "rome", pos: [RMKT[0], RMKT[1] - 2.8], prop: "none", hitOnly: true, parent: "romeMarket", alias: "cheese", tagline: "", blurb: "", match: () => false },
-  { id: "stall-salumi", world: "italy", kind: "ingredient", name: "Salumi", zh: "Salumi", emoji: "🥓", area: "rome", pos: [RMKT[0] + 4.2, RMKT[1] - 2.2], prop: "none", hitOnly: true, parent: "romeMarket", alias: "italyBeef", tagline: "", blurb: "", match: () => false },
-  { id: "stall-herbs", world: "italy", kind: "flavour", name: "Basil & herbs", zh: "Erbe", emoji: "🌿", area: "rome", pos: [RMKT[0] + 4.2, RMKT[1] + 2.2], prop: "none", hitOnly: true, parent: "romeMarket", alias: "basil", tagline: "", blurb: "", match: () => false },
-  { id: "stall-oil", world: "italy", kind: "ingredient", name: "Olive oil", zh: "Olio", emoji: "🫒", area: "rome", pos: [RMKT[0] - 4.2, RMKT[1] + 2.2], prop: "none", hitOnly: true, parent: "romeMarket", alias: "olive", tagline: "", blurb: "", match: () => false },
-  { id: "trattoria", world: "italy", kind: "landmark", name: "Pasta dishes", zh: "Primi", emoji: "🍝", area: "rome", pos: [-14, -6], prop: "none", hitOnly: true, parent: "ragu", alias: "ragu", tagline: "", blurb: "", match: () => false },
-  { id: "pizzeria", world: "italy", kind: "landmark", name: "Pizza", zh: "Pizza", emoji: "🍕", area: "rome", pos: [-6, -4], prop: "none", hitOnly: true, parent: "oven", alias: "oven", tagline: "", blurb: "", match: () => false },
-  { id: "gelateria", world: "italy", kind: "dish", name: "Gelato & coffee", zh: "Gelato", emoji: "🍨", area: "rome", pos: [-4, 2], prop: "gelateria", rot: -0.5, placeName: "Gelateria",
-    tagline: "The piazza's other business.", blurb: "Gelato is churned slower and served warmer than ice cream, so it tastes more of what's in it: pistachio, hazelnut, lemon. The espresso bar next door has served Romans standing at the counter since the 1930s.", match: () => false },
-  { id: "bacaro", world: "italy", kind: "dish", name: "Cicchetti", zh: "Cicchetti", emoji: "🍷", area: "venice", pos: [21, -10.5], prop: "bacaro", rot: 0.2, placeName: "Bàcaro",
-    tagline: "Venice's small plates with a small glass of wine.", blurb: "A bàcaro is a standing wine bar where Venetians eat cicchetti through the day: creamed cod on polenta, fried sardines, a meatball on a toothpick, with an ombra, a small glass of local wine.", match: () => false },
-  { id: "sicilyMarket", world: "italy", kind: "place", name: "Ballarò street market", zh: "Mercato di Ballarò", emoji: "🍋", area: "sicily", pos: [13, 12], prop: "sicilyMarket", rot: 0, place: true, open: "reveal",
-    tagline: "Palermo's loudest market, a thousand years old.", blurb: "Arancini, panelle, swordfish, capers, tomatoes and the vendors' singing calls, in a market the Arabs founded.", match: () => false },
-  { id: "stall-lemon", world: "italy", kind: "ingredient", name: "Lemons & citrus", zh: "Limoni", emoji: "🍋", area: "sicily", pos: [9, 10], prop: "none", hitOnly: true, parent: "sicilyMarket", alias: "lemon", tagline: "", blurb: "", match: () => false },
-  { id: "stall-tomato2", world: "italy", kind: "ingredient", name: "Tomatoes", zh: "Pomodori", emoji: "🍅", area: "sicily", pos: [17, 10], prop: "none", hitOnly: true, parent: "sicilyMarket", alias: "tomato", tagline: "", blurb: "", match: () => false },
-  { id: "stall-arancini", world: "italy", kind: "dish", name: "Street food", zh: "Cibo di strada", emoji: "🍙", area: "sicily", pos: [13, 8.5], prop: "none", hitOnly: true, parent: "sicilyMarket",
-    tagline: "Arancini, panelle and cannoli.", blurb: "Arancini are saffron rice balls stuffed with ragù and fried; the Arabs brought the rice and the saffron. Panelle are chickpea fritters in a bun. Cannoli, ricotta piped into a fried shell, were once a Carnival sweet from the convents near Palermo.", match: () => false },
-  { id: "pastry", world: "italy", kind: "dish", name: "Cannoli & pastries", zh: "Pasticceria", emoji: "🥐", area: "sicily", pos: [18, 6], prop: "pasticceria", rot: -0.4, placeName: "Pasticceria",
-    tagline: "Ricotta, pistachio and almond.", blurb: "Sicilian pastry grew out of the convents: cannoli, cassata layered with marzipan, and almond paste fruits. Bronte's pistachios, grown on Etna's lava soil, are the island's most expensive crop.", match: () => false },
-];
+/** Rome, Venice and Sicily: all forty-six objects come from `italy-objects.ts`, exactly as Spain's and
+ *  Thailand's do. The twenty-eight objects this list used to hold are all redefined there under the same ids,
+ *  at the Stage B blueprint positions (docs/italy-world.md, "Blueprint (fixed)"). */
+export const ITALY_OBJECTS: WorldObject[] = ITALY_WORLD_OBJECTS;
 
 
 // ---------- the Korea world ----------

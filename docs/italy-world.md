@@ -547,3 +547,64 @@ Every agent owns whole files. Stubs exist so the type check passes while files a
 | **shared** `world-intros.ts` | Researcher | The three Italy beats gain the new places in all three areas; `world-intros.mjs` must still pass |
 | **shared** `scripts/tests/room-audit.html`, `scripts/tests/rooms.html` | Lead, Stage D | Two edits each: `import {ITALY_SCENES} from '/src/fw/scenes-italy.ts';` beside the three existing imports, and `...ITALY_SCENES` in the `SCENES` merge |
 | `repertoire.ts`, `main.ts`, `ui.ts`, `README.md`, this file | Lead, Stage D | Registration only; `ITALY_REPERTOIRE` is merged in `repertoire.ts` so `scripts/tests/repertoire.mjs` covers its fifteen keys |
+
+## Stage D: integration, 2026-09-22
+
+### What was registered
+
+| File | Change |
+| --- | --- |
+| `graph.ts` | The hand-written Italy list (twenty-eight objects at the old positions, many of them now in the sea) is gone; `ITALY_OBJECTS` is the forty-six objects of `italy-objects.ts`, imported as `ITALY_WORLD_OBJECTS`. `AREAS.rome.center` [-19, -6], `AREAS.venice.center` [27, -20], `AREAS.sicily.center` [-8, 22]; ids, names and `zh` unchanged. `object-ids.mjs`: 409 objects, every id unique, every alias and parent resolves |
+| `main.ts` | `ITALY_SCENES` in the `SCENES` merge; entering `italy` sets `currentArea` to `rome` and arrives on the Campo de' Fiori market at `AREAS.rome.center`. The normal entry path already gives the computed fog: 198 / 439 at 1280 x 720, measured live after entry, not 90 / 200, so nothing in `configureControls` needed fixing |
+| `ui.ts` | Card art from `scenes/italy-food/` for the thirteen rooms (`ITALY_CARD_ART`), `ITALY_NEXT` and `ITALY_SOURCES` on the `italy` branch, and the six room ids that had no icon key (`romeMarket`, `lagunaIt`, `casaVeneta`, `friggitoria`, `sicilyMarket`, `tonnaraIt`) added to `ICON_KEYS` |
+| `snapshot.ts` | Nothing to add: `ITALY_ICONS` and `ITALY_PROPS` were already in both lookup chains |
+| `repertoire.ts`, `repertoire.mjs` | `ITALY_REPERTOIRE` merged; the harness builds `scenes-italy.ts` and checks the table: 142 places, 750 dishes, 88 kitchen rooms covered |
+| `README.md` | Areas line: Italy (Rome and the Agro Romano, Venice and its lagoon, Sicily from Palermo to Etna) |
+| `scripts/audit/objects.mjs` | `italy` added to the audited worlds |
+
+### Fronts face the camera
+
+The rule is now in `docs/building-a-world.md` (section 5) and the playbook's definition of done: a stand's `rot` stays within ±0.75, its front faces +z, and the road comes to the door. `props-italy.ts`'s `facing` wrapper, which turned every body back to the south whatever its `rot`, is removed; `ITALY_PROPS` is the builders as they are, honouring `rot` like every other area.
+
+- **Set to 0, twenty-three objects outside the band:** `ragu` (-2.94), `romeMarket` (3.14), `pasta` (3.14), `cheese` (-0.89), `casaVeneta` (1.57), `friggitoria` (3.14), `pastry` (3.14), `tonnaraIt` (-1.57), `italyChicken` (-1.44), `basil` (3.14), `riceIt` (2.65), `granoIt` (-3.04), `capperiIt` (-2.55), `quintoQuarto` (-3.09), `campanileIt` (2.84), and the eight children `stall-tomato`, `stall-cheese`, `stall-salumi`, `stall-herbs`, `stall-oil`, `trattoria`, `stall-lemon`, `stall-tomato2`. Because the wrapper showed the camera exactly this, the world looks as Stage C left it.
+- **Set to 0, twelve inside the band:** `carciofoIt` (0.46), `pecoraIt`, `olive`, `italyBeef`, `mushrooms` (about 0.2), `carrettoIt` (0.1), `etnaIt` (-0.1), `mandorleIt`, `vinoIt`, `bacaro`, `valliIt`, `seafood` (0.02 to 0.05). Once the wrapper was gone each of these made a measurement worse: the artichoke beds went from 1,885 to 2,501 vertices over the Tiber, the flock and the chestnut wood started to hang over the west coast, and eight footprint pairs grew.
+- **Kept:** `lagunaIt` -0.07 (it lowers its overhang from 233 to 220 vertices) and `lemon` -0.09. The objects that own world offsets (both markets, the forno, the casale and the tonnara) all stand at 0, so their stalls and outbuildings stay where the blueprint puts them. The water-subject stands (`seafood`, `lagunaIt`, `valliIt`, `tonnaraIt`) have their water on +z, so they face it inside the band.
+
+**Road points added** (`italy-landscape.ts`, all inside a landmass's own network, every end meeting a road or a door, `italy-world.mjs` passing):
+
+| Road | Width | Points | Brings a road to |
+| --- | --- | --- | --- |
+| IT-R1b the piazza lane | 1.6 | [-8,-7.4] [-9.6,-4.4] [-11.2,-2.2] [-15.2,-2.2] [-15.6,0.4] [-22,0.4] [-23,2.4] [-25.6,2.4] | `pasta`, `romeMarket`, `basil`, `stall-tomato`, `stall-cheese`, `stall-salumi` |
+| IT-R3b the rice spur | 1.2 | [3,-10.2] [0.8,-13] [0.8,-17.6] | `riceIt` |
+| IT-R4b the Albergheria spur | 1.4 | [-8,23] [-8.1,27.8] | joins IT-R4c to the lane |
+| IT-R4c the south lane | 1.4 | [-13.6,27.8] [-8.1,27.8] [-3,27.8] | `friggitoria`, `pastry` |
+| IT-R5 last point | 1.8 | [26.2,25.2] → [26.2,26.6] | `capperiIt` |
+
+`italy-world.mjs` now asserts the band and each stand's front door (the centre of its footprint's +z face, turned by `rot`) within 2.0 of a road's edge; the road count is fourteen. `STANDS_FINAL` is set, and the three stand checks assert against dated ceilings of 2026-09-22 (`OVER_WATER`, `HIDDEN`, `CROWDED`), each a Stage C measurement unchanged or lower. The anchor door ceiling `OFF_ROAD` shrank from six to two (`mushrooms` 4.59, `stall-arancini` 3.45).
+
+### Harness, audit and build
+
+`npm run typecheck` passes. `npm test`: 24 of 25 harnesses pass, `italy-world.mjs` and `italy-reactions.mjs` among them; the one failure is `london-reactions.mjs` (`pub: pub-tin hides pub-slice from the arrival camera at azimuth 0.75`), in the Britain Stage D agent's files, which are uncommitted and being edited at the same time. The tree as committed here (HEAD plus only these Italy changes, checked out on its own) passes all 25 harnesses and the type check. `npm run build:pages` builds. `node scripts/audit/objects.mjs`:
+
+```
+rome: rooms=5 card-only-with-prop=12 hit/child=7
+venice: rooms=4 card-only-with-prop=4 hit/child=0
+sicily: rooms=4 card-only-with-prop=7 hit/child=3
+```
+
+### Live check (dev server restarted for a fresh load, own tab)
+
+- **Entry.** `italy` arrives with the camera target on [-19, 0, -6], the Campo de' Fiori market; fog 198 / 439 after entry at 1280 x 720; the zoom limit is 215 and the table reads at it with no haze.
+- **Roads.** Ten views along every road on the mainland, the four lagoon islands and Sicily: every ribbon continuous, the new lanes read as paths in front of the stands, nothing standing on a road.
+- **Objects.** All forty-six opened through `__fw.open`. The thirty-three that are not rooms each open their own card with art and sources, apart from the aliases that are meant to open something else: `stall-cheese` opens the casale room, `trattoria` the trattoria, `pizzeria` the forno, and the other stall children their ingredient's card. No exception, no console error.
+- **Rooms.** All thirteen open at 1280 x 720 and at 390 x 844, with no console error. At phone width the `sceneShot` composite in a hidden pane lays the effect layers out wider than the painting. That is a flaw in the capture tool, not the room: a real screenshot of `it_pasta` at 390 x 844 shows the painting, the touches and the controls correctly placed.
+- **Seen from above:** the four lagoon islands carry their stands and boats but no house (below).
+- Contact sheet (arrival, one stand mid-reaction per area, one room per area, the zoom limit): `italy-stage-d.png` in the Stage D agent's scratchpad; the raw shots are `.data/shots/it-d-*.jpg`.
+
+### For the shared-ground pass
+
+- **Over the water (nine, vertices):** `carciofoIt` 1,885 (over the Tiber), `ragu` 1,723, `lagunaIt` 220, `campanileIt` 145, `italyBeef` 126, `tomato` 121, `seafood` 102, `etnaIt` 9, `valliIt` 2.
+- **Stand in front of stand (eighteen, rays of ten):** `oven<pasta` 9, `carciofoIt<ragu` 8, `vinoIt<ragu` 6, `italyChicken<cheese` 6, `vinoIt<quintoQuarto` 4, `sicilyMarket<friggitoria` 3, `sicilyMarket<pastry` 3, `olive<quintoQuarto` 3, `riceIt<casaVeneta` 3, `gelateria<romeMarket` 3, `bacaro<rialtoIt` 2, `tomato<friggitoria` 2, `lemon<tonnaraIt` 2, `quintoQuarto<ragu` 2, `carciofoIt<italy-bridge` 2 (the beds grown over the bridge ramp), `seafood<rialtoIt` 1, `etnaIt<capperiIt` 1, `carrettoIt<pastry` 1.
+- **Footprints sharing ground (thirty-six; overlap, or clearance under 1):** `olive/mushrooms` 3.50, `ragu/quintoQuarto` 3.03, `cheese/italyChicken` 2.68, `pecoraIt/olive` 2.61, `olive/vinoIt` 2.53, `pecoraIt/mushrooms` 2.53, `cheese/italyBeef` 2.37, `romeMarket/basil` 2.27, `carciofoIt/vinoIt` 1.88, `mandorleIt/etnaIt` 1.85, `olive/quintoQuarto` 1.43, `seafood/rialtoIt` 1.31, `bacaro/rialtoIt` 0.87, `pasta/panteonIt` 0.80, `sicilyMarket/pastry` 0.79, `pasta/oven` 0.74, `friggitoria/sicilyMarket` 0.69, `vinoIt/mushrooms` 0.63, `romeMarket/pasta` 0.61, `vinoIt/quintoQuarto` 0.60, `romeMarket/gelateria` 0.56, `sicilyMarket/carrettoIt` 0.42, `rialtoIt/campanileIt` 0.40, `seafood/bacaro` 0.39, `oven/panteonIt` 0.32, `ragu/vinoIt` 0.29, `romeMarket/oven` 0.01, `capperiIt/etnaIt` 0.00; with clear ground under 1: `colosseoIt/panteonIt` 0.21, `sicilyMarket/tomato` 0.19, `pecoraIt/vinoIt` 0.40, `carciofoIt/quintoQuarto` 0.39, `italyChicken/quintoQuarto` 0.40, `casaVeneta/riceIt` 0.51, `ragu/carciofoIt` 0.70, `ragu/olive` 0.95. The Agro Romano's ten objects inside one road loop carry most of them.
+- **Six off-road doors:** `ragu` 3.02 and `quintoQuarto` 2.23, whose fronts face a strip 1.8 wide between them and the casale's byre, with the Tiber east and the hen yard west, so no connected lane fits without moving an object; `granoIt` 5.80 and `campanileIt` 3.05, whose fronts face the shore; `tonnaraIt` 2.02, whose front is its pier on the sea; `stall-arancini` 3.45 (anchor), wedged behind the Ballarò market against Sicily's north shore. Close by: `stall-lemon` and `stall-tomato2` at 2.10 from IT-R4 (anchor), and `mushrooms`, whose front meets IT-R2 at 1.65 while its anchor is 4.59 away.
+- **The lead's item: Venice's lagoon islands stand bare.** None of their four houses is built (`it-rialto-casa`, `it-rialto-magazzino`, `it-sanmarco-casa`, `it-burano-casa` are all `built: false` inside the stands' pads). They must come back by spreading the stands across the quays, and the island edges must read as quays (a stone fondamenta edge and mooring) rather than sand.

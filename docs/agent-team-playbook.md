@@ -198,6 +198,7 @@ World:
 Stands:
 
 - Each main stand meets the hotpot table in the handbook: modelled food, always-on loop, six to nine people, lanterns under a beam, steam at the hot source
+- Every stand's front faces the camera side (+z): its `rot` is within ±0.75 radians, and its front door is within 2.0 of a road's edge. Roads come to the door; the stand does not turn to the road (`<id>-world.mjs`)
 - Each click moves food or material first, the worker second, one bystander third, speech last. The reaction is readable at world zoom after the 1.6-second approach
 - Repeated clicks stay bounded and return to rest. No person shakes
 - Every stand offers ambient speech in the local language plus English. Bubbles never overlap

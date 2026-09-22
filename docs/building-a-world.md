@@ -126,6 +126,8 @@ The hotpot house in `props.ts` (`hotpot()`) is the standard for a main food stan
 
 A small ingredient stand (the chilli field, the jujube tree, the pepper tree) is simpler: one crop that responds, one or two workers, a card, no room.
 
+**A stand's front faces the camera side (+z) within ±0.75 radians.** The arrival camera and the overview always look from the south: OrbitControls keeps the azimuth within 0.75 of world +z and the flight to an object keeps the visitor's compass direction. So a stand is authored with its work front on +z, and its `rot` stays inside [-0.75, 0.75]. **Roads come to the door; the stand does not turn to the road.** Where the street runs behind a stand, add a lane in front of it rather than turning the stand round, and every front door (the centre of the footprint's +z face, turned by `rot`) lies within 2.0 of a road's edge. A water-subject stand, a fish market or a tonnara, faces its water inside the same band. No wrapper in a props file may turn a body back against its `rot`: the props honour `rot` exactly as every area's do. Italy's Stage C turned eleven stands to about π towards a road on their north side and hid it behind such a wrapper; Stage D (2026-09-22) set them to 0 and added four lanes. `<id>-world.mjs` asserts the band and the front doors.
+
 ### 5.1 Stand skeleton
 
 ```ts

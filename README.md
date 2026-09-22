@@ -112,7 +112,7 @@ Jinhua ham, osmanthus and water bamboo in Jiangnan. The bao shop and tea hill mo
 
 ## The worlds
 
-China (Sichuan, Jiangnan, the north, the everyday table), Italy (Rome, Venice, Sicily), Korea (Seoul, Jeonju,
+China (Sichuan, Jiangnan, the north, the everyday table), Italy (Rome and the Agro Romano, Venice and its lagoon, Sicily from Palermo to Etna), Korea (Seoul, Jeonju,
 Busan, Jeju), Mexico (Mexico City, Oaxaca, Jalisco, Yucatán), the Middle East (Istanbul, the Levant, Arabia,
 Persia), the Mediterranean (Greece, Spain, Morocco, Dalmatia), India (Punjab & Delhi, Rajasthan, Mumbai, Kerala),
 Southeast Asia (Thailand, Vietnam's north and centre, Saigon & the Mekong delta), North America (New York & New England, the

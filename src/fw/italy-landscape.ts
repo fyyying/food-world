@@ -468,6 +468,8 @@ export type Road = { id: string; width: number; points: Pt[]; net: string };
  *    surface, over the 2.6 a door is allowed. The lane now turns down to the beds and both are answered.
  *  - **IT-R5** gains a last point [26.2, 25.2]. The coast road ended at [24, 22.8] meeting nothing at all, and
  *    `capperiIt` at [26.5, 26.5] was 3.6 from its surface. The road climbs to the caper terraces instead.
+ *    Stage D (2026-09-22) moved that point on to [26.2, 26.6], so the terraces' camera-facing front, at z 28.5,
+ *    is within 2.0 of the road's edge.
  *  - **IT-R6** moves 0.3 north, to z -20.9 … -21.2, and starts at x 22.4 rather than 22. At the blueprint's
  *    line the fondamenta's 1.8-wide ribbon hung 0.2 over the Grand Canal for its whole length and 0.4 off the
  *    quay's western end. **IT-R7**'s first point follows it to [27, -21].
@@ -480,12 +482,18 @@ export const IT_ROADS: Road[] = [
   { id: 'IT-R2', width: 2.0, net: 'mainland', points: [[-27.5, -7.4], [-29.2, -6.8], [-31, -6], [-32.6, -5.2], [-34, -4.6], [-36, -4.2], [-38, -4.1], [-41, -4], [-44, -3.4], [-45.2, -0.8], [-44.8, 2.2], [-43.6, 5], [-41.5, 7.6], [-38.5, 8.2], [-35.6, 7.6]] },
   { id: 'IT-R3', width: 2.2, net: 'mainland', points: [[-4, -7.4], [0, -8.4], [3, -10.2], [5.6, -12], [7, -13.5], [7, -17], [6.2, -20], [4.6, -22.4], [2.4, -23.8]] },
   { id: 'IT-R4', width: 2.0, net: 'sicily', points: [[-17, 21.4], [-17, 23], [-12, 23], [-8, 23], [-4, 23], [0, 22.6]] },
-  { id: 'IT-R5', width: 1.8, net: 'sicily', points: [[0, 22.6], [4, 22.2], [8, 21.8], [12, 22.2], [16, 22.6], [20, 22.4], [24, 22.8], [26.2, 25.2]] },
+  { id: 'IT-R5', width: 1.8, net: 'sicily', points: [[0, 22.6], [4, 22.2], [8, 21.8], [12, 22.2], [16, 22.6], [20, 22.4], [24, 22.8], [26.2, 26.6]] },
   { id: 'IT-R5b', width: 1.6, net: 'sicily', points: [[12, 22.2], [12, 25], [12, 28]] },
   { id: 'IT-R6', width: 1.8, net: 'rialto', points: [[22.4, -20.9], [26, -21], [30, -21.1], [33, -21.2]] },
   { id: 'IT-R7', width: 1.8, net: 'rialto', points: [[27, -21], [27, -19.6], [27, -16.6], [27.6, -14.8], [29.5, -13.9], [32, -13.6]] },
   { id: 'IT-R8', width: 1.6, net: 'burano', points: [[11.8, -24.6], [14, -24.4], [17, -24.6]] },
   { id: 'IT-R9', width: 1.4, net: 'valli', points: [[13.4, -12.9], [16, -13], [19, -12.9]] },
+  // Stage D, 2026-09-22: the doors. Every stand faces the camera (+z), so a stand whose street runs behind it
+  // gets a lane in front instead of being turned to the street. Four lanes, all within one landmass's network.
+  { id: 'IT-R1b', width: 1.6, net: 'mainland', points: [[-8, -7.4], [-9.6, -4.4], [-11.2, -2.2], [-15.2, -2.2], [-15.6, 0.4], [-22, 0.4], [-23, 2.4], [-25.6, 2.4]] },
+  { id: 'IT-R3b', width: 1.2, net: 'mainland', points: [[3, -10.2], [0.8, -13], [0.8, -17.6]] },
+  { id: 'IT-R4b', width: 1.4, net: 'sicily', points: [[-8, 23], [-8.1, 27.8]] },
+  { id: 'IT-R4c', width: 1.4, net: 'sicily', points: [[-13.6, 27.8], [-8.1, 27.8], [-3, 27.8]] },
 ];
 export const road = (id: string) => IT_ROADS.find(r => r.id === id)!;
 

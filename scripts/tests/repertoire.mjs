@@ -32,7 +32,7 @@ try {
   const plugin = {
     name: 'stub',
     resolveId(src, importer) {
-      if (src === './scene-painted' && importer && /scenes-(china|turkey|spain|thailand|vietnam)\.ts$/.test(importer)) return '\0stub';
+      if (src === './scene-painted' && importer && /scenes-(china|turkey|spain|thailand|vietnam|italy)\.ts$/.test(importer)) return '\0stub';
       if (src === './snapshot' && importer && /ui\.ts$/.test(importer)) return '\0snapshot';
     },
     load(id) {
@@ -51,6 +51,7 @@ try {
     `export { SPAIN_REPERTOIRE } from '${src('src/fw/spain-repertoire.ts')}';`,
     `export { THAILAND_REPERTOIRE } from '${src('src/fw/thailand-repertoire.ts')}';`,
     `export { VIETNAM_REPERTOIRE } from '${src('src/fw/vietnam-repertoire.ts')}';`,
+    `export { ITALY_REPERTOIRE } from '${src('src/fw/italy-repertoire.ts')}';`,
     `export { setRecipeLayerEnabled } from '${src('src/data.ts')}';`,
     `export { ALL_OBJECTS, enrich } from '${src('src/fw/graph.ts')}';`,
     `export { SCENES as CHINA_SCENES } from '${src('src/fw/scenes-china.ts')}';`,
@@ -58,6 +59,7 @@ try {
     `export { SPAIN_SCENES } from '${src('src/fw/scenes-spain.ts')}';`,
     `export { THAILAND_SCENES } from '${src('src/fw/scenes-thailand.ts')}';`,
     `export { VIETNAM_SCENES } from '${src('src/fw/scenes-vietnam.ts')}';`,
+    `export { ITALY_SCENES } from '${src('src/fw/scenes-italy.ts')}';`,
   ].join('\n'));
 
   // the card is written into one element; the rooms only need enough of a document to be imported
@@ -72,12 +74,12 @@ try {
   const m = await import(pathToFileURL(output));
 
   const objectIds = new Set(m.ALL_OBJECTS.map((o) => o.id));
-  const roomIds = new Set([...Object.keys(m.CHINA_SCENES), ...Object.keys(m.TURKEY_SCENES), ...Object.keys(m.SPAIN_SCENES), ...Object.keys(m.THAILAND_SCENES), ...Object.keys(m.VIETNAM_SCENES)]);
+  const roomIds = new Set([...Object.keys(m.CHINA_SCENES), ...Object.keys(m.TURKEY_SCENES), ...Object.keys(m.SPAIN_SCENES), ...Object.keys(m.THAILAND_SCENES), ...Object.keys(m.VIETNAM_SCENES), ...Object.keys(m.ITALY_SCENES)]);
   const { recipes: rawRecipes } = JSON.parse(await readFile('public/static/recipes.json', 'utf8'));
   const recipeIds = new Set(rawRecipes.map((r) => r.id));
 
   // 1. the content: real keys, a name, a line in the band, and a recipe id that resolves
-  const tables = [['CHINA_REPERTOIRE', m.CHINA_REPERTOIRE], ['TURKEY_REPERTOIRE', m.TURKEY_REPERTOIRE], ['SPAIN_REPERTOIRE', m.SPAIN_REPERTOIRE], ['THAILAND_REPERTOIRE', m.THAILAND_REPERTOIRE], ['VIETNAM_REPERTOIRE', m.VIETNAM_REPERTOIRE]];
+  const tables = [['CHINA_REPERTOIRE', m.CHINA_REPERTOIRE], ['TURKEY_REPERTOIRE', m.TURKEY_REPERTOIRE], ['SPAIN_REPERTOIRE', m.SPAIN_REPERTOIRE], ['THAILAND_REPERTOIRE', m.THAILAND_REPERTOIRE], ['VIETNAM_REPERTOIRE', m.VIETNAM_REPERTOIRE], ['ITALY_REPERTOIRE', m.ITALY_REPERTOIRE]];
   assert.equal(m.REPERTOIRE_TABLES.length, tables.length, 'repertoireOf merges every world table');
   let entries = 0, linked = 0;
   const seenKeys = new Map();

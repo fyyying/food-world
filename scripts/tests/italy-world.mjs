@@ -58,9 +58,14 @@ try {
   // here would be stale before the Stand maker's next commit and would fail that commit for a file the Builder
   // does not own. Until the lead sets STANDS_FINAL at Stage D, these three print what they measure as NOT RUN
   // with every id named; from then on they assert, and the lead writes the ceilings from the printed lists.
-  const STANDS_FINAL=false;
-  const standCheck=(list,msg)=>{
-    if(MEASURE||!STANDS_FINAL){ if(list.length) notRun.push(`${msg} — ${list.length} findings, stands in progress: ${list.join('; ')}`); return; }
+  // Stage D, 2026-09-22: set. The stands are final and every `rot` is inside [-0.75, 0.75], so the three checks
+  // assert against the ceilings OVER_WATER, HIDDEN and CROWDED below, measured that day. A ceiling is not a
+  // licence: a listed finding may not get worse and an unlisted one may not appear. Closing them is the
+  // shared-ground pass (docs/italy-world.md, Stage D). `ITALY_MEASURE=1` still prints every raw finding.
+  const STANDS_FINAL=true;
+  const raw=[];
+  const standCheck=(list,msg,all=list)=>{
+    if(MEASURE||!STANDS_FINAL){ if(all.length) notRun.push(`${msg} — ${all.length} findings${STANDS_FINAL?' (measure mode)':', stands in progress'}: ${all.join('; ')}`); return; }
     assert.deepEqual(list,[],msg);
   };
 
@@ -187,7 +192,10 @@ try {
   }
   const ribbons=world.group.children.filter(o=>o.isMesh&&o.name==='italy-road');
   assert.equal(ribbons.length,IT_ROADS.length,'one ribbon per route, never two overlapping strips');
-  assert.equal(IT_ROADS.length,10,'the blueprint fixes ten roads');
+  // The blueprint fixed ten roads; Stage D (2026-09-22) added four door lanes when every stand was turned to face
+  // the camera: IT-R1b in front of the Roman market and the pasta kitchen, IT-R3b to the rice fields, and IT-R4b
+  // and IT-R4c in front of the friggitoria and the pasticceria.
+  assert.equal(IT_ROADS.length,14,'the blueprint\'s ten roads and the four Stage D door lanes');
   for(const road of IT_ROADS){
     const mesh=ribbons.find(o=>o.userData.road===road.id);
     assert.ok(mesh,`${road.id}: no ribbon drawn`);
@@ -224,7 +232,7 @@ try {
   // at another route, a bridge deck, a door within half a road width plus 2.6, a shore within 2.6, or the
   // table edge. Every end this rule lets through, with its measured distance, so a change is visible:
   //   IT-R2 end [-35.6, 7.6] italyBeef 1.97 of 3.60   IT-R3 end [2.4, -23.8] riceIt 3.42 of 3.70
-  //   IT-R4 start [-17, 21.4] tomato 2.83 of 3.60     IT-R5 end [26.2, 25.2] capperiIt 1.33 of 3.50
+  //   IT-R4 start [-17, 21.4] tomato 2.83 of 3.60     IT-R5 end [26.2, 26.6] capperiIt 0.32 of 3.50
   //   IT-R5b end [12, 28] tonnaraIt 2.11 of 3.40      IT-R6 start [22.4, -20.9] seafood 2.67 of 3.50
   //   IT-R6 end [33, -21.2] bacaro 3.33 of 3.50       IT-R7 end [32, -13.6] campanileIt 3.27 of 3.50
   //   IT-R8 start/end lagunaIt 2.26 and 3.36 of 3.40  IT-R9 start/end the valli bank's own shore
@@ -305,7 +313,10 @@ try {
   // *behind* their market and are reached across the market's own ground, plus the chestnut wood and the herb
   // bed, which are a wood and a garden and have no lane of their own. A listed id may not get worse and an
   // unlisted one may not appear. Closing them is a re-blueprint, for the lead.
-  const OFF_ROAD={mushrooms:4.59, basil:5.40, 'stall-tomato':4.20, 'stall-cheese':5.00, 'stall-salumi':4.20, 'stall-arancini':3.45};
+  // Stage D, 2026-09-22: the piazza lane IT-R1b closed four of the six (basil, stall-tomato, stall-cheese and
+  // stall-salumi), so the ceiling holds the two left: the chestnut wood, whose front does meet IT-R2 (see the
+  // front-door check below), and the Ballarò stall wedged behind its market against the north shore.
+  const OFF_ROAD={mushrooms:4.59, 'stall-arancini':3.45};
   const doorFails=[];
   for(const o of ITALY_OBJECTS){
     const [x,z]=o.pos;
@@ -333,8 +344,42 @@ try {
     prop.updateMatrixWorld(true);
     stands.push({id:o.id,obj:o,group:prop});
   }
+  // ---------- every stand's front door meets a road ----------
+  // Stage D, 2026-09-22. Every `rot` is inside [-0.75, 0.75], so a stand's front faces the camera (+z) and the
+  // road must come to that front: the door is the centre of the footprint's +z face, turned by `rot`, and it must
+  // lie within 2.0 of a road's edge. Four lanes were added for it (IT-R1b, IT-R3b, IT-R4b, IT-R4c) and IT-R5's
+  // last point moved onto the caper terraces. Five fronts could not be reached without moving an object, and are
+  // listed as a ceiling for the shared-ground pass: the trattoria and the Mattatoio face a strip 1.8 wide between
+  // their fronts and the casale's byre; the latifondo and the campanile face the shore; the tonnara faces its sea.
+  const FRONT_OFF_ROAD={ragu:3.02, quintoQuarto:2.23, granoIt:5.80, campanileIt:3.05, tonnaraIt:2.02};
+  const frontFails=[];
+  for(const o of ITALY_OBJECTS){
+    if(o.hitOnly||o.prop==='none'||!REAL_PROPS[o.prop])continue;
+    assert.ok(Math.abs(o.rot??0)<=.75,`${o.id}: rot ${o.rot} turns its front away from the camera; roads come to the door, the stand does not turn to the road`);
+    const flat=REAL_PROPS[o.prop](); flat.updateMatrixWorld(true);
+    let b=null;
+    flat.traverse(m=>{
+      if(!m.isMesh||m.isSprite||!m.geometry)return;
+      if(m.material&&(m.material.visible===false||m.material.opacity===0))return;
+      m.geometry.computeBoundingBox();
+      const bb=m.geometry.boundingBox.clone().applyMatrix4(m.matrixWorld);
+      if(bb.min.y>2.5)return;
+      b=b?b.union(bb):bb;
+    });
+    const r=o.rot??0, lx=(b.min.x+b.max.x)/2, lz=b.max.z;
+    const dx=o.pos[0]+lx*Math.cos(r)+lz*Math.sin(r), dz=o.pos[1]-lx*Math.sin(r)+lz*Math.cos(r);
+    const gap=Math.min(...IT_ROADS.map(rd=>distToRoute(dx,dz,rd.points)-rd.width/2));
+    if(gap<=2.0)continue;
+    if(!(o.id in FRONT_OFF_ROAD)) frontFails.push(`${o.id}: its front door [${dx.toFixed(1)}, ${dz.toFixed(1)}] is ${gap.toFixed(2)} from a road`);
+    else if(gap>FRONT_OFF_ROAD[o.id]+.05) frontFails.push(`${o.id}: front door ${gap.toFixed(2)} from a road where 2026-09-22 measured ${FRONT_OFF_ROAD[o.id]}; a listed door may not get worse`);
+  }
+  assert.deepEqual(frontFails,[],'a stand faces the camera with no road at its front door');
   if(missingProps.length) notRun.push(`${missingProps.length} of ${missingProps.length+stands.length} stand props are not in ITALY_PROPS yet, so no water, visibility or footprint measurement covers them: ${missingProps.join(', ')}`);
   assert.ok(stands.length>=15,`the area should build at least fifteen props with what exists, built ${stands.length}`);
+  // Nine stands whose built bodies reach past their shore, measured on 2026-09-22 with the Stage D rotations.
+  // Each is the blueprint position against the size the stand was built to; none is a rotation effect (every
+  // count is the Stage C count or lower). Vertex counts over the water.
+  const OVER_WATER={ragu:1723, seafood:102, lagunaIt:220, carciofoIt:1885, italyBeef:126, valliIt:2, tomato:121, campanileIt:145, etnaIt:9};
   const vertex=new THREE.Vector3(), meshBox=new THREE.Box3();
   const soaked=[];
   for(const s of stands){
@@ -352,9 +397,12 @@ try {
         if(wet(vertex.x,vertex.z)){n++; over??=`${o.name||o.parent?.name||'a mesh'} at ${vertex.x.toFixed(1)}, ${vertex.z.toFixed(1)}`;}
       }
     });
-    if(n) soaked.push(`${s.id}: ${over} hangs over the water (${n} vertices)`);
+    if(!n)continue;
+    raw.push(`${s.id}: ${over} hangs over the water (${n} vertices)`);
+    if(!(s.id in OVER_WATER)) soaked.push(`${s.id}: ${over} hangs over the water (${n} vertices)`);
+    else if(n>OVER_WATER[s.id]) soaked.push(`${s.id}: ${n} vertices over water where 2026-09-22 measured ${OVER_WATER[s.id]}; a listed overhang may not get worse`);
   }
-  standCheck(soaked,'a stand hangs over the water');
+  standCheck(soaked,'a stand hangs over the water',raw.splice(0));
 
   // ---------- what the Builder placed: the scenery boxes ----------
   const placedGroups=new Set(world.placed.map(p=>p.group));
@@ -469,6 +517,14 @@ try {
     root.traverse(o=>{ if(o.isMesh&&!o.isSprite&&o.geometry&&!(o.material&&(o.material.visible===false||o.material.opacity===0))){ownerOf.set(o,id);rootOf.set(o,root);blockers.push(o);} });
   }
   const standIds=new Set(stands.map(s=>s.id));
+  // Eighteen pairs, measured on 2026-09-22 with the Stage D rotations, rays out of ten. `carciofoIt<italy-bridge`
+  // is the artichoke beds grown over the Tiber bridge's ramp, which is the stand's finding, not the bridge's.
+  const HIDDEN={
+    'oven<pasta':9, 'carciofoIt<ragu':8, 'vinoIt<ragu':6, 'italyChicken<cheese':6, 'vinoIt<quintoQuarto':4,
+    'sicilyMarket<friggitoria':3, 'sicilyMarket<pastry':3, 'olive<quintoQuarto':3, 'riceIt<casaVeneta':3, 'gelateria<romeMarket':3,
+    'bacaro<rialtoIt':2, 'tomato<friggitoria':2, 'lemon<tonnaraIt':2, 'quintoQuarto<ragu':2, 'carciofoIt<italy-bridge':2,
+    'seafood<rialtoIt':1, 'etnaIt<capperiIt':1, 'carrettoIt<pastry':1,
+  };
   const byDecor=[], covered=[];
   const ray=new THREE.Raycaster(); ray.far=400;
   const back=CAM_RAY.clone().multiplyScalar(70), into=CAM_RAY.clone().negate();
@@ -498,9 +554,12 @@ try {
     for(const [id,n] of Object.entries(by)){
       const own=ownedBy.get(id)??owner[id];
       if(own&&(own===s.id||own===alias[s.id]))continue;
-      if(!standIds.has(id)&&(grown[id]||crossesRoad)) covered.push(`${s.id}: its own footprint ${grown[id]?'has grown over':'lies across a road, and'} ${id} covers it on ${n} of 10 rays`);
-      else if(!standIds.has(id)) byDecor.push(`${s.id}: ${id} covers it on ${n} of 10 rays from the camera`);
-      else covered.push(`${s.id}<${id}: covered on ${n} of 10 rays`);
+      const key=`${s.id}<${id}`;
+      if(!standIds.has(id)&&!(grown[id]||crossesRoad)){ byDecor.push(`${s.id}: ${id} covers it on ${n} of 10 rays from the camera`); continue; }
+      const line=!standIds.has(id)?`${s.id}: its own footprint ${grown[id]?'has grown over':'lies across a road, and'} ${id} covers it on ${n} of 10 rays`:`${key}: covered on ${n} of 10 rays`;
+      raw.push(line);
+      if(!(key in HIDDEN)) covered.push(line);
+      else if(n>HIDDEN[key]) covered.push(`${key}: covered on ${n} of 10 rays where 2026-09-22 measured ${HIDDEN[key]}; a listed pair may not get worse`);
     }
   }
   // Nothing the Builder placed may stand in front of a clickable object. This half of the rule is the
@@ -509,7 +568,7 @@ try {
   // The other half is a stand covering a stand, and at Stage C the Builder owns neither end of it: the
   // positions are fixed in `italy-objects.ts` and the sizes in `props-italy.ts`. Nothing is listed yet, so any
   // pair that appears is reported to the lead.
-  standCheck(covered,'an Italian stand stands in front of another Italian stand');
+  standCheck(covered,'an Italian stand stands in front of another Italian stand',raw.splice(0));
 
   // ---------- footprints: what ground each stand actually stands on ----------
   const foot=g=>{
@@ -528,6 +587,19 @@ try {
     const dx=Math.max(a.min.x-b.max.x,b.min.x-a.max.x), dz=Math.max(a.min.z-b.max.z,b.min.z-a.max.z);
     return (dx<0&&dz<0)?-Math.min(-dx,-dz):Math.hypot(Math.max(dx,0),Math.max(dz,0));
   };
+  // Thirty-six pairs inside a unit of one another, measured on 2026-09-22 with the Stage D rotations: positive
+  // for an overlap, negative for a clearance under the one unit the rule asks for. Every one is the Stage C
+  // measurement unchanged; the Agro Romano's ten objects inside one road loop carry most of them.
+  const CROWDED={
+    'olive/mushrooms':3.50, 'ragu/quintoQuarto':3.03, 'cheese/italyChicken':2.68, 'pecoraIt/olive':2.61, 'olive/vinoIt':2.53,
+    'pecoraIt/mushrooms':2.53, 'cheese/italyBeef':2.37, 'romeMarket/basil':2.27, 'carciofoIt/vinoIt':1.88, 'mandorleIt/etnaIt':1.85,
+    'olive/quintoQuarto':1.43, 'seafood/rialtoIt':1.31, 'bacaro/rialtoIt':0.87, 'pasta/panteonIt':0.80, 'sicilyMarket/pastry':0.79,
+    'pasta/oven':0.74, 'friggitoria/sicilyMarket':0.69, 'vinoIt/mushrooms':0.63, 'romeMarket/pasta':0.61, 'vinoIt/quintoQuarto':0.60,
+    'romeMarket/gelateria':0.56, 'sicilyMarket/carrettoIt':0.42, 'rialtoIt/campanileIt':0.40, 'seafood/bacaro':0.39, 'oven/panteonIt':0.32,
+    'ragu/vinoIt':0.29, 'romeMarket/oven':0.01, 'capperiIt/etnaIt':0.00, 'colosseoIt/panteonIt':-0.21, 'sicilyMarket/tomato':-0.19,
+    'pecoraIt/vinoIt':-0.40, 'carciofoIt/quintoQuarto':-0.39, 'italyChicken/quintoQuarto':-0.40, 'casaVeneta/riceIt':-0.51,
+    'ragu/carciofoIt':-0.70, 'ragu/olive':-0.95,
+  };
   const feet=new Map(stands.map(s=>[s.id,foot(s.group)]));
   const crowded=[];
   for(let i=0;i<stands.length;i++)for(let j=i+1;j<stands.length;j++){
@@ -536,9 +608,12 @@ try {
     if(alias[a]===b||alias[b]===a)continue;
     const gap=clearance(fa,fb);
     if(gap>=1)continue;
-    crowded.push(`${a}/${b}: ${gap<0?`overlap ${(-gap).toFixed(2)}`:`only ${gap.toFixed(2)} of clear ground`}`);
+    const key=`${a}/${b}`, line=`${key}: ${gap<0?`overlap ${(-gap).toFixed(2)}`:`only ${gap.toFixed(2)} of clear ground`}`;
+    raw.push(line);
+    if(!(key in CROWDED)) crowded.push(line);
+    else if(-gap>CROWDED[key]+.05) crowded.push(`${key}: ${(-gap).toFixed(2)} where 2026-09-22 measured ${CROWDED[key].toFixed(2)}; a crowded pair may not get worse`);
   }
-  standCheck(crowded,'two Italian stand footprints share ground');
+  standCheck(crowded,'two Italian stand footprints share ground',raw.splice(0));
 
   // ---------- the bridges ----------
   const bridges=world.group.children.filter(o=>o.name==='italy-bridge');

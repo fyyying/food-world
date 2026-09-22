@@ -27,6 +27,7 @@ import { TURKEY_SCENES } from "./scenes-turkey";
 import { SPAIN_SCENES } from "./scenes-spain";
 import { THAILAND_SCENES } from "./scenes-thailand";
 import { VIETNAM_SCENES } from "./scenes-vietnam";
+import { ITALY_SCENES } from "./scenes-italy";
 import { STORIES, type Story } from "./stories";
 import { escapeHtml } from "./plates";
 import { type Diorama, type DishMarker, type Placed } from "./worldkit";
@@ -36,7 +37,7 @@ import { mountSettings } from "./settings";
 import { mountWorldIntro } from "./world-intro";
 import { person } from "./props";
 import { snapshotObject } from "./snapshot";
-const SCENES = { ...CHINA_SCENES, ...TURKEY_SCENES, ...SPAIN_SCENES, ...THAILAND_SCENES, ...VIETNAM_SCENES };
+const SCENES = { ...CHINA_SCENES, ...TURKEY_SCENES, ...SPAIN_SCENES, ...THAILAND_SCENES, ...VIETNAM_SCENES, ...ITALY_SCENES };
 mountSettings();
 
 // ---------- renderer ----------
@@ -521,7 +522,7 @@ function enterRegion(region: MapRegion) {
   ui.hide(); storiesBtn.hidden = true;
   const id = region.id as WorldId;
   if (diorama) worldScene.remove(diorama.group);
-  world = id; currentArea = id === 'middle-east' ? 'istanbul' : id === 'southeast-asia' ? 'bangkok' : null;
+  world = id; currentArea = id === 'middle-east' ? 'istanbul' : id === 'southeast-asia' ? 'bangkok' : id === 'italy' ? 'rome' : null;
   diorama = getWorld(id);
   const enteringDiorama = diorama;
   china = worldRecipesNow();
@@ -536,7 +537,8 @@ function enterRegion(region: MapRegion) {
       level = "world"; switchScene(worldScene); configureControls("world");
       // the arrival view of each grown table: Istanbul on the Middle East table, the Bangkok khlongs on the
       // Southeast Asia one (AREAS.bangkok.center), the default valley everywhere else
-      const target = id === 'middle-east' ? new THREE.Vector3(-24,0,-20) : id === 'southeast-asia' ? new THREE.Vector3(-44, 0, 0) : new THREE.Vector3(-4, 0, 2);
+      // Italy arrives on the Campo de' Fiori market in Rome (AREAS.rome.center)
+      const target = id === 'middle-east' ? new THREE.Vector3(-24,0,-20) : id === 'southeast-asia' ? new THREE.Vector3(-44, 0, 0) : id === 'italy' ? new THREE.Vector3(-19, 0, -6) : new THREE.Vector3(-4, 0, 2);
       camera.position.copy(target).add(new THREE.Vector3(-2,80,90)); controls.target.copy(target);
       worldIntro.enter(id, false);
       // Set time-based poses and warm the world's shaders while the paper still covers it. Without this,

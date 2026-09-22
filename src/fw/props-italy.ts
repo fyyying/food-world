@@ -33,7 +33,6 @@
 import * as THREE from "three";
 import { mat, add, rnd, C, person, wear, bubble, ambientChat, tickChildren, awning, type P } from "./props";
 import { IT_LINES } from "./italy-speech";
-import { ITALY_OBJECTS } from "./italy-objects";
 
 /** The Researcher owns the lines (docs/italy-world.md, module contracts); this file re-exports the one copy. */
 export { IT_LINES } from "./italy-speech";
@@ -73,22 +72,14 @@ export const IT = {
 
 /**
  * main.ts always approaches from the south: the overview keeps OrbitControls' azimuth within 0.75 of world +z and
- * the flight keeps the visitor's compass direction. Eleven of the thirty-six blueprint rotations turn an object's
- * front to a road on its north side (rot near 3.14), which would show the camera the back wall of a bay. So each
- * builder here is authored with its work front on +z, and `facing` turns that body by minus the object's own
- * `rot` from `italy-objects.ts`: placed at the blueprint rotation, every stand shows its food to the south. The
- * stall children and the three stand-owned buildings are world offsets from the object's anchor, so inside a
- * body they are written as those offsets unchanged. Steam and smoke points are carried out into the wrapper.
+ * the flight keeps the visitor's compass direction. So each builder here is authored with its work front on +z,
+ * and `italy-objects.ts` keeps every `rot` within [-0.75, 0.75] (docs/building-a-world.md, the stand section):
+ * the stand faces the camera and the road comes to its door, never the other way round. The props honour `rot`
+ * exactly as every other area's do; the Stage C `facing` wrapper, which turned every body back to the south
+ * whatever its rotation, was removed at Stage D (2026-09-22) when the rotations themselves were brought into the
+ * band. The stall children and the three stand-owned buildings are written as offsets from the object's anchor,
+ * which stay world offsets because every object that owns one is placed at rot 0.
  */
-const ROT: Record<string, number> = Object.fromEntries(ITALY_OBJECTS.filter((o) => o.prop !== "none").map((o) => [o.prop, o.rot ?? 0]));
-function facing(prop: string, body: P): P {
-  const g = group(); g.name = `it-stand-${prop}`;
-  g.add(body); body.rotation.y = -(ROT[prop] ?? 0); body.updateMatrix();
-  for (const key of ["steam", "smoke"] as const) { const v = body.userData[key]; if (v) { g.userData[key] = v.clone().applyMatrix4(body.matrix); delete body.userData[key]; } }
-  g.userData.ownReaction = body.userData.ownReaction; g.userData.poke = body.userData.poke; g.userData.tick = body.userData.tick;
-  delete body.userData.tick; delete body.userData.poke;
-  return g;
-}
 
 // ---------- reaction machinery, copied from props-thailand.ts (module-private there) ----------
 
@@ -3104,7 +3095,7 @@ const BUILDERS: Record<string, () => P> = {
   carciofaia, sheepFold, oliveGrove, wineCart, cow: oxYard, chicken: henYard, porciniWood, herbGarden, valliPesca, riceFieldItaly, wheatLatifondo, tomatoField, citrusGrove, almondGrove, caperTerrace,
   colosseum, pantheon, mattatoio, gelateria, rialtoBridge, campanile, etna, carretto,
 };
-export const ITALY_PROPS: Record<string, () => P> = Object.fromEntries(Object.entries(BUILDERS).map(([prop, build]) => [prop, () => facing(prop, build())]));
+export const ITALY_PROPS: Record<string, () => P> = { ...BUILDERS };
 
 /**
  * Card badges. The thirteen room objects each get a small modelled dish, the hero of the room; the card shows its

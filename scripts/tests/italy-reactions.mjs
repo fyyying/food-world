@@ -149,7 +149,7 @@ try{
     const distance=Math.max(8.8,Math.min(18,Math.max(Math.max(2.2,size.x+.4),Math.max(2.2,size.z+.4))*1.05));
     const target=new THREE.Box3().setFromObject(subject).expandByScalar(.05), aim=target.getCenter(new THREE.Vector3());
     // main.ts keeps the visitor's compass direction, and the overview never leaves the south: the camera does
-    // not turn with the stand. Every stand turns its own body to face it (`facing` in props-italy.ts).
+    // not turn with the stand. Every stand's `rot` is inside [-0.75, 0.75] (Stage D, 2026-09-22), so it faces it.
     for(const azimuth of [-0.75,0,0.75]){
       const eye=new THREE.Vector3(centre.x+Math.sin(azimuth)*distance,1.2+1.4,centre.z+Math.cos(azimuth)*distance);
       const dir=aim.clone().sub(eye),reach=dir.length();dir.normalize();

@@ -13,11 +13,24 @@ import { VN, vietnamHouse, woodenBridge, type VietnamStyle } from './vietnam-arc
 import { vietnamResident, vietnamWalk } from './vietnam-people';
 import {
   VN_ROADS, VN_BRIDGES, BRIDGE_SPAN, ROAD_LIFT, RED_RIVER_CURVE, CHANNEL_CURVES, RIVER_Y, CHANNEL_Y,
-  freeGround, roadDistance, type Pt,
+  freeGround, roadDistance, type Pt, type Road,
 } from './vietnam-landscape';
+import { VIETNAM_OBJECTS } from './vietnam-objects';
 import type { LayoutCtx } from './worldkit';
 
 export const ROAD_Y = .036, PAVING_Y = .018;
+/** The paved squares: name, centre, width, depth, colour. Axis-aligned rectangles; each side is measured
+ *  against the roads and the building footprints in `vietnam-world.mjs`.
+ *  - the guild street's market yard, between VN-R1, VN-R1b, the courtyard grill and the lake embankment
+ *  - the Saigon street's own square, inscribed inside the VN-R5 ring
+ *  - the Hội An quay, between VN-R4, the quay spur and the quay itself
+ *  - the Huế veranda apron, between VN-R3 and the two kitchens it serves */
+export const VN_PAVING: [string, number, number, number, number, string][] = [
+  ['guild-street-paving', -1.5, -18.6, 3.8, 2.8, '#CFC4A6'],
+  ['saigon-street-paving', 18.2, 14.5, 5.0, 3.6, '#CFC4A6'],
+  ['hoi-an-quay-paving', 30.8, -2.2, 3.2, 2.8, '#D6CCB2'],
+  ['hue-veranda-paving', 17.1, -5.4, 3.4, 2.4, '#D2C8AE'],
+];
 export const BRIDGE_DECK_Y = ROAD_LIFT;
 
 /** A straight walking segment cut from the road table, so a walker never rounds a corner into a wall.
@@ -80,12 +93,15 @@ export const VN_HOUSES: [string, VietnamStyle, number, number, number, number, n
   ['vn-stilt-house', 'stilt', -0.8, 9.6, -.1, 2.1, 1.7, 2.2, 1],
 ];
 
-/** A road ribbon: one mesh per route, above the paving and marked so it wins the depth test. */
+/** A road ribbon: one mesh per route, above the paving and marked so it wins the depth test. A route whose
+ *  first and last points are the same is drawn as one closed curve, so the ring has no seam where it began. */
 function ribbon(points: Pt[], width: number, color: string, y: number): THREE.Mesh {
-  const curve = new THREE.CatmullRomCurve3(points.map(([x, z]) => new THREE.Vector3(x, y, z)));
-  const steps = points.length * 12, pts = curve.getSpacedPoints(steps), pos: number[] = [], idx: number[] = [];
+  const ring = points.length > 3 && Math.hypot(points[0][0] - points[points.length - 1][0], points[0][1] - points[points.length - 1][1]) < 1e-6;
+  const line = ring ? points.slice(0, -1) : points;
+  const curve = new THREE.CatmullRomCurve3(line.map(([x, z]) => new THREE.Vector3(x, y, z)), ring);
+  const steps = line.length * 12, pts = curve.getSpacedPoints(steps), pos: number[] = [], idx: number[] = [];
   for (let i = 0; i <= steps; i++) {
-    const p = pts[i], tg = curve.getTangentAt(i / steps);
+    const p = pts[i], tg = curve.getTangentAt(Math.min(1, i / steps));
     const side = new THREE.Vector3(-tg.z, 0, tg.x).normalize().multiplyScalar(width / 2);
     pos.push(p.x - side.x, y, p.z - side.z, p.x + side.x, y, p.z + side.z);
     if (i < steps) { const k = i * 2; idx.push(k, k + 1, k + 2, k + 1, k + 3, k + 2); }
@@ -95,6 +111,47 @@ function ribbon(points: Pt[], width: number, color: string, y: number): THREE.Me
   const m = new THREE.Mesh(geo, mat(color, { polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 }));
   m.receiveShadow = true; return m;
 }
+/**
+ * The points a route is drawn through. Two ribbons that meet butt-end at a junction leave a wedge of grass
+ * between them, because each one stops on the junction's centre and their edges are not parallel; the owner
+ * saw exactly that where the coast road meets the Saigon street. So a route that ends on another route, on a
+ * bridge deck or at a stand's door is carried a little past that point along its own last direction, and the
+ * two surfaces overlap instead of meeting. A route that ends at the table edge is left alone: it leaves the
+ * table. Nothing here changes the road table; it changes only what is drawn.
+ */
+function drawnPoints(road: Road): Pt[] {
+  const points = road.points.map(p => [...p] as Pt);
+  const ring = Math.hypot(points[0][0] - points[points.length - 1][0], points[0][1] - points[points.length - 1][1]) < 1e-6;
+  if (ring) return points;
+  for (const end of [0, 1]) {
+    const i = end ? points.length - 1 : 0, j = end ? points.length - 2 : 1;
+    const [x, z] = points[i];
+    if (Math.abs(z) >= 27.6 || x <= -11.6 || x >= 37.6) continue;                       // the road leaves the table
+    let reach = 0;
+    for (const other of VN_ROADS) {
+      if (other.id === road.id) continue;
+      for (let k = 0; k < other.points.length - 1; k++) {
+        const [ax, az] = other.points[k], [bx, bz] = other.points[k + 1];
+        const ex = bx - ax, ez = bz - az, l2 = ex * ex + ez * ez || 1;
+        const t = Math.max(0, Math.min(1, ((x - ax) * ex + (z - az) * ez) / l2));
+        if (Math.hypot(x - ax - ex * t, z - az - ez * t) < 2.4) reach = Math.max(reach, other.width / 2 + .45);
+      }
+    }
+    for (const [bx, bz] of VN_BRIDGES) if (Math.hypot(x - bx, z - bz) < 2.4) reach = Math.max(reach, .8);
+    for (const o of VIETNAM_OBJECTS) if (Math.hypot(x - o.pos[0], z - o.pos[1]) < 2.4) reach = Math.max(reach, .7);
+    if (!reach) continue;
+    const dx = x - points[j][0], dz = z - points[j][1], len = Math.hypot(dx, dz) || 1;
+    // The carry never takes the drawn surface out of Vietnam's band or off the table.
+    const margin = road.width / 2 + .3;
+    points[i] = [
+      Math.min(38 - margin, Math.max(-12 + margin, x + dx / len * reach)),
+      Math.min(28 - margin, Math.max(-28 + margin, z + dz / len * reach)),
+    ];
+  }
+  return points;
+}
+
+/** A paved surface: an axis-aligned rectangle, never a soft shape. Each side lies under a road or a wall. */
 function slab(x: number, z: number, w: number, d: number, color: string, y: number, name: string): THREE.Mesh {
   const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), mat(color));
   m.rotation.x = -Math.PI / 2; m.position.set(x, y, z); m.receiveShadow = true; m.name = name; return m;
@@ -120,13 +177,15 @@ export function vietnamTown(ctx: LayoutCtx) {
   const { group, place, tickers, TOP } = ctx;
 
   // ---------- paving under the densest clusters, then the lanes on top of it ----------
-  group.add(slab(-4.2, -18.2, 13, 4.4, '#CFC4A6', PAVING_Y, 'guild-street-paving'));
-  group.add(slab(18.2, 14.6, 9.6, 7.2, '#CFC4A6', PAVING_Y, 'saigon-street-paving'));
-  group.add(slab(29.2, -1.2, 6.4, 5.4, '#D6CCB2', PAVING_Y, 'hoi-an-quay-paving'));
-  group.add(slab(17.2, -5.6, 5.6, 3.2, '#D2C8AE', PAVING_Y, 'hue-veranda-paving'));
+  // Four squares, not four blobs. The owner read the old Saigon slab as "a strangely painted circle": it was
+  // a 9.6 by 7.2 sheet laid on open grass with its own soft tint over it and nothing standing on it. Each one
+  // is now a rectangle that a real square defines, with every side under a road's own surface or under the
+  // wall of the building it serves, and no slab is laid where there is no square: VN_PAVING carries the four
+  // and `vietnam-world.mjs` measures every side against the roads and the footprints.
+  for (const [name, x, z, w, d, colour] of VN_PAVING) group.add(slab(x, z, w, d, colour, PAVING_Y, name));
   // Each route sits a little above the last: two ribbons at one height z-fight where they cross.
   for (const [i, r] of VN_ROADS.entries()) {
-    const strip = ribbon(r.points, r.width, r.width >= 2.2 ? '#CDBB94' : '#D2C3A2', ROAD_Y + i * .004);
+    const strip = ribbon(drawnPoints(r), r.width, r.width >= 2.2 ? '#CDBB94' : '#D2C3A2', ROAD_Y + i * .004);
     strip.name = 'vietnamese-road'; strip.userData.road = r.id; group.add(strip);
   }
 

@@ -26,19 +26,29 @@ export const atEdgeZ = (z: number) => Math.abs(z) >= TABLE.maxZ;
 
 /** The Red River: off the north edge at x -9, across the whole north of the band south of the guild street,
  *  into the eastern sea at the bight. The first two points share an x so the cap at the table edge is square. */
-export const RED_RIVER: Pt[] = [[-9, -28], [-9, -26.9], [-8, -26], [-5, -25], [1, -24.5], [8, -24], [13, -24.4], [18, -25], [21, -25.6], [24.3, -26.2]];
+export const RED_RIVER: Pt[] = [[-9, -28], [-9, -26.9], [-8, -26], [-5, -25], [1, -24.5], [8, -24], [13, -24.4], [18, -25], [21, -25.6], [24.3, -26.2], [25.2, -26.6]];
 export const RED_RIVER_WIDTH = 3.6, RED_RIVER_RIM = 5.2;
 /** The Perfume River, past Huế at CT1 and into the eastern sea at [33, -7]. Its head moved from the
  *  blueprint's [12.5, -11.5] to [15.1, -10.0]: the blueprint's first two points lie inside the corridor of
  *  VN-R3, the Huế river road, whose own points are fixed, so the river as blueprinted ran along the inside of
  *  the road for two units. It now rises clear of it. Nothing else about the line changed. */
-export const PERFUME: Pt[] = [[15.1, -10.0], [17, -9.2], [21, -7.6], [25, -6], [29, -6], [33, -7]];
+export const PERFUME: Pt[] = [[15.1, -10.0], [17, -9.2], [21, -7.6], [25, -6], [29, -6], [33, -7], [34.4, -7.2]];
 export const PERFUME_WIDTH = 2.8, PERFUME_RIM = 4.2;
+/** The spring the Perfume rises from. The stones at the head were already here; under the river-continuity
+ *  rule (owner, 2026-09-22) a ring of stones is not a source, so the head is a pool of water and the river's
+ *  first point lies inside it. Thailand's builder added this with the shared sea fix; nothing else moved. */
+export const PERFUME_SPRING = { x: 15.1, z: -10.0, r: .85 };
 /** The three Mekong channels, from the western band edge to the southern sea. They replace the old delta curve. */
 export const CHANNEL_A: Pt[] = [[-12, 14.5], [-7, 16.5], [-2, 19.5], [2, 22], [4, 24]];
-export const CHANNEL_B: Pt[] = [[-7.7, 19.2], [-4.5, 21], [-2.5, 23.4]];
-export const CHANNEL_C: Pt[] = [[-7, 16.5], [-7.8, 20], [-8.2, 23.4]];
+export const CHANNEL_B: Pt[] = [[-7.7, 19.2], [-4.5, 21], [-2.5, 23.4], [-2.2, 24.3]];
+export const CHANNEL_C: Pt[] = [[-7, 16.5], [-7.8, 20], [-8.2, 23.4], [-8.3, 24.3]];
 export const CHANNEL_WIDTH = { a: 2.6, b: 2.6, c: 2.0 };
+/** The head of the delta, where channel A comes out of the trees at the western edge of MK1. The blueprint
+ *  gives the channel a source at the band edge, which under the river-continuity rule (owner, 2026-09-22) is
+ *  open ground: the channel stopped in the middle of the delta. It now rises from a pool, the way the Perfume
+ *  rises from its spring. The pool reaches 0.4 into the two-unit strip between the areas, which carries ground
+ *  only for objects, roads, clusters and decor; the sea's own south margin already crosses it. */
+export const MEKONG_HEAD = { x: -11.6, z: 14.4, r: .8 };
 /** Hoàn Kiếm lake. The blueprint's circle of r 1.8 at [1, -19.8] cannot be drawn: the `hoanKiem` embankment as
  *  built runs from x -5.87 to 0.40 and the lakeside path VN-R1b closes the pocket on the other three sides, so
  *  a circle of that radius puts both the path and the stand in the water. The lake is the largest ellipse that
@@ -59,6 +69,21 @@ export const RIVER_Y = .09, CHANNEL_Y = .086, LAKE_Y = .075, RIM_Y = .034, PADDY
 export const ROAD_LIFT = .22;
 
 const curveOf = (pts: Pt[]) => new THREE.CatmullRomCurve3(pts.map(([x, z]) => new THREE.Vector3(x, 0, z)));
+/** Every Vietnamese waterway and still pool as named data, so a harness can check that each river runs from a
+ *  source to a mouth instead of stopping in the middle. `thailand-landscape.ts` exports the same two shapes. */
+export const VN_WATERWAYS: { id: string; points: Pt[]; width: number }[] = [
+  { id: 'red-river', points: RED_RIVER, width: RED_RIVER_WIDTH },
+  { id: 'perfume-river', points: PERFUME, width: PERFUME_WIDTH },
+  { id: 'mekong-channel-a', points: CHANNEL_A, width: CHANNEL_WIDTH.a },
+  { id: 'mekong-channel-b', points: CHANNEL_B, width: CHANNEL_WIDTH.b },
+  { id: 'mekong-channel-c', points: CHANNEL_C, width: CHANNEL_WIDTH.c },
+];
+export const VN_POOLS: { id: string; x: number; z: number; rx: number; rz: number }[] = [
+  { id: 'hoan-kiem-lake', x: HOAN_KIEM.x, z: HOAN_KIEM.z, rx: HOAN_KIEM.rx, rz: HOAN_KIEM.rz },
+  { id: 'perfume-spring', x: PERFUME_SPRING.x, z: PERFUME_SPRING.z, rx: PERFUME_SPRING.r, rz: PERFUME_SPRING.r * .8 },
+  { id: 'mekong-head', x: MEKONG_HEAD.x, z: MEKONG_HEAD.z, rx: MEKONG_HEAD.r, rz: MEKONG_HEAD.r * .85 },
+];
+
 export const RED_RIVER_CURVE = curveOf(RED_RIVER);
 export const PERFUME_CURVE = curveOf(PERFUME);
 export const CHANNEL_CURVES = { a: curveOf(CHANNEL_A), b: curveOf(CHANNEL_B), c: curveOf(CHANNEL_C) };
@@ -137,10 +162,10 @@ export function vietnamLandscape(ctx: LayoutCtx) {
   tint(-4, -18, 8, 6, '#C9C0A8');             // HN1, the guild street: swept earth and brick dust
   tint(8, -16, 7, 5, '#B9C48A');              // HN2, the Red River craft courtyard: silt green
   tint(16.5, -6.5, 6.5, 5, '#A9B58A');        // CT1, the Huế garden edge
-  tint(17.6, -4.4, 3.2, 2.4, '#C4BBA6');      // and its clay tile apron at the veranda
+  tint(17.1, -5.4, 2.6, 2.0, '#C4BBA6');      // and its clay tile apron at the veranda
   tint(28, -1, 6, 5.5, '#C4BBA6');            // CT2, Hội An's paving
-  tint(31.4, -1.6, 3, 2.6, '#EADFBD');        // turning to sand at the quay
-  tint(18, 14, 8, 6, '#C9C0A8');              // SG1, Saigon and Chợ Lớn street paving
+  tint(30.9, -2.2, 2.6, 2.2, '#EADFBD');      // turning to sand at the quay
+  tint(18.2, 14.5, 5.4, 4, '#C9C0A8');        // SG1, Saigon and Chợ Lớn, inside the street's own ring
   tint(-5, 13, 8, 7, '#7FB86A', -.05);        // MK1, the delta's wet green
   tint(-8.5, 16.5, 4, 3.4, '#8FB86A', .1);    // and the flooded ground between the channels
   tint(2, -22.6, 13, 2.2, '#9FB07A');         // the Red River's own damp bank, under the paddies
@@ -179,6 +204,10 @@ export function vietnamLandscape(ctx: LayoutCtx) {
     return water;
   };
   pool(HOAN_KIEM.x, HOAN_KIEM.z, HOAN_KIEM.rx, HOAN_KIEM.rz, 'hoan-kiem-lake', '#A8A092');
+  // A river may not stop in the middle: the Perfume rises from a spring pool and the delta from a head pool,
+  // and each river's first point lies inside its own pool. Both use the same still fresh water as the lake.
+  pool(PERFUME_SPRING.x, PERFUME_SPRING.z, PERFUME_SPRING.r, PERFUME_SPRING.r * .8, 'perfume-spring', '#A8A092');
+  pool(MEKONG_HEAD.x, MEKONG_HEAD.z, MEKONG_HEAD.r, MEKONG_HEAD.r * .85, 'mekong-head', '#B7A986');
   // The head of the Perfume: stones and reeds at the spring, so the river has a source instead of a cut end.
   for (const [i, [x, z]] of ([[14.6, -10.5], [14.7, -9.4], [15.6, -10.8]] as Pt[]).entries()) {
     const rock = add(group, new THREE.Mesh(new THREE.DodecahedronGeometry(.26 + i * .07, 0), mat('#9A968C')), x, .1, z);
@@ -228,18 +257,21 @@ const corners = (x: number, z: number, w: number, d: number): Pt[] => [[x - w / 
  *  importing the town (which imports this file). `vietnam-town.ts` draws the ribbons from it. */
 export type Road = { id: string; width: number; points: Pt[] };
 export const VN_ROADS: Road[] = [
-  { id: 'VN-R1', width: 2.4, points: [[-10.8, -19.6], [-7.4, -18.2], [-4, -18.8], [-0.6, -17.2], [1.8, -14.2]] },
-  { id: 'VN-R1b', width: 1.4, points: [[-0.6, -17.2], [-1.8, -19.8], [-0.6, -22.2], [2.2, -22.4], [3.4, -20]] },
+  // Seven ends were moved on 2026-09-22, after the owner saw two ribbons stop short of each other at the
+  // Saigon street: every end of every route now finishes on another route, on a bridge, at a stand's door or
+  // at the table edge, so no end is left hanging in the grass. The moved end is named in each comment.
+  { id: 'VN-R1', width: 2.4, points: [[-10.6, -18.4], [-7.4, -18.2], [-4, -18.8], [-0.6, -17.2], [1.8, -14.2]] },        // west end on to the herb trays' door
+  { id: 'VN-R1b', width: 1.4, points: [[-0.6, -17.2], [-1.8, -19.8], [-0.6, -22.2], [2.2, -22.4], [3.4, -20], [2.8, -16.6]] },   // east end carried up to the street carriers
   { id: 'VN-R2', width: 2.0, points: [[1.8, -14.2], [5, -16.4], [8.2, -17.2], [11.4, -16], [12.8, -13]] },
-  { id: 'VN-R2b', width: 1.6, points: [[5, -16.4], [5.6, -13.4], [8, -11.8]] },
-  { id: 'VN-R2c', width: 1.4, points: [[2.2, -22.4], [2, -24.4], [2.2, -27]] },
+  { id: 'VN-R2b', width: 1.6, points: [[5, -16.4], [5.6, -13.4], [5.8, -11.5]] },                                        // ends at the lotus tea tray, not past it
+  { id: 'VN-R2c', width: 1.4, points: [[2.2, -22.4], [2, -24.4], [2.2, -28]] },                                          // carried to the table edge: the path leaves the table
   { id: 'VN-R3', width: 2.0, points: [[12.8, -13], [12.6, -8.8], [14.6, -6.4], [17.6, -5.6], [19.8, -6.4], [19.6, -10.4]] },
   { id: 'VN-R4', width: 2.2, points: [[19.6, -10.4], [22.4, -8.4], [24.6, -6.2], [26.6, -4.4], [28.6, -2], [30.6, 1.6]] },
-  { id: 'VN-R4b', width: 1.6, points: [[28.6, -2], [30.2, -3.4], [31, -0.4]] },
-  { id: 'VN-R5', width: 2.4, points: [[17.6, 10.8], [14.2, 13.2], [16.2, 16.6], [20.4, 17.6], [22.2, 14.2], [20, 12], [17.6, 10.8]] },
+  { id: 'VN-R4b', width: 1.6, points: [[28.6, -2], [30.2, -3.4], [31.6, -1.5]] },                                        // ends at the quay's door
+  { id: 'VN-R5', width: 2.4, points: [[17.6, 10.8], [14.2, 13.2], [16.2, 16.6], [20.4, 17.6], [22.2, 14.2], [20, 12], [17.6, 10.8]] },   // a ring: drawn closed
   { id: 'VN-R6', width: 2.0, points: [[30.6, 1.6], [30, 5.6], [27.4, 10], [23.4, 12.6], [20, 12]] },
-  { id: 'VN-R7', width: 1.8, points: [[-11.4, 8.8], [-8.4, 10.4], [-5.6, 11], [-2.6, 12.2], [-0.6, 16]] },
-  { id: 'VN-R7b', width: 1.4, points: [[-8.4, 10.4], [-9.6, 14.2], [-9.8, 17.8]] },
+  { id: 'VN-R7', width: 1.8, points: [[-10.9, 11], [-8.4, 10.4], [-5.6, 11], [-2.6, 12.2], [-0.6, 16]] },                // west end at the chicken yard's door
+  { id: 'VN-R7b', width: 1.4, points: [[-8.4, 10.4], [-9.6, 14.2], [-10.6, 18.4]] },                                     // ends at the river-fish basket
   { id: 'VN-R8', width: 1.8, points: [[-0.6, 16], [3.6, 17.6], [8, 16.8], [12.4, 15.2], [14.2, 13.2]] },
 ];
 /** Deck centres. A road may touch the water only inside one of these. The blueprint names three; the fourth,

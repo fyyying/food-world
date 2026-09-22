@@ -118,16 +118,17 @@ export function vietnamCountryside(ctx: LayoutCtx) {
     const crest = add(group, new THREE.Mesh(new THREE.BoxGeometry(len - .6, .07, .5), mat(i % 2 ? '#9A8760' : '#B09C74')), x, .32, z);
     crest.rotation.y = rot; crest.name = 'river-dyke-crest';
   }
+  // The buffalo choose their ground first: they are the biggest thing on the bank and the narrowest band.
+  for (const [i, [x, z]] of spots([-11, -23.2, 17, -20.2], 2, 1.2, 5).entries()) {
+    const beast = put(buffalo(i * 3), x, z, i ? -1.9 : .8); beast.name = 'paddy-buffalo';
+    tickers.push(beast.userData.tick!);
+  }
   for (const [i, [x, z]] of spots([-11, -23, 17, -20], 5, 1.5).entries()) {
     const clump = put(tree('bamboo', 1.05 + (i % 3) * .12), x, z, x); clump.name = 'bank-bamboo';
     if (clump.userData.tick) tickers.push(clump.userData.tick);
   }
   for (const [i, [x, z]] of spots([-11, -23.2, 17, -20.4], 2, 1.6).entries()) {
     put(tree('round', .8 + i * .08), x, z, x).name = 'mulberry';
-  }
-  for (const [i, [x, z]] of spots([-10, -23, 16, -20], 2, 1.2, 6).entries()) {
-    const beast = put(buffalo(i * 3), x, z, i ? -1.9 : .8); beast.name = 'paddy-buffalo';
-    tickers.push(beast.userData.tick!);
   }
 
   // ---------- Hoàn Kiếm and the lotus lane: lotus on the still water, willows on the shore ----------

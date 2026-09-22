@@ -2,8 +2,9 @@
 export function worldZoomLimit(world: string, width: number, height: number) {
   const phone = width < height || width < 720;
   // The Middle East (124 wide), the Mediterranean (120 wide since Spain), Southeast Asia (120 wide since
-  // Thailand and Vietnam grew it) and Central Europe (120 wide since Britain) need the wide overview on desktop.
-  return (world === 'middle-east' || world === 'mediterranean' || world === 'southeast-asia' || world === 'central-europe') && !phone ? 215 : 90;
+  // Thailand and Vietnam grew it), Central Europe (120 wide since Britain) and Italy (100 wide since the three
+  // landmasses and the lagoon) need the wide overview on desktop.
+  return (world === 'middle-east' || world === 'mediterranean' || world === 'southeast-asia' || world === 'central-europe' || world === 'italy') && !phone ? 215 : 90;
 }
 
 /** The distance haze for a world, as [near, far] in world units.
@@ -14,8 +15,8 @@ export function worldZoomLimit(world: string, width: number, height: number) {
  *  original 90/200 pair is kept, so the haze builds the same way, and the colour stays the caller's paper.
  *
  *  A world whose limit is inside the old far plane keeps 90 and 200 exactly: China at its 90 limit, every other
- *  world and every phone view are unchanged. Only the four worlds that get the 215 desktop overview — the
- *  Mediterranean, the Middle East, Southeast Asia and Central Europe — get a computed pair. Before this, the Mediterranean used 90/200 with a 215
+ *  world and every phone view are unchanged. Only the five worlds that get the 215 desktop overview — the
+ *  Mediterranean, the Middle East, Southeast Asia, Central Europe and Italy — get a computed pair. Before this, the Mediterranean used 90/200 with a 215
  *  limit, so at maximum zoom-out its whole table was past the far plane and rendered in the paper colour, with
  *  only the sea visible, because the water shader ignores fog.
  */

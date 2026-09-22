@@ -15,6 +15,11 @@ run it again.
 Seven delivered files were rejected at picture acceptance (see docs/vietnam-world.md, "Stage B"). They are
 imported anyway so the pipeline is complete, and the regenerated versions overwrite them at the same paths:
 public/scenes/vietnam-food/bread-pate.webp and all six public/scenes/props/vn-*.webp.
+
+Finally, run `uv run --with pillow scripts/scenes/room-previews.py`. It writes the tiny preview-wide.jpg and
+preview-portrait.jpg beside each room picture this script wrote; a painted room shows its preview, blurred, while
+its painting loads, and without it the room opens on the plain dark stage. It reads the paintings and never
+rewrites them.
 """
 import hashlib
 import json

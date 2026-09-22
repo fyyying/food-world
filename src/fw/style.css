@@ -202,6 +202,14 @@ button { font: inherit; color: inherit; cursor: pointer; }
 #scene.in { opacity: 1; }
 #scene .scene-stage { position: absolute; inset: 0; transform-origin: 50% 58%; will-change: transform; }
 #scene .layer { position: absolute; inset: 0; will-change: transform; }
+/* A painted room waits for its own picture. While it waits the stage holds nothing but the blurred preview: no
+   effect canvas, no hung sprite, no glint, no hotspot and no panel — only the way back stays reachable. The
+   preview lies over the layers rather than under them, so the room is revealed by the preview fading off it in
+   220 ms: the painting and everything on it arrive together, and no layer depends on a transition of its own. */
+#scene.waiting .layer { visibility: hidden; }
+#scene.waiting .scene-light, #scene.waiting .scene-ui > *:not(.scene-back) { visibility: hidden; }
+#scene .scene-preview { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; object-fit: cover; opacity: 0; filter: blur(16px) saturate(.9); transform: scale(1.08); transition: opacity .22s ease; pointer-events: none; }
+#scene.waiting .scene-preview { opacity: 1; transition: none; }
 #scene .layer svg { width: 100%; height: 100%; display: block; }
 #scene canvas.fx { pointer-events: none; }
 #scene:not(.portrait) .portrait-only { display: none; }

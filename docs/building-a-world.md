@@ -370,6 +370,7 @@ Rules the engine applies to every `painting: true` room except hotpot:
 - Ambience patches are limited so that steam, fire, a flyer and patches together stay at or under four loops. Hotpot is the ceiling
 - The `PAINTED_SIGNATURES` entry for the room id defines its one signature motion. Add one per room
 - `npm test` fails when a room has fewer than three always-on loops in either orientation (`room-loops.mjs`). Count: signature + steam + fire + flyer + patches
+- The painting loads before any layer draws: the room fetches only the orientation on screen, shows `preview-<orientation>.jpg` blurred while it waits, and keeps every effect, sprite, glint, hotspot and panel hidden until the picture has loaded. Paintings are prefetched — every room of a world in idle time, and the room being walked up to at once — so run `uv run --with pillow scripts/scenes/room-previews.py` after any importer that adds or replaces a room picture
 
 Fire ellipses show in both orientations unless the portrait declares its own `fire` list. Write `portrait: { fire: [] }` when the flame is visible only in the wide painting. Steam behaves the same way: `portrait: { steam: [] }` hides a wide-only source on phones.
 

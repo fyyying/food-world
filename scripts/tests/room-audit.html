@@ -4,7 +4,9 @@ body{margin:8px;background:#eee2cc;font:14px system-ui}nav{display:flex;gap:12px
 import {SCENES as CHINA_SCENES} from '/src/fw/scenes-china.ts';
 import {TURKEY_SCENES} from '/src/fw/scenes-turkey.ts';
 import {SPAIN_SCENES} from '/src/fw/scenes-spain.ts';
-const SCENES={...CHINA_SCENES,...TURKEY_SCENES,...SPAIN_SCENES};
+import {THAILAND_SCENES} from '/src/fw/scenes-thailand.ts';
+import {VIETNAM_SCENES} from '/src/fw/scenes-vietnam.ts';
+const SCENES={...CHINA_SCENES,...TURKEY_SCENES,...SPAIN_SCENES,...THAILAND_SCENES,...VIETNAM_SCENES};
 const ids=Object.keys(SCENES);let page=Number(new URLSearchParams(location.search).get('page')||0);
 function show(){document.querySelector('#page').textContent=`${page+1} / ${Math.ceil(ids.length/2)}`;document.querySelector('main').innerHTML=ids.slice(page*2,page*2+2).map(id=>`<article><h2>${id}</h2><div class="views"><div class="wide"><iframe title="${id} wide" src="rooms.html?audit&room=${id}"></iframe></div><div class="phone"><iframe title="${id} phone" src="rooms.html?audit&room=${id}"></iframe></div></div></article>`).join('');}
 document.querySelector('#next').onclick=()=>{page=Math.min(Math.ceil(ids.length/2)-1,page+1);show()};document.querySelector('#prev').onclick=()=>{page=Math.max(0,page-1);show()};show();

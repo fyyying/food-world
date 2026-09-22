@@ -54,7 +54,7 @@ try {
   assert.equal(isBreezePixel('grape',160,24,30),true);
   assert.equal(isBreezePixel('leaves',40,100,50),true);
   assert.equal(isBreezePixel('chilli',40,100,50),false,'green wall and foliage pixels stay in the static painting');
-  assert.equal(Object.keys(PAINTED_SIGNATURES ?? {}).length,65,'all rooms except the preserved hotpot benchmark need an authored signature');
+  assert.equal(Object.keys(PAINTED_SIGNATURES ?? {}).length,89,'all rooms except the preserved hotpot benchmark need an authored signature');
   for(const [id,patch] of Object.entries(PAINTED_SIGNATURES)) {
     for(const orientation of ['wide','phone']) {
       assert.equal(patch[orientation]?.length,4,`${id} needs a ${orientation} anchor`);
@@ -282,8 +282,13 @@ try {
     'market portrait crop must stop above and left of the vendor fez');
   loaded.length=0;
   const hangingCanvas=recordCanvas();
-  ambientPainter([PAINTED_SIGNATURES.tr_kebab],'tr_kebab')(hangingCanvas.context,1.4,false);
-  assert.deepEqual(loaded,['/scenes/tr_kebab/wide.jpg','/scenes/tr_kebab/portrait.jpg'],'a hanging layer may load only its own two authored compositions');
+  const hangingPaint=ambientPainter([PAINTED_SIGNATURES.tr_kebab],'tr_kebab');
+  hangingPaint(hangingCanvas.context,1.4,false);
+  // The sampler reads the picture on screen, at the URL the room already fetched, so it costs nothing; the other
+  // composition is read only if the visitor turns the phone, and neither is ever a second download.
+  assert.deepEqual(loaded,['/scenes/tr_kebab/wide.jpg'],'a hanging layer may sample only the composition being shown');
+  hangingPaint(hangingCanvas.context,1.4,true);
+  assert.deepEqual(loaded,['/scenes/tr_kebab/wide.jpg','/scenes/tr_kebab/portrait.jpg'],'turning to the portrait painting samples that one, and only then');
   assert.ok(hangingCanvas.operations.every(([op])=>!['stroke','fill','ellipse'].includes(op)),'hanging motion may not draw a substitute chilli or garlic shape');
   const coffee=paintedScene({id:'tr_coffee',folder:'tr_coffee',title:'',zh:'',caption:'',painting:true,hotspots:[],
     steam:[{x:200,y:500,w:40,rate:8}],portrait:{steam:[{x:900,y:500,w:40,rate:8}]},ambience:TURKEY_AMBIENCE.tr_coffee});
@@ -294,5 +299,5 @@ try {
     'coffee phone prioritises the exposed lower-right window pane');
   assert.ok(portraitRain.operations.filter(([op])=>op==='lineTo').length>=8,
     'coffee window rain needs enough readable beads to remain visible over the painted rain');
-  console.log('PASS: 65 paired signatures, painting-native China/Turkey/Xinjiang motion, tight hanging layers, bounded geometry, reduced motion, orientation reset, and readable ambience.');
+  console.log('PASS: 89 paired signatures, painting-native China/Turkey/Xinjiang motion, tight hanging layers, bounded geometry, reduced motion, orientation reset, and readable ambience.');
 } finally {await rm(temp,{recursive:true,force:true})}

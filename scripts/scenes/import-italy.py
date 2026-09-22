@@ -17,6 +17,11 @@ write, merges only the `it_` rooms and `it-` props it owns, and retries when ano
 in first. Running it twice in a row produces byte-identical output.
 
 Run: uv run --with pillow --with numpy --with scipy scripts/scenes/import-italy.py "$HOME/Downloads/additional game asset/italy"
+
+Finally, run `uv run --with pillow scripts/scenes/room-previews.py`. It writes the tiny preview-wide.jpg and
+preview-portrait.jpg beside each room picture this script wrote; a painted room shows its preview, blurred, while
+its painting loads, and without it the room opens on the plain dark stage. It reads the paintings and never
+rewrites them.
 """
 import hashlib
 import json

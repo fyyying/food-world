@@ -12,6 +12,11 @@ es_manchego, wide and portrait), painting the hanging pepper string out of the p
 sprite hung over it in scenes-spain.ts has clean wall behind it, as the China hotpot sprite does. Re-running this
 importer overwrites those four with the delivered originals again, which is safe: paint-out-strings.py notices and
 paints them out a second time.
+
+Finally, run `uv run --with pillow scripts/scenes/room-previews.py`. It writes the tiny preview-wide.jpg and
+preview-portrait.jpg beside each room picture this script wrote; a painted room shows its preview, blurred, while
+its painting loads, and without it the room opens on the plain dark stage. It reads the paintings and never
+rewrites them.
 """
 import hashlib
 import json

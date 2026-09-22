@@ -129,6 +129,89 @@ export const PAINTED_SIGNATURES: Record<string, AmbientPatch> = {
   es_sidreria: {kind:'stream-glint',wide:[.508,.042,.534,.607],phone:[.606,.112,.652,.566],color:'#f6e3a8',
     paths:[[[[.29,0],[.43,.17],[.54,.42],[.63,.67],[.67,1]]],[[[.32,0],[.43,.23],[.55,.50],[.69,.77],[.77,1]]]]},   // the escanciado: the painted cider thread, bottle lip to the cider in the glass, traced on the pixels of each composition
   es_bodega: {kind:'sunray',wide:[.40,0,1,.72],phone:[.28,0,1,.64],angles:[.60,.50],sway:[.09,.085]},   // the shaft from the high shutter
+  // Thailand: one signature per room, measured on that room's own wide.jpg and portrait.jpg. No Thailand room uses
+  // a breeze crop and none needed one — every painting was generated with an empty hook, pole, rail, line or nail
+  // and its hanging object arrived as a separate keyed sprite, so the hanging motion is a `th-*` sprite laid over
+  // clean wall, plank, sky or paddy (see thailand-ambience.ts). Three rooms sign with a traced pour, because a
+  // pour is what those paintings are of; the rest sign with light, haze, sky, foliage or sparks off a fire the
+  // painting already draws. Every box and path is in docs/thailand-rooms.md with the pixels it was read off.
+  // The coconut water: the cut lip of the young coconut down to the surface in the cup standing on the thwart.
+  // Wide: lip (.4905, .5225), thread through (.493, .550) and (.4955, .600), surface (.4965, .636).
+  // Portrait: lip (.512, .518), through (.512, .548) and (.510, .585), surface in the bamboo cup (.508, .612).
+  th_khlong: {kind:'stream-glint',wide:[.484,.5225,.504,.637],phone:[.500,.518,.524,.612],color:'#eaf6ff',
+    paths:[[[[.325,0],[.45,.24],[.575,.677],[.625,1]]],[[[.50,0],[.50,.32],[.417,.71],[.333,1]]]]},   // the water running out of the cut coconut into the cup
+  // The ladle of boat-noodle broth. Wide: the broth leaves the ladle rim at (.5535, .5025) and lands on the
+  // noodles at (.549, .582). Portrait: lip (.548, .472), landing on the broth in the bowl at (.542, .5565).
+  th_noodleboat: {kind:'stream-glint',wide:[.542,.502,.562,.582],phone:[.534,.472,.558,.557],color:'#f0c477',
+    paths:[[[[.575,0],[.525,.35],[.425,.70],[.35,1]]],[[[.583,0],[.479,.33],[.375,.68],[.333,1]]]]},   // the broth falling from the ladle into the bowl on its board
+  th_wang: {kind:'sunray',wide:[.34,0,.88,.66],phone:[.18,0,.78,.52],angles:[-.35,.32],sway:[.090,.075]},   // daylight falling in a clean band across the pavilion's teak floor
+  th_curry: {kind:'sunray',wide:[.58,0,1,.62],phone:[.35,0,.90,.44],angles:[-.30,.30],sway:[.085,.080]},   // the yard beyond the open side, under the raised house
+  // The foi thong threads. Wide: they leave the perforated tip of the cone at y .455 and land on the nest on the
+  // syrup at y .640, running dead straight at x .234 to .263. Portrait: tip y .524, nest y .626, x .355 to .428.
+  th_sweets: {kind:'stream-glint',wide:[.230,.455,.268,.640],phone:[.350,.524,.432,.626],color:'#f7cf5e',
+    paths:[[[[.47,0],[.45,.5],[.46,1]]],[[[.50,0],[.49,.5],[.50,1]]]]},   // the golden threads drawn down from the cone onto the syrup
+  th_shophouse: {kind:'embers',wide:[.15,.55,.40,.70],phone:[.44,.655,.80,.77],color:'#ffcf6e'},   // sparks off the charcoal ring the wok's flame rises from
+  th_paddy: {kind:'mist',wide:[.12,.175,.80,.255],phone:[.10,.130,.88,.215],alpha:.42},   // the hazy horizon over the flooded squares at harvest
+  th_isan: {kind:'leaves',wide:[.02,0,.30,.26],phone:[.62,.02,.90,.28],leaf:'olive',color:'#7f9a4e',count:8,size:1.6},   // the bamboo grove beyond the fence, widened to its full span on 2026-09-22 after the wide painting measured under floor
+  th_lanna: {kind:'sunray',wide:[.42,0,.98,.66],phone:[.24,0,.86,.46],angles:[-.38,.34],sway:[.090,.080]},   // the cool daylight through the open side, onto the raised floor
+  th_andaman: {kind:'mist',wide:[.42,.18,.95,.30],phone:[.33,.295,.88,.385],alpha:.46},   // the midday haze on the green water at the foot of the karsts
+  // Every phone box here stops at or before x .906, which is the right edge of the slice a 390-wide viewport shows
+  // of a portrait painting; a `sunray` whose box edge is the painting's own edge is not faded by the engine, so a
+  // box that ran to 1.0 would have been cut off square in mid-air on a phone. Four were pulled in on 2026-09-22:
+  // th_curry to .90, th_isan to .90, th_muslim to .90 and th_sweets's doorway beam in thailand-ambience.ts to .90.
+  // The sunset the room is lit by. This was `birds` until 2026-09-22, when the wide painting measured 2.55 per cent
+  // against a 3 per cent floor: two bird silhouettes are a rounding error in a changed-pixel count, and the low
+  // light coming in over the water is the largest thing the painting actually does. The birds keep the room's one
+  // ambience slot instead (thailand-ambience.ts), which is the same trade Spain's cheese farm made in reverse.
+  th_muslim: {kind:'sunray',wide:[.46,0,1,.66],phone:[.32,0,.90,.52],angles:[.34,.30],sway:[.095,.085]},   // the low sun over the mangrove, through the open cooking side
+  th_baba: {kind:'sunray',wide:[.36,0,.72,.58],phone:[.26,0,.72,.50],angles:[.25,.22],sway:[.090,.085]},   // the airwell's shaft of last daylight onto the tiled floor
+  // Vietnam: one signature per room, measured on each painting's own pixels. No Vietnam room uses a breeze crop.
+  // Every one of the twelve pictures was composed with an empty peg, rail, nail or beam, and its hanging object
+  // arrived as a separate keyed sprite, so the hanging motion of this area is a `vn-*` sprite over clean wall,
+  // post or sky (see scenes-vietnam.ts) and nothing is cut out of a finished painting. Four rooms sign with a
+  // traced pour or fall, because a poured bowl is what those paintings are of; the rest sign with light, sky,
+  // foliage or sparks the painting already draws. Every box and path is in docs/vietnam-rooms.md with its pixels.
+  // The phở pour: the lip of the small pan down to the broth surface in the resting bowl.
+  // Wide: lip (.494, .527), thread through (.499, .580), surface (.504, .625).
+  // Portrait: lip (.534, .506), through (.553, .550) and (.562, .590), surface (.573, .622).
+  vn_pho: {kind:'stream-glint',wide:[.483,.525,.512,.628],phone:[.468,.553,.508,.642],color:'#f2e3b4',
+    paths:[[[[.38,0],[.55,.53],[.72,1]]],[[[.25,0],[.40,.35],[.58,.70],[.73,1]]]]},   // the ladle of stock going into the waiting bowl
+  vn_bun_cha: {kind:'embers',wide:[.255,.600,.315,.700],phone:[.525,.605,.615,.700],color:'#ffbe5c'},   // sparks off the flare under the pork on the tongs
+  vn_banh_cuon: {kind:'sunray',wide:[.44,0,.80,.70],phone:[.18,0,.77,.55],angles:[-.34,.30],sway:[.095,.085]},   // the courtyard daylight the steamer works in
+  // The one room in the set with no steam anywhere, so its signature has to carry it alone. Gulls over the paddy
+  // sky were measured first and were not enough: four capture pairs at 1280 x 720 and four at 390 x 844 put the
+  // whole room at 0.1 to 0.2 per cent of the frame changing in two seconds, against a 2.5 per cent floor, because
+  // two bird strokes and five sparks are a rounding error in a changed-pixel count. The courtyard's own daylight
+  // takes the signature instead: the painting is lit hard from the upper right, the door frame and the mortar
+  // throw their shadows down to the left across the paving, and the beam follows that direction.
+  vn_com_vong: {kind:'sunray',wide:[.28,0,.78,.66],phone:[.28,0,.86,.52],angles:[.34,.30],sway:[.095,.085]},   // the sun through the courtyard tree, the one cue in the set's one cold room
+  // The Huế broth: the lip of the ladle, through the strainer the other hand holds, to the broth in the bowl.
+  // Wide: lip (.3865, .414), thread through (.396, .440), (.402, .520) and (.400, .580), surface (.398, .628).
+  // Portrait: lip (.534, .506), through (.553, .550) and (.562, .590), surface (.573, .622).
+  vn_bun_bo_hue: {kind:'stream-glint',wide:[.378,.412,.412,.632],phone:[.522,.504,.592,.626],color:'#f6c06a',
+    paths:[[[[.25,0],[.53,.13],[.71,.49],[.65,.76],[.59,1]]],[[[.17,0],[.44,.38],[.57,.71],[.73,1]]]]},   // the strained broth from the ladle lip to the bowl
+  vn_hue_cakes: {kind:'sunray',wide:[.62,0,1,.72],phone:[.52,0,.90,.52],angles:[.42,.38],sway:[.090,.080]},   // the side window's light across the cake bench
+  vn_cao_lau: {kind:'sunray',wide:[.56,0,.88,.66],phone:[.42,0,.80,.50],angles:[.38,.32],sway:[.095,.085]},   // the river door at the back of the shophouse
+  // The turmeric pour: the lip of the ladle down to the noodles in the shallow bowl, which the broth only just
+  // reaches. Wide: lip (.384, .547), through (.388, .590) and (.391, .635), surface (.393, .663).
+  // Portrait: lip (.468, .545), through (.478, .570) and (.486, .610), surface (.494, .640).
+  vn_mi_quang: {kind:'stream-glint',wide:[.374,.545,.404,.666],phone:[.456,.543,.506,.642],color:'#f3b73f',
+    paths:[[[[.33,0],[.47,.37],[.57,.74],[.63,1]]],[[[.24,0],[.44,.27],[.60,.68],[.76,1]]]]},   // one measured ladle of broth into the shallow bowl
+  vn_bread_pate: {kind:'sunray',wide:[.50,0,.88,.70],phone:[.40,0,.86,.55],angles:[-.32,.34],sway:[.095,.085]},   // the colonnade light off the street the counter faces
+  // The drain: water off the wire basket, in its own painted column, into the stock it came out of.
+  // Wide: the drops leave the basket at (.302, .565) and land on the stock surface at (.303, .755), which is
+  // where the painting draws its own ring. Portrait: they leave at (.297, .527) and fade out at the pot's near
+  // rim at (.295, .598) — that end shows steel, not liquid, so the portrait takes no splash.
+  vn_hu_tieu: {kind:'drip',wide:[.288,.562,.316,.760],phone:[.283,.525,.313,.600],color:'#e7eff2',period:1.5,
+    splash:[true,false],
+    paths:[[[[.47,0],[.48,.5],[.50,1]]],[[[.47,0],[.45,.5],[.40,1]]]]},   // the wire basket's one shake, off the noodles and back into the stock
+  vn_banh_xeo: {kind:'birds',wide:[.50,.025,.63,.125],phone:[.47,.105,.72,.175],period:6,scale:1.5},   // the clean sky between the palms over the canal
+  // The glaze: the dark reduced sauce going back over the fish, traced on each composition's own fall.
+  // Wide: it runs off the brush tip at (.608, .657) and reaches the glaze pooled round the fish at (.612, .682).
+  // Portrait: it leaves the lip of the tilted bowl at (.740, .505) and lands in the pot at (.742, .535).
+  vn_mekong_home: {kind:'drip',wide:[.596,.655,.624,.686],phone:[.730,.503,.754,.538],color:'#d9a04a',period:2.1,
+    splash:[true,true],
+    paths:[[[[.43,0],[.50,.5],[.57,1]]],[[[.42,0],[.46,.5],[.50,1]]]]},   // the glaze going back over the fish in the open clay pot
 };
 
 /** Extra source-observed motion for Xinjiang rooms whose signature alone is too quiet. */
@@ -293,14 +376,21 @@ export function ambientPainter(patches: AmbientPatch[], folder?: string) {
     const image = new Image(); image.src = `${import.meta.env.BASE_URL}scenes/hotpot/leaf-${i}.png`; return image;
   }) : [];
   const breeze: AmbientArt['breeze'] = patches.map(() => []);
-  if(folder&&patches.some(p=>p.kind==='breeze'))for(const [orientation,name] of ['wide','portrait'].entries()) {
+  // The sampler reads the very picture the room is showing, at the very URL the room asked for, and only for the
+  // orientation on screen: so it is a cache hit on the painting the visitor is already looking at, never a second
+  // download and never the other orientation's file. A patch stays unprepared, and so draws nothing, until that
+  // image has loaded — there is no swaying string before there is a painted string to sway.
+  const sampled=[false,false];
+  const sample=(orientation: 0|1) => {
+    if(!folder||sampled[orientation]||!patches.some(p=>p.kind==='breeze'&&(orientation?p.phone:p.wide)))return;
+    sampled[orientation]=true;
     const image=new Image();image.onload=()=>patches.forEach((patch,index)=>{
       const rect=orientation?patch.phone:patch.wide;
       if(patch.kind==='breeze'&&rect)breeze[index][orientation]=prepareBreezeLayer(image,rect,patch.source);
     });
-    image.src=`${import.meta.env.BASE_URL}scenes/${folder}/${name}.jpg`;
-  }
-  return (ctx: CanvasRenderingContext2D, t: number, portrait: boolean) => drawAmbience(ctx, t, portrait, patches, { leaves, breeze });
+    image.src=`${import.meta.env.BASE_URL}scenes/${folder}/${orientation?'portrait':'wide'}.jpg`;
+  };
+  return (ctx: CanvasRenderingContext2D, t: number, portrait: boolean) => { sample(portrait?1:0); drawAmbience(ctx, t, portrait, patches, { leaves, breeze }); };
 }
 
 let sunrayCanvas: HTMLCanvasElement | undefined;

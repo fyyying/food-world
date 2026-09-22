@@ -107,6 +107,20 @@ export const pAt = (folder: string, fx: number, fy: number) => { const [w, h] = 
 /** a point inside the cover painting, as fractions of it */
 export const at = (folder: string, fx: number, fy: number) => { const b = coverBox(folder); return { x: b.x + fx * b.w, y: b.y + fy * b.h }; };
 
+/**
+ * A room's picture folder from the scene id the world's objects carry, so the prefetcher can reach a painting
+ * without building the whole room. Every room folder is a key of scenes-props.json's `rooms`, and every room but
+ * the Chengdu tower is filed under its own scene id; a room the lookup cannot place is simply not prefetched.
+ */
+const FOLDER_OF_SCENE: Record<string, string> = { tower: "historical_tower" };
+export function paintingFolder(sceneId: string): string | null {
+  const folder = FOLDER_OF_SCENE[sceneId] ?? sceneId;
+  return PROPS.rooms[folder] ? folder : null;
+}
+/** the file a room shows in this orientation: one of the two, never both */
+export const paintingUrl = (folder: string, portrait: boolean) =>
+  `${import.meta.env.BASE_URL}scenes/${folder}/${portrait ? "portrait" : "wide"}.jpg`;
+
 function size(folder: string, name: string, w: number, prop = false) { const [pw, ph] = prop ? PROPS.props[name] : SIZES[folder][name]; return { w, h: (w * ph) / pw }; }
 
 /**
@@ -209,16 +223,20 @@ export function paintedScene(cfg: PaintedCfg): SceneDef {
     </defs>
     ${HALO}
     ${painting
-      ? `<image href="${painting}wide.jpg" x="-8" y="-5" width="${STAGE_W + 16}" height="${STAGE_H + 10}" preserveAspectRatio="none"/>
-         <image class="portrait-only" data-minw="${pw.toFixed(1)}" href="${painting}portrait.jpg" x="${((STAGE_W - pw) / 2).toFixed(1)}" y="-5" width="${pw.toFixed(1)}" height="${STAGE_H + 10}" preserveAspectRatio="xMidYMid slice"/>`
+      // One picture, not two: the room carries both URLs and scene.ts hangs the one this orientation shows on the
+      // element, so a desktop never downloads the portrait twin and a phone never downloads the wide one. It starts
+      // without an href for the same reason — the first href scene.ts sets is the only file this room fetches.
+      ? `<image class="room-painting" data-wide="${painting}wide.jpg" data-portrait="${painting}portrait.jpg" data-minw="${pw.toFixed(1)}" x="-8" y="-5" width="${STAGE_W + 16}" height="${STAGE_H + 10}" preserveAspectRatio="none"/>`
       : `${wings}
     <rect x="-100" y="-60" width="${(cb.x + 140).toFixed(1)}" height="1020" fill="rgba(8,4,2,${dim})"/><rect x="${(cb.x + cb.w - 40).toFixed(1)}" y="-60" width="900" height="1020" fill="rgba(8,4,2,${dim})"/>
     <image href="${cover}" x="${cb.x.toFixed(1)}" y="0" width="${cb.w.toFixed(1)}" height="${STAGE_H}" preserveAspectRatio="none" mask="url(#coverMask)"/>`}
+    <g class="room-extras">
     ${(cfg.fire ?? []).map((o, i) => `<ellipse id="fire-${i}" class="${cfg.portrait?.fire ? "wide-only" : ""}" cx="${o.x}" cy="${o.y}" rx="${o.rx}" ry="${o.ry}" fill="url(#fireQ)"/>`).join("")}
     ${(cfg.portrait?.fire ?? []).map((o, i) => `<ellipse id="fire-p${i}" class="portrait-only" cx="${o.x.toFixed(1)}" cy="${o.y.toFixed(1)}" rx="${o.rx}" ry="${o.ry}" fill="url(#fireQ)"/>`).join("")}
     ${(cfg.lamps ?? []).map((o, i) => `<ellipse id="lamp-${i}" class="${cfg.portrait?.lamps ? "wide-only" : ""}" cx="${o.x}" cy="${o.y}" rx="${o.r}" ry="${o.r * 0.85}" fill="url(#haloQ)" opacity=".7"/>`).join("")}
     ${(cfg.portrait?.lamps ?? []).map((o, i) => `<ellipse id="lamp-p${i}" class="portrait-only" cx="${o.x.toFixed(1)}" cy="${o.y.toFixed(1)}" rx="${o.r}" ry="${o.r * 0.85}" fill="url(#haloQ)" opacity=".7"/>`).join("")}
-    ${flyers}`;
+    ${flyers}
+    </g>`;
 
   const frontLayer = `${HALO}${(cfg.front ?? []).map((s, i) => sprite(f, s, `front-${i}`, "front")).join("")}${walkers}`;
 
@@ -231,9 +249,11 @@ export function paintedScene(cfg: PaintedCfg): SceneDef {
       if (signature && hotspots.some(spot => spot.id===id)) { reaction.started=reaction.clock; reaction.until=reaction.clock+3.2; }
     },
     id: cfg.id, title: cfg.title, zh: cfg.zh, caption: cfg.caption,
+    // the folder the painting lives in, so scene.ts can show its tiny preview and main.ts can fetch it before the click
+    painting: painting ?? undefined,
     // with a full painting the hanging pieces must sit in front of it; with a cut sheet they hang behind the cover
     layers: cfg.painting
-      ? [{ svg: backLayer, depth: 0.15 }, { svg: coverLayer, depth: 0.5 }, { svg: hangLayer, depth: 0.62 }, { svg: frontLayer, depth: 1, blur: 0.5 }]
+      ? [{ svg: backLayer, depth: 0.15 }, { svg: coverLayer, depth: 0.5, painting: true }, { svg: hangLayer, depth: 0.62 }, { svg: frontLayer, depth: 1, blur: 0.5 }]
       : [{ svg: backLayer, depth: 0.15 }, { svg: hangLayer, depth: 0.42 }, { svg: coverLayer, depth: 0.5 }, { svg: frontLayer, depth: 1, blur: 0.5 }],
     fxDepth: 0.5,
     fx: makeFx(cfg, reaction, signature),

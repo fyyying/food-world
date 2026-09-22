@@ -15,6 +15,11 @@ nothing is lost and the run can simply be repeated.
 Rejected pictures are imported too, so the pipeline is complete. When a regenerated file is dropped into the source
 folder under the same name, re-running this script overwrites the room JPG, the card or the sprite in place and
 updates its source hash in public/scenes/london-assets.json.
+
+Finally, run `uv run --with pillow scripts/scenes/room-previews.py`. It writes the tiny preview-wide.jpg and
+preview-portrait.jpg beside each room picture this script wrote; a painted room shows its preview, blurred, while
+its painting loads, and without it the room opens on the plain dark stage. It reads the paintings and never
+rewrites them.
 """
 import hashlib
 import json

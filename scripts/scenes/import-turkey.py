@@ -1,4 +1,10 @@
-"""Import the supplied Turkey paintings without cropping or upscaling them."""
+"""Import the supplied Turkey paintings without cropping or upscaling them.
+
+Finally, run `uv run --with pillow scripts/scenes/room-previews.py`. It writes the tiny preview-wide.jpg and
+preview-portrait.jpg beside each room picture this script wrote; a painted room shows its preview, blurred, while
+its painting loads, and without it the room opens on the plain dark stage. It reads the paintings and never
+rewrites them.
+"""
 import hashlib
 import json
 import sys

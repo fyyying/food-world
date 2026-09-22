@@ -20,6 +20,7 @@ import { buildJapan } from "./world-japan";
 import { buildCeurope } from "./world-ceurope";
 import { auditDiorama } from "./audit";
 import { openLivingScene, type LivingScene } from "./scene";
+import { paintingFolder, paintingUrl } from "./scene-painted";
 import { setRepertoireRecipes } from "./repertoire";
 import { SCENES as CHINA_SCENES } from "./scenes-china";
 import { TURKEY_SCENES } from "./scenes-turkey";
@@ -505,7 +506,10 @@ function getWorld(id: WorldId): Diorama {
     const recipes = isRecipeLayerEnabled() ? worldRecipes(id, allRecipes).map(enrich) : [];
     d = id === "china" ? buildChina(recipes) : id === "italy" ? buildItaly(recipes) : id === "korea" ? buildKorea(recipes) : id === "mexico" ? buildMexico(recipes) : id === "middle-east" ? buildMideast(recipes) : id === "mediterranean" ? buildMed(recipes) : id === "india" ? buildIndia(recipes) : id === "southeast-asia" ? buildSeasia(recipes) : id === "north-america" ? buildNamerica(recipes) : id === "japan" ? buildJapan(recipes) : buildCeurope(recipes);
     worlds[id] = d;
-    for (const p of d.placed) p.labelEl.addEventListener("click", () => { if (p.labelEl.classList.contains("pinned")) openObject(p); });
+    for (const p of d.placed) {
+      p.labelEl.addEventListener("click", () => { if (p.labelEl.classList.contains("pinned")) openObject(p); });
+      p.labelEl.addEventListener("pointerenter", () => fetchPainting(p.obj.scene, true));   // a hovered label is a room about to open
+    }
   }
   return d;
 }
@@ -537,6 +541,7 @@ function enterRegion(region: MapRegion) {
       controls.update();
       renderer.render(active, camera);
       labelRenderer.render(active, camera);
+      prefetchWorldPaintings(id);   // the world's first frame is drawn: its rooms' paintings can come in idle time
       fly(target.clone().add(id === 'middle-east' ? new THREE.Vector3(12,36,57) : new THREE.Vector3(2,48,60)), target, 2.0, () => {
         if (!story) worldIntro.enter(id);
       });
@@ -573,6 +578,58 @@ function leaveWorld() {
   setTimeout(() => { dropScene(); showMap(false); fade.classList.remove("on"); }, 500);
 }
 
+// ---------- room paintings ----------
+// A room's painting is half a megabyte, and until it is there the room has nothing to show. So it is never left
+// to the click: every room of a world is fetched quietly while the world is idle, the room the visitor is walking
+// up to is fetched at once, and the click itself asks for it again (a no-op when it is already in hand). Only the
+// orientation on screen is ever fetched, and on a metered connection none of this happens at all.
+const fetchedPaintings = new Set<string>();
+const saveData = () => Boolean((navigator as unknown as { connection?: { saveData?: boolean } }).connection?.saveData);
+const portraitNow = () => window.innerWidth / window.innerHeight < 0.85;
+/** Starts the fetch and returns the image, so the idle queue can wait for one picture before asking for the next. */
+function fetchPainting(scene: string | undefined, eager: boolean): HTMLImageElement | null {
+  if (!scene || saveData() || !SCENES[scene]) return null;
+  const folder = paintingFolder(scene);
+  if (!folder) return null;
+  const url = paintingUrl(folder, portraitNow());
+  if (fetchedPaintings.has(url)) return null;
+  fetchedPaintings.add(url);
+  const image = new Image();
+  (image as HTMLImageElement & { fetchPriority?: string }).fetchPriority = eager ? "high" : "low";
+  image.decoding = "async";
+  image.src = url;
+  return image;
+}
+let paintingQueue: string[] = [];
+/** One picture at a time, in idle time, so the world's own load and its first minute of animation stay untouched. */
+function pumpPaintings() {
+  const idle = (window as unknown as { requestIdleCallback?: (fn: () => void, o?: { timeout: number }) => void }).requestIdleCallback;
+  const run = () => {
+    const next = paintingQueue.shift();
+    if (!next) return;
+    const image = fetchPainting(next, false);
+    if (!image) { pumpPaintings(); return; }
+    image.onload = image.onerror = () => pumpPaintings();
+  };
+  if (!paintingQueue.length) return;
+  // The world animates without pause, so real idle gaps are short and rare; the timeout is what actually paces
+  // this, and 1.5 s is late enough to be clear of the world's own first frames and soon enough to have a world's
+  // rooms in hand within half a minute of arriving.
+  if (idle) idle(run, { timeout: 1500 }); else window.setTimeout(run, 500);
+}
+function prefetchWorldPaintings(id: WorldId) {
+  if (saveData()) { paintingQueue = []; return; }
+  paintingQueue = objectsOf(id).map((o) => o.scene).filter((s): s is string => Boolean(s && SCENES[s]));
+  pumpPaintings();
+}
+let approachAt = -1;
+/** The camera coming up to a stand is the last warning before the room opens: fetch that painting at once. */
+function fetchNearbyPaintings(t: number) {
+  if (approachAt > 0 && t - approachAt < 0.4) return;
+  approachAt = t;
+  for (const p of diorama!.placed) if (p.obj.scene && camera.position.distanceTo(p.anchor) < 34) fetchPainting(p.obj.scene, true);
+}
+
 // ---------- living scenes ----------
 // 3D world → approach the place → paper fade → living illustrated scene → back to exactly where you were.
 /** debug: with window.__fwInstant the scene fades skip their timers, so a hidden pane (throttled timers) can still step through them */
@@ -580,6 +637,7 @@ const later = (fn: () => void, ms: number) => ((window as unknown as { __fwInsta
 
 function enterLivingScene(p: Placed, obj: WorldObject, recipes: EnrichedRecipe[]) {
   if (livingScene) return;
+  fetchPainting(obj.scene, true);   // the approach lasts about two seconds: spend them on the painting
   sceneObject = obj;
   clearTimeout(cardTimer); clearTimeout(revealTimer);
   ui.hide();
@@ -814,7 +872,7 @@ function frame(forcedDt?: number) {
   }
   controls.update();
   if (level === "map" || level === "home") { mapWorld?.tick(t, dt); routeTick(t); }
-  if (level === "world") diorama?.tick(t, dt);
+  if (level === "world") { diorama?.tick(t, dt); if (diorama) fetchNearbyPaintings(t); }
   labelRenderer.domElement.classList.toggle('quiet-overview', level === 'world' && world === 'middle-east' && camera.position.distanceTo(controls.target) > 120);
   renderer.render(active, camera);
   labelRenderer.render(active, camera);

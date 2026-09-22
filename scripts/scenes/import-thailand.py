@@ -12,6 +12,11 @@ twelve `rooms` keys and six `props` keys in scenes-props.json; it re-reads that 
 another agent appending its own area's keys in the same minute is not overwritten. If a room picture is
 regenerated after picture acceptance, drop the new file into the same folder under the same name and re-run:
 the room JPG and its manifest hash are replaced and nothing else moves.
+
+Finally, run `uv run --with pillow scripts/scenes/room-previews.py`. It writes the tiny preview-wide.jpg and
+preview-portrait.jpg beside each room picture this script wrote; a painted room shows its preview, blurred, while
+its painting loads, and without it the room opens on the plain dark stage. It reads the paintings and never
+rewrites them.
 """
 import hashlib
 import json

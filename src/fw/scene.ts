@@ -22,6 +22,8 @@ export type SceneLayer = {
   depth: number;
   /** blur radius in px for out-of-focus foreground pieces */
   blur?: number;
+  /** the layer that carries the room's painting: it is the one the other layers wait for */
+  painting?: boolean;
 };
 
 export type SceneHotspot = {
@@ -38,6 +40,11 @@ export type SceneDef = {
   zh?: string;
   caption: string;
   layers: SceneLayer[];
+  /**
+   * A painted room's picture folder (`…/scenes/<folder>/`). Its presence is what makes the room wait: the stage
+   * shows the folder's tiny preview and nothing else until `wide.jpg` or `portrait.jpg` has loaded.
+   */
+  painting?: string;
   hotspots?: SceneHotspot[];
   react?: (id: string) => boolean | void;
   /** particle canvas depth (steam, bubbles) */
@@ -97,12 +104,16 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
   el.className = "scene";
   el.classList.toggle("has-room-touches", Boolean(def.hotspots?.some(h => h.interaction)));
   el.dataset.scene = def.id;
-  const layerHtml = def.layers.map((l, i) => `<div class="layer" data-depth="${l.depth}" data-i="${i}" ${l.blur ? `style="filter:blur(${l.blur}px)"` : ""}><svg viewBox="0 0 ${STAGE_W} ${STAGE_H}" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">${l.svg}</svg></div>`);
+  const layerHtml = def.layers.map((l, i) => `<div class="layer${l.painting ? " painting" : ""}" data-depth="${l.depth}" data-i="${i}" ${l.blur ? `style="filter:blur(${l.blur}px)"` : ""}><svg viewBox="0 0 ${STAGE_W} ${STAGE_H}" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">${l.svg}</svg></div>`);
   // the particle canvas sits between the layers at its own depth
   const fxIndex = def.layers.findIndex((l) => l.depth > def.fxDepth);
   layerHtml.splice(fxIndex < 0 ? layerHtml.length : fxIndex, 0, `<canvas class="layer fx" data-depth="${def.fxDepth}"></canvas>`);
+  // A painted room opens on its own painting, never on the layers over an empty stage: until the picture has
+  // loaded the stage shows only this thumbnail, blurred up, and every layer, effect and panel stays hidden.
+  if (def.painting) el.classList.add("waiting");
   el.innerHTML = `
     <div class="scene-stage">
+      ${def.painting ? `<img class="scene-preview" alt="" aria-hidden="true" decoding="async">` : ""}
       ${layerHtml.join("")}
       ${def.hotspots?.length ? `<div class="scene-hotspots layer" data-depth="0.5">${def.hotspots.map((h, i) => `<button class="scene-hotspot${h.interaction ? ' room-touch' : ''}" data-hotspot="${i}" type="button" ${h.activeLabel ? 'aria-pressed="false"' : h.interaction && h.interaction.effect !== 'detail' ? '' : 'aria-expanded="false" aria-controls="scene-feedback"'} aria-label="${esc(h.label)}" title="${esc(h.label)}"><span>${h.interaction?.icon ?? '＋'}</span><b>${esc(h.label)}</b></button>${h.interaction ? `<div class="room-response" data-response="${i}" aria-hidden="true"></div>` : ''}`).join("")}</div>` : ""}
       <div class="scene-light"></div>
@@ -135,6 +146,25 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
 
   // stage → viewport mapping (xMidYMid slice)
   let W = 1, H = 1, S = 1, OX = 0, OY = 0, dpr = 1, isPortrait = false;
+  const paintingEl = () => el.querySelector<SVGImageElement>("image.room-painting");
+  /**
+   * Hangs the one picture this orientation shows on the room's single `<image>`, so a room open on a desktop never
+   * downloads the portrait twin and a phone never downloads the wide one. Turning the phone swaps the href, but
+   * only once the other file has decoded, so the painting on the stage is never taken away mid-look.
+   */
+  let shownPainting = "";
+  function fitPainting(im: SVGImageElement, portrait: boolean, visibleW: number) {
+    const w = portrait ? Math.max(Number(im.dataset.minw), visibleW) : STAGE_W + 16;
+    im.setAttribute("x", (portrait ? (STAGE_W - w) / 2 : -8).toFixed(1));
+    im.setAttribute("width", w.toFixed(1));
+    im.setAttribute("preserveAspectRatio", portrait ? "xMidYMid slice" : "none");
+    const want = (portrait ? im.dataset.portrait : im.dataset.wide) ?? "";
+    if (!want || want === shownPainting) return;
+    const show = () => { shownPainting = want; im.setAttribute("href", want); };
+    if (!shownPainting) { show(); return; }   // opening the room: this href is the room's one and only download
+    const next = new Image(); next.src = want;
+    if (typeof next.decode === "function") void next.decode().then(show, show); else next.onload = next.onerror = show;
+  }
   function resize() {
     W = el.clientWidth || window.innerWidth || 1200; H = el.clientHeight || window.innerHeight || 675;   // a hidden pane reports 0×0: keep a sane stage for snapshots
     const portrait = W / H < 0.85;   // phones get the portrait painting where a room has one
@@ -144,7 +174,8 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
     // the portrait painting covers whatever slice of the stage the screen shows (a tablet shows more than a phone)
     S = Math.max(W / STAGE_W, H / STAGE_H);
     const visibleW = W / S;
-    el.querySelectorAll<SVGImageElement>("image.portrait-only").forEach((im) => { const w = Math.max(Number(im.dataset.minw), visibleW); im.setAttribute("x", ((STAGE_W - w) / 2).toFixed(1)); im.setAttribute("width", w.toFixed(1)); });
+    const room = paintingEl();
+    if (room) fitPainting(room, portrait, visibleW);
     // sprites hung over the portrait painting follow it: the same frame the ambience effects use, so they stay on
     // the painted object they cover when a wider portrait screen re-fits the picture
     el.querySelectorAll<SVGGElement>("g[data-pf]").forEach((group) => {
@@ -175,7 +206,7 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
         label.style.left = fractions[0] > .72 ? 'auto' : fractions[0] < .28 ? '0' : '50%';
         label.style.right = fractions[0] > .72 ? '0' : 'auto';
         label.style.transform = fractions[0] > .72 || fractions[0] < .28 ? 'none' : 'translateX(-50%)';
-        const painted = el.querySelector<SVGImageElement>('image.portrait-only');
+        const painted = paintingEl();
         const pw = painted ? Number(painted.getAttribute('width')) : visibleW;
         point = { x: portrait ? (STAGE_W - pw) / 2 + fractions[0] * pw : -8 + fractions[0] * 1616, y: -5 + fractions[1] * 910 };
         const response = el.querySelector<HTMLElement>(`[data-response="${button.dataset.hotspot}"]`)!;
@@ -194,6 +225,31 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
   }
   resize();
   window.addEventListener("resize", resize);
+
+  /**
+   * The painting first, then everything else. Steam, fire, glints, hung sprites, hotspots and the story panel are
+   * hidden (`.waiting` in style.css) until the room's own `<image>` has loaded; the picture then fades up over the
+   * blurred preview in 200 ms and the effects start on that same frame, so nothing ever moves over an empty stage.
+   * A picture that fails or is very slow reveals the room anyway after eight seconds rather than trapping anybody.
+   */
+  let ready = !def.painting;
+  let paintingTimer: number | undefined;
+  function reveal() {
+    if (ready) return;
+    ready = true;
+    window.clearTimeout(paintingTimer);
+    el.classList.remove("waiting");
+  }
+  if (def.painting) {
+    const preview = el.querySelector<HTMLImageElement>("img.scene-preview")!;
+    // no preview beside the painting yet: the plain dark stage, with nothing animated on it
+    preview.addEventListener("error", () => preview.remove(), { once: true });
+    preview.src = `${def.painting}preview-${isPortrait ? "portrait" : "wide"}.jpg`;
+    const room = paintingEl();
+    room?.addEventListener("load", reveal, { once: true });
+    room?.addEventListener("error", reveal, { once: true });
+    paintingTimer = window.setTimeout(reveal, 8000);
+  }
 
   // parallax: pointer when it moves, a slow drift when it does not
   let px = 0, py = 0, tx = 0, ty = 0, lastMove = -10;
@@ -270,7 +326,7 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
       if (spot.interaction) {
         const { folder, wide, phone } = spot.interaction;
         const [x, y] = isPortrait ? phone : wide;
-        const height = 900, width = isPortrait ? Number(el.querySelector<SVGImageElement>('image.portrait-only')?.dataset.minw) || 506 : 1600;
+        const height = 900, width = isPortrait ? Number(paintingEl()?.dataset.minw) || 506 : 1600;
         const cropW = width * (isPortrait ? .50 : .17), cropH = cropW * .56;
         const left = Math.max(0, Math.min(width - cropW, x * width - cropW / 2));
         const top = Math.max(0, Math.min(height - cropH, y * height - cropH / 2));
@@ -290,6 +346,9 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
 
   function tick(t: number, dt: number) {
     if (!alive) return;
+    // Nothing is drawn while the painting is still coming: the arrival push and every effect start from the frame
+    // the picture appears on, not from the frame the empty stage was built on.
+    if (!ready) { now = t; return; }
     if (t0 < 0) t0 = t;
     now = t; const age = t - t0;
     const reduced = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -327,6 +386,7 @@ export function openLivingScene(def: SceneDef, opts: SceneOpts): LivingScene {
 
   function destroy() {
     alive = false;
+    window.clearTimeout(paintingTimer);
     propCleanups.forEach(cleanup => cleanup());
     propCleanups.clear();
     window.removeEventListener("resize", resize);

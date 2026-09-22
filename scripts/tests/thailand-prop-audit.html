@@ -1,0 +1,105 @@
+<!doctype html><html><head><title>Thailand stand audit</title><style>
+body{margin:0;background:#20242a;color:#e8e2d2;font:13px system-ui}
+nav{height:34px;display:flex;gap:10px;align-items:center;padding:0 10px}
+#sheet{display:block;max-width:100%;image-rendering:auto}
+</style></head><body><nav><span id="status">building…</span></nav><canvas id="sheet"></canvas><script type="module">
+/**
+ * One page that renders every Thailand stand alone, from above and from the arrival camera, into a single contact
+ * sheet. Copied from vietnam-prop-audit.html: the arrival view uses main.ts's own approach geometry (horizontal
+ * offset max(8.8, min(18, larger footprint side x 1.05)), eye 1.4 above the anchor's 1.2) and the stand's rotation
+ * from thailand-objects.ts, so a cell shows what a visitor sees when the flight ends.
+ *
+ * The four market stall boats carry `prop: "none"` in the object list, because they are still the floating
+ * market's hit-only children; they are drawn square to the basin, which is how the blueprint moors them.
+ *
+ *   ?ids=a,b,c   only these stands          ?poke=1    click each stand and tick to the 1.6 s arrival
+ *   ?view=pair   top and arrival (default)  ?view=top|arrival   one view per stand
+ *   ?cell=300x220  cell size                ?cols=4    stands per row
+ *
+ * window.__save(name) posts the finished sheet to the local receiver on 5399, so nothing has to travel as text.
+ */
+import * as THREE from 'three';
+import {THAILAND_PROPS} from '/src/fw/props-thailand.ts';
+import {THAILAND_OBJECTS} from '/src/fw/thailand-objects.ts';
+
+const q=new URLSearchParams(location.search);
+const ids=q.has('ids')?q.get('ids').split(','):Object.keys(THAILAND_PROPS);
+const view=q.get('view')||'pair', poke=q.get('poke')==='1';
+const [cw,ch]=(q.get('cell')||'300x220').split('x').map(Number);
+const cols=Number(q.get('cols')||(view==='pair'?4:6));
+const perStand=view==='pair'?2:1;
+const rows=Math.ceil(ids.length/cols);
+const W=cols*perStand*cw, H=rows*ch;
+
+const gl=document.createElement('canvas');gl.width=W;gl.height=H;
+const renderer=new THREE.WebGLRenderer({canvas:gl,antialias:true,preserveDrawingBuffer:true});
+renderer.setPixelRatio(1);renderer.setSize(W,H,false);renderer.setScissorTest(true);
+const rotOf=Object.fromEntries(THAILAND_OBJECTS.filter(o=>o.prop&&o.prop!=='none').map(o=>[o.prop,o.rot??0]));
+
+/** Build a stand, run it to a settled moment, and give back its bounds. */
+function make(id){
+  const scene=new THREE.Scene();scene.background=new THREE.Color('#dfd7c2');
+  scene.add(new THREE.HemisphereLight(0xffffff,0x8a7958,2.1));
+  const sun=new THREE.DirectionalLight(0xffffff,2.6);sun.position.set(6,12,8);scene.add(sun);
+  const prop=THAILAND_PROPS[id]();prop.rotation.y=rotOf[id]??0;scene.add(prop);
+  // warm the always-on loops, then either leave it at rest or poke it and stop at the 1.6-second arrival
+  for(let i=1;i<=120;i++)prop.userData.tick?.(i/60,1/60);
+  if(poke){prop.userData.poke?.();for(let i=1;i<=16;i++)prop.userData.tick?.(2+i*.1,.1);}
+  else for(let i=121;i<=180;i++)prop.userData.tick?.(i/60,1/60);
+  prop.updateMatrixWorld(true);
+  const box=new THREE.Box3().setFromObject(prop);
+  const size=box.getSize(new THREE.Vector3()), centre=box.getCenter(new THREE.Vector3());
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(Math.max(size.x,size.z)*2.2,Math.max(size.x,size.z)*2.2),new THREE.MeshStandardMaterial({color:'#b6bb90'}));
+  ground.rotation.x=-Math.PI/2;ground.position.set(centre.x,Math.min(0,box.min.y)-.02,centre.z);scene.add(ground);
+  return {scene,prop,box,size,centre};
+}
+/** The arrival camera of main.ts: dead ahead of the stand, eye 2.6, looking at the anchor at 1.2. */
+function arrivalCamera(s,aspect){
+  const d=Math.max(8.8,Math.min(18,Math.max(Math.max(2.2,s.size.x+.4),Math.max(2.2,s.size.z+.4))*1.05));
+  const cam=new THREE.PerspectiveCamera(34,aspect,.1,400);   // main.ts's own lens
+  cam.position.set(s.centre.x,2.6,s.centre.z+d);
+  cam.lookAt(s.centre.x,1.2,s.centre.z);
+  return cam;
+}
+/** Straight down on the stand: the silhouette the overview camera reads. */
+function topCamera(s,aspect){
+  const span=Math.max(s.size.x,s.size.z)*1.15;
+  const cam=new THREE.OrthographicCamera(-span*aspect,span*aspect,span,-span,.1,400);
+  cam.position.set(s.centre.x,60,s.centre.z+.001);
+  cam.lookAt(s.centre.x,0,s.centre.z);
+  return cam;
+}
+const cells=[];
+ids.forEach((id,n)=>{
+  const s=make(id);
+  const col=n%cols, row=Math.floor(n/cols);
+  const wanted=view==='pair'?['top','arrival']:[view];
+  wanted.forEach((kind,k)=>{
+    const x=(col*perStand+k)*cw, y=H-(row+1)*ch;
+    const cam=kind==='top'?topCamera(s,cw/ch):arrivalCamera(s,cw/ch);
+    renderer.setViewport(x,y,cw,ch);renderer.setScissor(x,y,cw,ch);
+    renderer.render(s.scene,cam);
+    cells.push({id,kind,x:x,y:(row)*ch});
+  });
+  s.scene.traverse(o=>{o.geometry?.dispose?.();});
+});
+// the labels go on a 2D layer over the rendered grid, so one canvas carries the whole sheet
+const sheet=document.getElementById('sheet');sheet.width=W;sheet.height=H;
+const ctx=sheet.getContext('2d');
+ctx.drawImage(gl,0,0);
+ctx.font='bold 14px system-ui';ctx.textBaseline='top';
+for(const c of cells){
+  const label=`${c.id} · ${c.kind}`;
+  const w=ctx.measureText(label).width+10;
+  ctx.fillStyle='rgba(20,24,28,.72)';ctx.fillRect(c.x+4,c.y+4,w,20);
+  ctx.fillStyle='#f3ecd8';ctx.fillText(label,c.x+9,c.y+7);
+  ctx.strokeStyle='rgba(20,24,28,.35)';ctx.strokeRect(c.x+.5,c.y+.5,cw-1,ch-1);
+}
+document.getElementById('status').textContent=`${ids.length} stands · ${cells.length} views · ${W}x${H}${poke?' · mid-reaction':''}`;
+window.__save=async(name)=>{
+  const blob=await new Promise(r=>sheet.toBlob(r,'image/png'));
+  const res=await fetch(`http://localhost:5399/save?name=${encodeURIComponent(name)}`,{method:'POST',body:blob});
+  return `${name}: ${blob.size} bytes, ${await res.text()}`;
+};
+window.__ready=true;
+</script></body></html>

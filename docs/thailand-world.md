@@ -448,3 +448,127 @@ The Stand maker may import from `thailand-architecture.ts` and `thailand-people.
 ## State at the end of 2026-09-21
 
 Stage C started the same day the blueprint was fixed, and the weekly usage limit stopped it mid-run. Committed: the Researcher files (objects, story depth, discoveries, speech lines). Partial and uncommitted in the working tree: the Stand maker file `props-*.ts`. Not started: the Room maker files, the Builder modules and the shared `world-seasia.ts` growth. The Thailand Builder carries an owner rule received the same day: the dark-to-light blue water transition of this table is kept, same materials and estuary blends at every mouth. Stage D notes: re-point the `stall-herbs-th` alias to `chilliesSea`; the Southeast Asia intro is at its four-beat cap. Work resumes after the reset in the order Stand makers, Builders, Room makers, then Stage D.
+
+## Stage D: integration, 2026-09-22
+
+Thailand is registered. `bangkok` displays as **Thailand** and the area is the whole country: the Andaman area
+is gone from the code, not only from the display.
+
+### What was registered
+
+| File | What changed |
+| --- | --- |
+| `graph.ts` | `THAILAND_OBJECTS` and `VIETNAM_OBJECTS` imported and spread into `SEASIA_OBJECTS`, beside the way `SPAIN_OBJECTS` is spread into `MED_OBJECTS`. The twenty-two Stage A objects this list held are all redefined in the two new files under the same ids, so the old list is gone entirely and the `FM` anchor with it. `andaman` removed from the `Area` union and from `AREAS`; no reference to it survives anywhere in `src` or `scripts` (the room id `th_andaman` and the card stem `andaman` are not the area and stay). `AREAS.bangkok` is now `name: "Thailand"`, `zh: "ประเทศไทย"`, `blurb: "the khlongs, the curry mortar, the plain, Lanna and the Andaman"`, `center: [-44, 0]`, exactly the row this document proposed |
+| `graph.ts`, the alias ruling | `stall-herbs-th` now aliases `chilliesSea`, not `herbsSea`. It is applied in `graph.ts` rather than in `thailand-objects.ts`, because the file's own note says the alias is a `graph.ts` decision: the spread is mapped and only that one object is rewritten. The herb boat therefore opens the Sampheng spice stall's card, four doors from the mortar it supplies, instead of a Hanoi herb garden across the table |
+| `main.ts` | `THAILAND_SCENES` and `VIETNAM_SCENES` in the `SCENES` merge. The arrival target gained a `southeast-asia` branch: every world but the Middle East arrived at the hard-coded `(-4, 0, 2)`, which on the grown table is the no-man's strip between the two areas. It is now `AREAS.bangkok.center`, `(-44, 0, 0)`, and `currentArea` is set to `bangkok` on entry as it is set to `istanbul` for the Middle East, so the breadcrumb says Thailand on arrival |
+| `ui.ts` | Card art keyed by world **and area**, because Thailand and Vietnam share the world id `southeast-asia`: `area === "bangkok"` reads `scenes/thailand-food/`, the rest reads `scenes/vietnam-food/`. `THAILAND_NEXT` and `THAILAND_SOURCES` wired into "Continue exploring" and "Sources and further reading" on the same two branches. The Stage A ids `riceSea`, `chickenSea`, `herbsSea`, `coconutSea`, `spicesSea`, `chilliesSea`, `fishSauce`, `wat`, `almsRound`, `hoanKiem`, `motorbikes`, `stilts`, `karsts`, `longtail` and `tukTuk` were dropped from `ICON_KEYS`: their `props-seasia.ts` icons were drawn for objects Stage C replaced, so a rickshaw would have worn a tuk-tuk's badge. They now render their own prop, which is what Spain's fourteen card-only objects do |
+| `snapshot.ts` | `THAILAND_ICONS`/`THAILAND_PROPS` and `VIETNAM_ICONS`/`VIETNAM_PROPS` added to both lookup chains, **before** the Stage A `SEASIA_*` sets so an id both hold resolves to the area's own art |
+| `repertoire.ts` | `THAILAND_REPERTOIRE` and `VIETNAM_REPERTOIRE` in `REPERTOIRE_TABLES` |
+| `README.md` | the world's areas line |
+
+Story depth needed no wiring: `thailand-objects.ts` already appends `THAILAND_STORY_DEPTH` to each room blurb.
+Discoveries and ambience needed none either: `scenes-thailand.ts` already reads `THAILAND_DISCOVERIES`,
+`THAILAND_AMBIENCE` and `THAILAND_HUNG`, the twelve `PAINTED_SIGNATURES` entries are in `scene-ambience.ts`, and
+`room-audit.html` and `rooms.html` already merge `THAILAND_SCENES`.
+
+### Harnesses
+
+`scripts/tests/room-loops.mjs` bundled China, Turkey and Spain only. It now bundles `scenes-thailand.ts` and
+`scenes-vietnam.ts` as well: **90 rooms audited**, the twenty-four new ones among them, every one at three or
+four always-on loops in both orientations with its hung sprites counted. `scripts/tests/repertoire.mjs` was
+extended the same way, from three tables to five, and now checks 114 places and 567 dishes.
+
+`scripts/tests/thailand-world.mjs` gained the three checks `vietnam-world.mjs` carries:
+
+- **Every road end meets something.** Vietnam's terminations are a street network's; Thailand is a coast with
+  country roads, so two of them are written differently and nothing is added. A route may end **at a stand it
+  serves**, at the same 2.6 from its surface that this area's own "a road at its door" rule uses, and it may end
+  **on the shore**, within 2.6 of the water, which is what the table edge is for Vietnam. All eight ends the
+  rule lets through are listed in the harness with their measured distance: `TH-R1` start at `almsRound` 3.13 of
+  3.70 and `TH-R1` end on the estuary shore at 1.08; `TH-R2` end on the salt-flat shore at 2.44; `TH-R3b` at
+  `tukTuk` 2.64; `TH-R5` at `miangTh` 2.44; `TH-R6` at `plaRaTh` 1.84; `TH-R7` at `karsts` 1.80; `TH-R7b` at
+  `khamminTh` 2.30. No Thai road ends in open country
+- **The two road surfaces overlap at a junction.** Copied straight, then made symmetric, because Thailand has a
+  hairpin Vietnam has not: the old-city street `TH-R3`, 2.4 wide, arrives at `[-24.2, -4.6]` and the Isan road
+  `TH-R6`, 1.6 wide, leaves the same point back along almost the same line. The wide street covers the narrow
+  one completely there, so no vertex of the wide one can ever be within the narrow one's 0.8, and the one-way
+  test read a full overlap as a gap. With the symmetric test every Thai junction passes and **no road fix was
+  needed**: `drawnPoints`, the carry Vietnam added, was written, tested and then dropped, because there was no
+  wedge of grass to close
+- **The paving is squares.** Both Thai slabs, `old-city-paving` at `[-31, -4]` 15 x 11 and `khlong-quay-paving`
+  at `[-44.4, 1]` 7.5 x 13, are axis-aligned, drawn at the size the town file gives, and each of their four
+  sides lies under a road or against a building. The check filters to `x <= -14` because Vietnam's four slabs
+  are on the same table
+
+The copied `coplanarOverlaps` check was added to the Thai bridge decks at the same time and found one real
+defect, the only change made to `thailand-town.ts`: the ramp and the deck are the same width, so their long
+side faces lie in one plane, and a ramp that tucked 25 mm under the deck end left a z-fighting sliver of about
+13 cm² on each of the four crossings. The ramp is set out 0.03 further, from 0.2 to 0.23, so it meets the deck
+end instead of overlapping it. Its width is untouched: the stone tessellation reads mesh sizes, and narrowing
+it moved the world's seeded random stream enough to change a walker's gait fifty units away.
+
+One harness rule was rewritten rather than fixed. Registration puts the real Thai stands into `buildSeasia`,
+and the 240-second stride rule then flagged `kabang-child` for covering 1.4 with its legs locked. The child is
+standing on a rocking moored dug-out: it is a passenger, carried as a diner is carried by a stool, and it has
+nowhere to walk to. Figures on the harness's own `MOORED` hulls now count as seated for that rule.
+
+### Results
+
+`npm run typecheck` clean. `npm test`: 21 harnesses passed. `node scripts/tests/object-ids.mjs`: 391 objects,
+every id unique, every alias and parent resolves. `npm run build:pages` clean. `node scripts/audit/objects.mjs`:
+
+```
+bangkok: rooms=12 card-only-with-prop=16 hit/child=4
+hanoi:   rooms=8  card-only-with-prop=9  hit/child=0
+mekong:  rooms=4  card-only-with-prop=7  hit/child=0
+```
+
+Thirty-two Thai objects and twenty-eight Vietnamese, sixty in all, which is what `diorama.placed` holds on the
+live page.
+
+### The live check
+
+On a restarted dev server and a fresh load, 1280 x 720, through `window.__fw`.
+
+- **Arrival.** The camera arrives at target `(-44, 0, 0)` from `(-42, 48, 60)`: the khlongs, as the blueprint
+  asks. Sixty objects placed
+- **Roads.** All twenty-two routes walked end to end, nine Thai and thirteen Vietnamese, 126 points
+- **Objects.** All sixty open. The thirty-six card objects each open their own card — checked by title against
+  the object's name, with a settle long enough for the 800 ms card timer — with three or more blurb paragraphs,
+  a rendered badge, a "Continue exploring" row and a "Sources and further reading" block. Both aliased stalls
+  resolve: `stall-herbs-th` opens "Chilli, galangal & lemongrass" and `stall-coconut` opens "Coconut". The
+  twenty-four room objects each open their room, and "The story" inside it opens a card with **painted** art
+  and seven paragraphs. **No object failed to open**
+- **Rooms.** All twenty-four open and show their painting, at 1280 x 720 and again at 390 x 844, each with
+  three hotspots and six layers; at phone size every one loads `preview-portrait.jpg`, so the portrait
+  composition is the one that draws. **No room failed to show**
+- **Console.** One error in the whole pass: `THREE.WebGLProgram: Shader Error 0 - VALIDATE_STATUS false`,
+  `MeshStandardMaterial`, with an empty program info log. It is not this table's: a fresh load that enters
+  **China** instead produces exactly the same single line. It is the hidden Browser pane's software GL
+  validating a program, and everything renders and screenshots normally. Nothing else, in any world view, any
+  card or any room, at either size
+
+Contact sheet, seven tiles — the arrival view, one stand mid-reaction per area and one room per area — at
+`/private/tmp/claude-501/-Users-yingyingfu-Projects-fyying-food-tour/0dc0bae3-03ac-485b-a807-0a6ab67f1645/scratchpad/seasia-stage-d.png`.
+
+### Left for the shared-ground pass
+
+Registration closes nothing that belongs to the ground between the stands. The two Builders' harnesses hold
+these as dated ceilings — a listed pair may not get worse and an unlisted pair may not appear — and closing
+them is a re-blueprint or a stand resize, not a registration.
+
+**Twenty-three Thai stand-on-stand ray failures** (`A < B` reads "B covers A on n of 10 rays from the camera"),
+from `HIDDEN` in `scripts/tests/thailand-world.mjs`:
+
+`chilliesSea < curryPaste` 7 · `wangKitchenTh < wat` 6 · `sweetsTh < kluaTh` 6 · `talayTh < babaTh` 6 ·
+`coconutSea < muslimKitchenTh` 6 · `karsts < babaTh` 6 · `khaoSoiTh < suanTh` 5 · `khamminTh < muslimKitchenTh` 5 ·
+`almsRound < wat` 4 · `floatingMarket < kuaitiaoRuea` 3 · `wangKitchenTh < curryPaste` 3 · `khaoSoiTh < tanTh` 3 ·
+`talayTh < muslimKitchenTh` 3 · `coconutSea < babaTh` 3 · `suanTh < naPaddyTh` 3 · `longtail < babaTh` 3 ·
+`chinHawTh < tanTh` 3 · `shophouseTh < curryPaste` 2 · `shophouseTh < tukTuk` 2 · `isanGrillTh < plaRaTh` 2 ·
+`chilliesSea < tukTuk` 2 · `chinHawTh < suanTh` 2 · `naKhaoTh < naPaddyTh` 1
+
+**Four Thai stands hanging over water**, from `OVER_WATER` in the same file, counted in vertices: `suanTh` 3300,
+`sweetsTh` 1179, `khaoSoiTh` 6, `chinHawTh` 6. The two large ones are the river orchards and the sweets kitchen
+on the khlong grid, where the anchor is fixed in `thailand-objects.ts` and the water line in this document.
+
+The Vietnamese half of both lists is in [vietnam-world.md](vietnam-world.md) under the same heading.

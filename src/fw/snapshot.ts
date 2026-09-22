@@ -9,6 +9,8 @@ import { MED_ICONS, MED_PROPS } from "./props-med";
 import { SPAIN_ICONS, SPAIN_PROPS } from "./props-spain";
 import { INDIA_ICONS, INDIA_PROPS } from "./props-india";
 import { SEASIA_ICONS, SEASIA_PROPS } from "./props-seasia";
+import { THAILAND_ICONS, THAILAND_PROPS } from "./props-thailand";
+import { VIETNAM_ICONS, VIETNAM_PROPS } from "./props-vietnam";
 import { NAMERICA_ICONS, NAMERICA_PROPS } from "./props-namerica";
 import { JAPAN_ICONS, JAPAN_PROPS } from "./props-japan";
 import { CEUROPE_ICONS, CEUROPE_PROPS } from "./props-ceurope";
@@ -19,7 +21,7 @@ const cache = new Map<string, string>();
 export function snapshot(key: string, size = 192): string | null {
   const hit = cache.get(key);
   if (hit) return hit;
-  const build = ICONS[key] ?? ITALY_ICONS[key] ?? KOREA_ICONS[key] ?? MEXICO_ICONS[key] ?? MIDEAST_ICONS[key] ?? SPAIN_ICONS[key] ?? MED_ICONS[key] ?? INDIA_ICONS[key] ?? SEASIA_ICONS[key] ?? NAMERICA_ICONS[key] ?? JAPAN_ICONS[key] ?? CEUROPE_ICONS[key] ?? PROPS[key] ?? ITALY_PROPS[key] ?? KOREA_PROPS[key] ?? MEXICO_PROPS[key] ?? MIDEAST_PROPS[key] ?? SPAIN_PROPS[key] ?? MED_PROPS[key] ?? INDIA_PROPS[key] ?? SEASIA_PROPS[key] ?? NAMERICA_PROPS[key] ?? JAPAN_PROPS[key] ?? CEUROPE_PROPS[key];
+  const build = ICONS[key] ?? ITALY_ICONS[key] ?? KOREA_ICONS[key] ?? MEXICO_ICONS[key] ?? MIDEAST_ICONS[key] ?? SPAIN_ICONS[key] ?? MED_ICONS[key] ?? INDIA_ICONS[key] ?? THAILAND_ICONS[key] ?? VIETNAM_ICONS[key] ?? SEASIA_ICONS[key] ?? NAMERICA_ICONS[key] ?? JAPAN_ICONS[key] ?? CEUROPE_ICONS[key] ?? PROPS[key] ?? ITALY_PROPS[key] ?? KOREA_PROPS[key] ?? MEXICO_PROPS[key] ?? MIDEAST_PROPS[key] ?? SPAIN_PROPS[key] ?? MED_PROPS[key] ?? INDIA_PROPS[key] ?? THAILAND_PROPS[key] ?? VIETNAM_PROPS[key] ?? SEASIA_PROPS[key] ?? NAMERICA_PROPS[key] ?? JAPAN_PROPS[key] ?? CEUROPE_PROPS[key];
   if (!build) return null;
   const url = snapshotObject(build(), size);
   cache.set(key, url);

@@ -343,3 +343,92 @@ The Stand maker may import from `vietnam-architecture.ts` and `vietnam-people.ts
 ## State at the end of 2026-09-21
 
 Stage C started the same day the blueprint was fixed, and the weekly usage limit stopped it mid-run. Committed: the Researcher files (objects, story depth, discoveries, speech lines). Partial and uncommitted in the working tree: the Stand maker file `props-*.ts`. Not started: the Room maker files, the Builder modules and the shared `world-seasia.ts` growth. The Thailand Builder carries an owner rule received the same day: the dark-to-light blue water transition of this table is kept, same materials and estuary blends at every mouth. Stage D notes: re-point the `stall-herbs-th` alias to `chilliesSea`; the Southeast Asia intro is at its four-beat cap. Work resumes after the reset in the order Stand makers, Builders, Room makers, then Stage D.
+
+## Stage D: integration, 2026-09-22
+
+The Vietnam package is registered. Both ids are kept; the display names and the centres are the ones this
+document proposed, and `hanoi` now covers the north *and* the centre.
+
+### What was registered
+
+| File | What changed |
+| --- | --- |
+| `graph.ts` | `VIETNAM_OBJECTS` imported and spread into `SEASIA_OBJECTS` beside `THAILAND_OBJECTS`, the way `SPAIN_OBJECTS` is spread into `MED_OBJECTS`. Every Stage A object the old list held is redefined in the two new files under the same id — `riceSea`, `chickenSea`, `herbsSea`, `fishSauce`, `hanoiKitchen`, `banhMi`, `hoanKiem`, `motorbikes` and `stilts` among them — so the hand-written list is gone. `AREAS.hanoi` is `name: "Vietnam: the north and the centre"`, `zh: "Bắc và Trung Bộ"`, `blurb: "the guild street, the Red River, Huế's garden and the Hội An quay"`, `center: [-4, -18]`; `AREAS.mekong` is `name: "Saigon and the Mekong delta"`, `zh: "Sài Gòn · Đồng bằng sông Cửu Long"`, `blurb: "bread and noodles in Chợ Lớn, the delta hearth, fish sauce and stilt houses"`, `center: [-5, 13]`. The `andaman` area is gone from the `Area` union, from `AREAS` and from every reference in `src` and `scripts` |
+| `main.ts` | `VIETNAM_SCENES` and `THAILAND_SCENES` in the `SCENES` merge, and a `southeast-asia` arrival target at `AREAS.bangkok.center` — the old hard-coded `(-4, 0, 2)` lands in the two-unit strip between the two areas on the grown table |
+| `ui.ts` | Card art keyed by world **and area**, because both areas share the world id `southeast-asia`: `bangkok` reads `scenes/thailand-food/` and everything else reads `scenes/vietnam-food/`. `VIETNAM_NEXT` and `VIETNAM_SOURCES` wired into "Continue exploring" and "Sources and further reading" on the same branches. The Stage A `ICON_KEYS` entries for ids Stage C re-propped (`riceSea`, `chickenSea`, `herbsSea`, `fishSauce`, `hoanKiem`, `motorbikes`, `stilts` and the rest) were removed, so each renders its own new prop instead of a Stage A icon drawn for a different object |
+| `snapshot.ts` | `VIETNAM_ICONS`/`VIETNAM_PROPS` and `THAILAND_ICONS`/`THAILAND_PROPS` in both lookup chains, before the Stage A `SEASIA_*` sets |
+| `repertoire.ts` | `VIETNAM_REPERTOIRE` and `THAILAND_REPERTOIRE` in `REPERTOIRE_TABLES` |
+| `README.md` | the world's areas line |
+
+`world-intros.ts` needed no edit: the Southeast Asia intro already names `["hanoi","bangkok"]` and no beat
+mentions `andaman`. Story depth is already appended to each blurb in `vietnam-objects.ts`; discoveries,
+ambience and the two room test pages were already wired by the Room maker.
+
+### Harnesses
+
+`scripts/tests/room-loops.mjs` now bundles `scenes-vietnam.ts` and `scenes-thailand.ts` beside China, Turkey
+and Spain: **90 rooms audited**, the twelve Vietnamese rooms among them, each at three or four always-on loops
+in wide and portrait with its hung sprites counted. `scripts/tests/repertoire.mjs` was extended from three
+tables to five.
+
+`scripts/tests/vietnam-world.mjs` is unchanged. Its road-connectivity, road-surface-overlap and paving checks
+were copied into `scripts/tests/thailand-world.mjs`; what had to change to fit the Thai coast, and the one
+bridge-ramp fix the copied `coplanarOverlaps` check found, are written up in
+[thailand-world.md](thailand-world.md) under the same heading.
+
+### Results
+
+`npm run typecheck` clean. `npm test`: 21 harnesses passed. `object-ids.mjs`: 391 objects, every id unique,
+every alias and parent resolves. `npm run build:pages` clean. `scripts/audit/objects.mjs`:
+
+```
+bangkok: rooms=12 card-only-with-prop=16 hit/child=4
+hanoi:   rooms=8  card-only-with-prop=9  hit/child=0
+mekong:  rooms=4  card-only-with-prop=7  hit/child=0
+```
+
+Twenty-eight Vietnamese objects across the two areas, sixty on the table.
+
+### The live check
+
+On a restarted dev server and a fresh load, through `window.__fw`.
+
+- **Arrival** at target `(-44, 0, 0)`, the Bangkok khlongs, with sixty objects placed
+- **Roads**: all thirteen Vietnamese routes walked end to end, and all nine Thai
+- **Objects**: all sixty open. Every Vietnamese card object opens its own card — `riceSea` "Rice in four
+  forms", `chickenSea` "The chicken yard", `herbsSea` "The herb trays", `fishSauce` "The Phú Quốc barrels",
+  `starAniseVn`, `lemongrassVn`, `riverFishVn`, `lotusTeaVn`, `caPheVn`, `hoanKiem`, `motorbikes`, `stilts`,
+  `hueCitadelVn`, `hoiAnQuayVn`, `waterPuppetsVn`, `benThanhVn` — with three or more paragraphs, a rendered
+  badge, "Continue exploring" and "Sources and further reading". The twelve room objects each open their room,
+  and "The story" inside opens a card with painted art and seven paragraphs. **No object failed to open**
+- **Rooms**: all twelve Vietnamese rooms (and all twelve Thai) open and show their painting at 1280 x 720 and
+  again at 390 x 844, three hotspots and six layers each, the portrait painting loading at phone size. **No
+  room failed to show**
+- **Console**: one line in the whole pass, `THREE.WebGLProgram: Shader Error 0 - VALIDATE_STATUS false` with
+  an empty info log, which a fresh load into **China** reproduces exactly. Not this world's, and nothing renders
+  wrong. Nothing else
+
+Contact sheet at
+`/private/tmp/claude-501/-Users-yingyingfu-Projects-fyying-food-tour/0dc0bae3-03ac-485b-a807-0a6ab67f1645/scratchpad/seasia-stage-d.png`.
+
+### Left for the shared-ground pass
+
+**Twenty Vietnamese stand-on-stand ray failures** (`A / B` reads "B covers A on n of 10 rays from the camera"),
+from `KNOWN_STAND_COVER` in `scripts/tests/vietnam-world.mjs`:
+
+`waterPuppetsVn / comVongVn` 9 · `riceSea / stilts` 7 · `fishSauce / stilts` 6 · `caoLauVn / miQuangVn` 4 ·
+`hoanKiem / bunChaVn` 4 · `riceSea / mekongKitchenVn` 3 · `caPheVn / huTieuVn` 3 · `stilts / banhXeoVn` 3 ·
+`hueCitadelVn / hueKitchenVn` 3 · `hueCitadelVn / banhHueVn` 3 · `hoiAnQuayVn / miQuangVn` 3 ·
+`banhCuonVn / comVongVn` 2 · `banhMi / benThanhVn` 2 · `fishSauce / banhXeoVn` 2 ·
+`hanoiKitchen / starAniseVn` 1 · `comVongVn / hueKitchenVn` 1 · `chickenSea / mekongKitchenVn` 1 ·
+`lemongrassVn / hueKitchenVn` 1 · `motorbikes / bunChaVn` 1 · `hoanKiem / hanoiKitchen` 1
+
+**Nine Vietnamese stands reaching into the water**, from `KNOWN_OVER_WATER` in the same file, in units:
+`hanoiKitchen` 1.85 · `banhCuonVn` 1.74 · `hoiAnQuayVn` 1.45 · `caoLauVn` 1.39 · `mekongKitchenVn` 1.29 ·
+`banhHueVn` 1.17 · `hueCitadelVn` 1.10 · `hueKitchenVn` 1.03 · `hoanKiem` 0.95. `hoiAnQuayVn` is the one that is
+right as it stands: a quay is built at the water's edge, and the blueprint puts it there.
+
+Both are ceilings, not licences: a listed pair may not get worse and an unlisted one may not appear. The stand
+anchors are fixed in `vietnam-objects.ts` and the geometry in `props-vietnam.ts`, so closing them is an object-
+list change or a stand resize, not a registration. The Thai half of both lists is in
+[thailand-world.md](thailand-world.md) under the same heading.

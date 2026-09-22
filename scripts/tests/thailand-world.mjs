@@ -17,6 +17,7 @@ import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { build } from 'rolldown';
 import * as THREE from 'three';
+import { coplanarOverlaps } from './coplanar-surfaces.mjs';
 const ctx=new Proxy({}, {get:(_,key)=>key==='createLinearGradient'||key==='createRadialGradient'?()=>({addColorStop(){}}):key==='measureText'?()=>({width:20}):()=>{},set:()=>true});
 globalThis.document={visibilityState:'hidden',defaultView:{Element:class {}},createElement:()=>({ownerDocument:document,getContext:()=>ctx,style:{},setAttribute(){},classList:{add(){},remove(){},toggle(){}},addEventListener(){}})};
 globalThis.Image=class { complete=true;naturalWidth=24;naturalHeight=14;set src(_){} };
@@ -138,6 +139,92 @@ try {
     }
     assert.equal(seen.size,TH_ROADS.length,`the Thai network is in ${TH_ROADS.length-seen.size+1} pieces: ${TH_ROADS.filter(r=>!seen.has(r.id)).map(r=>r.id)}`);
   }
+
+  // ---------- every road end meets something ----------
+  // Copied from vietnam-world.mjs, which got it from the owner defect of 2026-09-22: "the roads are not
+  // connected and there is a strangely painted circle". Two ribbons came to the same place from different
+  // directions and stopped short of each other. Every end of every route must finish at something.
+  //
+  // Vietnam's list of terminations is a street network's: another route, a bridge deck, a door at half a road
+  // width, or the table edge. Thailand is a coast with country roads, so two of them are written differently
+  // and nothing else is added. A route may end **at a stand it serves**, at the same 2.6 from its surface that
+  // the area's own "a road at its door" rule uses two sections below — a lane that ends at the last farm is
+  // that farm's lane, not a lane stopping in the grass. And it may end **on the shore**, within 2.6 of the
+  // water, which is what the table edge is for Vietnam: a quay finishes at the water it runs down to.
+  //
+  // Every end the rule lets through on 2026-09-22, with its measured distance, so a change is visible:
+  //   TH-R1 start [-38.2, -9.4]  almsRound 3.13 of 3.70   TH-R1 end [-36.4, 20.6]  the estuary shore, 1.08
+  //   TH-R2 end   [-53.4, 19.6]  the salt-flat shore 2.44  TH-R3b end [-27.8, 0.8]  tukTuk 2.64 of 3.50
+  //   TH-R5 end   [-64, -20.6]   miangTh 2.44 of 3.40      TH-R6 end  [-20.8, -20.2] plaRaTh 1.84 of 3.40
+  //   TH-R7 end   [-73, 5.8]     karsts 1.80 of 3.50       TH-R7b end [-62.2, 12.6] khamminTh 2.30 of 3.30
+  const centrelineGap=(x,z,road)=>{let d=1e9;for(let i=0;i<road.points.length-1;i++){const [ax,az]=road.points[i],[bx,bz]=road.points[i+1];const ex=bx-ax,ez=bz-az,l2=ex*ex+ez*ez||1;const t=Math.max(0,Math.min(1,((x-ax)*ex+(z-az)*ez)/l2));d=Math.min(d,Math.hypot(x-ax-ex*t,z-az-ez*t));}return d;};
+  const edgeGap=(x,z,poly)=>{let d=1e9;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const [ax,az]=poly[j],[bx,bz]=poly[i];const ex=bx-ax,ez=bz-az,l2=ex*ex+ez*ez||1;const t=Math.max(0,Math.min(1,((x-ax)*ex+(z-az)*ez)/l2));d=Math.min(d,Math.hypot(x-ax-ex*t,z-az-ez*t));}return d;};
+  const isRing=road=>Math.hypot(road.points[0][0]-road.points[road.points.length-1][0],road.points[0][1]-road.points[road.points.length-1][1])<1e-6;
+  const dangling=[];
+  for(const road of TH_ROADS){
+    for(const [which,[x,z]] of [['start',road.points[0]],['end',road.points[road.points.length-1]]]){
+      if(Math.abs(z)>=TABLE.maxZ-.4||x<=TABLE.minX+.4||x>=-14.4) continue;   // it leaves Thailand's band
+      const reach=road.width/2;
+      const onRoad=TH_ROADS.some(other=>other!==road&&centrelineGap(x,z,other)<=reach);
+      const onDeck=TH_CROSSINGS.some(c=>Math.hypot(x-c.at[0],z-c.at[1])<=reach+c.span/2);
+      const atDoor=THAILAND_OBJECTS.some(o=>Math.hypot(x-o.pos[0],z-o.pos[1])<=reach+2.6);
+      const atShore=[sea,...waterOutlines()].some(poly=>edgeGap(x,z,poly)<=2.6);
+      if(!onRoad&&!onDeck&&!atDoor&&!atShore&&!isRing(road)) dangling.push(`${road.id} ${which} [${x}, ${z}]: meets no road, no bridge, no door within ${(reach+2.6).toFixed(1)} and no shore within 2.6`);
+    }
+  }
+  assert.deepEqual(dangling,[],'a road ends in the grass');
+  // And the drawn surfaces really overlap at the junction: for every end that meets another route, one of the
+  // two ribbons puts a vertex inside the other's own surface, so no grass shows between them. The test is
+  // symmetric because Thailand has a hairpin Vietnam has not: the old-city street TH-R3, 2.4 wide, arrives at
+  // [-24.2, -4.6] and the Isan road TH-R6, 1.6 wide, leaves the same point back along almost the same line.
+  // The wide street covers the narrow one completely there, so no vertex of the wide one can be within the
+  // narrow one's 0.8 — and an asymmetric test would read a full overlap as a gap.
+  const surfaceOf=id=>{const m=ribbons.find(o=>o.userData.road===id),pos=m.geometry.attributes.position,v=[];for(let i=0;i<pos.count;i++)v.push([pos.getX(i),pos.getZ(i)]);return v;};
+  const drawn=new Map(TH_ROADS.map(r=>[r.id,surfaceOf(r.id)]));
+  const gaps=[];
+  for(const road of TH_ROADS){
+    if(isRing(road))continue;
+    for(const [which,[x,z]] of [['start',road.points[0]],['end',road.points[road.points.length-1]]]){
+      const meets=TH_ROADS.filter(other=>other!==road&&centrelineGap(x,z,other)<=road.width/2);
+      if(!meets.length)continue;
+      const near=(id,w)=>drawn.get(id).filter(([vx,vz])=>Math.hypot(vx-x,vz-z)<w+1.4);
+      const mine=near(road.id,road.width);
+      const over=meets.some(other=>mine.some(([vx,vz])=>centrelineGap(vx,vz,other)<=other.width/2)
+        ||near(other.id,other.width).some(([vx,vz])=>centrelineGap(vx,vz,road)<=road.width/2));
+      if(!over) gaps.push(`${road.id} ${which} [${x}, ${z}]: its surface stops short of ${meets.map(m=>m.id)}`);
+    }
+  }
+  assert.deepEqual(gaps,[],'two road surfaces meet with grass between them');
+
+  // ---------- the paving is squares, not blobs ----------
+  // The two swept slabs of `thailandTown`, name, centre and size, kept here so a change to either one has to
+  // be made in both places. Each is an axis-aligned rectangle and each of its four sides lies under a road's
+  // own surface or against a building's footprint, exactly as VN_PAVING is held in vietnam-world.mjs.
+  const TH_PAVING=[['old-city-paving',-31,-4,15,11],['khlong-quay-paving',-44.4,1,7.5,13]];
+  const slabs=world.group.children.filter(o=>o.isMesh&&/paving$/.test(o.name||'')&&o.position.x<=-14);   // Vietnam's slabs are on the same table
+  assert.equal(slabs.length,TH_PAVING.length,'one mesh per paved square');
+  const footprints=[...world.placed.filter(p=>p.obj.pos[0]<=-14).map(p=>new THREE.Box3().setFromObject(p.group)),
+    ...world.group.children.filter(o=>o.name==='thai-house'||o.name==='wat-chedi'||o.name==='thai-sala').map(o=>new THREE.Box3().setFromObject(o))];
+  const unsupported=[];
+  for(const [name,cx,cz,w,d] of TH_PAVING){
+    const mesh=slabs.find(o=>o.name===name);
+    assert.ok(mesh,`${name}: not drawn`);
+    assert.ok(Math.abs(mesh.rotation.y)<1e-9,`${name}: a paved square is axis-aligned, never turned`);
+    const box=new THREE.Box3().setFromObject(mesh);
+    assert.ok(Math.abs((box.max.x-box.min.x)-w)<.01&&Math.abs((box.max.z-box.min.z)-d)<.01,`${name}: drawn at a different size from TH_PAVING`);
+    const sides={north:[[cx-w/2,cz-d/2],[cx+w/2,cz-d/2]],south:[[cx-w/2,cz+d/2],[cx+w/2,cz+d/2]],
+                 west:[[cx-w/2,cz-d/2],[cx-w/2,cz+d/2]],east:[[cx+w/2,cz-d/2],[cx+w/2,cz+d/2]]};
+    for(const [which,[a,b]] of Object.entries(sides)){
+      let held=false;
+      for(let k=0;k<=8&&!held;k++){
+        const x=a[0]+(b[0]-a[0])*k/8, z=a[1]+(b[1]-a[1])*k/8;
+        if(TH_ROADS.some(r=>centrelineGap(x,z,r)<=r.width/2+1.0)) held=true;
+        if(!held&&footprints.some(f=>x>=f.min.x-1.0&&x<=f.max.x+1.0&&z>=f.min.z-1.0&&z<=f.max.z+1.0)) held=true;
+      }
+      if(!held) unsupported.push(`${name}: its ${which} side runs over open grass, under no road and against no building`);
+    }
+  }
+  assert.deepEqual(unsupported,[],'a paved square has a side on open grass');
 
   // ---------- the thirty-two objects: dry ground, a road at the door, and the band ----------
   const objects=THAILAND_OBJECTS.filter(o=>o.area==='bangkok');
@@ -401,6 +488,7 @@ try {
   assert.equal(bridges.length,TH_CROSSINGS.length,'three short decks over the khlongs and one long one over the river');
   assert.equal(TH_BRIDGES.length,TH_CROSSINGS.length);
   for(const b of bridges){
+    assert.deepEqual(coplanarOverlaps(b),[],'bridge faces overlap on the same plane');
     const box=new THREE.Box3().setFromObject(b);
     const crossing=TH_CROSSINGS.find(c=>Math.hypot(b.position.x-c.at[0],b.position.z-c.at[1])<.6);
     assert.ok(crossing,`a bridge at ${b.position.x.toFixed(1)}, ${b.position.z.toFixed(1)} is not one of the four crossings`);
@@ -484,7 +572,12 @@ try {
   const rigged=[];
   world.group.traverse(o=>{ if(o.userData?.legs?.left?.thigh) rigged.push(o); });
   assert.ok(rigged.length>=20,`the Thai half should be peopled, found ${rigged.length} leg rigs`);
-  const strides=rigged.map(o=>({o,name:o.name||`figure at ${o.position.x.toFixed(1)}, ${o.position.z.toFixed(1)}`,seated:Boolean(o.userData.seated||o.userData.seatTop),travelled:0,swung:0,prev:null,prevLeg:0}));
+  // Which placed object a figure belongs to, so a passenger can be told from a walker. A figure on one of the
+  // MOORED hulls — the market boats, the noodle boat, the kabang on their Andaman mooring — is carried by the
+  // hull as a diner is carried by a stool: its world position travels while the boat rocks and it has nowhere
+  // to walk to. `kabang-child` covers 1.4 over 240 seconds standing perfectly still on a rocking dug-out.
+  const placedOf=o=>{ let p=o; while(p){ const hit=world.placed.find(x=>x.group===p); if(hit) return hit.obj.id; p=p.parent; } return null; };
+  const strides=rigged.map(o=>({o,name:o.name||`figure at ${o.position.x.toFixed(1)}, ${o.position.z.toFixed(1)}`,seated:Boolean(o.userData.seated||o.userData.seatTop)||MOORED.has(placedOf(o)),travelled:0,swung:0,prev:null,prevLeg:0}));
   const here=new THREE.Vector3();
   const buffalo=world.group.children.find(o=>o.name==='thai-buffalo');
   for(let frame=0;frame<1200;frame++){

@@ -15,7 +15,9 @@ import { CHINA_REPERTOIRE } from "./china-repertoire";
 import type { EnrichedRecipe } from "./graph";
 import { escapeHtml as esc } from "./plates";
 import { SPAIN_REPERTOIRE } from "./spain-repertoire";
+import { THAILAND_REPERTOIRE } from "./thailand-repertoire";
 import { TURKEY_REPERTOIRE } from "./turkey-repertoire";
+import { VIETNAM_REPERTOIRE } from "./vietnam-repertoire";
 
 /**
  * One dish in a place's repertoire. `zh` is the local name, `recipe` an exact id from the recipe export, and
@@ -27,7 +29,7 @@ import { TURKEY_REPERTOIRE } from "./turkey-repertoire";
 export type RepertoireEntry = { name: string; zh?: string; line: string; recipe?: string; art?: string };
 
 /** Every world's table, in the order they are searched. Ids are unique across worlds, so the order never matters. */
-export const REPERTOIRE_TABLES: Record<string, RepertoireEntry[]>[] = [CHINA_REPERTOIRE, TURKEY_REPERTOIRE, SPAIN_REPERTOIRE];
+export const REPERTOIRE_TABLES: Record<string, RepertoireEntry[]>[] = [CHINA_REPERTOIRE, TURKEY_REPERTOIRE, SPAIN_REPERTOIRE, THAILAND_REPERTOIRE, VIETNAM_REPERTOIRE];
 
 const NONE: RepertoireEntry[] = [];
 

@@ -75,8 +75,11 @@ function woodenCrossing(len: number, deckWidth = 1.9): P {
     for (let i = 0; i <= 4; i++) add(g, block(.09, .52, .09, TH.teakDark), -len / 2 + .2 + i * (len - .4) / 4, deckTop + .30, z);
   }
   // The ramp onto the lane sits just outside the deck, not a whole deck-length away: three khlong crossings
-  // stand three and a half apart and a long ramp turns them into one boardwalk.
-  for (const x of [-len / 2, len / 2]) add(g, block(.44, .1, deckWidth, '#B7A986'), x + (x > 0 ? .2 : -.2), deckTop - .05, 0).rotation.z = x > 0 ? -.16 : .16;
+  // stand three and a half apart and a long ramp turns them into one boardwalk. It is set 0.03 further out
+  // than it was: the ramp and the deck are the same width, so their long side faces lie in one plane, and a
+  // ramp that tucked 25 mm under the deck end left a z-fighting sliver there (`coplanarOverlaps` in
+  // thailand-world.mjs). At 0.23 the ramp meets the deck end instead of overlapping it.
+  for (const x of [-len / 2, len / 2]) add(g, block(.44, .1, deckWidth, '#B7A986'), x + (x > 0 ? .23 : -.23), deckTop - .05, 0).rotation.z = x > 0 ? -.16 : .16;
   return masonry(g) as P;
 }
 

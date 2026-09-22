@@ -5,9 +5,9 @@
  * the dishes that kitchen actually cooks — and the card shows it with the recipe add-on off, because that is how
  * the world is built and reviewed. This harness guards the content and the two places it is drawn:
  *
- *   - every key in the three tables is a real object id or a real room id, so nothing is written for a place
+ *   - every key in the five tables is a real object id or a real room id, so nothing is written for a place
  *     that does not exist and no rename silently drops a list
- *   - every entry has a name and a line of 12 to 25 words, the length band the three tables were written to
+ *   - every entry has a name and a line of 12 to 25 words, the length band the five tables were written to
  *   - every `recipe` id is a recipe that really exists in the export, so the add-on's link never dead-ends
  *   - a card for an object with a repertoire draws the section with the add-on off, and nothing else about dishes
  *   - the same card with the add-on on grows a recipe link on the entries that name one, and still no fuzzy
@@ -32,7 +32,7 @@ try {
   const plugin = {
     name: 'stub',
     resolveId(src, importer) {
-      if (src === './scene-painted' && importer && /scenes-(china|turkey|spain)\.ts$/.test(importer)) return '\0stub';
+      if (src === './scene-painted' && importer && /scenes-(china|turkey|spain|thailand|vietnam)\.ts$/.test(importer)) return '\0stub';
       if (src === './snapshot' && importer && /ui\.ts$/.test(importer)) return '\0snapshot';
     },
     load(id) {
@@ -49,11 +49,15 @@ try {
     `export { CHINA_REPERTOIRE } from '${src('src/fw/china-repertoire.ts')}';`,
     `export { TURKEY_REPERTOIRE } from '${src('src/fw/turkey-repertoire.ts')}';`,
     `export { SPAIN_REPERTOIRE } from '${src('src/fw/spain-repertoire.ts')}';`,
+    `export { THAILAND_REPERTOIRE } from '${src('src/fw/thailand-repertoire.ts')}';`,
+    `export { VIETNAM_REPERTOIRE } from '${src('src/fw/vietnam-repertoire.ts')}';`,
     `export { setRecipeLayerEnabled } from '${src('src/data.ts')}';`,
     `export { ALL_OBJECTS, enrich } from '${src('src/fw/graph.ts')}';`,
     `export { SCENES as CHINA_SCENES } from '${src('src/fw/scenes-china.ts')}';`,
     `export { TURKEY_SCENES } from '${src('src/fw/scenes-turkey.ts')}';`,
     `export { SPAIN_SCENES } from '${src('src/fw/scenes-spain.ts')}';`,
+    `export { THAILAND_SCENES } from '${src('src/fw/scenes-thailand.ts')}';`,
+    `export { VIETNAM_SCENES } from '${src('src/fw/scenes-vietnam.ts')}';`,
   ].join('\n'));
 
   // the card is written into one element; the rooms only need enough of a document to be imported
@@ -68,12 +72,12 @@ try {
   const m = await import(pathToFileURL(output));
 
   const objectIds = new Set(m.ALL_OBJECTS.map((o) => o.id));
-  const roomIds = new Set([...Object.keys(m.CHINA_SCENES), ...Object.keys(m.TURKEY_SCENES), ...Object.keys(m.SPAIN_SCENES)]);
+  const roomIds = new Set([...Object.keys(m.CHINA_SCENES), ...Object.keys(m.TURKEY_SCENES), ...Object.keys(m.SPAIN_SCENES), ...Object.keys(m.THAILAND_SCENES), ...Object.keys(m.VIETNAM_SCENES)]);
   const { recipes: rawRecipes } = JSON.parse(await readFile('public/static/recipes.json', 'utf8'));
   const recipeIds = new Set(rawRecipes.map((r) => r.id));
 
   // 1. the content: real keys, a name, a line in the band, and a recipe id that resolves
-  const tables = [['CHINA_REPERTOIRE', m.CHINA_REPERTOIRE], ['TURKEY_REPERTOIRE', m.TURKEY_REPERTOIRE], ['SPAIN_REPERTOIRE', m.SPAIN_REPERTOIRE]];
+  const tables = [['CHINA_REPERTOIRE', m.CHINA_REPERTOIRE], ['TURKEY_REPERTOIRE', m.TURKEY_REPERTOIRE], ['SPAIN_REPERTOIRE', m.SPAIN_REPERTOIRE], ['THAILAND_REPERTOIRE', m.THAILAND_REPERTOIRE], ['VIETNAM_REPERTOIRE', m.VIETNAM_REPERTOIRE]];
   assert.equal(m.REPERTOIRE_TABLES.length, tables.length, 'repertoireOf merges every world table');
   let entries = 0, linked = 0;
   const seenKeys = new Map();

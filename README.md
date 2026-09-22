@@ -115,7 +115,7 @@ Jinhua ham, osmanthus and water bamboo in Jiangnan. The bao shop and tea hill mo
 China (Sichuan, Jiangnan, the north, the everyday table), Italy (Rome, Venice, Sicily), Korea (Seoul, Jeonju,
 Busan, Jeju), Mexico (Mexico City, Oaxaca, Jalisco, Yucatán), the Middle East (Istanbul, the Levant, Arabia,
 Persia), the Mediterranean (Greece, Spain, Morocco, Dalmatia), India (Punjab & Delhi, Rajasthan, Mumbai, Kerala),
-Southeast Asia (Bangkok, the Andaman coast, Hanoi, the Mekong delta), North America (New York & New England, the
+Southeast Asia (Thailand, Vietnam's north and centre, Saigon & the Mekong delta), North America (New York & New England, the
 Midwest, Texas & the South, California), Japan (Tokyo, Kyoto, Fuji & the lake, Hokkaido) and Central Europe
 (London, Budapest & the puszta, the Alps, Georgia).
 

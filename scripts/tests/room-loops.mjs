@@ -8,15 +8,15 @@ import { build } from 'rolldown';
 const root = process.cwd();
 const real = resolve(root, 'src/fw/scene-painted.ts');
 const stub = `export { pAt, at } from ${JSON.stringify(real)}; export const paintedScene = (cfg) => ({ __cfg: cfg });`;
-const plugin = { name: 'stub', resolveId(src, importer) { if (src === './scene-painted' && importer && /scenes-(china|turkey|spain|thailand|vietnam)\.ts$/.test(importer)) return '\0stub'; }, load(id) { if (id === '\0stub') return stub; } };
+const plugin = { name: 'stub', resolveId(src, importer) { if (src === './scene-painted' && importer && /scenes-(china|turkey|spain|thailand|vietnam|london|italy)\.ts$/.test(importer)) return '\0stub'; }, load(id) { if (id === '\0stub') return stub; } };
 const dir = await mkdtemp(join(tmpdir(), 'loops-'));
 try {
-  await build({ input: { china: 'src/fw/scenes-china.ts', turkey: 'src/fw/scenes-turkey.ts', spain: 'src/fw/scenes-spain.ts', thailand: 'src/fw/scenes-thailand.ts', vietnam: 'src/fw/scenes-vietnam.ts', amb: 'src/fw/scene-ambience.ts' }, plugins: [plugin], platform: 'node', output: { banner: 'import.meta.env = { VITE_STATIC: "1", BASE_URL: "/" };', dir, format: 'esm', entryFileNames: '[name].mjs', chunkFileNames: '[name].mjs' } });
+  await build({ input: { china: 'src/fw/scenes-china.ts', turkey: 'src/fw/scenes-turkey.ts', spain: 'src/fw/scenes-spain.ts', thailand: 'src/fw/scenes-thailand.ts', vietnam: 'src/fw/scenes-vietnam.ts', london: 'src/fw/scenes-london.ts', italy: 'src/fw/scenes-italy.ts', amb: 'src/fw/scene-ambience.ts' }, plugins: [plugin], platform: 'node', output: { banner: 'import.meta.env = { VITE_STATIC: "1", BASE_URL: "/" };', dir, format: 'esm', entryFileNames: '[name].mjs', chunkFileNames: '[name].mjs' } });
   globalThis.Image = class { constructor() { this.src = ''; } };
   globalThis.document = { createElement: () => ({ getContext: () => null }) };
-  const [china, turkey, spain, thailand, vietnam, amb] = await Promise.all(['china', 'turkey', 'spain', 'thailand', 'vietnam', 'amb'].map(n => import(pathToFileURL(join(dir, `${n}.mjs`)))));
+  const [china, turkey, spain, thailand, vietnam, london, italy, amb] = await Promise.all(['china', 'turkey', 'spain', 'thailand', 'vietnam', 'london', 'italy', 'amb'].map(n => import(pathToFileURL(join(dir, `${n}.mjs`)))));
   const SIG = amb.PAINTED_SIGNATURES;
-  const all = { ...china.SCENES, ...turkey.TURKEY_SCENES, ...spain.SPAIN_SCENES, ...thailand.THAILAND_SCENES, ...vietnam.VIETNAM_SCENES };
+  const all = { ...china.SCENES, ...turkey.TURKEY_SCENES, ...spain.SPAIN_SCENES, ...thailand.THAILAND_SCENES, ...vietnam.VIETNAM_SCENES, ...london.LONDON_SCENES, ...italy.ITALY_SCENES };
   const rows = [];
   for (const [id, make] of Object.entries(all)) {
     const r = make(); const cfg = r.__cfg ?? r;
@@ -59,6 +59,6 @@ try {
   const failures = rows.filter(r => r[4]);
   for (const r of failures) console.log(r.join(' | '));
   assert.equal(failures.length, 0, `${failures.length} rooms have fewer than three always-on loops in one orientation`);
-  assert.ok(rows.length >= 90, 'every painted room is audited: China, Turkey, Spain, Thailand and Vietnam');
+  assert.ok(rows.length >= 116, 'every painted room is audited: China, Turkey, Spain, Thailand, Vietnam, Britain and Italy');
   console.log(`PASS: ${rows.length} rooms, three to four always-on loops in wide and portrait.`);
 } finally { await rm(dir, { recursive: true, force: true }); }

@@ -212,6 +212,119 @@ export const PAINTED_SIGNATURES: Record<string, AmbientPatch> = {
   vn_mekong_home: {kind:'drip',wide:[.596,.655,.624,.686],phone:[.730,.503,.754,.538],color:'#d9a04a',period:2.1,
     splash:[true,true],
     paths:[[[[.43,0],[.50,.5],[.57,1]]],[[[.42,0],[.46,.5],[.50,1]]]]},   // the glaze going back over the fish in the open clay pot
+  // Britain: one signature per room, measured on that room's own wide.jpg and portrait.jpg. No Britain room uses a
+  // breeze crop and none needed one — every painting was composed with an empty hook, bracket, chain end, nail, peg
+  // or cross-bar and its hanging object arrived as a separate keyed sprite, so the hanging motion is a `uk-*`
+  // sprite laid over clean brick, plaster, timber, canvas or sky (see london-ambience.ts). Seven rooms sign with a
+  // traced pour or fall, because a pour is what those paintings are of; the rest sign with firelight, an oven mouth
+  // or sparks off a pit. Every box and path is in docs/london-rooms.md with the pixels it was read off.
+  // The coal grate in the settle corner. There is no pour anywhere in this room — every glass is filled and either
+  // standing or held — so the fire the room is lit and warmed by is its signature, and it takes no fire ellipse on
+  // top of it. A phone shows only x .094 to .906 of the portrait painting and the grate runs from the painting's
+  // left edge to x .122, so the phone box is the grate's right-hand edge, above the drinker's cap at y .245; the
+  // portrait's other loop for the same light is the gas globe in london-ambience.ts.
+  uk_pub: {kind:'light',wide:[.884,.378,.956,.504],phone:[.094,.204,.126,.243],color:'#f3a34b'},
+  // The tea through the strainer. Wide: the pot's spout lip (.2813, .574), the thread through (.2907, .620) and
+  // (.2941, .650), landing where it meets the strainer over the cup at (.2971, .678).
+  // Portrait: lip (.3562, .5677), through (.3721, .6097) and (.3814, .6266), the tea in the cup at (.3840, .6639).
+  uk_tearoom: {kind:'stream-glint',wide:[.276,.572,.304,.681],phone:[.350,.566,.392,.666],color:'#c98a3c',
+    paths:[[[[.19,0],[.52,.44],[.65,.72],[.75,1]]],[[[.15,0],[.53,.44],[.75,.61],[.81,1]]]]},   // the pot, the strainer and the cup
+  uk_market: {kind:'sunray',wide:[.520,0,.920,.600],phone:[.240,0,.880,.460],angles:[-.32,.30],sway:[.090,.080]},   // first light down the aisle, through the iron and glass roof
+  // The green liquor. Wide: the ladle's lip (.2478, .5055), the thread almost straight down at x .246, landing in
+  // the liquor already pooled on the pie at (.2460, .6120), measured on the pixels with a colour key.
+  // Portrait: the ladle's sheet narrows to a thread at (.459, .586) and runs at x .464 down to the mash at
+  // (.4655, .670), both read off a colour key on the pixels rather than off the eye.
+  uk_piemash: {kind:'stream-glint',wide:[.238,.504,.258,.614],phone:[.448,.584,.478,.672],color:'#cfe07a',
+    paths:[[[[.49,0],[.41,.50],[.40,1]]],[[[.37,0],[.52,.26],[.55,.80],[.58,1]]]]},   // the ladle of liquor over the pie and mash
+  // The dripping running off the lifted basket back into the pan, in separate threads, which is what the brief
+  // asked this composition for. Wide: the threads leave the basket at y .553 and reach the fat at y .641, at
+  // x .148 to .216. Portrait: they leave at y .470 and reach the fat at y .575, at x .585 to .800.
+  uk_chippy: {kind:'stream-glint',wide:[.142,.551,.222,.641],phone:[.575,.468,.815,.580],color:'#ffe9b0',
+    paths:[[[[.10,0],[.12,1]],[[.33,0],[.35,1]],[[.58,0],[.60,1]],[[.85,0],[.87,1]]],
+      [[[.10,0],[.11,1]],[[.29,0],[.30,1]],[[.48,0],[.49,1]],[[.67,0],[.68,1]],[[.89,0],[.90,1]]]]},   // fat off the basket into the pan
+  // The boiler tap. Wide: the brass nozzle at (.3889, .5616) down to the mug standing on the board at (.3916,
+  // .5979). Portrait: the same tap at (.8452, .4276) down to the tea in the mug at (.8426, .4522) — and there the
+  // mug is **held**, which the Stage B acceptance row flagged, so the thread is anchored on the mug's rim as
+  // painted rather than on a board the portrait does not show.
+  uk_breakfast: {kind:'stream-glint',wide:[.384,.560,.398,.600],phone:[.836,.426,.852,.454],color:'#b8641f',
+    paths:[[[[.35,0],[.43,.50],[.54,1]]],[[[.58,0],[.47,.50],[.41,1]]]]},   // the boiler tap filling a mug
+  // The ground spice off the tilted slab. Wide: the slab's lip (.3558, .4766), through (.3606, .5248) and
+  // (.3648, .5682), landing on the curry at (.3677, .5995). Portrait: lip (.5747, .5109), through (.5839, .5492)
+  // and (.5931, .5817), landing at (.596, .600).
+  uk_lascar: {kind:'stream-glint',wide:[.348,.475,.376,.601],phone:[.566,.509,.606,.602],color:'#f0a02e',
+    paths:[[[[.28,0],[.45,.40],[.60,.74],[.70,1]]],[[[.22,0],[.45,.43],[.68,.78],[.75,1]]]]},   // the slab tipped into the open pan
+  // The ladle poured back into the pot. Wide: the rim (.2964, .5848), through (.2979, .6155), landing on the stew
+  // at (.2986, .6410). Portrait: rim (.5123, .5074), through (.5192, .5380) and (.5211, .5832), landing (.5219, .5997).
+  uk_hopkitchen: {kind:'stream-glint',wide:[.290,.583,.306,.642],phone:[.506,.505,.528,.601],color:'#e8c88a',
+    paths:[[[[.40,0],[.49,.55],[.54,1]]],[[[.29,0],[.60,.34],[.69,.81],[.72,1]]]]},   // the ladle lifted and poured back
+  // The one cold room in the area, and the one whose liquid is not hot: whey from the press spout into the pail.
+  // It is a `drip` and not a glint for that reason (docs/london-world.md, "uk_dairy is a cold room"). Wide: the
+  // spout (.5595, .6300) down to the whey in the pail at (.5603, .7370). Portrait: (.5033, .5832) to (.5063, .6590).
+  // Both paintings draw their own ring where it lands, so both orientations splash.
+  uk_dairy: {kind:'drip',wide:[.552,.628,.570,.740],phone:[.496,.581,.516,.661],color:'#f2eddc',period:1.7,
+    splash:[true,true],
+    paths:[[[[.42,0],[.44,.51],[.46,1]]],[[[.37,0],[.45,.51],[.52,1]]]]},   // whey off the press spout into the pail
+  // The granite oven's open mouth. The phone box stops at x .903: the oven arch runs past the right edge of the
+  // slice a 390-wide viewport shows, and this is the brightest thing inside it.
+  uk_pasty: {kind:'light',wide:[.870,.225,.960,.400],phone:[.845,.240,.903,.325],color:'#f3a34b'},
+  // The wet sand through the riddle, in separate falls, from the riddle's underside to the heap on the shore.
+  // Wide: from y .532 to y .800, at x .768 to .820. Portrait: from y .600 to y .745, at x .40 to .80.
+  uk_cockles: {kind:'stream-glint',wide:[.762,.532,.824,.800],phone:[.345,.600,.865,.745],color:'#e7d9bd',
+    paths:[[[[.25,0],[.18,1]],[[.45,0],[.42,1]],[[.62,0],[.66,1]],[[.80,0],[.86,1]]],
+      [[[.11,0],[.09,1]],[[.26,0],[.25,1]],[[.41,0],[.41,1]],[[.57,0],[.58,1]],[[.72,0],[.74,1]],[[.88,0],[.90,1]]]]},   // sand off the riddle onto the sand
+  uk_smokehouse: {kind:'embers',wide:[.380,.770,.550,.860],phone:[.440,.645,.760,.715],color:'#ffcf6e'},   // sparks off the hardwood fire in the sunk barrel
+  // The middle cut running in the spirit safe, which is the clearest pour in the set. Wide: the brass funnel
+  // (.7773, .3505) down to the spirit in the glass bowl at (.7781, .3855). Portrait: the copper spout (.8416,
+  // .4803), through (.8429, .5155) and (.8443, .5440), landing on the spirit at (.8437, .5604).
+  uk_distillery: {kind:'stream-glint',wide:[.770,.349,.786,.387],phone:[.834,.478,.852,.562],color:'#eef4f7',
+    paths:[[[[.46,0],[.49,.50],[.51,1]]],[[[.42,0],[.49,.45],[.57,.79],[.54,1]]]]},   // the spirit through the glass of the safe
+  // Italy: one signature per room, measured on that room's own wide.jpg and portrait.jpg. No Italy room uses a
+  // breeze crop and none needed one — every painting was generated with an empty hook, peg, chain, rail or cane and
+  // its hanging object arrived as a separate keyed sprite, so the hanging motion of this world is an `it-*` sprite
+  // over clean lime wash, plaster, stone or sky (see italy-ambience.ts). Five rooms sign with a traced pour or
+  // fall, because a pour is what those paintings are of; the rest sign with light, haze, sky or sun. Every box and
+  // every path is in docs/italy-rooms.md with the pixels it was read off. Every phone box stops at or before
+  // x .906, the right edge of the slice a 390-wide viewport shows of a portrait painting.
+  // The foglietta: the lip of the ringed glass carafe down to the wine standing in the tumbler on the marble.
+  // Wide: lip (.4535, .510), thread through (.460, .545) and (.4655, .572), surface (.469, .597).
+  // Portrait: lip (.4645, .450), through (.474, .480) and (.481, .498), surface (.487, .512).
+  it_trattoria: {kind:'stream-glint',wide:[.446,.506,.478,.597],phone:[.456,.450,.498,.512],color:'#d98a92',
+    paths:[[[[.23,0],[.44,.40],[.61,.71],[.72,1]]],[[[.20,0],[.43,.48],[.60,.77],[.74,1]]]]},   // wine poured from the foglietta into the tumbler
+  it_market: {kind:'sunray',wide:[.36,0,.90,.72],phone:[.28,0,.88,.56],angles:[-.40,.36],sway:[.090,.080]},   // winter morning across the Campo, the one big thing a cold market does
+  it_pasta: {kind:'sunray',wide:[.03,0,.46,.80],phone:[.10,0,.48,.60],angles:[-.42,-.38],sway:[.090,.080]},   // the shaft from the tall window the sheet is rolled under
+  it_forno: {kind:'light',wide:[.60,.22,.76,.40],phone:[.71,.22,.90,.37],color:'#f3a34b'},   // the oven mouth the peel comes out of, which is the brightest thing in the room
+  // The whey. A **cold** room: no fire, no steam, nothing heated, so its liquid drips rather than pours, and the
+  // painting draws its own ring where it lands. Wide: the cloth lip (.494, .582), thread through (.4995, .620) and
+  // (.5005, .700), surface in the pail (.5015, .763). Portrait: lip (.5815, .525), through (.589, .560) and
+  // (.596, .600), surface (.601, .622).
+  it_casale: {kind:'drip',wide:[.486,.582,.512,.763],phone:[.573,.525,.611,.622],color:'#f2e7c0',period:1.4,
+    splash:[true,true],
+    paths:[[[[.31,0],[.52,.21],[.56,.65],[.60,1]]],[[[.22,0],[.42,.36],[.60,.77],[.74,1]]]]},   // whey off the draining table into the pail
+  it_pescaria: {kind:'sunray',wide:[.46,0,.90,.62],phone:[.44,.02,.88,.50],angles:[.34,.30],sway:[.095,.085]},   // first light down the iron canopy onto the wet marble
+  // The cask. Wide: the brass tap's mouth (.1805, .440), thread through (.186, .500) and (.189, .550), landing on
+  // the wine in the small glass at (.1905, .588). Portrait: mouth (.1955, .448), through (.199, .490) and
+  // (.2025, .520), surface (.2045, .546).
+  it_bacaro: {kind:'stream-glint',wide:[.174,.440,.198,.588],phone:[.189,.448,.212,.546],color:'#d98a92',
+    paths:[[[[.27,0],[.50,.41],[.63,.74],[.69,1]]],[[[.28,0],[.43,.43],[.59,.73],[.67,1]]]]},   // the ombra drawn from the cask's tap
+  // The beaten egg running back off the soft crab into the bowl, which the painting draws its own ring for.
+  // Wide: the crab's underside (.6395, .505), through (.6415, .550) and (.6425, .620), surface (.6435, .682).
+  // Portrait: underside (.6035, .425), through (.605, .460) and (.607, .490), surface (.6085, .508).
+  it_laguna: {kind:'drip',wide:[.633,.505,.652,.682],phone:[.596,.425,.616,.508],color:'#f0b93c',period:1.4,
+    splash:[true,true],
+    paths:[[[[.34,0],[.45,.25],[.50,.65],[.55,1]]],[[[.38,0],[.45,.42],[.55,.78],[.63,1]]]]},   // the egg falling back off the crab into the bowl
+  it_veneto: {kind:'light',wide:[.80,.70,.99,.88],phone:[.70,.55,.90,.68],color:'#f3a34b'},   // the open hearth the polenta copper hangs over, the room's own light
+  it_friggitoria: {kind:'sunray',wide:[.10,0,.46,.72],phone:[.12,.02,.46,.52],angles:[.38,.34],sway:[.090,.080]},   // the hard sun down the Albergheria lane the pan stands in
+  // The water thrown across the swordfish, traced from the bucket's rim to the fish's flank on each composition's
+  // own arc. Wide: rim (.318, .375), through (.375, .445) and (.420, .490), landing (.455, .530).
+  // Portrait: rim (.288, .392), through (.335, .425) and (.365, .455), landing (.385, .478).
+  it_ballaro: {kind:'stream-glint',wide:[.312,.375,.470,.535],phone:[.282,.392,.400,.478],color:'#dff0f7',
+    paths:[[[[.04,0],[.40,.44],[.68,.72],[.90,1]]],[[[.05,0],[.45,.38],[.70,.73],[.87,1]]]]},   // the morning water going over the slab
+  it_pasticceria: {kind:'sunray',wide:[.56,0,.95,.76],phone:[.46,.02,.90,.62],angles:[.42,.38],sway:[.110,.110]},   // the doorway onto the bay, the only daylight in a room with no fire
+  // The oil. Wide: the copper jug's lip (.8595, .525), thread through (.8665, .580) and (.868, .620), landing on
+  // the oil in the open tin at (.8685, .652). Portrait: lip (.8575, .618), through (.863, .650) and (.866, .670),
+  // surface (.867, .681).
+  it_tonnara: {kind:'stream-glint',wide:[.853,.525,.875,.652],phone:[.851,.618,.873,.681],color:'#f4c53a',
+    paths:[[[[.30,0],[.61,.43],[.68,.75],[.71,1]]],[[[.30,0],[.55,.51],[.68,.83],[.73,1]]]]},   // olive oil poured over the boiled loin in the tin
 };
 
 /** Extra source-observed motion for Xinjiang rooms whose signature alone is too quiet. */

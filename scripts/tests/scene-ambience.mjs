@@ -54,7 +54,7 @@ try {
   assert.equal(isBreezePixel('grape',160,24,30),true);
   assert.equal(isBreezePixel('leaves',40,100,50),true);
   assert.equal(isBreezePixel('chilli',40,100,50),false,'green wall and foliage pixels stay in the static painting');
-  assert.equal(Object.keys(PAINTED_SIGNATURES ?? {}).length,89,'all rooms except the preserved hotpot benchmark need an authored signature');
+  assert.equal(Object.keys(PAINTED_SIGNATURES ?? {}).length,115,'all rooms except the preserved hotpot benchmark need an authored signature');
   for(const [id,patch] of Object.entries(PAINTED_SIGNATURES)) {
     for(const orientation of ['wide','phone']) {
       assert.equal(patch[orientation]?.length,4,`${id} needs a ${orientation} anchor`);

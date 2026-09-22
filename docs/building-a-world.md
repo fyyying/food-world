@@ -217,6 +217,14 @@ Prop gotcha: `add(parent, child, x, y, z)` sets the child's position. Pass offse
 
 Water rules: seas use `seaWater()`, rivers and ponds use `freshWater()`, a river that meets the sea uses `estuaryWater`. A river that reaches the table edge ends with two points at the same edge coordinate so the cap is square. Nothing walks or stands in water.
 
+**Every river, khlong and channel is continuous from a source to a mouth. It may not stop in the middle.** Owner feedback, 2026-09-22, on the Southeast Asia table: "rivers are not cut properly and it can't stop in the middle". Four waterways on that one table ended in open ground — two khlongs whose western ends stopped two units short of the cross canal, the Perfume River which stopped short of its own coast, a Mekong channel whose source was simply the edge of an area's band, and another whose mouth stopped short of the shore. The rule, which applies to every world:
+
+- A **source** is the table edge, a lake or a basin, or another river — a confluence.
+- A **mouth** is the sea, a lake or a basin, or another river.
+- The **water geometry of the two must overlap at the join**, not merely touch: a ribbon that ends exactly on a shore line shows a strip of ground between the two once the shore's own wobble is drawn. End the ribbon a unit inside the water it joins.
+- A ribbon may **never** end in land. A decorative ring of stones at a spring is not a source; if a river rises there, the spring is a pool of water and the river's first point is inside it.
+- The check belongs in `<id>-world.mjs`: for every river, khlong and channel curve on the table, both endpoints must lie inside the sea polygon, inside a lake or basin disc, within half a width of another river's centreline, or on the table edge, and the failure names the river and which end.
+
 Road rules: one continuous ribbon per route. Two ribbons at the same height flicker where they overlap; lift the second by `0.004`. Every door and gathering place meets a road.
 
 Flicker rules: two horizontal surfaces closer than about 0.01 in height z-fight at world zoom, and the flicker shows most while the camera moves. One ground per spot: a stand placed on town paving has no floor plane of its own. Squares and courtyards sit 0.008 or more above the paving they cover; lanes carry `polygonOffset` so they win over squares. `node scripts/audit/flicker.mjs <world-module> <build-fn> <x> <z> <radius>` lists every upward face near a point by height and reports exact coplanar overlaps; run it on any spot the owner reports as flickering, and on every new cluster before review.

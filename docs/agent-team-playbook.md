@@ -182,6 +182,7 @@ World:
 
 - Four or more clusters with clear separation, connected by continuous roads. Every door meets a road
 - Water is continuous, square at the table edge, and correct in colour. Nothing stands in water
+- **Every river, khlong and channel runs from a source to a mouth and never stops in the middle.** A source is the table edge, a lake or basin, or another river; a mouth is the sea, a lake or basin, or another river; the two geometries overlap at the join so no ground shows between them. A ribbon that ends in land fails, and `<id>-world.mjs` names the river and the end (owner, 2026-09-22: "rivers are not cut properly and it can't stop in the middle")
 - At least ten interactive stands and five ingredient stops, each with a diamond cue. At least three clickable objects per area are not food stands: an ingredient source, an animal, a tree or a landmark with a card and a 3D reaction (`node scripts/audit/objects.mjs`)
 - At least three walker loops or lanes with residents in the area's traditional clothing, steps matched to distance
 - Small details in every cluster: hanging produce that sways, stacks, racks, crocks, animals in pens

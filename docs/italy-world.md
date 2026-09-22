@@ -400,3 +400,150 @@ const SCENES={...CHINA_SCENES,...TURKEY_SCENES,...SPAIN_SCENES};
 What was confirmed instead, without that config: all twenty-six imported JPGs decode, sit at the folder and file names the room contract fixes, and carry the sizes recorded in `scenes-props.json`. The proof is one contact sheet of the thirteen rows, wide beside portrait, at `italy-rooms-sheet.png` in the Room maker's scratchpad.
 
 **Owner rulings, 2026-09-22.** Only `it08_laguna_portrait.png` is regenerated, and it is **still outstanding**: the second-round picture arrived on 2026-09-21 and was rejected for lifting the crab cage out of the canal, and the third-round picture arrived on 2026-09-22 at 941 x 1672, was imported over `public/scenes/it_laguna/portrait.jpg` and is rejected again because the cage, though back in the water with the boy's hand on it and the crabs visible, sits at x ≈ .049 to .200 and is cut by the phone band. Stage B pictures are therefore not yet closed and no coordinate should be measured on that portrait; the one line left to fix is the cage's horizontal position, nothing else in the frame. The three short portraits (`it06_pescaria_portrait.png`, `it11_ballaro_portrait.png`, `it13_tonnara_portrait.png`) are padded by the importer rather than regenerated. The sweeter faces across all thirteen rooms are accepted as within the house style. The pasticceria card text must not name martorana, because the fruit beside the pastry tube is a real fig, not one of the painted marzipan fruits the brief asked for. 2026-09-22: the owner accepted the third laguna portrait as delivered and closed regeneration for the area. Stage B pictures are closed for all four areas.
+
+### Blueprint (fixed)
+
+Italy is three landmasses in one sea on a grown `world-italy.ts` table: the **mainland**, which carries Rome and the Veneto's terraferma; the **Venetian lagoon** of island quays cut off its north-east shoulder; and **Sicily** across a strait in the south. Every number below is held as data in `scratchpad/italy-blueprint.py` and passes the paper check there — landmass membership, water clearances, 2.5 between clickables, rooms on roads, nothing solid on a road centreline, blockers off every corridor, blocker separation, houses per area, cluster separation and the strait's width — and the plan it draws, `italy-blueprint.png`, is the contact sheet for this section.
+
+Table and frame:
+
+- `world-italy.ts` grows to **`W: 100, D: 64`**, `cx: 0, cz: 0` unchanged. The table runs x from **-50 to 50** and z from **-32 to 32**.
+- **`shore()` loses both hand-written literals.** Its edge test becomes the table's own half-width and half-depth — x at or beyond **-50 or 50**, z at or beyond **32** in either direction — read from the same `W`/`D` the world is built with, so the sea stays square at the edge and the table can be resized again without editing the test. This is the Thailand trap in a second world and it is fixed here, not worked around.
+- Arrival views: **`AREAS.rome.center` becomes [-19, -6]**, on the Campo de' Fiori cluster; **`AREAS.venice.center` becomes [27, -20]**, on the Rialto quay; **`AREAS.sicily.center` becomes [-8, 22]**, on the Ballarò cluster. The three area ids, names and `zh` are unchanged.
+- `worldZoomLimit` and `worldFogRange` in `world-camera.ts` gain **`italy` beside `mediterranean`** (and beside `middle-east` and `southeast-asia`, which are already there), so the 100-wide table gets the 215 desktop overview and the computed fog pair instead of the flat 90/200. Builder, Stage C; it is one word in one expression.
+
+**Water: one continuous `seaWater()` polygon, square at all four table edges.** Its outer ring is the table itself —
+
+```
+[-50,-32] [50,-32] [50,32] [-50,32]
+```
+
+— and the three landmasses and the lagoon's five islands are **holes** in that shape, so the sea is one polygon, one rim and one shader, exactly as Britain's island is a hole in the Channel. The rim (`#efe0bb`) is an inset of every ring by 1.2, computed per vertex, not from a single centre as the two hand-drawn Italian shores are now.
+
+The **mainland's coast**, clockwise from the north-west — the Tyrrhenian north shore, then the lagoon's landward shore running east, the Adriatic side, the toe, and the long south coast back to the west cape:
+
+```
+[-46,-27] [-38,-27.6] [-30,-27.2] [-22,-27.6] [-14,-27.2] [-6,-27.6] [0,-27.2] [4,-26.4]        the north coast
+[6,-24] [8,-20] [9,-16] [11,-12.5] [14,-9.5] [18,-8] [23,-7.2] [28,-7.6] [32,-8.4]              the lagoon's landward shore
+[35,-6] [36,-2] [35,2] [33,5]                                                                    the east coast
+[31,8] [29.6,10.8] [27.4,12.4]                                                                   the toe, reaching the strait
+[23.6,12] [20,11.2] [16,10.4] [12,9.6] [8,9.2] [4,9.6] [0,9] [-4,9.6] [-8,9.2]                   the south coast
+[-12,10] [-16,10.4] [-20,10.2] [-24,10.6] [-28,10.6] [-33,10.8] [-38,10.4] [-42,10] [-45,9.4]    on past the Tiber mouth
+[-46,6] [-45.6,2] [-46,-4] [-45.6,-10] [-46,-16] [-45.6,-22]                                     the west coast
+```
+
+**Sicily's coast**, clockwise from the west cape, with the north-east cape at [29, 18.6] facing the toe:
+
+```
+[-21,20] [-18,17.6] [-14,16.4] [-10,16] [-6,16.4] [-2,15.8] [2,16.2] [6,15.6]                    the north coast
+[10,16] [14,15.4] [18,15.8] [22,16.2] [26,17.2] [29,18.6] [31,21] [32,24]
+[31,27] [29,29.4] [25,30.2] [20,30.6] [15,30.2] [10,30.6] [5,30.2] [0,30.6]                      the south coast
+[-5,30.2] [-10,30.4] [-14,29.8] [-18,28.6] [-20,26] [-21.4,23]
+```
+
+**The strait** is the water between the mainland's toe and Sicily's north-east cape: **4.46 units at its narrowest**, measured in the paper check, running from the open sea in the east to the south coast in the west. **There is no bridge**, because there was none; a boat lane crosses it.
+
+**The lagoon** is the shallow water inside the mainland's north-east shoulder, x about 7 to 41 and z -32 to -8, tinted `#69b3b0` over the sea's own blue and held inside a **lido barrier**, a bar of land at x 38 to 41, z -29 to -13, with the open porto south of it. Five islands stand in it, each a quay with a fondamenta round it and its own square-edged rim; they are the lagoon landmass, and they are its own islands, so they are not "something standing in water":
+
+| Island | Rectangle | Holds |
+| --- | --- | --- |
+| The Rialto quay | x 21 to 35, z -26.5 to -19.5 | `seafood`, `bacaro`, two decorative houses |
+| The San Marco quay | x 23 to 35, z -16.5 to -10 | `campanileIt`, one decorative house |
+| Burano | x 10.5 to 19, z -28.6 to -23 | `lagunaIt`, one decorative house |
+| The valli bank | x 11 to 20.5, z -17.5 to -10.5 | `valliIt` and its walled enclosures |
+| The lido barrier | x 38 to 41, z -29 to -13 | Nothing. It is the barrier the lagoon is shallow behind |
+
+The **Grand Canal** is the 3-unit channel between the Rialto quay and the San Marco quay, z -19.5 to -16.5, and `rialtoIt` spans it.
+
+**The Tiber**, `freshWater()` width 2.4 on a rim 1.6 wider, with an `estuaryWater` blend from z 8 to the mouth. It rises in the central hills east of Rome, runs south-west past the piazza, through the Testaccio quarter and reaches the south coast below Rome:
+
+```
+[-2,-22] [-8,-21] [-14,-19.5] [-20,-18] [-25,-16] [-28,-13] [-30,-9.5] [-31,-6] [-31.5,-2] [-32,2] [-32.5,6] [-33,10.6]
+```
+
+Nothing stands in water on this table except **`rialtoIt`**, the moored boats and gondolas, and the quay edges built to — the Pescaria's marble slab and the tonnara's pier reach the water, their stands do not. The Albufera lesson is tested from the first commit, not at the review: every vertex of every stand goes against the sea ring, all three landmass rings, the lagoon, the Grand Canal, the strait and the Tiber in `scripts/tests/italy-world.mjs`. The fish market and the tonnara are the two that will want to creep onto the water and must not.
+
+Clusters and their ground tints. Positions are final; every one of the forty-six registered ids appears exactly once.
+
+| Cluster | Centre | Tint | Holds |
+| --- | --- | --- | --- |
+| Rome: the piazza | [-17, -6.5] | `#d9cbb0` travertine and basalt setts, 20 x 10 | The street runs east–west with the market square on its south side: `romeMarket` [-20.5, -5.55] and `pasta` [-14, -5.55] on the south side, `oven` [-14.6, -9.25] with **its own oven house at [-16.6, -10.6]** and `gelateria` [-24, -9.25] on the north side. The market's five stalls stand in a horseshoe behind it, clear of the road: `stall-oil` [-24.7, -4.9], `stall-tomato` [-23, -2], `stall-cheese` [-20.5, -1.2], `stall-salumi` [-18, -2], `stall-herbs` [-16.8, -4.6]; `basil` [-25.8, -0.8] beside them. `panteonIt` [-10, -9.7] and `colosseoIt` [-5.5, -10.6] stand behind the street at the east end, small and behind their neighbourhood. `pizzeria` is `oven`'s alias and sits on its point. Two decorative houses: **`it-piazza-palazzo` [-19.8, -11.8]** and **`it-piazza-casa` [-11, -3]** |
+| Testaccio and the Agro Romano | [-38, -1] | `#c6b489` dry campagna running to `#b9ad98` river quay along the Tiber, 22 x 20 | The road loops round the quarter and out into sheep country: `ragu` [-35, -2.5] under the slaughterhouse wall with `trattoria` on its point, `quintoQuarto` [-37.6, -2.4], `carciofoIt` [-33.6, -8.2] on the beds between the road and the river, `vinoIt` [-38.5, -6.2], `olive` [-41.5, -6.6], `pecoraIt` [-44.2, -6], `mushrooms` [-43.5, -9.2] in the chestnut wood, `italyChicken` [-43.4, 1], `cheese` [-40.6, 5.8] with **its own byre at [-39.5, 2.6]**, `italyBeef` [-36.6, 5.9]. One decorative house, **`it-trastevere-casa` [-27.5, -3]**, on the town side of the river; **no house inside the loop** — ten objects and the byre already fill it, and Spain's Plaza Mayor set the precedent |
+| Venice: the Rialto | [27, -19] | `#ded3b6` Istrian stone over brick, the quays themselves | `seafood` [24.5, -22.55] under the plain iron canopy of 1884 and `bacaro` [30, -22.65] on the Rialto quay's fondamenta; `rialtoIt` [27, -18] spanning the Grand Canal; `campanileIt` [29, -12.3] on the San Marco quay. Three decorative houses: **`it-rialto-casa` [22.8, -24.8]**, **`it-rialto-magazzino` [32.2, -24.6]**, **`it-sanmarco-casa` [25.5, -13]** |
+| The lagoon and the terraferma | [4, -18] | `#a9b878` maize green on the mainland, `#c8bd93` sand and salt marsh on Burano and the valli bank, 16 x 14 | `casaVeneta` [5.15, -16] and `riceIt` [1.5, -20.5] on the terraferma, both on the via consolare; `lagunaIt` [13.8, -25.65] on Burano and `valliIt` [15.8, -14.55] on the valli bank, each on its own island with its own path. One decorative house: **`it-burano-casa` [16.5, -26.6]**. **This cluster straddles two landmasses** — its centre is on the mainland, its two lagoon objects are reached by boat, and that is the reading this world records rather than a failure |
+| Palermo: the Albergheria | [-8, 22] | `#cdbb92` tufa under awnings, 18 x 10 | The lane runs east–west with the market on its north side: `sicilyMarket` [-8, 21.15] with `stall-lemon` [-11.6, 19.9], `stall-tomato2` [-4.4, 19.9] and `stall-arancini` [-8, 18.55] behind it; `friggitoria` [-12.5, 24.85] and `pastry` [-4, 24.85] on the south side; `tomato` [-15.5, 19] on the beds at the west end and `carrettoIt` [-1.5, 20] at the east. Two decorative houses: **`it-albergheria-casa` [-9.5, 26.2]** and **`it-albergheria-torre` [-16.2, 25.8]** |
+| The tonnara coast and Etna | [16, 23] | `#b6ac7e` dry gold running to `#6b6258` basalt under Etna, 24 x 14 | `lemon` [8.2, 19.6] in the Conca d'Oro, `granoIt` [4.2, 25.6] on the latifondo, `mandorleIt` [18.5, 19.8], `etnaIt` [23, 19.2] behind the coast, `capperiIt` [26.5, 26.5] on the terraces, and `tonnaraIt` [13.85, 27] on the spur down to the shore with **its own sheds at [15.6, 28.6]**. Three decorative houses: **`it-coast-casa` [17.5, 25.6]**, **`it-etna-casa` [26, 20.5]**, **`it-latifondo-masseria` [1.2, 25.4]** |
+
+Roads. **One network per landmass**, which is this world's reading of "connected by continuous roads" and is recorded here rather than left for a harness to fail silently: the mainland's three ribbons meet at [-27.5, -7.4] (IT-R1 with IT-R2) and [-4, -7.4] (IT-R1 with IT-R3); Sicily's three meet at [0, 22.6] and [12, 22.2]; the lagoon's four are each one island's fondamenta, joined across the Grand Canal by the Rialto and otherwise by boat. Every door is on a road, and nothing solid sits within half a road's width plus 0.4 of a centreline.
+
+| Road | Width | Points |
+| --- | --- | --- |
+| IT-R1 the piazza street | 2.4 | [-27.5,-7.4] [-24,-7.4] [-20.5,-7.4] [-16,-7.4] [-12,-7.4] [-8,-7.4] [-4,-7.4] |
+| IT-R2 the Testaccio and Agro road | 2.0 | [-27.5,-7.4] [-29.2,-6.8] [-31,-6] bridge [-32.6,-5.2] [-34,-4.6] [-36,-4.2] [-38,-4.1] [-41,-4] [-44,-3.4] [-45.2,-0.8] [-44.8,2.2] [-43.6,5] [-41.5,7.6] [-38.5,8.2] [-35.6,7.6] |
+| IT-R3 the via consolare | 2.2 | [-4,-7.4] [0,-8.4] [3,-10.2] [5.6,-12] [7,-13.5] [7,-17] [7,-20] [5.2,-22.4] [2.6,-23.8] |
+| IT-R4 the Albergheria lane | 2.0 | [-17,23] [-12,23] [-8,23] [-4,23] [0,22.6] |
+| IT-R5 the tonnara coast road | 1.8 | [0,22.6] [4,22.2] [8,21.8] [12,22.2] [16,22.6] [20,22.4] [24,22.8] |
+| IT-R5b the tonnara spur | 1.6 | [12,22.2] [12,25] [12,28] |
+| IT-R6 the Rialto fondamenta | 1.8 | [22,-20.6] [26,-20.7] [30,-20.8] [33,-20.9] |
+| IT-R7 the riva and the Rialto bridge | 1.8 | [27,-20.7] [27,-19.5] bridge [27,-16.5] [27.6,-14.8] [29.5,-13.9] [32,-13.6] |
+| IT-R8 the Burano fondamenta | 1.6 | [11,-24] [14,-23.8] [17,-24] |
+| IT-R9 the valli bank path | 1.4 | [12.5,-12.6] [16,-12.7] [19,-12.6] |
+
+**IT-R2 is the only road on the table that crosses fresh water**, and it crosses the Tiber once. Everywhere else the roads keep at least half their own width plus half the river's from the centreline; if a road point ever comes inside a bank, move the road, not the water.
+
+**Bridges, two.** A stone road bridge, **`ponteIt` at [-31, -6]**, where IT-R2 crosses the Tiber: span 5.0, deck at the road height (`BRIDGE_DECK_Y` 0.9), ends on the banks, square to the water, with a `deckY` entry so walkers and the wine carts ride up onto it. **`rialtoIt` at [27, -18]** is the second: the single-arch Rialto, a clickable landmark that carries IT-R7 over the Grand Canal and is the one object on this table that stands in water. The four `venetianBridge` decks the world file places today all go with the old lagoon.
+
+**Boat lanes, five.** The islands are linked to each other and to the mainland by water, not by a causeway, because the doc names none:
+
+| Lane | Points | Carries |
+| --- | --- | --- |
+| L1 the Grand Canal | [19,-18.2] [24,-18] [27,-18] [31,-17.6] [36,-17.2] | Three gondolas under the Rialto |
+| L2 the lagoon lane | [8.8,-21.6] [12,-21.2] [16,-21] [19.5,-19.8] [19.8,-20.6] | The terraferma landing to Burano to the Rialto quay: two sandoli and a market barge |
+| L3 the valli lane | [21.7,-19.2] [21.8,-16] [21.6,-13.5] | One flat-bottomed boat to the valli quay |
+| L4 the porto lane | [36,-17.2] [37.5,-15] [39.5,-11.5] [42,-9.5] [45,-8] | Two bragozzi out through the porto to the open sea |
+| L5 the strait lane | [31.5,11.5] [31.8,14] [31.4,16.5] [30.6,18.6] | The one sailing boat that crosses the strait, mole to mole; no bridge |
+
+Walker loops, residents from the eight profiles, steps matched to distance (`italyWalk`), speed 0.009 on the piazza street and 0.007 elsewhere:
+
+1. **The piazza**, IT-R1 between [-24, -7.4] and [-8, -7.4], six residents, one with a basket and one with a tray of cooked greens; **the in-period traffic runs here** — two hooded two-wheeled wine carts of the Castelli carrettieri, and **no Vespa anywhere on the table**
+2. **The Agro road**, IT-R2 between [-34, -4.6] and [-41.5, 7.6], four residents, one leading a mule with panniers and one shepherd behind the flock
+3. **The Rialto**, IT-R6 and IT-R7 over the bridge as a circuit, five residents, two porters with baskets on their heads, plus the three gondolas on L1
+4. **The Albergheria**, IT-R4 between [-17, 23] and [0, 22.6], five residents, one carrying a split roll and one crying the market
+5. **The coast road**, IT-R5 between [0, 22.6] and [24, 22.8], four residents, one leading the painted cart's mule
+
+**Decor.** **Thirteen decorative houses in the whole world** — four in `rome`, four in `venice`, five in `sicily`, none over the five-per-area line — each at a fixed coordinate and each a 1.5-radius blocker in the paper check: `it-piazza-palazzo` [-19.8, -11.8], `it-piazza-casa` [-11, -3], `it-trastevere-casa` [-27.5, -3], `it-campagna-casale` [-40, -11], `it-rialto-casa` [22.8, -24.8], `it-rialto-magazzino` [32.2, -24.6], `it-sanmarco-casa` [25.5, -13], `it-burano-casa` [16.5, -26.6], `it-albergheria-casa` [-9.5, 26.2], `it-albergheria-torre` [-16.2, 25.8], `it-coast-casa` [17.5, 25.6], `it-etna-casa` [26, 20.5], `it-latifondo-masseria` [1.2, 25.4]. Three buildings belong to stands and are **not** extra houses, but they are blockers under exactly the same rule: the forno's oven house [-16.6, -10.6], the casale's byre [-39.5, 2.6] and the tonnara's sheds [15.6, 28.6]. Every one of the sixteen is at least 2.5 from every clickable it does not own, at least 3.0 from the next blocker so no two buildings interpenetrate, clear of every road centreline by half that road's width plus 1.5, clear of the Tiber, and at least 1.5 inside its own shore. The eleven houses the world file builds today, the four free-standing `venetianBridge` decks, the six mooring poles, the two Vespas, the three disconnected `path()` ribbons, the nine-wide channel, the straight filler strip at x 35.75 and both hand-drawn shore polygons all go with the old table.
+
+**Countryside between the clusters.** Umbrella pines along the piazza street and broken travertine columns behind it; cypresses on the ridge above Testaccio; dry campagna grass, thistle and stone sheepfolds over the Agro with the flock's own walled pen; a chestnut wood in the west with the porcini drying on strings; vines on the Castelli slope above the wine road; poplars and reed beds along the Tiber with the river's own mud banks below Rome; mulberry rows and maize stubble over the terraferma, the rice fields flooded and mirroring; salt marsh barene, fish weirs and bricole in the shallow lagoon, gulls over all of it; prickly pear, agave and dry-stone terraces over Sicily; the latifondo's wheat in great unfenced blocks; the Conca d'Oro's citrus in walled gardens with their water tanks; basalt walls, black sand and the snow pits cut into the flank under Etna; almond and caper terraces stepping down to the tonnara coast; swifts over Rome, gulls over the lagoon and the tonnara. Every crop or tree that carries an object responds to a click (the Stand maker's file); the rest is the Builder's.
+
+#### What this blueprint overrides in the Stage A object list
+
+Every id, kind, area, prop, purpose, cluster, room, repertoire entry and reaction in the object list above is **unchanged**, and nothing is retired. The Stage A positions were written as provisional in a frame the lead had not yet fixed, and **all forty-six move**; the cluster table here is the only positional record. Seven things go further than a coordinate and are the lead's, recorded so Stage C does not have to ask:
+
+- **The sea is the table with the land as holes.** The Researcher's proposal wrapped the sea round a peninsula that still touched the north and west edges. Squaring the sea at all four edges, Britain's way, is what makes one polygon, one rim and one shader possible, and it is why the mainland's north coast stands off the edge at z about -27.
+- **The lagoon is reached by boat, not by a causeway.** The doc names stone bridges between islands; only one of them is a named object, so the Rialto is built and the other three islands are served by L2 and L3. The old world's four unnamed `venetianBridge` decks are not replaced.
+- **`valliIt` stands on a bank of its own** rather than in the walled water it works, because a stand goes beside the water and never on it. Its enclosures, weirs and casone are decor in the water; the clickable is on land.
+- **`tonnaraIt` stands 3.4 inside Sicily's south shore**, on the spur IT-R5b, with its pier reaching the water. It is one of the two the doc warned would creep onto the sea.
+- **`etnaIt` is behind the coast at [23, 19.2], not on the shoulder of the table.** The volcano is a landmark object now, so the decorative `etna()` the world file places is removed; the same mesh must not stand twice. The same ruling covers `colosseum()`, `pantheon()` and `campanile()`, whose decor placements go and whose builders are now reached through `colosseoIt`, `panteonIt` and `campanileIt`. `obelisk()`, `fountain()`, `triumphalArch()`, `basilica()`, `treviFountain()` and `baroqueChurch()` stay as decor and are re-sited into this frame by the Builder.
+- **Testaccio and the Agro Romano carries no decorative house inside its road loop**, and Rome therefore has four houses rather than five. Ten objects and the casale's byre leave no ground behind them; Spain's Plaza Mayor is the precedent.
+- **The strait is 4.46 wide at its narrowest**, between the mainland's toe at [27.4, 12.4] and Sicily's cape at [26, 17.2]. The Researcher's frame put Sicily "across a strait" without a number; this is the number, and the Builder keeps it at or above 4.0 after the `shore()` jitter, so both of its shores take at most 0.2 of jitter instead of the usual 0.35.
+
+### Module contracts for Stage C
+
+Every agent owns whole files. Stubs exist so the type check passes while files are empty. Nobody edits another owner's file; a missing helper is built in the owning file. The Stand maker may import from `italy-architecture.ts` and `italy-people.ts` once they exist; until then a stand uses `person()` and `wear()` from `props.ts` and a local shelter.
+
+| File | Owner | Exports (keep these names and signatures) |
+| --- | --- | --- |
+| `italy-architecture.ts` | Builder, first | `ITP` palette constant with the twelve names from the image brief (`romanOchre`, `travertine`, `sanpietrino`, `terracotta`, `pineGreen`, `campagnaStraw`, `venetianRed`, `istrianStone`, `lagoonGreen`, `adriaticBlue`, `palermoTufa`, `etnaBasalt`) — **not** `IT`, which `props-italy.ts` already exports; `italyBuilding(style, w, d, h, { storeys })` for styles `romanPalazzo`, `trastevere`, `casale`, `venetianQuay`, `buranoCottage`, `terraferma`, `palermoTufa`, `sicilianCoast`; `fornoOvenHouse()`; `casaleByre()`; `tonnaraShed()`; `ironCanopy()` (the Pescaria's plain 1884 canopy, never the stone loggia); `stoneBridge(span)` for `ponteIt` and the Rialto; `valliCasone()`; `latifondoMasseria()`; `snowPit()`. `italianHouse()` stays in `props-italy.ts`, because `map.ts` imports it |
+| `italy-people.ts` | Builder, second | `italianResident(seed, working?)` and `italyWalk(person, from, to, range, seed)` following `spain-people.ts`; the eight clothing profiles from section 1.5 of the research as data, **each one pinned to a catalogued garment or photograph before a resident is dressed** — this is the largest open gap in Stage A and it is closed here or the profiles are marked unverified in the file; `wineCart()` and `followCart()` for the Castelli carrettieri, which replace both Vespas; `lagoonRower()` |
+| `italy-landscape.ts`, `italy-town.ts`, `italy-countryside.ts` | Builder | `italyLandscape(ctx)`, `italyTown(ctx)`, `italyCountryside(ctx)`. The landscape owns the sea shape **with the three landmasses and the five lagoon islands as its holes**, every rim, the lagoon's shallow tint and its lido, the Grand Canal, the strait, and the Tiber with its estuary blend, and exports `IT_LANES`, `IT_BRIDGES`, `BRIDGE_SPAN` (5.0) and `BRIDGE_DECK_Y` (0.9) in the shape `spain-town.ts` and `thailand-landscape.ts` use |
+| `props-italy.ts` (exists) | Stand maker | `ITALY_PROPS` gains a key for every new `prop` name in the object list — `carciofaia`, `sheepFold`, `wineCart`, `mattatoio`, `buranoKitchen`, `venetoFarm`, `valliPesca`, `rialtoBridge`, `friggitoria`, `tonnara`, `wheatLatifondo`, `almondGrove`, `caperTerrace`, `carretto` — plus the four new prop keys over existing builders (`colosseum`, `pantheon`, `campanile`, `etna`); `ITALY_ICONS` gains the eighteen new ids; `pizzeria()`, `trattoria()`, `fishMarket()`, `bacaro()`, `sicilyMarket()`, `pasticceria()`, `italyMarket()`, `dairy()` and `pastaWorkshop()` are rebuilt to the stand standard with the China click chain. **`vespa()` is deleted** once nothing imports it. Speech lines do **not** live here |
+| `italy-speech.ts` | Researcher | `IT_LINES` keyed by object id: five ambient lines per room object in Romanesco, Venetian and Sicilian with English on the same line, from section 2.5 of the research, **checked by a native reader before they ship**; `village-speech.mjs` must still pass |
+| `italy-objects.ts`, `italy-stories.ts` | Researcher | `ITALY_OBJECTS`, `ITALY_CARD_ART`, `ITALY_NEXT`, `ITALY_STORY_DEPTH`, `ITALY_SOURCES`, written to the card blurb band set above (room objects 2,500–3,200 characters, card-only 750–1,000), **including rewritten blurbs for all eighteen retained objects and a written or explained blurb for each of the nine empty ones**. The eleven unverified facts stay out or are written as "by tradition"; the pasticceria card does not name martorana |
+| `scenes-italy.ts`, `italy-ambience.ts` | Room maker | `ITALY_SCENES` keyed by the thirteen `it_*` scene ids, each a `() => SceneDef` built with `paintedScene`; `ITALY_AMBIENCE`; hotspot labels and texts live in `scenes-italy.ts`; `scene-ambience.ts` gains `PAINTED_SIGNATURES` entries only. **`it_casale` is a cold room**: the `drip` glint variant, no steam source anywhere in it, and half of Venice is cold with it. All twenty-six paintings are final — the owner closed the laguna portrait on 2026-09-22 — so every coordinate is measured on the files on disk, `it_laguna`'s portrait included |
+| `scripts/tests/italy-world.mjs`, `scripts/tests/italy-reactions.mjs` | Builder, Stand maker | Copies of the Spain and Thailand harnesses with Italy ids. `italy-world.mjs` tests **every vertex of every stand against the sea ring, all three landmass rings, the five island rings, the lagoon, the Grand Canal, the strait and the Tiber from the first commit**, plus the 2.5 corridors, rooms-on-roads, the sixteen blockers, gait and gait direction. `italy-reactions.mjs` carries all thirty-six clickable ids |
+| **shared** `world-italy.ts` | Builder, Stage C | Growth to `W: 100, D: 64`; `shore()` rewritten to the table's own half-width and half-depth, with both literals gone; both hand-drawn shore polygons, the lagoon rim, the nine-wide channel, the x 35.75 filler strip, the four island boxes, the four `venetianBridge` decks, the six mooring poles, the two Vespas, the three `path()` ribbons, the eleven houses, the two walker loops and the decor placements of `colosseum`, `pantheon`, `campanile` and `etna` removed; `{ ...ITALY_PROPS }` kept and the Italy layout calls added. **One owner for this file**; no other Italy agent opens it |
+| **shared** `world-camera.ts` | Builder, Stage C | `italy` added beside `mediterranean` in `worldZoomLimit`, and so through it in `worldFogRange`. One word, one owner |
+| **shared** `graph.ts` | Lead, Stage D | `AREAS.rome.center` [-19, -6], `AREAS.venice.center` [27, -20], `AREAS.sicily.center` [-8, 22], ids, names and `zh` unchanged; the eighteen new objects registered and all twenty-eight existing ones re-sited to the cluster table; `seafood`, `pasta` and `cheese` become `kind: "place"`; `ragu`, `oven`, `romeMarket`, `sicilyMarket`, `bacaro`, `gelateria` and `pastry` take their new names; `trattoria` and `pizzeria` stay exactly as they are; `scripts/audit/objects.mjs` line 6 learns every world rather than a fourth hard-coded id |
+| **shared** `world-intros.ts` | Researcher | The three Italy beats gain the new places in all three areas; `world-intros.mjs` must still pass |
+| **shared** `scripts/tests/room-audit.html`, `scripts/tests/rooms.html` | Lead, Stage D | Two edits each: `import {ITALY_SCENES} from '/src/fw/scenes-italy.ts';` beside the three existing imports, and `...ITALY_SCENES` in the `SCENES` merge |
+| `repertoire.ts`, `main.ts`, `ui.ts`, `README.md`, this file | Lead, Stage D | Registration only; `ITALY_REPERTOIRE` is merged in `repertoire.ts` so `scripts/tests/repertoire.mjs` covers its fifteen keys |

@@ -374,7 +374,7 @@ export const WORLD_INTROS: Record<WorldId, WorldIntro> = {
     ],
   },
   "central-europe": {
-    summary: "This personal European route crosses London, Budapest, the Alps and Georgia through baking, preserving and generous gathering tables.",
+    summary: "This personal European route crosses Britain, Budapest, the Alps and Georgia through baking, preserving and generous gathering tables.",
     accent: "#668061",
     beats: [
       {
@@ -385,16 +385,23 @@ export const WORLD_INTROS: Record<WorldId, WorldIntro> = {
         areas: ["london", "budapest", "alps"],
       },
       {
+        eyebrow: "Britain, about 1880 to 1914",
+        title: "An island of separate kitchens",
+        body: "Britain here is one island and six neighbourhoods, held to a single recorded period. A Westminster public house and a Shadwell seamen's kitchen, a Dales dairy and a Cornish bakehouse, cockle sands on the Gower and a curing fire on a Scottish shore: regional trades, each with its own dated record.",
+        emoji: "🇬🇧",
+        areas: ["london"],
+      },
+      {
         eyebrow: "Gathering",
         title: "The table marks belonging",
-        body: "Pubs, cafés, market halls, chalets and the Georgian supra turn food into social space. Hospitality may be formal or everyday, but the meal often carries local memory.",
+        body: "Public houses, tea rooms, market halls, chalets and the Georgian supra turn food into social space. Hospitality may be formal or everyday, but the meal often carries local memory - and a tea room was one of the few public rooms a woman could sit down in alone.",
         emoji: "🕯️",
         areas: ["london", "alps", "georgia"],
       },
       {
         eyebrow: "A personal route",
         title: "Not a strict geography lesson",
-        body: "London, Budapest, the Alps and Georgia do not define one cuisine or one neat region. They are the places gathered in this world, each with its own history and voice.",
+        body: "Britain, Budapest, the Alps and Georgia do not define one cuisine or one neat region. They are the places gathered in this world, each with its own history and voice.",
         emoji: "🧭",
         areas: ["london", "budapest", "alps", "georgia"],
       },

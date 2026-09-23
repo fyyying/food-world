@@ -126,10 +126,19 @@ try{
 
   // 3b. The arrival camera can see the reaction, from either end of its range as well as from the middle, with the
   // stand turned to the rotation italy-objects.ts gives it; and the subject is inside main.ts's 34-degree lens.
-  // main.ts flies to the object in 1.6 seconds and stops on a horizontal offset of max(8.8, min(18, the larger
-  // footprint side x 1.05)) with the eye 1.4 above the anchor's 1.2, and OrbitControls clamps the azimuth to plus
-  // or minus 0.75 radians. Five takes each, because the shared rnd() seed moves crowns and figures a little.
+  // main.ts has two arrivals, and each object is measured against the one it really gets:
+  // - a room object (`scene` set) flies in 1.6 seconds to a horizontal offset of max(8.8, min(18, the larger
+  //   footprint side x 1.05)) with the eye 1.4 above the anchor's 1.2 (`enterLivingScene`);
+  // - a card-only object glides to 28 units from the anchor plus 0.8, keeping the visitor's pitch, with the target
+  //   pushed 5 to the right of the screen so the card does not cover the subject (`openObject`, `glideTo`). The
+  //   pitch is the arrival's own, the (2, 48, 60) direction the world camera drops in on.
+  // Until 2026-09-23 every object was measured against the room arrival, which is low and close; that is what held
+  // Etna to a 2.7-high mound, because a summit plume cannot sit in a 34-degree frame from 2.6 above the ground at
+  // 8.8 away. OrbitControls clamps the azimuth to plus or minus 0.75 radians. Five takes each, because the shared
+  // rnd() seed moves crowns and figures a little.
   const rotOf=Object.fromEntries(ITALY_OBJECTS.filter(o=>o.prop&&o.prop!=='none').map(o=>[o.prop,o.rot??0]));
+  const roomProp=new Set(ITALY_OBJECTS.filter(o=>o.prop&&o.prop!=='none'&&o.scene).map(o=>o.prop));
+  const CARD_DIR=new THREE.Vector3(2,48,60).normalize();
   for(const [id,name] of Object.entries(subjects)) for(let take=0;take<5;take++){
     const stand=ITALY_PROPS[id]();
     stand.rotation.y=rotOf[id]??0;
@@ -148,10 +157,20 @@ try{
     const whole=new THREE.Box3().setFromObject(stand), size=whole.getSize(new THREE.Vector3()), centre=whole.getCenter(new THREE.Vector3());
     const distance=Math.max(8.8,Math.min(18,Math.max(Math.max(2.2,size.x+.4),Math.max(2.2,size.z+.4))*1.05));
     const target=new THREE.Box3().setFromObject(subject).expandByScalar(.05), aim=target.getCenter(new THREE.Vector3());
+    const room=roomProp.has(id);
     // main.ts keeps the visitor's compass direction, and the overview never leaves the south: the camera does
     // not turn with the stand. Every stand's `rot` is inside [-0.75, 0.75] (Stage D, 2026-09-22), so it faces it.
     for(const azimuth of [-0.75,0,0.75]){
-      const eye=new THREE.Vector3(centre.x+Math.sin(azimuth)*distance,1.2+1.4,centre.z+Math.cos(azimuth)*distance);
+      let eye,look;
+      if(room){
+        eye=new THREE.Vector3(centre.x+Math.sin(azimuth)*distance,1.2+1.4,centre.z+Math.cos(azimuth)*distance);
+        look=new THREE.Vector3(centre.x,1.2,centre.z);
+      }else{
+        const flat=Math.hypot(CARD_DIR.x,CARD_DIR.z), off=new THREE.Vector3(Math.sin(azimuth)*flat,CARD_DIR.y,Math.cos(azimuth)*flat).multiplyScalar(28);
+        const right=new THREE.Vector3(Math.cos(azimuth),0,-Math.sin(azimuth));
+        look=new THREE.Vector3(centre.x,.8,centre.z).addScaledVector(right,5);
+        eye=look.clone().add(off);
+      }
       const dir=aim.clone().sub(eye),reach=dir.length();dir.normalize();
       const entry=new THREE.Ray(eye,dir).intersectBox(target,new THREE.Vector3());
       const stop=entry?entry.distanceTo(eye):reach;
@@ -160,9 +179,9 @@ try{
       if(blocked&&process.env.ITALY_DEBUG){const w=new THREE.Vector3();blocked.object.getWorldPosition(w);const chain=[];for(let b=blocked.object;b;b=b.parent)if(b.name)chain.push(b.name);console.log(`DEBUG ${id} a=${azimuth} blocked by ${chain.join('<')||blocked.object.geometry.type} at (${w.x.toFixed(2)},${w.y.toFixed(2)},${w.z.toFixed(2)}) d=${blocked.distance.toFixed(2)}/${stop.toFixed(2)} aim(${aim.x.toFixed(2)},${aim.y.toFixed(2)},${aim.z.toFixed(2)})`);}
       assert.ok(!blocked,`${id}: ${blocked?(blocked.object.name||blocked.object.parent?.name||'a mesh of the stand'):''} hides ${name} from the arrival camera at azimuth ${azimuth} (take ${take})`);
       const lens=new THREE.PerspectiveCamera(34,16/9,.1,400);
-      lens.position.copy(eye);lens.lookAt(centre.x,1.2,centre.z);lens.updateMatrixWorld(true);
+      lens.position.copy(eye);lens.lookAt(look);lens.updateMatrixWorld(true);
       const frustum=new THREE.Frustum().setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(lens.projectionMatrix,lens.matrixWorldInverse));
-      assert.ok(frustum.containsPoint(aim),`${id}: ${name} is outside the 34-degree arrival frame at azimuth ${azimuth} (aim y ${aim.y.toFixed(2)})`);
+      assert.ok(frustum.containsPoint(aim),`${id}: ${name} is outside the 34-degree ${room?'room':'card'} arrival frame at azimuth ${azimuth} (aim y ${aim.y.toFixed(2)})`);
     }
   }
 

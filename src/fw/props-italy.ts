@@ -896,36 +896,74 @@ export function italyMarket(): P {
     for (let k = 0; k < 5; k++) add(bn, ball(0.05, i === 2 ? "#efe6d0" : IT.greens, 5), Math.cos(k * 1.26) * 0.06, -0.26, Math.sin(k * 1.26) * 0.06).scale.y = 1.5;
     return bn;
   });
-  // the five stall children of the object list, in the horseshoe behind: local space, the market turned 3.14
-  const stallAt = (x: number, z: number, cloth: string, fill: () => THREE.Object3D[]) => {
-    const s = add(g, new THREE.Group(), x, 0, z);
-    add(s, box(1.7, 0.07, 0.9, IT.wood), 0, 0.86, 0);
-    for (const dx of [-0.72, 0.72]) for (const dz of [-0.35, 0.35]) add(s, box(0.07, 0.82, 0.07, "#6e4a2c"), dx, 0.41, dz);
-    add(s, box(1.74, 0.05, 0.94, cloth), 0, 0.915, 0);                 // a cloth over the boards; no awning, the stall stays under the sight line
-    for (const o of fill()) add(s, o, 0, 0, 0);
+  // the Campo's own paving under the stalls: basalt setts from the piazza street's edge to the lane in front, held
+  // a unit clear of the herb garden and the Pantheon; the market stands on it and has no floor of its own
+  add(g, box(9.3, 0.024, 4.83, "#d4c6aa"), -0.2, 0.012, 2.535).name = "it-campo-paving";
+  for (let i = 0; i < 18; i++) add(g, box(0.34, 0.006, 0.34, i % 2 ? "#c7b89a" : "#ddd0b6"), -4.2 + (i * 2.37) % 8.3, 0.026, 0.6 + ((i * 1.73) % 4.0)).rotation.y = i * 0.4;
+  // the five stall children of the object list, in a horseshoe in front of the canopy, at the offsets the object
+  // list gives them from the market's anchor: a trestle under a cloth that hangs to the paving, the produce on it,
+  // and the seller standing inside the horseshoe behind the board, facing out across it
+  const stallAt = (x: number, z: number, rot: number, cloth: string, fill: (s: THREE.Object3D) => void) => {
+    const s = add(g, new THREE.Group(), x, 0, z); s.rotation.y = rot;
+    add(s, box(1.7, 0.07, 0.9, IT.wood), 0, 0.8, 0);
+    for (const dx of [-0.72, 0.72]) for (const dz of [-0.35, 0.35]) add(s, box(0.07, 0.76, 0.07, "#6e4a2c"), dx, 0.38, dz);
+    add(s, box(1.76, 0.03, 0.96, cloth), 0, 0.85, 0);                                    // the cloth over the boards
+    add(s, box(1.76, 0.5, 0.02, cloth), 0, 0.6, -0.48);                                  // and hanging down the customers' side
+    for (const side of [-1, 1]) add(s, box(0.02, 0.5, 0.96, cloth), side * 0.88, 0.6, 0);
+    fill(s);
     return s;
   };
-  const scatter = (make: () => THREE.Mesh, n: number, y = 0.95) => () => Array.from({ length: n }, (_, i) => { const m = make(); m.position.set(-0.6 + (i % 5) * 0.3, y + Math.floor(i / 5) * 0.09, -0.2 + (i % 2) * 0.24); return m; });
-  // world offsets from the market's anchor, which is how the object list fixes them: the horseshoe opens north
-  stallAt(-4.2, 0.65, "#c9603e", scatter(() => cyl(0.1, 0.09, 0.3, "#5a6b3a", 8), 8, 1.09)).rotation.y = 1.72;       // stall-oil
-  stallAt(-2.5, 3.55, "#d9a55b", scatter(() => ball(0.085, "#c0392b", 6), 10)).rotation.y = 2.53;                     // stall-tomato
-  stallAt(0, 4.35, "#e9dcc3", scatter(() => cyl(0.15, 0.15, 0.1, "#e9c46a", 12), 7, 0.99)).rotation.y = 3.14;         // stall-cheese
-  stallAt(2.5, 3.55, "#8e4b3a", scatter(() => cyl(0.06, 0.05, 0.3, "#8e4b3a", 8), 9, 1.09)).rotation.y = -2.53;       // stall-salumi
-  stallAt(3.7, 0.95, "#6f9b57", scatter(() => ball(0.1, IT.greens, 6), 10)).rotation.y = -1.82;                       // stall-herbs
-  // the people: the woman with the knife, the stallholder, a buyer, two shoppers, a child and a walker
+  const pile = (s: THREE.Object3D, n: number, make: (i: number) => THREE.Mesh, rows = 2, y = 0.9, dx = 0.26) => {
+    for (let i = 0; i < n; i++) { const m = make(i); add(s, m, -0.6 + (i % Math.ceil(n / rows)) * dx, y + m.userData.lift, -0.2 + Math.floor(i / Math.ceil(n / rows)) * 0.28); }
+  };
+  const lifted = (m: THREE.Mesh, lift: number) => { m.userData.lift = lift; return m; };
+  const crate = (s: THREE.Object3D, x: number, z: number) => { add(s, box(0.46, 0.14, 0.34, "#b08a5a"), x, 0.94, z); };
+  // stall-oil: tins and flasks of oil from the Sabina, and a crock of olives
+  stallAt(-4.2, 0.65, 1.72, "#c9603e", (s) => {
+    pile(s, 6, (i) => lifted(cyl(0.08, 0.09, 0.26, i % 2 ? "#5a6b3a" : "#8a8f5a", 8), 0.13), 1, 0.9, 0.2);
+    add(s, cyl(0.16, 0.13, 0.22, "#9c6a4a", 10), 0.45, 1.0, 0.2);
+    for (let i = 0; i < 6; i++) add(s, ball(0.04, "#4a5a2a", 5), 0.38 + (i % 3) * 0.06, 1.12, 0.14 + Math.floor(i / 3) * 0.08);
+  });
+  // stall-tomato: two crates of tomatoes, a string of them hung at the end
+  stallAt(-2.5, 3.55, 2.53, "#d9a55b", (s) => {
+    for (const x of [-0.45, 0.25]) { crate(s, x, 0); for (let i = 0; i < 6; i++) add(s, ball(0.075, i % 3 ? "#c0392b" : "#d9482f", 7), x - 0.14 + (i % 3) * 0.14, 1.06, -0.08 + Math.floor(i / 3) * 0.16).scale.y = 0.85; }
+  });
+  // stall-cheese: pecorino wheels stacked on the board, one cut, and a ricotta basket
+  stallAt(0, 4.35, 3.14, "#e9dcc3", (s) => {
+    for (let i = 0; i < 3; i++) add(s, cyl(0.17, 0.17, 0.11, "#e2c98a", 14), -0.5, 0.92 + i * 0.115, 0);
+    add(s, cyl(0.17, 0.17, 0.11, "#e2c98a", 14), 0.0, 0.92, 0.05);
+    add(s, box(0.16, 0.1, 0.12, "#f1e2b6"), 0.22, 0.92, 0.05);
+    add(s, cyl(0.13, 0.1, 0.12, "#c9a97a", 10), 0.55, 0.93, -0.05);
+    add(s, ball(0.1, "#f6f2e4", 8), 0.55, 1.0, -0.05).scale.y = 0.5;
+  });
+  // stall-salumi: sausages in a row on the board and a ham, a rail of them over it
+  stallAt(2.5, 3.55, -2.53, "#8e4b3a", (s) => {
+    pile(s, 8, () => lifted(cyl(0.05, 0.045, 0.3, "#8e4b3a", 8), 0.03), 2, 0.9, 0.2);
+    s.children.slice(-8).forEach((m) => { m.rotation.z = Math.PI / 2; });
+    const ham = add(s, ball(0.16, "#a45a44", 8), 0.5, 0.98, 0); ham.scale.set(1.4, 0.8, 0.9);
+  });
+  // stall-herbs: bunches of basil, parsley and rocket in baskets
+  stallAt(3.7, 0.95, -1.82, "#6f9b57", (s) => {
+    for (const [x, c] of [[-0.5, IT.greens], [0, "#4f7a33"], [0.5, "#7d9a4a"]] as [number, string][]) {
+      add(s, cyl(0.19, 0.15, 0.12, "#c9a97a", 10), x, 0.93, 0);
+      for (let i = 0; i < 5; i++) add(s, ball(0.07, c, 6), x + Math.cos(i * 1.26) * 0.08, 1.03, Math.sin(i * 1.26) * 0.08).scale.y = 1.4;
+    }
+  });
+  // the sellers, inside the horseshoe behind their boards
+  const seller = (x: number, z: number, rot: number, role: Role) => { const f = add(g, own(resident(role, false)), x, 0, z) as Figure; f.rotation.y = rot; return f; };
+  const sellers = [seller(-3.45, 0.95, -1.42, "townswoman"), seller(-2.25, 2.72, -0.61, "vendor"), seller(0.35, 3.6, 0, "dairywoman"),
+    seller(2.2, 2.72, 0.61, "townsman"), seller(2.9, 1.15, 1.32, "townswoman")];
+  // the people: the woman with the knife, the stallholder, a buyer and a walker behind the canopy
   const woman = add(g, own(resident("vendor")), -0.9, 0, 0.55) as Figure; woman.rotation.y = 0;
   const knife = add(arms(woman).right, box(0.2, 0.015, 0.05, "#bcc2c6"), 0.02, arms(woman).hand - 0.03, 0.1);
   add(knife, box(0.08, 0.03, 0.045, "#5a4636"), -0.13, 0, 0);
   arms(woman).right.rotation.x = -1.1; arms(woman).left.rotation.x = -1.0;
   const holder = add(g, own(resident("vendor", false)), 1.5, 0, 0.5) as Figure; holder.rotation.y = 0.3;
   const buyer = add(g, own(resident("townswoman", false)), 0.5, 0, 0.35) as Figure; buyer.rotation.y = 0.2;
-  const shopper = add(g, own(resident("townsman", false)), -2.0, 0, 0.3) as Figure; shopper.rotation.y = 0.5;
-  const nonna = add(g, own(resident("townswoman", false)), 2.9, 0, -0.4) as Figure; nonna.rotation.y = -0.9;
-  const child = add(g, own(resident("child")), -2.9, 0, -0.5) as Figure; child.rotation.y = 0.9;
   const walker = resident("porter", false); add(g, walker, -2.4, 0, -1.4);
   const walk = pacer(walker, V(-2.4, 0, -1.4), V(2.4, 0, -1.4), 0.30, 0.6);
   const heartRest = heart.position.clone(), leafRest = leaves.map((l) => l.position.clone());
-  return life(g, "romeMarket", [woman, holder, buyer, shopper, nonna, child, walker], (t, k) => {
+  return life(g, "romeMarket", [woman, holder, buyer, walker, ...sellers], (t, k) => {
     scale.rotation.z = Math.sin(t * 1.2) * 0.07;
     bunches.forEach((bn, i) => { bn.rotation.z = Math.sin(t * 1.35 + i) * 0.055; });
     // 1. food first: the head turns against the knife and the stripped leaves drop into the basket
@@ -1287,14 +1325,18 @@ export function bacaro(): P {
   // the people: the host, a man at the door who turns, two at the counter, two on the bench, a walker
   const host = add(g, own(resident("oste")), -0.9, 0.08, 0.7) as Figure; host.rotation.y = -0.2;
   arms(host).right.rotation.x = -1.05; arms(host).left.rotation.x = -0.6;
-  const atDoor = add(g, own(resident("porter", false)), 2.6, 0, 1.15) as Figure; atDoor.rotation.y = -2.4;
+  // the counter runs x -2.1 to 2.1 and z 1.0 to 2.0: both drinkers stand at its ends, outside it, and the man at
+  // the door stands past the east wall's end
+  const atDoor = add(g, own(resident("porter", false)), 2.85, 0, 0.98) as Figure; atDoor.rotation.y = -2.4;
   const drinkerA = add(g, own(resident("fisher", false)), -2.4, 0, 1.25) as Figure; drinkerA.rotation.y = 1.9;
-  const drinkerB = add(g, own(resident("townsman", false)), 1.9, 0, 1.2) as Figure; drinkerB.rotation.y = -1.9;
+  const drinkerB = add(g, own(resident("townsman", false)), 2.36, 0, 1.78) as Figure; drinkerB.rotation.y = -1.7;
   const by = bench(g, 1.9, -0.3, 1.9, -0.4, 0.44);
   const sitterA = seatFigure(g, resident("townswoman", false), 1.4, -0.15, -0.4, by + 0.02);
   const sitterB = seatFigure(g, resident("fisher", false), 2.3, -0.5, -0.4, by + 0.02);
-  const walker = resident("townsman", false); add(g, walker, -2.2, 0.08, 0.2);
-  const walk = pacer(walker, V(-2.2, 0.08, 0.2), V(0.6, 0.08, 0.2), 0.22, 1.4);
+  // the boy fetching from the back shelf walks behind the cask stand, never through it (x -1.85 to -0.35, z -0.15
+  // to 0.65) or the bench
+  const walker = resident("townsman", false); add(g, walker, -2.0, 0.08, -1.3);
+  const walk = pacer(walker, V(-2.0, 0.08, -1.3), V(0.6, 0.08, -1.3), 0.22, 1.4);
   const ombraRest = ombra.position.clone();
   return life(g, "bacaro", [host, atDoor, drinkerA, drinkerB, sitterA, sitterB, walker], (t, k) => {
     pitcher.rotation.z = Math.sin(t * 0.9) * 0.012;
@@ -1745,12 +1787,39 @@ export function tonnara(): P {
   roofOver(hall, "sicilianCoast", 5.2, 1.6, 2.6, 0);
   for (let i = 0; i < 3; i++) { add(hall, box(0.9, 1.6, 0.1, "#3f4a4a"), -1.6 + i * 1.6, 0.8, 0.81); add(hall, new THREE.Mesh(new THREE.TorusGeometry(0.45, 0.08, 5, 14, Math.PI), mat("#e0d8c4")), -1.6 + i * 1.6, 1.6, 0.81); }
   add(hall, cyl(0.24, 0.3, 2.4, "#e0d8c4", 10), -1.9, 3.4, -0.3);
-  // the sheds of the blueprint at [1.75, 1.6] from the anchor: the low salting shed, a blocker kept under the sight line
-  const sheds = add(g, new THREE.Group(), 1.75, 0, 1.6);
-  add(sheds, box(2.2, 1.3, 3.0, "#e8dfcc"), 0, 0.65, 0);
-  add(sheds, box(2.5, 0.1, 3.3, "#c9805a"), 0, 1.36, 0).rotation.x = 0.04;
-  for (let i = 0; i < 3; i++) add(sheds, box(0.06, 0.7, 0.5, "#3f4a4a"), -1.11, 0.5, -0.9 + i * 0.9);
-  for (let i = 0; i < 4; i++) add(sheds, cyl(0.2, 0.2, 0.36, IT.wood, 10), 1.4, 0.18, -1.0 + i * 0.6);
+  // the salting shed east of the coppers: a long low building of rubble stone, lime-washed, under a pantile roof
+  // with its ridge running back from the landing, end-on to the camera, and its door in the gable to the landing
+  const shed = add(g, new THREE.Group(), 2.35, 0, -0.45); shed.name = "it-tonnara-shed";
+  const shedW = 1.9, shedL = 3.0, eaves = 1.35;
+  add(shed, box(shedW + 0.12, 0.22, shedL + 0.12, "#b9b0a0"), 0, 0.11, 0);                     // the stone footing
+  add(shed, box(shedW, eaves, shedL, "#ece3cf"), 0, eaves / 2, 0);
+  for (let i = 0; i < 8; i++) add(shed, box(0.24, 0.12, 0.03, i % 2 ? "#c9bfa8" : "#d8cfba"), (i % 2 ? -0.5 : 0.45) + (i % 3) * 0.12, 0.35 + (i % 4) * 0.26, shedL / 2 + 0.005);   // rubble showing through the wash
+  const gable = new THREE.Shape([new THREE.Vector2(-shedW / 2, 0), new THREE.Vector2(shedW / 2, 0), new THREE.Vector2(0, 0.62)]);
+  for (const s of [-1, 1]) add(shed, new THREE.Mesh(new THREE.ExtrudeGeometry(gable, { depth: 0.02, bevelEnabled: false }), mat("#ece3cf")), 0, eaves, s * (shedL / 2) - (s > 0 ? 0.02 : 0));
+  const pitch = Math.atan2(0.62, shedW / 2), slope = Math.hypot(0.62, shedW / 2) + 0.22;
+  for (const side of [-1, 1]) {
+    const face = add(shed, box(slope, 0.08, shedL + 0.36, "#c4673f"), side * (shedW / 4 + 0.05), eaves + 0.31 + 0.04, 0);
+    face.rotation.z = -side * pitch;
+    for (let i = 0; i < 9; i++) add(face, cyl(0.045, 0.045, shedL + 0.36, "#a9553a", 6), -slope / 2 + 0.1 + i * (slope - 0.2) / 8, 0.06, 0).rotation.x = Math.PI / 2;
+  }
+  add(shed, box(0.14, 0.1, shedL + 0.4, "#a9553a"), 0, eaves + 0.66, 0);                         // the ridge tiles
+  add(shed, box(0.62, 0.95, 0.05, "#5a3b2a"), 0, 0.5, shedL / 2 + 0.03);                           // the door to the landing
+  add(shed, box(0.78, 0.1, 0.1, "#b9b0a0"), 0, 1.02, shedL / 2 + 0.05);
+  for (const z of [-0.8, 0.5]) add(shed, box(0.05, 0.36, 0.32, "#3f4a4a"), -shedW / 2 - 0.01, 0.85, z);   // two small barred windows
+  // the barrels of salted tuna and oil along its west wall, and the nets drying on a rail by its door
+  for (let i = 0; i < 4; i++) {
+    const b = add(g, cyl(0.19, 0.17, 0.4, "#8a5a36", 10), 1.12, 0.2, -1.55 + i * 0.44);
+    add(b, new THREE.Mesh(new THREE.TorusGeometry(0.19, 0.015, 4, 12), mat(IT.iron)), 0, 0.1, 0).rotation.x = Math.PI / 2;
+    add(b, new THREE.Mesh(new THREE.TorusGeometry(0.19, 0.015, 4, 12), mat(IT.iron)), 0, -0.1, 0).rotation.x = Math.PI / 2;
+  }
+  add(g, cyl(0.18, 0.16, 0.36, "#8a5a36", 10), 1.3, 0.58, -1.33).rotation.z = Math.PI / 2;        // one on its side on top
+  for (const z of [0.3, 1.15]) add(g, cyl(0.035, 0.04, 1.05, IT.wood, 5), 3.38, 0.52, z);
+  add(g, cyl(0.025, 0.025, 1.0, IT.wood, 5), 3.38, 1.02, 0.72).rotation.x = Math.PI / 2;
+  const net = add(g, box(0.05, 0.78, 0.9, "#6b5a3e"), 3.4, 0.6, 0.72);
+  net.material = mat("#6b5a3e", { transparent: true, opacity: 0.85 });
+  for (let i = 0; i < 5; i++) add(g, ball(0.05, "#d9a55b", 5), 3.43, 0.98, 0.34 + i * 0.19);        // the cork floats along its head rope
+  const heap = add(g, ball(0.34, "#6b5a3e", 8), 2.9, 0.12, 1.55); heap.scale.set(1.3, 0.4, 0.9);
+  for (let i = 0; i < 4; i++) add(g, ball(0.045, "#d9a55b", 5), 2.62 + i * 0.18, 0.24, 1.5 + (i % 2) * 0.12);
   // the boiling floor and the three coppers on a raised hearth, west of the sheds where the camera reads them
   add(g, box(3.8, 0.12, 1.8, "#b9b0a0"), -1.4, 0.06, 1.2);
   const coppers = [-2.6, -1.4, -0.2].map((x, i) => {
@@ -1793,8 +1862,8 @@ export function tonnara(): P {
   const tinner = add(g, own(resident("townswoman")), -2.9, 0, -2.2) as Figure; tinner.rotation.y = 0;
   const packerA = add(g, own(resident("townswoman")), -2.1, 0, -2.2) as Figure; packerA.rotation.y = 0.1;
   const packerB = add(g, own(resident("townswoman")), -1.5, 0, -2.2) as Figure; packerB.rotation.y = 0.2;
-  const poleMan = add(g, own(resident("fisher", false)), -0.1, 0, -0.4) as Figure; poleMan.rotation.y = -0.6;
-  const boy = add(g, own(resident("child")), 3.3, 0, -0.8) as Figure; boy.rotation.y = -1.4;
+  const poleMan = add(g, own(resident("fisher", false)), 0.25, 0, 0.4) as Figure; poleMan.rotation.y = -0.9;   // off the walker's line at z -0.5
+  const boy = add(g, own(resident("child")), 1.0, 0, 0.55) as Figure; boy.rotation.y = -1.9;
   const walker = resident("worker", false); add(g, walker, -3.4, 0, -0.5);
   const walk = pacer(walker, V(-3.4, 0, -0.5), V(0.4, 0, -0.5), 0.30, 1.5);
   g.userData.steam = V(-1.4, 1.75, 1.2); g.userData.smoke = V(-2.9, 4.6, -3.3);
@@ -2073,6 +2142,7 @@ function oxYard(): P {
   const trough = add(g, box(2.0, 0.3, 0.5, IT.stone), -0.8, 0.15, 1.3);
   add(g, box(1.8, 0.1, 0.36, "#8a7f60"), -0.8, 0.3, 1.3);
   const ox = add(g, new THREE.Group(), -0.8, 0, 0.35); ox.name = "it-ox";
+  ox.scale.set(0.68, 0.56, 0.6);                                                          // withers at a man's shoulder
   add(ox, ball(0.56, "#9a8464", 10), 0, 0.98, 0).scale.set(1.75, 1.0, 0.98);
   add(ox, ball(0.34, "#8a7458", 8), -0.72, 1.28, 0).scale.set(0.9, 0.8, 0.8);            // the hump over the shoulder
   const oxHead = add(ox, new THREE.Group(), 0.94, 1.0, 0);
@@ -2665,7 +2735,9 @@ export function colosseum(): P {
   add(ruin, new THREE.Mesh(new THREE.CircleGeometry(R - 0.4, 32), mat("#b8a878")), 0, 0.04, 0).rotation.x = -Math.PI / 2;
   // what grows on it: the flora the botanists catalogued, as tufts along the ledges and the broken top
   for (let i = 0; i < 26; i++) { const a = rnd() * Math.PI * 2, y = 1.3 * (1 + Math.floor(rnd() * 2)); add(ruin, ball(0.16, i % 3 ? "#6f8a4a" : "#8fa06a", 5), Math.cos(a) * (R + 0.1), y + 0.05, Math.sin(a) * (R + 0.1)).scale.set(1.2, 0.6, 1.2); }
-  // the swifts: the subject. A few perch on the upper ledge over the front; the click sends them out in a spiral.
+  // the swifts: the subject. At rest they are inside the arcades and nothing of them shows (bunched in front of the
+  // wall they read from above as a black heap on the arena floor, walkthrough item 18); the click sends them out of
+  // the upper arcades in a spiral over the front of the ring, and they go back in.
   const swifts = add(g, new THREE.Group(), 0.3, 1.75, 1.85); swifts.name = "it-swifts";
   const flock = Array.from({ length: 9 }, (_, i) => { const b = add(swifts, bird(), Math.cos(i * 0.7) * 0.5, 0, Math.sin(i * 0.7) * 0.2); b.rotation.y = i; return b; });
   // two visitors with a guide book, a friar, and a boy selling postcards, all on the paving below the arcades
@@ -2675,12 +2747,14 @@ export function colosseum(): P {
   arms(guide).right.rotation.x = -1.0;
   const friar = add(g, own(resident("priest", false)), 1.7, 0, 2.1) as Figure; friar.rotation.y = Math.PI + 0.6;
   const boy = add(g, own(resident("child")), 1.1, 0, 2.55) as Figure; boy.rotation.y = Math.PI - 0.2;
+  swifts.visible = false;
   const swiftRest = swifts.position.clone();
   return life(g, "colosseoIt", [guide, visitor, friar, boy], (t, k) => {
     // 1. the swifts go up off the ledge and spiral out over the front of the ring, then settle again
     const out = hold(k, 0.14, 0.86);
     swifts.position.copy(swiftRest);
     swifts.position.y = swiftRest.y + out * 0.6; swifts.position.z = swiftRest.z + out * 0.9;
+    swifts.visible = out > 0.02;
     flock.forEach((b, i) => {
       const a = t * (2.2 + (i % 3) * 0.3) + i * 0.7, r = 0.5 + out * (0.6 + (i % 4) * 0.25);
       b.position.set(Math.cos(a) * r, out * Math.sin(a * 0.7 + i) * 0.35, Math.sin(a) * r * (0.4 + out * 0.6));
@@ -2874,47 +2948,109 @@ export function gelateria(): P {
 }
 
 /**
- * The Rialto: the single stone arch over the Grand Canal with the shops along its deck. The stand is the one
- * object on this table that stands in water. On the click the front shop's shutter swings open and the goods
- * come out, and a gondola passes under the arch.
+ * The Rialto bridge's section, in the stand's own frame: the Grand Canal runs along x under it and IT-R7 runs along
+ * z over it, and the bridge is centred on the boat lane L1. One segmental stone arch springs from the two quays at
+ * |z| 1.85, 0.9 above the table, and rises to a soffit 2.30 high over the lane; its intrados is a circle of radius
+ * 1.92 about y 0.38. The deck climbs in steps from the quays to a crown 2.85 high. `rialtoDeckY(dz)` returns the
+ * walking surface at `dz` from the lane, so a walker who crosses can be lifted to the steps rather than to a flat
+ * deck under the arch.
+ */
+const RIALTO = { half: 1.85, spring: 0.9, crown: 2.3, ring: 0.3, cover: 0.25, end: 3.75, width: 3.3 };
+const rialtoR = (RIALTO.half ** 2 + (RIALTO.crown - RIALTO.spring) ** 2) / (2 * (RIALTO.crown - RIALTO.spring));
+const rialtoYc = RIALTO.crown - rialtoR;
+/** The soffit of the arch at `dz` from the lane (the clear height a boat has there). */
+export const rialtoSoffitY = (dz: number) => (Math.abs(dz) >= RIALTO.half ? RIALTO.spring : rialtoYc + Math.sqrt(rialtoR * rialtoR - dz * dz));
+const rialtoExtrados = (dz: number) => rialtoYc + Math.sqrt(Math.max(0, (rialtoR + RIALTO.ring) ** 2 - dz * dz));
+/** The walking surface of the Rialto at `dz` from the lane: the crown, the steps and the quay at both ends. */
+export function rialtoDeckY(dz: number): number {
+  const a = Math.abs(dz), knee = rialtoExtrados(RIALTO.half) + RIALTO.cover;
+  if (a >= RIALTO.end) return 0;
+  if (a <= RIALTO.half) return rialtoExtrados(a) + RIALTO.cover;
+  return knee * (RIALTO.end - a) / (RIALTO.end - RIALTO.half);
+}
+
+/**
+ * The Rialto as it stood in 1900: Antonio da Ponte's single stone arch of 1591, pale Istrian stone, the steps
+ * climbing in three walkways over the crown, two rows of shops under lead roofs stepping down with the deck, and
+ * the portico with its pediment at the top. The arch springs from the quays and gives the gondola lane under it
+ * the clear height in `rialtoSoffitY`. The rowed boats that pass under it are the Builder's, on lane L1; the
+ * bridge carries none of its own. On the click the shutter of the shop at the top of the south steps swings open
+ * and its goods come out onto the sill; the shopkeeper steps to the door and the porter on the steps turns round.
  */
 export function rialtoBridge(): P {
   const g = group();
-  const span = 5.2, rise = 1.4, width = 3.2;
-  // the arch and the stepped deck, the span running along z as IT-R7 does
-  const arch = new THREE.Mesh(new THREE.TorusGeometry(span / 2, 0.36, 8, 22, Math.PI), mat("#e6dcc6"));
-  arch.scale.set(1, rise / (span / 2), 1); arch.rotation.y = Math.PI / 2;
-  for (const x of [-width / 2 + 0.2, width / 2 - 0.2]) { const a = arch.clone(); a.position.x = x; g.add(a); }
-  add(g, box(width, 0.3, 1.0, "#e6dcc6"), 0, rise + 0.2, 0);
-  for (let i = 0; i < 6; i++) for (const s of [-1, 1]) add(g, box(width, 0.18, 0.42, i % 2 ? "#e6dcc6" : "#ded3b6"), 0, rise + 0.14 - i * 0.24, s * (0.7 + i * 0.4));
-  for (const s of [-1, 1]) add(g, box(width + 0.4, 0.9, 1.2, "#d9ccb0"), 0, 0.45, s * (span / 2 + 0.3));
-  for (const x of [-width / 2, width / 2]) for (let i = 0; i < 7; i++) add(g, box(0.06, 0.34, 0.06, "#d9ccb0"), x, rise + 0.52 - Math.abs(i - 3) * 0.24, -1.8 + i * 0.6);
-  // the two rows of shops on the deck, arched fronts, one lead roof over each row
-  for (const s of [-1, 1]) {
-    add(g, box(0.9, 1.1, 2.4, "#efe4cc"), s * 1.05, rise + 0.9, 0);
-    add(g, box(1.0, 0.1, 2.6, "#8d9a99"), s * 1.05, rise + 1.5, 0).rotation.z = -s * 0.2;
-    for (let i = 0; i < 3; i++) add(g, box(0.05, 0.6, 0.55, "#5a3b2a"), s * 0.58, rise + 0.75, -0.8 + i * 0.8);
+  const { half, spring, ring, end, width: W } = RIALTO;
+  const stone = "#e6dcc6", stoneShade = "#d6c9ae", lead = "#8d9a99", dark = "#3a332c";
+  // the abutments on the two quays, from the ground to the springing, with the steps' lowest flights on them
+  for (const s of [-1, 1]) add(g, box(W, spring, end - half + 0.1, stoneShade), 0, spring / 2, s * (half + (end - half) / 2 - 0.05)).name = "it-rialto-abutment";
+  // the arch ring: voussoirs round the intrados, each its own block, standing proud of the spandrels on both faces
+  const a0 = Math.asin(half / rialtoR), n = 15;
+  for (let i = 0; i < n; i++) {
+    const a = -a0 + ((i + 0.5) / n) * 2 * a0, arc = ((2 * a0) / n) * (rialtoR + ring / 2);
+    const v = add(g, box(W + 0.06, ring, arc * 0.97, i % 2 ? stone : "#efe6d2"), 0, rialtoYc + (rialtoR + ring / 2) * Math.cos(a), (rialtoR + ring / 2) * Math.sin(a));
+    v.rotation.x = a; v.name = "it-rialto-voussoir";
   }
-  add(g, box(1.4, 0.16, 0.6, "#efe4cc"), 0, rise + 1.7, 0);
-  // the front shop's shutter: the subject, hinged at its side, at the top of the steps on the arrival side
-  const shutter = add(g, new THREE.Group(), -0.6, rise + 0.75, 1.24); shutter.name = "it-rialto-shutters";
-  add(shutter, box(0.5, 0.62, 0.05, "#3f6b4a"), 0.25, 0, 0);
-  for (let i = 0; i < 4; i++) add(shutter, box(0.46, 0.02, 0.06, "#2f5232"), 0.25, -0.24 + i * 0.16, 0.01);
-  add(g, box(0.5, 0.62, 0.05, "#3f6b4a"), 0.85, rise + 0.75, 1.24);
-  const goods = add(g, new THREE.Group(), -0.35, rise + 0.52, 1.35);
-  for (let i = 0; i < 4; i++) add(goods, box(0.12, 0.08, 0.1, ["#c9a06a", "#8e2a22", "#f1e6d0", "#3f6b8f"][i]), -0.18 + i * 0.12, 0, 0);
+  // the spandrels and the stepped deck over them, slice by slice: solid from the arch's back to the treads
+  const tread = 0.25;
+  for (let z0 = -end; z0 < end - 1e-6; z0 += tread) {
+    const zm = z0 + tread / 2, top = rialtoDeckY(zm);
+    if (top <= 0.02) continue;
+    const over = Math.abs(zm) < half;
+    const bottom = over ? Math.min(rialtoExtrados(z0), rialtoExtrados(z0 + tread)) - 0.05 : spring - 0.02;
+    if (top - bottom < 0.02) continue;
+    add(g, box(W, top - bottom, tread + 0.005, stone), 0, (top + bottom) / 2, zm);
+    add(g, box(W - 0.02, 0.03, 0.03, stoneShade), 0, top + 0.012, z0 + 0.02);                    // the nosing of the step
+  }
+  // the balustrades along both outer walkways, post and rail, following the steps
+  for (const x of [-W / 2 + 0.05, W / 2 - 0.05]) for (let z0 = -end + 0.2; z0 < end - 0.3; z0 += 0.42) {
+    const y0 = rialtoDeckY(z0), y1 = rialtoDeckY(z0 + 0.42);
+    add(g, box(0.07, 0.34, 0.07, stone), x, y0 + 0.17, z0);
+    const rail = add(g, box(0.09, 0.05, Math.hypot(0.42, y1 - y0), stone), x, (y0 + y1) / 2 + 0.34, z0 + 0.21);
+    rail.rotation.x = -Math.atan2(y1 - y0, 0.42);
+  }
+  // the two rows of shops, three blocks each side of the crown, stepping down with the deck; arched doors onto
+  // the central walkway and a lead roof over each block
+  const shopX = 0.93, shopW = 0.74;
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) for (let b = 0; b < 3; b++) {
+    const za = 0.72 + b * 0.78, zc = sz * (za + 0.36), base = rialtoDeckY(za + 0.72) - 0.02, h = rialtoDeckY(za) - base + 0.62;
+    add(g, box(shopW, h, 0.74, "#efe4cc"), sx * shopX, base + h / 2, zc);
+    const roof = add(g, box(shopW + 0.16, 0.06, 0.8, lead), sx * shopX, base + h + 0.05, zc); roof.rotation.z = -sx * 0.22;
+    for (const dz of [-0.18, 0.18]) {
+      add(g, box(0.04, 0.36, 0.2, dark), sx * (shopX - shopW / 2 - 0.005), rialtoDeckY(zc + dz) + 0.22, zc + dz);
+      add(g, cyl(0.1, 0.1, 0.042, dark, 8), sx * (shopX - shopW / 2 - 0.005), rialtoDeckY(zc + dz) + 0.4, zc + dz).rotation.z = Math.PI / 2;
+    }
+  }
+  // the portico at the crown: two piers either side of the central walkway, the arch, and the pediment over it
+  const crownY = rialtoDeckY(0);
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) add(g, box(0.22, 0.95, 0.22, stone), sx * 0.62, crownY + 0.475, sz * 0.42);
+  for (const sz of [-1, 1]) {
+    add(g, new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.07, 5, 12, Math.PI), mat(stone)), 0, crownY + 0.95, sz * 0.42);
+    add(g, box(1.5, 0.14, 0.1, stone), 0, crownY + 1.52, sz * 0.46);
+  }
+  add(g, box(1.5, 0.52, 1.0, "#efe6d2"), 0, crownY + 1.2, 0);
+  const pediment = new THREE.Shape([new THREE.Vector2(-0.8, 0), new THREE.Vector2(0.8, 0), new THREE.Vector2(0, 0.42)]);
+  const ped = add(g, new THREE.Mesh(new THREE.ExtrudeGeometry(pediment, { depth: 1.04, bevelEnabled: false }), mat(stone)), 0, crownY + 1.58, -0.52);
+  void ped;
+  add(g, box(1.64, 0.06, 1.12, lead), 0, crownY + 1.6, 0);
+  // the front shop's shutter: the subject, hinged on the south end of the west row where the steps look at it
+  const frontZ = 0.72 + 2 * 0.78 + 0.74, shutY = rialtoDeckY(frontZ) + 0.36;
+  const shutter = add(g, new THREE.Group(), -shopX - 0.3, shutY, frontZ + 0.02); shutter.name = "it-rialto-shutters";
+  add(shutter, box(0.3, 0.44, 0.04, "#3f6b4a"), 0.15, 0, 0);
+  for (let i = 0; i < 4; i++) add(shutter, box(0.27, 0.02, 0.05, "#2f5232"), 0.15, -0.16 + i * 0.11, 0.01);
+  add(g, box(0.3, 0.44, 0.04, "#3f6b4a"), -shopX + 0.15 + 0.02, shutY, frontZ + 0.02);
+  const goods = add(g, new THREE.Group(), -shopX - 0.1, shutY - 0.2, frontZ + 0.1);
+  for (let i = 0; i < 4; i++) add(goods, box(0.1, 0.07, 0.09, ["#c9a06a", "#8e2a22", "#f1e6d0", "#3f6b8f"][i]), -0.15 + i * 0.1, 0, 0);
   goods.scale.setScalar(0.001);
-  // the gondola in the canal under the arch, travelling across it
-  const boat = add(g, gondola(), -2.2, 0, 0); boat.rotation.y = 0;
-  // the people: two on the steps, a shopkeeper, a porter
-  const shopkeeper = add(g, own(resident("vendor", false)), -1.0, rise + 0.2, 0.7) as Figure; shopkeeper.rotation.y = 0.4;
-  const porter = add(g, own(resident("porter", false)), 1.0, rise - 0.15, 1.0) as Figure; porter.rotation.y = Math.PI;
-  add(porter, cyl(0.24, 0.2, 0.18, "#c9a97a", 10), 0, 1.72, 0);
-  const woman = add(g, own(resident("fishwife", false)), -0.9, rise - 0.6, -2.0) as Figure; woman.rotation.y = 0;
-  return life(g, "rialtoIt", [shopkeeper, porter, woman], (t, k) => {
-    // the gondola crosses under the arch and back, always
-    const u = (t * 0.07) % 2, x = u < 1 ? -2.2 + u * 4.4 : 2.2 - (u - 1) * 4.4;
-    boat.position.x = x; boat.rotation.y = u < 1 ? 0 : Math.PI; boat.position.z = Math.sin(t * 0.3) * 0.12;
+  // the people, each on his own step: the shopkeeper by the shutter, a porter climbing, a woman on the north steps
+  const onStep = (x: number, z: number) => V(x, rialtoDeckY(Math.round((z + end) / tread) * tread - end + tread / 2), z);
+  const kp = onStep(-0.25, frontZ + 0.3);
+  const shopkeeper = add(g, own(resident("vendor", false)), kp.x, kp.y, kp.z) as Figure; shopkeeper.rotation.y = 0.4;
+  const pp = onStep(0.2, 2.95);
+  const porter = add(g, own(resident("porter", false)), pp.x, pp.y, pp.z) as Figure; porter.rotation.y = Math.PI;
+  add(porter, cyl(0.2, 0.17, 0.16, "#c9a97a", 10), 0, 1.3, 0);
+  const wp = onStep(-0.2, -2.9);
+  const woman = add(g, own(resident("fishwife", false)), wp.x, wp.y, wp.z) as Figure; woman.rotation.y = 0;
+  return life(g, "rialtoIt", [shopkeeper, porter, woman], (_t, k) => {
     // 1. the shutter swings open on its hinge and the goods come out onto the sill
     const open = hold(k, 0.18, 0.84);
     shutter.rotation.y = -open * 1.5;
@@ -2927,49 +3063,80 @@ export function rialtoBridge(): P {
 }
 
 /**
- * St Mark's campanile, as it stood until it fell on 14 July 1902: a brick shaft, the open belfry, the pyramid spire
- * and the angel. The tower is drawn short enough that its bells sit inside the arrival camera's frame. On the click
- * the bells swing and the whole tower leans a fraction, which is what it did before it came down.
+ * St Mark's campanile, as it stood until it fell on 14 July 1902: a slender brick shaft with its pilaster strips,
+ * the open belfry in white Istrian stone, the brick attic with its roundels, the green copper spire and the gilded
+ * angel. It is the tallest thing on the table after Etna, twice the Venetian houses beside it, and it stands back
+ * on the San Marco quay so that the rays from the Pescaria behind it pass over its shoulder. The belfry's arches
+ * are cut wide, so the big bell is seen from the card approach's pitch. On the click the bells swing and the whole
+ * tower leans a fraction, which is what it did before it came down.
  */
 export function campanile(): P {
   const g = group();
-  const tower = add(g, new THREE.Group(), 0, 0, -1.6);
-  add(tower, box(1.9, 2.9, 1.9, "#b8654a"), 0, 1.45, 0);
-  for (const s of [-1, 1]) for (const f of [-1, 1]) add(tower, box(0.2, 2.9, 0.08, "#a5553e"), s * 0.5, 1.45, f * 0.96);
-  add(tower, box(2.1, 0.16, 2.1, IT.venCream), 0, 2.95, 0);
-  // the belfry: corner piers and one wide opening on each face, so the bells are seen through it
-  for (const sx of [-1, 1]) for (const sz of [-1, 1]) add(tower, box(0.28, 1.1, 0.28, IT.venCream), sx * 0.83, 3.58, sz * 0.83);
-  add(tower, box(2.1, 0.2, 2.1, IT.venCream), 0, 4.22, 0);
-  add(tower, box(1.8, 0.7, 1.8, "#b8654a"), 0, 4.67, 0);
-  for (const s of [-1, 1]) add(tower, cyl(0.26, 0.26, 0.05, IT.venCream, 12), s * 0.4, 4.67, 0.91).rotation.x = Math.PI / 2;
-  add(tower, cone(1.3, 1.6, "#3f7a5a", 4), 0, 5.8, 0).rotation.y = Math.PI / 4;
-  add(tower, ball(0.12, C.gold, 8), 0, 6.7, 0);
-  add(tower, box(0.05, 0.4, 0.2, C.gold), 0, 6.95, 0);
-  // the bells: the big one at the front is the named subject; they hang from the belfry's beam
-  add(tower, box(1.5, 0.1, 0.1, "#5a3b2a"), 0, 4.05, 0.72);
-  add(tower, box(1.5, 0.1, 0.1, "#5a3b2a"), 0, 4.05, -0.3);
+  const brick = "#a9573f", brickDark = "#8f4633", stone = IT.venCream, copper = "#4f8a6a";
+  const S = 1.12, shaftTop = 3.95, bellFloor = shaftTop + 0.12, bellTop = 5.3, atticTop = 5.85, spireTop = 7.35;
+  const tower = add(g, new THREE.Group(), 0.1, 0, -1.2);
+  // the stone plinth and the brick shaft, with five pilaster strips on each face running up to the arcading
+  add(tower, box(S + 0.24, 0.26, S + 0.24, stone), 0, 0.13, 0);
+  add(tower, box(S, shaftTop - 0.26, S, brick), 0, 0.26 + (shaftTop - 0.26) / 2, 0);
+  for (let f = 0; f < 4; f++) {
+    const face = add(tower, new THREE.Group(), 0, 0, 0); face.rotation.y = (f * Math.PI) / 2;
+    for (let i = 0; i < 5; i++) add(face, box(0.09, shaftTop - 0.7, 0.05, brickDark), -0.44 + i * 0.22, 0.26 + (shaftTop - 0.7) / 2, S / 2 + 0.02);
+    // the blind arches the strips end in under the belfry
+    for (let i = 0; i < 4; i++) add(face, new THREE.Mesh(new THREE.TorusGeometry(0.1, 0.025, 4, 8, Math.PI), mat(brickDark)), -0.33 + i * 0.22, shaftTop - 0.44, S / 2 + 0.02);
+  }
+  // the belfry: a floor, four slim corner piers and a heavy cornice, open on every face
+  add(tower, box(S + 0.16, 0.12, S + 0.16, stone), 0, shaftTop + 0.06, 0);
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) add(tower, box(0.13, bellTop - bellFloor, 0.13, stone), sx * (S / 2 - 0.05), (bellFloor + bellTop) / 2, sz * (S / 2 - 0.05));
+  add(tower, box(S + 0.2, 0.14, S + 0.2, stone), 0, bellTop + 0.07, 0);
+  // a balustrade low across each opening, under the sight line to the bells
+  for (let f = 0; f < 4; f++) {
+    const face = add(tower, new THREE.Group(), 0, 0, 0); face.rotation.y = (f * Math.PI) / 2;
+    add(face, box(S - 0.3, 0.05, 0.08, stone), 0, bellFloor + 0.24, S / 2 - 0.05);
+    for (let i = 0; i < 5; i++) add(face, box(0.04, 0.22, 0.04, stone), -0.36 + i * 0.18, bellFloor + 0.11, S / 2 - 0.05);
+  }
+  // the brick attic with its roundels, the corner pinnacles, the spire and the angel on her gilded ball
+  add(tower, box(S - 0.06, atticTop - bellTop - 0.14, S - 0.06, brick), 0, (bellTop + 0.14 + atticTop) / 2, 0);
+  for (let f = 0; f < 4; f++) {
+    const face = add(tower, new THREE.Group(), 0, 0, 0); face.rotation.y = (f * Math.PI) / 2;
+    add(face, cyl(0.15, 0.15, 0.04, stone, 12), 0, (bellTop + atticTop) / 2 + 0.05, S / 2 - 0.01).rotation.x = Math.PI / 2;
+  }
+  add(tower, box(S + 0.06, 0.08, S + 0.06, stone), 0, atticTop, 0);
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) add(tower, cone(0.07, 0.3, copper, 4), sx * 0.47, atticTop + 0.18, sz * 0.47);
+  add(tower, cone(0.74, spireTop - atticTop, copper, 4), 0, (atticTop + spireTop) / 2 + 0.04, 0).rotation.y = Math.PI / 4;
+  add(tower, ball(0.09, C.gold, 8), 0, spireTop + 0.05, 0);
+  const angel = add(tower, new THREE.Group(), 0, spireTop + 0.12, 0);
+  add(angel, cyl(0.035, 0.06, 0.28, C.gold, 6), 0, 0.14, 0);
+  add(angel, ball(0.045, C.gold, 6), 0, 0.32, 0);
+  for (const side of [-1, 1]) add(angel, box(0.03, 0.18, 0.12, C.gold), side * 0.05, 0.2, -0.06).rotation.x = -0.4;
+  // the bells on their beam, the big one at the front of the belfry where the arch shows it: the named subject
+  const beamY = bellTop - 0.42;
+  add(tower, box(S - 0.3, 0.07, 0.07, "#5a3b2a"), 0, beamY, 0.36);
+  add(tower, box(S - 0.3, 0.07, 0.07, "#5a3b2a"), 0, beamY, -0.28);
   const bellAt = (x: number, z: number, s: number) => {
-    const pivot = add(tower, new THREE.Group(), x, 4.0, z);
-    add(pivot, cyl(0.02, 0.02, 0.1, IT.iron, 4), 0, -0.05, 0);
-    add(pivot, cone(0.24 * s, 0.42 * s, "#8a6a2a", 12), 0, -0.3 * s, 0);
-    add(pivot, ball(0.06 * s, "#5a4a1a", 6), 0, -0.52 * s, 0);
+    const pivot = add(tower, new THREE.Group(), x, beamY - 0.04, z);
+    add(pivot, cyl(0.015, 0.015, 0.08, IT.iron, 4), 0, -0.04, 0);
+    add(pivot, cone(0.17 * s, 0.3 * s, "#8a6a2a", 12), 0, -0.2 * s, 0);
+    add(pivot, cyl(0.17 * s, 0.17 * s, 0.03, "#7a5a22", 12), 0, -0.35 * s, 0);
     return pivot;
   };
-  const bell = bellAt(0, 0.72, 1.1); bell.name = "it-campanile-bell";
-  const bells = [bellAt(-0.45, -0.3, 0.8), bellAt(0.45, -0.3, 0.8)];
-  // the loggetta at the foot, low, and the piazzetta's people
-  const loggetta = add(g, new THREE.Group(), 0, 0, 0.1);
-  add(loggetta, box(3.0, 1.4, 0.9, "#e6d7c0"), 0, 0.7, 0);
-  for (let i = 0; i < 4; i++) add(loggetta, cyl(0.1, 0.1, 1.2, "#c9a0a0", 8), -1.2 + i * 0.8, 0.6, 0.5);
-  add(loggetta, box(3.2, 0.14, 1.1, IT.venCream), 0, 1.45, 0.05);
-  for (let i = 0; i < 12; i++) { const p = add(g, bird("#8a8d96", 0.9), -1.8 + rnd() * 3.6, 0.05, 0.9 + rnd() * 1.4); p.rotation.y = rnd() * 6; }
-  const priest = add(g, own(resident("priest", false)), -1.9, 0, 0.9) as Figure; priest.rotation.y = 0.4;
-  const woman = add(g, own(resident("fishwife", false)), 1.8, 0, 1.2) as Figure; woman.rotation.y = -0.5;
-  const porter = add(g, own(resident("porter", false)), 2.1, 0, -0.2) as Figure; porter.rotation.y = -0.9;
+  const bell = bellAt(-0.05, 0.36, 1.1); bell.name = "it-campanile-bell";
+  const bells = [bellAt(-0.26, -0.28, 0.8), bellAt(0.26, -0.28, 0.8)];
+  // the loggetta at the foot, facing the quay: three arches in pale marble under a white attic
+  const loggetta = add(g, new THREE.Group(), 0.1, 0, 0.05);
+  add(loggetta, box(2.2, 0.16, 0.9, stone), 0, 0.08, 0);
+  add(loggetta, box(2.2, 1.0, 0.5, "#e2c9bd"), 0, 0.66, -0.2);
+  for (let i = 0; i < 4; i++) add(loggetta, cyl(0.07, 0.07, 0.9, "#c9a0a0", 8), -0.9 + i * 0.6, 0.61, 0.12);
+  for (let i = 0; i < 3; i++) add(loggetta, new THREE.Mesh(new THREE.TorusGeometry(0.24, 0.04, 4, 10, Math.PI), mat(stone)), -0.6 + i * 0.6, 1.06, 0.12);
+  add(loggetta, box(2.3, 0.2, 0.62, stone), 0, 1.4, -0.08);
+  // the piazzetta's people (the pigeons scattered on the quay read from above as grey scraps, and are gone)
+  const priest = add(g, own(resident("priest", false)), -1.75, 0, 0.55) as Figure; priest.rotation.y = 0.4;
+  const woman = add(g, own(resident("fishwife", false)), 1.8, 0, 0.9) as Figure; woman.rotation.y = -0.5;
+  const porter = add(g, own(resident("porter", false)), 1.75, 0, -0.9) as Figure; porter.rotation.y = -0.9;
   return life(g, "campanileIt", [priest, woman, porter], (t, k) => {
     // 1. the bells swing, the big one first, 2. the tower leans a fraction and settles
     const ring = hold(k, 0.08, 0.86);
-    bell.rotation.x = ring * Math.sin(t * 5.5) * 0.55 + ring * 0.35;
+    // the big bell swings across the opening that faces the quay, so the swing is seen from the south
+    bell.rotation.z = ring * Math.sin(t * 5.5) * 0.55 + ring * 0.35;
     bells.forEach((b, i) => { b.rotation.x = beat(k, 0.1 + i * 0.05, 0.95) * Math.sin(t * 6.2 + i) * 0.5; });
     tower.rotation.z = beat(k, 0.15, 0.95) * 0.012;
     // 3. the piazzetta looks up
@@ -2979,54 +3146,127 @@ export function campanile(): P {
 }
 
 /**
- * Etna from the coast: a broad cone of basalt with the snow line and the snow pits cut into its flank, drawn low
- * enough that its summit and plume sit inside the arrival frame. The plume tilts off the summit on the click and
- * the snow cutters on the flank straighten to look.
+ * Etna from the coast: a broad basalt cone with concave flanks, the tallest thing on the table. Its summit stands
+ * at twice the height of the Apennine ridge across the strait (its cones are 3.0 to 5.4 tall), with snow and ash
+ * over the upper third, a black lava tongue down the south-east flank and a thin plume leaning off the crater.
+ * Nobody stands on the cone. At its foot, where the road passes, is the snow trade that fed the island's ices: a
+ * round stone neviera, snow cut into blocks and wrapped in straw, a mule under two panniers of it, and a wall of
+ * the dark lava stone. The base is held inside the ground between the almond terraces and the tonnara, and the
+ * plume inside the frame the card approach flies to. On the click the plume swells, darkens and leans away east,
+ * the crater glows, and the cutters at the foot straighten to look up.
  */
+const ETNA = { cx: 0, cz: -1.55, rx: 3.25, rz: 3.2, summit: 8.2, rim: 0.42 };
 export function etna(): P {
   const g = group();
-  const Rb = 3.4, H = 2.7;
-  const geo = new THREE.ConeGeometry(Rb, H, 18, 6);
-  const pos = geo.attributes.position as THREE.BufferAttribute;
-  const colors: number[] = [];
-  const snow = new THREE.Color("#f2f0ea"), dark = new THREE.Color(IT.lava), mid = new THREE.Color("#6b5a55"), green = new THREE.Color("#6f9b57");
-  for (let i = 0; i < pos.count; i++) {
-    const y = pos.getY(i), f = (y + H / 2) / H;
-    if (f < 0.999 && f > 0.001) { const kx = 1 + Math.sin(i * 12.9) * 0.05; pos.setX(i, pos.getX(i) * kx); pos.setZ(i, pos.getZ(i) * kx); }
-    const c = f > 0.8 ? snow.clone() : f > 0.45 ? mid.clone().lerp(dark, (f - 0.45) / 0.35) : green.clone().lerp(mid, f / 0.45);
-    colors.push(c.r, c.g, c.b);
+  const { cx, cz, rx, rz, summit: H, rim } = ETNA;
+  // the cone: a lathe on a concave profile, scaled to the ellipse of ground it has, with a rough surface
+  const prof: THREE.Vector2[] = [];
+  const steps = 14, rimN = rim / Math.max(rx, rz);
+  for (let i = 0; i <= steps; i++) {
+    const rn = 1 - (1 - rimN) * (i / steps);                     // from the foot to the crater rim
+    prof.push(new THREE.Vector2(rn, H * Math.pow((1 - rn) / (1 - rimN), 1.55)));
   }
-  geo.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3)); geo.computeVertexNormals();
-  const cone = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, flatShading: true, roughness: 0.95 })); cone.position.y = H / 2; g.add(cone);
-  add(g, cyl(0.45, 0.6, 0.3, "#2a2528", 12), 0, H - 0.08, 0);
-  const glow = add(g, cyl(0.36, 0.36, 0.05, "#ff6a2a", 12), 0, H + 0.08, 0);
-  glow.material = mat("#ff6a2a", { emissive: "#ff4a1a", emissiveIntensity: 0.5 });
-  const onFlank = (r: number, a: number) => V(Math.sin(a) * r, H * (1 - r / Rb), Math.cos(a) * r);
-  // the snow pits cut into the flank, the stone walls of the terraces and the prickly pear below
-  for (let i = 0; i < 5; i++) { const p = onFlank(1.4 + (i % 2) * 0.25, -0.6 + i * 0.3); add(g, box(0.3, 0.1, 0.3, "#3a3530"), p.x, p.y + 0.02, p.z).rotation.y = -0.6 + i * 0.3; add(g, box(0.24, 0.05, 0.24, "#f2f0ea"), p.x, p.y + 0.07, p.z).rotation.y = -0.6 + i * 0.3; }
-  for (let i = 0; i < 10; i++) { const p = onFlank(2.9, -1.2 + i * 0.26); add(g, box(0.36, 0.2, 0.2, IT.lavaLight), p.x, p.y + 0.08, p.z).rotation.y = -1.2 + i * 0.26; }
-  for (let i = 0; i < 5; i++) { const p = onFlank(3.2, -0.9 + i * 0.45); add(g, pricklyPear(), p.x, p.y, p.z).scale.setScalar(0.7); }
-  // the plume: the subject, puffs over the summit that drift always and tilt on the click
-  const plume = add(g, new THREE.Group(), 0, H + 0.15, 0); plume.name = "it-etna-plume";
-  const puffs = Array.from({ length: 7 }, (_, i) => { const p = add(plume, ball(0.2 + i * 0.03, "#d9d4cc", 8), 0, 0.15 + i * 0.1, 0); (p.material as THREE.MeshStandardMaterial).transparent = true; (p.material as THREE.MeshStandardMaterial).opacity = 0.85 - i * 0.07; return p; });
-  g.userData.smoke = V(0, H + 0.4, 0);
-  // the snow cutters on the flank with their baskets, and the muleteer lower down
-  const at = onFlank(1.6, 0.35), at2 = onFlank(2.0, -0.3), at3 = onFlank(3.0, 0.8);
-  const cutter = add(g, own(resident("worker")), at.x, at.y, at.z) as Figure; cutter.rotation.y = 0.25;
-  upper(cutter).rotation.x = 0.4; arms(cutter).right.rotation.x = -1.4;
-  const cutter2 = add(g, own(resident("worker", false)), at2.x, at2.y, at2.z) as Figure; cutter2.rotation.y = -0.2;
-  add(cutter2, cyl(0.22, 0.18, 0.2, "#c9a97a", 10), 0, 1.72, 0);
-  const muleteer = add(g, own(resident("carter", false)), at3.x, at3.y, at3.z) as Figure; muleteer.rotation.y = 0.5;
+  prof.push(new THREE.Vector2(rimN * 0.62, H - 0.34));            // the crater's inner wall and floor
+  prof.push(new THREE.Vector2(0.001, H - 0.36));
+  const geo = new THREE.LatheGeometry(prof, 30);
+  const pos = geo.attributes.position as THREE.BufferAttribute;
+  const colours: number[] = [];
+  const snow = new THREE.Color("#f2f0ea"), ash = new THREE.Color("#8d8782"), basalt = new THREE.Color("#4b464b"), basaltLight = new THREE.Color("#5f5961");
+  const scrub = new THREE.Color("#6f7148"), chestnut = new THREE.Color("#5d6a3c"), rust = new THREE.Color("#6d4f45"), flow = new THREE.Color("#2a2629");
+  for (let i = 0; i < pos.count; i++) {
+    const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i), r = Math.hypot(x, z), a = Math.atan2(x, z);
+    // ridges and gullies: an inward-only wobble, so the foot never leaves its ellipse
+    const rough = r > 0.01 && y > 0.02 && y < H - 0.5 ? 1 - Math.abs(Math.sin(a * 7 + y * 0.9)) * 0.05 - Math.abs(Math.sin(a * 13 + 2.1)) * 0.025 : 1;
+    pos.setX(i, x * rough * rx); pos.setZ(i, z * rough * rz);
+    const f = y / H, streak = Math.sin(a * 9 + y * 1.7);
+    // the lava tongue down the south-east flank, from under the snow to the foot
+    const inFlow = Math.abs(a - 0.62) < 0.16 + f * 0.1 && f < 0.72;
+    let c: THREE.Color;
+    if (f > 0.74) c = snow.clone().lerp(ash, streak > 0.55 ? 0.55 : 0.08);
+    else if (f > 0.6) c = ash.clone().lerp(snow, streak > 0.2 ? 0.55 : 0.1);
+    else if (inFlow) c = flow.clone();
+    else if (f > 0.2) c = basalt.clone().lerp(basaltLight, 0.5 + streak * 0.5).lerp(rust, f < 0.32 && streak < -0.4 ? 0.5 : 0);
+    else c = chestnut.clone().lerp(scrub, 0.5 + streak * 0.5).lerp(basalt, f * 2.5);
+    colours.push(c.r, c.g, c.b);
+  }
+  geo.setAttribute("color", new THREE.Float32BufferAttribute(colours, 3)); geo.computeVertexNormals();
+  const peak = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, flatShading: true, roughness: 0.95, side: THREE.DoubleSide }));
+  peak.name = "it-etna-cone"; peak.position.set(cx, 0, cz); peak.castShadow = true; peak.receiveShadow = true; g.add(peak);
+  // the crater: a dark rim and the glow deep in it, seen from above
+  const glow = add(g, cyl(0.2, 0.2, 0.04, "#ff6a2a", 12), cx, H - 0.33, cz);
+  glow.material = mat("#ff6a2a", { emissive: "#ff4a1a", emissiveIntensity: 0.55 });
+  add(g, new THREE.Mesh(new THREE.TorusGeometry(rim * 0.9, 0.07, 5, 16), mat("#3a3538")), cx, H - 0.03, cz).rotation.x = Math.PI / 2;
+  // the plume: the subject. A thin column of puffs rising off the crater and leaning away north-east, always
+  // drifting; on the click it swells, darkens and leans further east.
+  const plume = add(g, new THREE.Group(), cx, H - 0.1, cz); plume.name = "it-etna-plume";
+  // it rises a little, then the wind bends it over and it trails away east along the snow
+  // puffs of uneven size that overlap and thin out, so it reads as smoke and not as a string of beads
+  const puffs = Array.from({ length: 14 }, (_, i) => {
+    const u = i / 13, wob = Math.sin(i * 2.3);
+    const p = add(plume, ball(0.1 + u * 0.26 + wob * 0.04, "#dcd7cf", 7), 1.6 * Math.pow(u, 1.4) + wob * 0.05, 0.08 + 0.75 * Math.pow(u, 0.55) + Math.cos(i * 1.7) * 0.05 * u, 0.3 * u + wob * 0.08 * u);
+    p.scale.set(1.25, 0.8, 1);
+    p.material = mat(i < 3 ? "#b9b3ab" : "#dcd7cf", { transparent: true, opacity: 0.78 - u * 0.5, depthWrite: false });
+    return p;
+  });
+  const puffRest = puffs.map((p) => p.position.clone());
+  g.userData.smoke = V(cx, H + 0.25, cz); g.userData.smokeTint = "#b5aea3";
+  // at the foot, south-east: the round snow house, its door to the road, and the snow blocks wrapped in straw
+  const nev = add(g, new THREE.Group(), 2.72, 0, 1.28);
+  add(nev, cyl(0.46, 0.5, 0.62, "#57525a", 12), 0, 0.31, 0);
+  for (let i = 0; i < 12; i++) add(nev, box(0.2, 0.1, 0.06, i % 2 ? "#6a646c" : "#48434a"), Math.sin(i * 0.52) * 0.49, 0.12 + (i % 3) * 0.2, Math.cos(i * 0.52) * 0.49).rotation.y = i * 0.52;
+  add(nev, cone(0.58, 0.42, "#6a6168", 12), 0, 0.83, 0);
+  add(nev, box(0.26, 0.4, 0.05, "#2a2420"), 0, 0.2, 0.5);
+  const blocks: THREE.Object3D[] = [];
+  for (let i = 0; i < 5; i++) {
+    const b = add(g, new THREE.Group(), 1.62 + (i % 3) * 0.3, 0.1 + Math.floor(i / 3) * 0.2, 1.72 - Math.floor(i / 3) * 0.05);
+    add(b, box(0.26, 0.18, 0.2, "#c9b27a"), 0, 0, 0);                                      // the straw wrapping
+    add(b, box(0.2, 0.19, 0.14, "#f4f2ec"), 0, 0.005, 0.035);                               // the snow showing at the end
+    blocks.push(b);
+  }
+  // the spade and the tamper against the house
+  add(g, cyl(0.02, 0.02, 0.9, IT.wood, 5), 2.16, 0.44, 1.02).rotation.z = 0.2;
+  add(g, box(0.16, 0.2, 0.03, IT.iron), 2.07, 0.06, 1.02);
+  // the mule under its panniers of snow, head to the road, west of the flank
+  const beast = add(g, new THREE.Group(), -2.35, 0, 1.42); beast.scale.setScalar(0.62); beast.rotation.y = -0.35;
+  const { head: muleHead } = mule(beast, 0, 0, 0, "#6b5a48");
+  for (const side of [-1, 1]) {
+    add(beast, box(0.62, 0.46, 0.26, "#8a6a3a"), -0.05, 0.92, side * 0.46);
+    add(beast, box(0.5, 0.12, 0.2, "#f4f2ec"), -0.05, 1.18, side * 0.46);
+  }
+  // the lava wall: two courses of the dark stone, laid dry, along the foot west of the road
+  for (let r = 0; r < 2; r++) for (let i = 0; i < 7; i++) {
+    const s = add(g, box(0.36 - (i % 3) * 0.04, 0.2, 0.3, (i + r) % 3 === 0 ? "#5c5760" : (i + r) % 3 === 1 ? "#474249" : "#6a646c"), -2.8 + i * 0.29 + r * 0.14, 0.1 + r * 0.19, 0.62 + i * 0.12);
+    s.rotation.y = -0.4 + (rnd() - 0.5) * 0.18;
+  }
+  // prickly pear against the wall, the one green thing on the black ground
+  for (const [x, z] of [[-2.9, 1.5], [0.9, 2.05]] as [number, number][]) add(g, pricklyPear(), x, 0, z).scale.setScalar(0.6);
+  // the people, all on the ground at the foot: the cutter at the snow house, the muleteer, a boy with a block
+  const cutter = add(g, own(resident("worker")), 2.0, 0, 1.55) as Figure; cutter.rotation.y = -0.6;
+  arms(cutter).right.rotation.x = -0.9; arms(cutter).left.rotation.x = -0.8;
+  const muleteer = add(g, own(resident("carter", false)), -1.55, 0, 1.9) as Figure; muleteer.rotation.y = -0.9;
+  const boy = add(g, own(resident("child")), 1.25, 0, 2.05) as Figure; boy.rotation.y = 0.5;
+  add(upper(boy), box(0.24, 0.16, 0.18, "#c9b27a"), 0, 0.3, 0.2);
   const plumeRest = plume.position.clone();
-  return life(g, "etnaIt", [cutter, cutter2, muleteer], (t, k) => {
-    (glow.material as THREE.MeshStandardMaterial).emissiveIntensity = 0.5 + Math.sin(t * 3) * 0.25 + beat(k, 0, 0.6) * 0.6;
-    puffs.forEach((p, i) => { p.position.x = Math.sin(t * 0.4 + i) * 0.08 + i * 0.05; p.scale.setScalar(1 + Math.sin(t * 0.8 + i) * 0.06); });
-    // 1. the plume tilts off the summit and swells, 2. the cutters straighten and look up
-    const tilt = hold(k, 0.18, 0.86);
-    plume.position.copy(plumeRest); plume.position.x = plumeRest.x + tilt * 0.35;
-    plume.rotation.z = -tilt * 0.55; plume.scale.setScalar(1 + tilt * 0.15);
-    upper(cutter).rotation.x = 0.4 - beat(k, 0.3, 1) * 0.6;
-    upper(cutter2).rotation.x = -beat(k, 0.35, 1) * 0.25;
+  return life(g, "etnaIt", [cutter, muleteer, boy], (t, k) => {
+    // the plume drifts always: each puff wanders and breathes a little
+    puffs.forEach((p, i) => {
+      p.position.copy(puffRest[i]);
+      p.position.x += Math.sin(t * 0.35 + i * 0.9) * 0.06 * (i / 9); p.position.y += Math.sin(t * 0.5 + i * 1.3) * 0.03 * (i / 9);
+      const breathe = 1 + Math.sin(t * 0.7 + i) * 0.07; p.scale.set(1.25 * breathe, 0.8 * breathe, breathe);
+    });
+    (glow.material as THREE.MeshStandardMaterial).emissiveIntensity = 0.55 + Math.sin(t * 2.2) * 0.2 + beat(k, 0, 0.6) * 0.9;
+    muleHead.rotation.z = Math.sin(t * 0.8) * 0.05;
+    // 1. the plume first: it swells, darkens at its root and leans away east
+    const lean = hold(k, 0.16, 0.84);
+    plume.position.copy(plumeRest);
+    plume.rotation.set(0, 0, -lean * 0.35);
+    plume.scale.set(1 + lean * 0.35, 1 + lean * 0.1, 1 + lean * 0.35);
+    (puffs[0].material as THREE.MeshStandardMaterial).color.set(lean > 0.02 ? "#8f8983" : "#b9b3ab");
+    // 2. the cutter straightens and looks up, 3. the muleteer turns to the mountain
+    upper(cutter).rotation.x = -beat(k, 0.25, 1) * 0.45;
+    arms(cutter).right.rotation.x = -0.9 + beat(k, 0.25, 1) * 0.5;
+    upper(muleteer).rotation.y = beat(k, 0.35, 1) * 0.7;
+    upper(boy).rotation.x = -beat(k, 0.45, 1) * 0.3;
   });
 }
 

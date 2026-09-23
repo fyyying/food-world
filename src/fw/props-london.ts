@@ -3081,7 +3081,18 @@ export function towerBridge(len = 9): P {
   for (const sd of [-1, 1]) {
     add(g, box(len * .22, .26, 2.30, "#3F6FB5"), sd * (len * .38 + len * .15), .95, 0);
     add(g, box(len * .22, .40, 2.10, "#8F857A"), sd * (len * .38 + len * .15), .48, 0);
-    for (let k = 0; k < 4; k++) add(g, cyl(.022, .022, 2.6 + k * .55, "#E9E2CC", 3), sd * (len * .38 + .8 + k * .45), 2.60 + k * .28, .85);
+    // The side spans hang from chains, as on the real bridge: on each side of the deck a chain runs from the tower's
+    // outer face at walkway height down to the deck's far end, and four rods hang from it to the deck top, so
+    // nothing stands on its own over the strait (residual fixes, 2026-09-23; the old rods stood free above the deck).
+    const ax = sd * (len * .38 + .65), ay = 4.0, bx = sd * (len * .64 - .06), by = 1.15, deckTop = 1.08;
+    for (const sz of [-1, 1]) {
+      const chain = add(g, box(Math.hypot(bx - ax, ay - by), .12, .10, "#3F6FB5"), (ax + bx) / 2, (ay + by) / 2, sz * .85);
+      chain.rotation.z = Math.atan2(by - ay, bx - ax);
+      for (let k = 0; k < 4; k++) {
+        const x = sd * (len * .38 + .8 + k * .45), cy = ay + (by - ay) * ((x - ax) / (bx - ax)), h = cy - deckTop;
+        add(g, cyl(.03, .03, h, "#3F6FB5", 4), x, deckTop + h / 2, sz * .85);
+      }
+    }
   }
   // the bascules: two leaves hinged at the piers
   const leaves = [-1, 1].map((sd) => {

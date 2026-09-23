@@ -130,6 +130,8 @@ A small ingredient stand (the chilli field, the jujube tree, the pepper tree) is
 
 The band is an outer limit, not a free choice inside it. Stand rotation and camera azimuth add: an open bay turned 0.6 one way is seen at 1.35 from the far end of the camera's swing, where its own posts and roof hide the food. Britain's Stage D (2026-09-22) found eight stands whose reacting subject was hidden that way inside the band, so pick each `rot` where `<id>-reactions.mjs` still sees the subject from all three azimuths, and check the water overhang there too: turning a coastal stand to face +z often puts its front over the sea.
 
+An object may carry an `approach` override (`{ dist, pitch, yaw }` in `graph.ts`, honoured by the room approach and the card glide) when its neighbours cannot move out of the default view; the harness does not check approaches, so every override is verified by eye on the live page and recorded in the area doc. Britain's market, hop cookhouse, bakehouse, curing yard and oyster smacks carry one (2026-09-23).
+
 ### 5.1 Stand skeleton
 
 ```ts

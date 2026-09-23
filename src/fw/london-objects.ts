@@ -104,6 +104,8 @@ type Room = {
   tagline: string;
   blurb: string;
   partners?: string[];
+  /** Room approach override (graph.ts `approach`), set only where a neighbour that cannot move fills the default one. */
+  approach?: WorldObject["approach"];
   match: (r: EnrichedRecipe) => boolean;
 };
 
@@ -128,6 +130,8 @@ const rooms: Room[] = [
   {
     id: "boroughUk", kind: "place", name: "The market", zh: "Borough Market", emoji: "🧀",
     pos: [-53.85, 3.95], rot: 0, prop: "boroughMarket", scene: "uk_market", placeName: "Borough Market",
+    // The default camera ends inside the hop cookhouse's roof, 9 south: look down over it at 0.6.
+    approach: { dist: 11, pitch: 0.6, yaw: 0 },
     tagline: "Four in the morning under iron and glass, and a railway going over the stalls.",
     blurb: "A low roof of iron and glass beside a railway viaduct, shafts of first light coming through it with the dust turning in them, and the floor already full. This is a wholesale market working at dawn: goods in by river and by the night train, moved by barrow and by porter, weighed on a brass balance with iron weights, and sold in quantity to the shops and stalls that will sell them on. Retail happens round the edges, for whoever else is awake.\n\nWhat is on the boards is the whole of the British larder in October. Truckles of Cheddar and Cheshire with one cut open to show the cloth-bound rind and the white crumb; a side of bacon and a brace of game hanging on their hooks; potatoes, swedes, carrots and cabbages in wooden crates; apples in a chip basket; a pyramid of butter on a marble slab with a pair of ribbed wooden pats beside it; brown eggs in straw. The cheese is bandaged in muslin and larded so that it can breathe and travel, and the butter is on marble because marble stays cold.\n\nThe market's right to stand here is a document rather than a tradition. The Borough Market Act of 1756 moved the old market off the road at the foot of London Bridge and gave the parish of St Saviour's Southwark the right to hold one on new ground; the buildings are largely of 1851, and in 1860 a railway viaduct was driven straight through them. Its neighbours were rebuilt in the same generation: Smithfield in 1868, Billingsgate in 1875, both by the City architect Sir Horace Jones.\n\nAlmost every other room in this area buys here or sells here. The pie shop's eels come up from Billingsgate, the pub's cheese and the tea room's butter come off these slabs, and the dale's cheese and the dark rhubarb come down on the night train to be on this floor before it is light.",
     partners: ["cheese", "butter", "bacon", "apples", "eggs"],
@@ -168,6 +172,8 @@ const rooms: Room[] = [
   {
     id: "hopKitchenUk", kind: "place", name: "The hop-pickers' cookhouse", zh: "Hopping", emoji: "🍲",
     pos: [-54.2, 12.9], rot: 0, prop: "hopCookhouse", scene: "uk_hopkitchen", placeName: "Hop-pickers' cookhouse",
+    // The default camera ends among the hop garden's poles, 8.7 south: stop at 7.5, looking down at 0.4.
+    approach: { dist: 7.5, pitch: 0.4, yaw: 0 },
     tagline: "A town family cooking outdoors for six weeks, and calling it the holiday.",
     blurb: "September in a Kentish hop garden, at the end of a line of corrugated hopper huts: a fire of faggots burning between two iron uprights, a big iron pot hanging from a chain over it, hop strings twelve feet high behind, and a canvas bin half full of green cones. This is an open cookhouse, and it exists because a quarter of London came down to Kent for the picking and had to be fed somewhere.\n\nIn the pot, neck of mutton with potato, onion, carrot and pearl barley, put on in the morning and still going at dark, with a ladle lifting and pouring back to stop it catching. A kettle stands beside it, a loaf and a clasp knife on an upturned crate, bacon on a toasting fork, a stone jar of beer, enamel plates. Nothing is bought ready-made and nothing is thrown away. The fire does the cooking, the drying and the warming, and a child is kept off it by being given something to hold.\n\nThe garden around it was at its largest just before this band. The English hop acreage peaked at 71,789 acres in 1878, about forty thousand of them in Kent across some three hundred parishes, and one estimate puts nearly seven thousand oasts in the county at that date. Published estimates of how many Londoners came down each September run from tens of thousands to two hundred thousand, with one estimate of a quarter of a million by the early twentieth century; the range is the honest figure.\n\nAbout a third of that workforce came from the East End and it was mostly women and children. They lived in single rooms of corrugated iron with a straw-filled mattress, were paid by the bushel, came back to the same farm for generations, and called it their holiday - which was true, and was also the only one most of them had.",
     partners: ["mutton", "pearl barley", "potato", "hops", "bacon"],
@@ -184,6 +190,8 @@ const rooms: Room[] = [
   {
     id: "pastyUk", kind: "dish", name: "The Cornish bakehouse", zh: "Pasti", emoji: "🥟",
     pos: [-67.25, 8.05], rot: 0, prop: "pastyBakehouse", scene: "uk_pasty", placeName: "Cornish bakehouse",
+    // The default camera ends on the cockle shelter's roof, 6.9 south: come in from the south-east instead.
+    approach: { dist: 10, yaw: 0.6 },
     tagline: "A dinner with a handle, baked in a granite wall above a mining village.",
     blurb: "A granite bakehouse in a mining village, the oven mouth open to the room and throwing its heat across a scrubbed board, the door open onto a street running down to the sea, and an engine house on the skyline. On the board, shortcrust rolled to a circle, filled, folded and crimped; on the long-handled peel, a tray going into the oven; on a cloth by the window, baked pasties cooling.\n\nThe filling goes in raw and cooks in its own steam inside the pastry, which is the whole trick of the thing: skirt of beef cut in pieces, potato and swede sliced rather than diced, onion, salt and a great deal of pepper. No carrot. The crimp runs along the side, never over the top, and it is a seam before it is anything else. A pastry initial is pressed into one corner so that a man can tell his own from the four others in the same oven.\n\nThe record is thinner than the tradition and it is worth keeping them apart. The earliest known Cornish pasty recipe is in a letter of 1746 held by the Cornwall Record Office, and it describes something quite unlike this one; the name was given a protected status in 2011, which fixed both the D shape and the filling. Traditionally told, and without a contemporary source: that the thick crimp was a handle for a miner whose hands carried arsenic, and was thrown away.\n\nThe landscape it fed has its own dates. The Cornwall and West Devon Mining Landscape was inscribed on the World Heritage List in 2006 for a period running principally from 1700 to 1914. The copper market crashed in 1866, tin carried on at a much reduced scale, and Cornish miners emigrated in very large numbers, taking the engine house and the pasty to South Africa, Australia and the Americas.",
     partners: ["beef skirt", "swede", "potato", "onion", "pepper"],
@@ -200,6 +208,8 @@ const rooms: Room[] = [
   {
     id: "smokehouseUk", kind: "dish", name: "The smokehouse", zh: "Arbroath smokies", emoji: "🐟",
     pos: [-71.7, -11.36], rot: 0, prop: "smokehouse", scene: "uk_smokehouse", placeName: "Curing yard",
+    // The default camera ends 1.5 in front of the engine house, 11.4 south, whose roof and stack fill the frame: stop at 6.5.
+    approach: { dist: 6.5, yaw: 0 },
     tagline: "A fire in a hole in the ground, and haddock tied together by the tail.",
     blurb: "A curing yard on a red sandstone shelf above a small harbour, with boats and barrel stacks below it. The equipment is a half whisky barrel sunk into the ground with a hardwood fire burning in it, a frame of wooden speets laid across the top, and wet hessian sacks to hand. That is all. Everything that makes the fish is the fire, the stick, the sack and the man deciding when.\n\nHaddock are split, cleaned and dry-salted for a couple of hours, then tied in pairs by the tail and hung over the speets, and the pair is lowered over the pit together so the smoke gusts up round it. The hessian goes over the frame to hold the heat and the smoke down. What comes off an hour later has a copper-coloured skin and creamy flesh, is opened by hand rather than cut, and is eaten warm with the fingers.\n\nThe distinction this yard turns on is on the rail beside it. An Arbroath smokie is hot-smoked over a fierce short fire, so the fish is cooked; a kipper is cold-smoked, comes off the rail raw and needs a pan afterwards; and a Findon haddock, from south of Aberdeen, is pale, split and cold-smoked, and was being made for generations before the smokie. Three cures in one yard, and only one of them is ready to eat.\n\nThe dates run the other way from the fame. Smoked haddock was being sent from Auchmithie to Dundee in 1842, and Auchmithie, four miles up the coast, is the fishertoun the smokie is said to come from and whose families are said to have carried the trade into Arbroath. The protected name came in 2004, and it draws a five-mile circle round Arbroath Town House.",
     partners: ["haddock", "salt", "hardwood smoke", "oatcake", "butter"],
@@ -233,6 +243,7 @@ export const LONDON_OBJECTS: WorldObject[] = rooms.map((room) => ({
   tagline: room.tagline,
   blurb: room.blurb + "\n\n" + LONDON_STORY_DEPTH[room.id],
   partners: room.partners,
+  ...(room.approach ? { approach: room.approach } : {}),
   match: room.match,
 }));
 
@@ -249,6 +260,9 @@ LONDON_OBJECTS.push(
   {
     id: "oystersUk", world: "central-europe", kind: "ingredient", name: "The oyster smacks", zh: "Natives", emoji: "🦪",
     area: "london", pos: [-34.2, 13.2], rot: -0.1, elevation: 0, prop: "oysterSmack",
+    // The Alps' nearest snow peak, [-28, 22], stands between the default card camera and the smacks: look down
+    // steeper and from the west, so it falls behind the card (it was also lowered a third in world-ceurope.ts).
+    approach: { pitch: 0.95, yaw: -0.6 },
     tagline: "The cheapest food in the city, until it priced itself out of reach.",
     blurb: "Two smacks moored in the dock below Tower Bridge, back from dredging Whitstable and Colchester natives off the estuary beds and bringing them up to Billingsgate. An oyster in this period is not a luxury. It is the cheapest protein a Londoner could buy, opened on a barrow, eaten standing, and shovelled into the pie and the pudding to make a little beef go further.\n\nThe numbers are of an industry rather than a delicacy. Something over 700 million oysters were eaten in London alone in 1864, and the fisheries employed around 120,000 people across Britain; by the 1850s Whitstable alone was sending 80 million a year to Billingsgate.\n\nThen it ended inside one lifetime. Overfishing thinned the beds, sewage ruined the grounds nearest the city, and a typhoid outbreak traced to oysters in the winter of 1902 and 1903 broke the public's nerve. The food that had been the mark of having no money became the mark of having some, and the eels in the shop across the river are what stayed cheap.",
     partners: ["eel", "beef", "vinegar", "bread"],
@@ -315,7 +329,7 @@ LONDON_OBJECTS.push(
     id: "herringUk", world: "central-europe", kind: "ingredient", name: "The herring quay", zh: "The silver darlings", emoji: "🐟",
     area: "london", pos: [-39.19, -21.9], rot: 0, elevation: 0, prop: "herringQuay",
     tagline: "A crew of three women, a fish every ten seconds, and fingers bound in cotton.",
-    blurb: "A quay with a drifter moored against it and a farlane - a long wooden trough - of herring on the stones behind. The fleet followed the shoal down the coast with the year, from Shetland in May to Yarmouth and Lowestoft in the autumn, and the gutting crews followed by train, lodging where they could.\n\nThe crew is three women and the division is fixed: two gut and one packs. They gutted a fish every ten seconds with a short knife and could pack thirty barrels of some seven hundred fish each in a ten-hour day, salted in layers with the backs up. Their fingers were bound in cotton strips against the knife and the salt.\n\n1913 was the record year, and its figures belong with their sources rather than added together: one account gives upwards of 380,000 tons landed at Yarmouth and Lowestoft between September and December, another about 800,000 cran at Yarmouth alone. Both agree on the labour: some ten thousand seasonal workers into Yarmouth that season, six thousand of them Scotswomen.",
+    blurb: "A quay with a drifter drawn up on the hard beside it, her sail up to dry, and a farlane - a long wooden trough - of herring on the stones behind. The fleet followed the shoal down the coast with the year, from Shetland in May to Yarmouth and Lowestoft in the autumn, and the gutting crews followed by train, lodging where they could.\n\nThe crew is three women and the division is fixed: two gut and one packs. They gutted a fish every ten seconds with a short knife and could pack thirty barrels of some seven hundred fish each in a ten-hour day, salted in layers with the backs up. Their fingers were bound in cotton strips against the knife and the salt.\n\n1913 was the record year, and its figures belong with their sources rather than added together: one account gives upwards of 380,000 tons landed at Yarmouth and Lowestoft between September and December, another about 800,000 cran at Yarmouth alone. Both agree on the labour: some ten thousand seasonal workers into Yarmouth that season, six thousand of them Scotswomen.",
     partners: ["salt", "oatmeal", "potato", "smoke"],
     match: (r) => brit(r) && has(r.core, /herring|fish|salt/),
   },

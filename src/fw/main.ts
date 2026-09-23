@@ -118,9 +118,9 @@ function fly(to: THREE.Vector3, target: THREE.Vector3, dur = 1.4, done?: () => v
   if (level === 'world') to = target.clone().add(to.clone().sub(target).clampLength(controls.minDistance, controls.maxDistance));
   flight = { from: camera.position.clone(), to, tf: controls.target.clone(), tt: target, t: 0, dur, done };
 }
-/** Move the target and keep the current viewing offset (a glide, not a cut). `bias` shifts the subject left so the card doesn't cover it. */
-function glideTo(target: THREE.Vector3, distance?: number, dur = 1.1, done?: () => void, bias = 0) {
-  const offset = camera.position.clone().sub(controls.target);
+/** Move the target and keep the current viewing offset (a glide, not a cut). `bias` shifts the subject left so the card doesn't cover it.
+ *  `offset`, when given, replaces the current viewing offset (an object's `approach` override). */
+function glideTo(target: THREE.Vector3, distance?: number, dur = 1.1, done?: () => void, bias = 0, offset = camera.position.clone().sub(controls.target)) {
   if (distance) offset.setLength(distance);
   const t = target.clone();
   if (bias && window.innerWidth > 720) {
@@ -129,6 +129,15 @@ function glideTo(target: THREE.Vector3, distance?: number, dur = 1.1, done?: () 
   }
   fly(t.clone().add(offset), t, dur, done);
 }
+/** Apply an object's `approach` override to a default camera offset: each missing field keeps the default's own value. */
+function approachOffset(base: THREE.Vector3, o: NonNullable<WorldObject["approach"]>): THREE.Vector3 {
+  const dist = o.dist ?? base.length();
+  const pitch = o.pitch ?? Math.asin(THREE.MathUtils.clamp(base.y / Math.max(base.length(), 1e-6), -1, 1));
+  const yaw = o.yaw ?? Math.atan2(base.x, base.z);
+  return new THREE.Vector3(Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), Math.cos(yaw) * Math.cos(pitch)).multiplyScalar(dist);
+}
+/** The world's nearest zoom, saved while a room approach with a nearer `approach.dist` lowers it. */
+let approachMinDistance: number | null = null;
 
 // ---------- state ----------
 type Level = "home" | "map" | "world";
@@ -662,11 +671,18 @@ function enterLivingScene(p: Placed, obj: WorldObject, recipes: EnrichedRecipe[]
   const hitSize=(p.hit.geometry as THREE.BoxGeometry).parameters;
   const approachDistance=Math.max(8.8,Math.min(18,Math.max(hitSize.width,hitSize.depth)*1.05));
   approachHorizontal.setLength(approachDistance);
-  const approachOffset=approachHorizontal.add(new THREE.Vector3(0,1.4,0));
+  let roomOffset=approachHorizontal.add(new THREE.Vector3(0,1.4,0));
+  // A stand whose neighbours cannot move carries its own approach (graph.ts, `approach`); a nearer camera lowers
+  // the world's zoom limit for the flight, and dropScene puts it back.
+  const override=p.obj.approach ?? obj.approach;
+  if(override){
+    roomOffset=approachOffset(roomOffset,override);
+    if(roomOffset.length()<controls.minDistance){approachMinDistance??=controls.minDistance;controls.minDistance=roomOffset.length();}
+  }
   // The overview clamp (maxPolarAngle 1.12, about 26 degrees of elevation) would cancel this low pitch and let a
   // facade hide the work surface; loosen it for the approach and restore it when the room closes.
   controls.maxPolarAngle = APPROACH_MAX_POLAR;
-  fly(approachTarget.clone().add(approachOffset),approachTarget,1.6,() => {
+  fly(approachTarget.clone().add(roomOffset),approachTarget,1.6,() => {
     fade.classList.add("on");
     later(() => {
       controls.enabled = false;
@@ -702,6 +718,7 @@ function dropScene() {
   if (!livingScene) return;
   livingScene.destroy(); livingScene = null; sceneObject = null;
   controls.enabled = true; flight = null; controls.maxPolarAngle = OVERVIEW_MAX_POLAR;   // nothing pending may carry the camera away from where it was
+  if (approachMinDistance !== null) { controls.minDistance = approachMinDistance; approachMinDistance = null; }
   if (sceneReturn) { camera.position.copy(sceneReturn.pos); controls.target.copy(sceneReturn.target); sceneReturn = null; }
   diorama?.highlight(null, null);
 }
@@ -743,7 +760,9 @@ function openObject(p: Placed) {
   }, COARSE ? 1200 : 800);
   diorama!.poke(p);
   if (p.obj.alias) { const real = diorama!.placed.find((x) => x.obj.id === p.obj.alias); if (real) diorama!.poke(real); }
-  glideTo(p.anchor.clone().add(new THREE.Vector3(0, 0.8, 0)), p.obj.hitOnly ? 16 : 28, 1.0, undefined, p.obj.hitOnly ? 3 : 5);
+  const cardDist = p.obj.hitOnly ? 16 : 28;
+  const cardOffset = p.obj.approach ? approachOffset(camera.position.clone().sub(controls.target).setLength(cardDist), p.obj.approach) : undefined;
+  glideTo(p.anchor.clone().add(new THREE.Vector3(0, 0.8, 0)), cardOffset ? undefined : cardDist, 1.0, undefined, p.obj.hitOnly ? 3 : 5, cardOffset);
 }
 
 /** A place (market, noodle shop, dumpling stall…) zooms in and shows what's inside; you pick a plate or a stall from there. */

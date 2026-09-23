@@ -60,6 +60,13 @@ export type WorldObject = {
   scene?: string;
   /** hitOnly objects: a custom invisible click box [width, height, depth, centre y] */
   hit?: [number, number, number, number];
+  /** Camera override for the approach after a click (the room approach, or the card glide for a card-only object),
+   *  for a stand whose neighbours cannot move out of the default view. `dist` is the camera's distance from the point
+   *  it looks at, `pitch` its elevation above the horizontal in radians, `yaw` its compass bearing from the object in
+   *  radians (0 is +z, the table's front; positive turns toward +x). A missing field keeps today's value: the
+   *  visitor's own bearing, and for a room 1.4 over a run of 8.8 to 18 (never nearer than 10), for a card 28 (16 for
+   *  a `hitOnly` spot) at the current pitch. The harness does not check approaches; verify each override by eye. */
+  approach?: { dist?: number; pitch?: number; yaw?: number };
   match: (r: EnrichedRecipe) => boolean;
 };
 

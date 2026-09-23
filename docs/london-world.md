@@ -696,7 +696,7 @@ Rooms
 | R5 | Traced liquid paths lip to surface, checked live | Pass | Lit pixels sit on the configured paths in both orientations; endpoints taken from `docs/london-rooms.md`, not re-measured on the pixels. How little two of them draw is walkthrough 38 and 39 |
 | R6 | Hanging motion is a sprite over a clean painting | Pass | No breeze crop in the area |
 | R7 | Every delivered sprite used or explained | Pass | Six of six used |
-| R8 | Every path and box on a gridded crop and an overlay contact sheet | Pass | The rooms record names the gridded crops and the pour overlay sheet `uk-pours.jpg` |
+| R8 | Every path and box on a gridded crop and an overlay contact sheet | Pass (2026-09-23) | `docs/london-rooms.md` now names the sheet under "Overlay sheet": `.data/shots/london-rooms-overlay.png`, both orientations of all thirteen rooms with the phone heading and every measured box and hook drawn over the painting |
 | R9 | Every phone box and sprite inside the band, lit live | Pass | Table above: every portrait cue lit, every visible portrait sprite inside the viewport |
 | R10 | Motion capture re-run after the last cue change; the baseline carries the numbers | **Fail** | `docs/quality-baseline.md` carries no Britain motion numbers (no `uk_` entry); the rooms doc's "Left for the lead" item 1 is still open |
 | R11 | 3 percent in two seconds, or 2.5 with a crisp cue | **Fail** | `uk_market` wide re-measured at a 2.8 percent median with no crisp cue (sunray, lamps, haze) |
@@ -721,8 +721,8 @@ Verification record
 | # | Line | Verdict | Evidence |
 | --- | --- | --- | --- |
 | V1 | typecheck, test, `build:pages` | **Fail** | Typecheck passes; `npm test` 22 of 25 on this working tree (Italy, Thailand, Vietnam); `build:pages` was not run in this review |
-| V2 | Screenshots of the world, each stand and each room at both sizes | **Fail** | `.data/shots/ld-e-r-*` has every room at both sizes and `ld-e-ap-*` every object at 1280 x 720; no stand has a shot at 390 x 844, and the phone-width world shot is this review's `ld-e-phone-world.jpg` |
-| V3 | Animation inventory table | **Fail** | `docs/london-world.md` promises one in its first paragraph and does not carry it |
+| V2 | Screenshots of the world, each stand and each room at both sizes | Pass (2026-09-23) | All 29 stands now have their own arrival-camera shot at both sizes, `.data/shots/london-stands-wide.png` (1920x900, 1280x720 aspect) and `london-stands-phone.png` (1170x2110, 390x844 aspect), rendered through `london-prop-audit.html` on the dev server; see this file's "Stage E close-out" below |
+| V3 | Animation inventory table | Pass (2026-09-23) | This file's "Stage E close-out" section below carries one row per stand (29) with its always-on loop, its click reaction and, for the thirteen that open one, its room's signature |
 | V4 | Pages run and live URL | **Fail** | Britain is not published; this is Stage F |
 
 **Count: 28 pass, 14 fail, 3 not verified, of 45 lines.** Failed: W2, W7, W9, W14, S3, R3, R10, R11, R13, C1, V1, V2, V3, V4. Not verified: W13, S1, R14. *After the lead's rulings of 2026-09-23 on W7 and C1: 30 pass, 12 fail, 3 not verified.*
@@ -893,3 +893,68 @@ Fix agent's items, the residuals of the three fix reports above (world, stands) 
 - Handbook: `docs/building-a-world.md` section 5 now has the rule. An object may carry an `approach` override when its neighbours cannot move. The harness does not check approaches, so every override is verified by eye and recorded in the area doc.
 - Harness and build: `npm run typecheck` clean; `npm test` **25 harnesses passed**, `london-world.mjs` ("25 continuous roads, 29 British objects with 29 props clear of the water, 5 houses, 1 crossing, 20 walkers, 240 seconds of motion") and `london-reactions.mjs` included; `npm run build:pages` builds. Live `__fw.audit(60)` twice on the stubbed load: 63 and 72 movers; the only violations are 3 hits from one cockle-stall steam puff inside its own copper, as before.
 - Not verified: the approaches from any bearing but the arrival one (the four rooms and the smacks now fix their bearing, so the swing does not change them, but the flight's path from a swung view was not watched); phone width 390 x 844 for the approaches and the smacks' card (under 720 wide the card has no bias and is laid out differently); the other nine rooms' approaches after the minimum-distance change (they carry no override and take the old path); real-time watching of each approach end, since the shots are stepped frames at the flight's last frame and only two of the five were also flown at real speed; the fully hidden pane (a hidden tab was tested; the pane was displayed throughout); the published site.
+
+## Stage E close-out, 2026-09-23
+
+Mechanical bookkeeping closing the Stage E review's three remaining fails that are paperwork rather than defects
+(R8, V2, V3): an overlay sheet named where the rooms record already describes it, per-stand screenshots at both
+sizes, and the animation inventory table this file's first paragraph had promised and never delivered. R10 was
+closed separately, in commit 948207f, which carried the Britain row into `docs/quality-baseline.md`. Nothing in
+`src/fw`, `scenes-london.ts` or `london-ambience.ts` changed in this pass.
+
+### Verification record
+
+- **R8, the overlay sheet.** `docs/london-rooms.md` now names it under its own "Overlay sheet" heading:
+  `.data/shots/london-rooms-overlay.png`, both orientations of all thirteen rooms with the back button, the room
+  name and the story button outlined in red and the hung sprites outlined in yellow, over the painting.
+- **V2, per-stand screenshots at both sizes.** `scripts/tests/london-prop-audit.html` was opened on the dev server
+  (`food-tour-web`, in this agent's own background tab) at `?view=arrival&cell=320x180&cols=6` and
+  `?view=arrival&cell=195x422&cols=6` — cell aspects of exactly 1280x720 and 390x844 — which renders all 29 stands
+  alone at the arrival camera `main.ts` really gives them and posts the finished canvas to a local receiver on 5399.
+  Two contact sheets came back, six stands to a row: `london-stands-wide.png` (1920 x 900, exactly 1280x720 scaled
+  6x) and `london-stands-phone.png` (1170 x 2110, exactly 390x844 scaled 6x), both copied into `.data/shots/`. They
+  join the room screenshots already listed in `docs/london-rooms.md`.
+- **V1 and V4** stay open: `npm run build:pages` and the live URL are Stage F, not touched here.
+
+### Animation inventory
+
+One row per stand: its always-on loop (running every frame, unrelated to the click), its click reaction (the
+`life()`/`onPoke` sequence the click plays through, first beat first), and, for the thirteen that open a room, that
+room's dominant painted cue from `docs/london-rooms.md`. Read off `src/fw/props-london.ts`'s doc comments, its
+`// the ... always-on ...` code comments and each `life(g, id, people, (t, k) => {...})` body (grep `ownReaction`
+for the shared idle-figure sway every stand gets besides what is listed here).
+
+| Stand | Always-on loop | Click reaction | Room signature |
+| --- | --- | --- | --- |
+| `pub` | The coal fire in the grate flickers; the pub sign sways on its bracket and the pints on the board tremble | The knife draws across the sirloin and a slice falls onto the plate; the carver's arm follows the knife and a drinker at the settle looks up | `uk_pub`: the fire the room is lit by (there is no pour in this room) |
+| `teaRoom` | The tea in the pot trembles before it is poured | The pot tilts on its base and a thread of tea falls through the strainer into the cup; the waitress turns to the table and the woman alone looks up | `uk_tearoom`: the tea through the strainer |
+| `boroughMarket` | The porter's barrow wheel turns and the brace of game on the rail sways | The wire draws down through the truckle and the wedge falls away; the cheesemonger's arms follow the wire and the porter leans in over the barrow | `uk_market`: the daylight down the aisle (nothing in this room is hot) |
+| `pieShop` | The eels in the tub turn over in their water | The ladle tips and green liquor runs over the pie, whose lid breaks open under it; the pieman wipes the marble and the boy at the eel tub looks round | `uk_piemash`: the liquor over the pie |
+| `chipShop` | The coals glow under the range and the two pans of dripping tremble | The wire basket lifts clear of the fat and shakes, with fat streaming off it; the frier's arm follows the basket and a child in the queue leans in | `uk_chippy`: fat off the basket into the pan |
+| `coffeeStall` | The naphtha flare gutters on its stick and the brew trembles in the mug | A rasher curls on the griddle and the mug fills from the boiler tap; the stallholder turns the bacon and the porter takes his mug | `uk_breakfast`: the tap's pour |
+| `lascarKitchen` | The fire under the pan flickers and the muller rocks on the grinding slab | Ground spice slides off the slab into the pan, which tilts under it; the cook's hand follows the pan and a man on the bench looks over | `uk_lascar`: the spice fall |
+| `hopCookhouse` | The fire flickers, the pot swings on its chain over it, and the picked hops turn over in the bin | The ladle lifts out of the pot and pours back into it; the cook's arm follows the ladle and a child at the bin turns round | `uk_hopkitchen`: the ladle's pour |
+| `daleDairy` | The press screw turns slowly | The screw drives down, the truckle settles in its hoop and whey runs into the pail; the dairymaid leans on the handle and the woman at the churn straightens | `uk_dairy`: whey into the pail |
+| `pastyBakehouse` | Embers glow in the oven mouth and a raw pasty is crimped under the thumb on the board | The peel slides a tray of pasties into the oven mouth and the glow brightens; the oven man's arms follow the peel and a child steps back from the mouth | `uk_pasty`: the oven mouth |
+| `cockleStall` | The fire under the copper flickers and the water in it trembles | The riddle is shaken and sand falls through it in a curtain onto the heap; the riddler's arms drive the shake and the donkey's head turns | `uk_cockles`: the sand through the riddle |
+| `smokehouse` | Embers glow in the pit and the tied fish on the eave rail sway | The speet of paired haddock is lowered over the pit and the smoke gusts up; the hessian is thrown over the rim and the curer steps back from the heat | `uk_smokehouse`: sparks off the pit |
+| `distillery` | The pagoda vent turns to the wind and spirit trembles in the safe | The shiel drives through the piece and the barley turns over ahead of it; the maltman leans on the shiel and the stillman at the safe watches the spirit run | `uk_distillery`: the spirit in the safe |
+| `bakeryCe` | The rolling pin trembles over the dough on the block | The pin rolls across the block, which spreads and thins under it as flour puffs up; the baker's arms drive the pin and the customer leans over the counter | — (card only) |
+| `oysterSmack` | The two smacks rock gently at their moorings | The knife goes in at the hinge and the top shell lifts away from the meat; the opener's hands work the knife and his mate looks across from the second smack | — (card only) |
+| `hopGarden` | The bines sway on their strings and the oast's cowl turns in the wind | A bine is pulled down off its string and swings over the bin; the picker's arms come down with it and the measurer at the bin looks up | — (card only) |
+| `mushroomWood` | The field mushrooms and ceps sway underfoot | The cep comes up out of the leaf mould, turns over and goes into the basket; the forager's arm follows it up and the boy holds the basket out | — (card only) |
+| `daleFlock` | The flock grazes, heads swaying over the grass | The lead ewe lifts her head off the grass and takes two steps down the fell; the shepherd's crook comes up and the boy turns to look | — (card only) |
+| `forcingShed` | The candles flicker between the rows and the other forced stalks sway | A stick is pulled away from its crown and comes clear with its leaf into the crate; the puller's arm follows it up and the boy lifts his candle to see | — (card only) |
+| `ciderOrchard` | The horse walks the round and turns the runner stone whatever happens | The nearest trees are shaken and the apples drop into the baskets; the pressman leans on the beam and the woman straightens over her basket | — (card only) |
+| `leekBed` | The leeks in the bed sway | A leek lifts clear of the ridge with earth falling off its roots; the gardener's arm rises with it and the woman at the pot looks up | — (card only) |
+| `oatMill` | The water wheel turns and the millstone spins on the burn | Meal runs from the spout and the heap grows in the bin; the miller's hand goes to the hopper and the woman at the girdle turns a bannock | — (card only) |
+| `herringQuay` | The catch in the farlane trembles under the salt | The cran basket tips over the farlane and the herring spill into the trough; the crew's knives keep working and the cooper's hammer comes down on the hoop | — (card only) |
+| `bigBen` | The minute hand creeps forward and the dials glow faintly | The minute hand steps a whole minute at a stroke and the dials warm, the bell swings in the belfry and the Ayrton light comes up; the member on the terrace turns to the tower and the constable looks up | — (card only) |
+| `towerBridge` | The steam coaster rocks gently at anchor below the span | Both bascules swing up and hold open while the coaster steams through; one watcher steps back from the gate and the other points at the coaster | — (card only) |
+| `omnibus` | The horses' heads sway in the traces | The pair leans into the traces, steps off, and the omnibus rolls forward with them; the cabman touches his hat and a passenger waiting on the pavement turns to watch | — (card only) |
+| `pillarBox` | The gas lamp's mantle flickers faintly | The collection door swings open on its hinge and the letters inside show; the lamplighter's pole comes up to the mantle and lights it, the woman's hand comes off the aperture and the boy looks up at the lamp | — (card only) |
+| `forthBridge` | The painters' cradle swings gently under the far cantilever | The train runs east along the deck and stops over the firth, the cradle swinging harder as it passes; the ganger on the shore turns to watch it and the boy points | — (card only) |
+| `engineHouse` | The beam rocks slowly on its bearing and the whim turns | The beam's stroke quickens and the pump rod rises and falls harder in the shaft; the engineman leans out of the door and the miner at the shaft turns | — (card only) |
+
+Card-only stands with no room: the ten ingredient stops and the six landmarks above account for all 16; every row's
+click reaction is what the object's card approach plays, not a room flight.

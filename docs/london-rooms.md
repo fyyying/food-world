@@ -444,3 +444,12 @@ and the hung sprites in yellow: the fix agent's `london-fix-rooms.png`.
 responses; reduced motion; `npm run build:pages`; a physical phone. The face check is by eye on the lit envelopes
 over the paintings, not a face detector. `docs/quality-baseline.md` still carries no Britain motion numbers (item 1 of
 "Left for the lead" above).
+
+### Overlay sheet
+
+Every box, patch, anchor and sprite this file's tables and "Fixes from the walkthrough, 2026-09-23" above describe
+was checked against the delivered paintings on one overlay contact sheet, `.data/shots/london-rooms-overlay.png`
+(the fix agent's `london-fix-rooms.png`, copied over from its scratchpad): both orientations of all thirteen rooms,
+live composites at frame 284, with the back button, the room name and the story button outlined in red and the hung
+sprites outlined in yellow. This is the crop-and-overlay step "How it was checked" above describes, and the sheet is
+what the boxes in "Fixes from the walkthrough, 2026-09-23" were checked against for faces, jambs and the heading.

@@ -290,7 +290,7 @@ export const PAINTED_SIGNATURES: Record<string, AmbientPatch> = {
   // Portrait: lip (.4645, .450), through (.474, .480) and (.481, .498), surface (.487, .512).
   it_trattoria: {kind:'stream-glint',wide:[.446,.506,.478,.597],phone:[.456,.450,.498,.512],color:'#d98a92',
     paths:[[[[.23,0],[.44,.40],[.61,.71],[.72,1]]],[[[.20,0],[.43,.48],[.60,.77],[.74,1]]]]},   // wine poured from the foglietta into the tumbler
-  it_market: {kind:'sunray',wide:[.36,0,.90,.72],phone:[.28,0,.88,.56],angles:[-.40,.36],sway:[.090,.080]},   // winter morning across the Campo, the one big thing a cold market does
+  it_market: {kind:'sunray',wide:[.36,0,.90,.72],phone:[.28,0,.88,.56],angles:[-.40,.36],sway:[.090,.120]},   // winter morning across the Campo, the one big thing a cold market does; portrait drift .12 since 2026-09-23, when its awning came out
   it_pasta: {kind:'sunray',wide:[.03,0,.46,.80],phone:[.10,0,.48,.60],angles:[-.42,-.38],sway:[.090,.080]},   // the shaft from the tall window the sheet is rolled under
   it_forno: {kind:'light',wide:[.60,.22,.76,.40],phone:[.71,.22,.90,.37],color:'#f3a34b'},   // the oven mouth the peel comes out of, which is the brightest thing in the room
   // The whey. A **cold** room: no fire, no steam, nothing heated, so its liquid drips rather than pours, and the
@@ -300,7 +300,7 @@ export const PAINTED_SIGNATURES: Record<string, AmbientPatch> = {
   it_casale: {kind:'drip',wide:[.486,.582,.512,.763],phone:[.573,.525,.611,.622],color:'#f2e7c0',period:1.4,
     splash:[true,true],
     paths:[[[[.31,0],[.52,.21],[.56,.65],[.60,1]]],[[[.22,0],[.42,.36],[.60,.77],[.74,1]]]]},   // whey off the draining table into the pail
-  it_pescaria: {kind:'sunray',wide:[.46,0,.90,.62],phone:[.44,.02,.88,.50],angles:[.34,.30],sway:[.095,.085]},   // first light down the iron canopy onto the wet marble
+  it_pescaria: {kind:'sunray',wide:[.46,0,.90,.62],phone:[.44,.02,.88,.50],angles:[.34,.30],sway:[.140,.160]},   // first light down the iron canopy onto the wet marble; drift raised 2026-09-23 when the haze was cut back to the water
   // The cask. Wide: the brass tap's mouth (.1805, .440), thread through (.186, .500) and (.189, .550), landing on
   // the wine in the small glass at (.1905, .588). Portrait: mouth (.1955, .448), through (.199, .490) and
   // (.2025, .520), surface (.2045, .546).
@@ -319,7 +319,7 @@ export const PAINTED_SIGNATURES: Record<string, AmbientPatch> = {
   // Portrait: rim (.288, .392), through (.335, .425) and (.365, .455), landing (.385, .478).
   it_ballaro: {kind:'stream-glint',wide:[.312,.375,.470,.535],phone:[.282,.392,.400,.478],color:'#dff0f7',
     paths:[[[[.04,0],[.40,.44],[.68,.72],[.90,1]]],[[[.05,0],[.45,.38],[.70,.73],[.87,1]]]]},   // the morning water going over the slab
-  it_pasticceria: {kind:'sunray',wide:[.56,0,.95,.76],phone:[.46,.02,.90,.62],angles:[.42,.38],sway:[.110,.110]},   // the doorway onto the bay, the only daylight in a room with no fire
+  it_pasticceria: {kind:'sunray',wide:[.56,0,.95,.76],phone:[.46,.02,.90,.62],angles:[.42,.38],sway:[.150,.150]},   // the doorway onto the bay, the only daylight in a room with no fire; drift .15 since 2026-09-23, when the portrait lamp came out
   // The oil. Wide: the copper jug's lip (.8595, .525), thread through (.8665, .580) and (.868, .620), landing on
   // the oil in the open tin at (.8685, .652). Portrait: lip (.8575, .618), through (.863, .650) and (.866, .670),
   // surface (.867, .681).

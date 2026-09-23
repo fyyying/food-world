@@ -30,7 +30,9 @@ to .169). Three wide hooks fall inside the wide block (trattoria, market, Pescar
 One row per room and orientation. Dominant cue names the room's `PAINTED_SIGNATURES` entry. Supporting cues are the
 `ITALY_AMBIENCE` patches, the `ITALY_HUNG` sprites, the steam, the fire and the pot. Visibility is the share of the
 frame that visibly changes in two seconds (`|ΔR|+|ΔG|+|ΔB| > 24`), the median of four pairs phased across the drift
-cycle at frame offsets 60, 130, 200 and 270, with the weakest and strongest pair. Wide at 1280 x 720, portrait at
+cycle at frame offsets 60, 130, 200 and 270, with the weakest and strongest pair. The ten rooms re-measured after the
+walkthrough fixes of 2026-09-23 carry the median of six pairs instead, spread across the whole 22.4 s cycle of the
+beams' drift (see "Fixes from the walkthrough, 2026-09-23"); those cells say so. Wide at 1280 x 720, portrait at
 390 x 844. Lit pixels are read off the room's own effect canvas inside each configured box, the maximum over 108
 stepped frames, in canvas pixels. Sprite boxes are screen pixels from the DOM.
 
@@ -39,49 +41,50 @@ stepped frames, in canvas pixels. Sprite boxes are screen pixels from the DOM.
 | Field | Wide | Portrait |
 | --- | --- | --- |
 | Pictured source | The ringed glass foglietta pouring into a tumbler on the marble, the open oxtail pot, two pasta bowls and the grilled chops, the open firebox of the range, the piazza door at the right, an empty iron hook on the lime wash at the upper left | The same pour and dishes, the range at the left, the hook at x .42 |
-| Boundary | Signature glint [.446, .506, .478, .597]; steam (.675, .600) 240, (.50, .70) 180, (.42, .665) 150, (.67, .745) 140; fire (.331, .462) rx 34 ry 16; sunray [.56, 0, .90, .70] | Signature [.456, .450, .498, .512]; steam (.62, .565) 200, (.33, .68) 170, (.22, .61) 140; fire (.147, .322) rx 24 ry 14; hung `it-salumi` fx .3825 fy .062 fw .085 |
-| Anchor | Lip (.4535, .510), through (.460, .545) and (.4655, .572), surface in the tumbler (.469, .597) | Lip (.4645, .450), through (.474, .480) and (.481, .498), surface (.487, .512); the salumi's twine on the hook's J at (.424, .078) |
+| Boundary | Signature glint [.446, .506, .478, .597]; steam (.675, .600) 240, (.50, .70) 180, (.42, .665) 150, (.67, .745) 140; fire (.331, .462) rx 34 ry 16; sunray [.56, 0, .90, .70] | Signature [.456, .450, .498, .512]; steam (.62, .565) 200, (.33, .68) 170, (.22, .61) 140; fire (.147, .322) rx 24 ry 14; nothing hung (since 2026-09-23) |
+| Anchor | Lip (.4535, .510), through (.460, .545) and (.4655, .572), surface in the tumbler (.469, .597) | Lip (.4645, .450), through (.474, .480) and (.481, .498), surface (.487, .512); the hook's J at (.424, .078) stays empty |
 | Forbidden overlap | The oste's hand on the carafe, the glass above the lip, the tumbler below the wine surface; the cut pecorino, bread and wine stay dry | The same; the diners' held tumblers stay dry |
 | Dominant cue | The wine poured from the foglietta, traced lip to surface | The same pour |
-| Supporting cues | Steam off four dishes, the firebox, the piazza daylight | Steam off three dishes, the firebox, the salumi on the hook |
-| Visibility | 7.19 (6.58 to 7.68) | 15.54 (12.36 to 17.27) |
-| Browser status | Glint box 11,256 lit (the tomato pasta's plume rises through it), sunray 341,503. No sprite: see below | Glint 4,494. Salumi drawn at screen x 130 to 179, y 47 to 229 |
+| Supporting cues | Steam off four dishes, the firebox, the piazza daylight | Steam off three dishes, the firebox |
+| Visibility | 7.20 (5.3 to 8.0) | 14.05 (12.9 to 15.3) |
+| Browser status | Glint box 11,256 lit (the tomato pasta's plume rises through it), sunray 384,771. No sprite: see below | Glint 4,494. No sprite |
 
 **The wide hook hangs nothing.** Its J is at (.136, .100). A salumi hung from it drew at screen x 136 to 191, y 66 to
 267, and ran behind the end of the title "The trattoria" (glyphs to x 208, y 97 to 138). The wide composition spends
-that loop on the piazza door's daylight instead. In portrait only the twine and the salami's shoulder pass behind
-the one-line heading (y 64 to 94); the body hangs clear below it.
+that loop on the piazza door's daylight instead. The portrait salumi came out on 2026-09-23: hung from the J at
+(.424, .078) it ran down to y .27 and across the oste's face (walkthrough 34). The portrait runs on three loops.
 
 ### Campo de' Fiori, `it_market` (cold)
 
 | Field | Wide | Portrait |
 | --- | --- | --- |
 | Pictured source | The artichoke turned against the knife, the drained ricotta baskets, the brass balance, Bruno's statue, the sky over the palazzi, a young tree left of the plinth, an empty S-hook on the stall rail at the upper left | The same three subjects, a larger tree over the left stalls, the sky right of the statue, the S-hook at x .342 |
-| Boundary | Signature sunray [.36, 0, .90, .72]; birds [.60, .02, .90, .14] and [.40, .02, .56, .10]; leaves [.53, .16, .62, .27] | Signature [.28, 0, .88, .56]; birds [.56, .115, .90, .19]; leaves [.11, .14, .33, .31]; hung `it-awning` fx .252 fy .102 fw .18 |
-| Anchor | Nothing hot: no steam, no fire | The awning's top edge on the hook's bend (.342, .102) |
+| Boundary | Signature sunray [.36, 0, .90, .72]; birds [.60, .02, .90, .14] and [.40, .02, .56, .10]; leaves [.53, .16, .605, .27] | Signature [.28, 0, .88, .56], drift .12; birds [.56, .115, .90, .19]; leaves [.10, .17, .30, .235]; nothing hung (since 2026-09-23) |
+| Anchor | Nothing hot: no steam, no fire | The S-hook's bend (.342, .102) stays empty |
 | Forbidden overlap | The stall greens and chicory crates are not foliage and carry no leaves | The canvas awning over the top-left, which the first birds box sat on and was moved off |
 | Dominant cue | Winter sun across the Campo | The same |
-| Supporting cues | Two flocks, the leaves of the plinth tree | One flock, the tree's leaves, the awning |
-| Visibility | 4.88 (4.10 to 5.05) | 5.78 (3.55 to 6.89) |
-| Browser status | Sunray 260,868, birds 25,870, leaves 21,088 | Sunray 124,062, birds 18,281, leaves 2,245; awning at screen x 74 to 162, y 80 to 126 |
+| Supporting cues | Two flocks, the leaves of the plinth tree | One flock, the tree's leaves |
+| Visibility | 4.20 (0.4 to 5.5) | 4.90 (3.0 to 7.9) |
+| Browser status | Sunray 266,595, birds 25,870 and 29,589, leaves 31,590 | Sunray 128,350, birds 18,631, leaves 2,077 |
 
 **The weakest sprite placement in the world.** The wide hook's bend is at (.132, .127) and an awning hung from it sat
-squarely behind both lines of the title, so the wide hangs nothing and takes a second flock. The portrait awning is
-kept: its top 12 px pass behind the heading's name and its lower-left corner behind the story button, and the rest
-swings in the clear. If the owner reads it as clutter the fix is to drop it and give the portrait a second flock.
+squarely behind both lines of the title, so the wide hangs nothing and takes a second flock. The portrait awning was
+kept at Stage C with its top behind the heading's name and its corner behind the story button; the walkthrough
+(item 39) ruled that nothing may hang in either, so it came out on 2026-09-23 and the portrait's sun drift went from
+.08 to .12 to carry the loop.
 
 ### The pasta kitchen, `it_pasta` (hot)
 
 | Field | Wide | Portrait |
 | --- | --- | --- |
 | Pictured source | The folded sheet under the knife, the lifted ribbons, the guitar frame, the tall window at the left, the open copper on the range, the bare cane between two iron brackets | The same; cane with brackets at .465 and .790 |
-| Boundary | Signature sunray [.03, 0, .46, .80] angles -.42; steam (.255, .19) 150; fire (.262, .315) rx 34 ry 14; hung `it-pasta-cane` fx .51 fy .047 fw .18 | Sunray [.10, 0, .48, .60] angle -.38; steam (.215, .265) 140; fire (.225, .425) rx 26 ry 14; hung fx .52 fy .150 fw .25 |
-| Anchor | The sprite's cane on the painted cane (.47 to .73, y .045 to .050) | The painted cane (.43 to .83, y .150 to .156) |
+| Boundary | Signature sunray [.03, 0, .46, .80] angles -.42; steam (.255, .19) 150; fire (.262, .315) rx 34 ry 14; hung `it-pasta-cane` fx .50 fy .047 fw .11 (since 2026-09-23) | Sunray [.10, 0, .48, .60] angle -.38; steam (.215, .265) 140; fire (.225, .425) rx 26 ry 14; hung fx .52 fy .150 fw .25 |
+| Anchor | The sprite's cane on the left half of the painted cane (.47 to .73, y .045 to .050); the nests end at x .61, y .117, clear of the lifted ribbons (x .60 to .70, from y .24) | The painted cane (.43 to .83, y .150 to .156) |
 | Forbidden overlap | The woman's head at x .68 to .76 (the sprite stops at .69); the sheet, ribbons, flour and eggs are cold | The man's head at y .25 (the sprite ends at .25) |
 | Dominant cue | The window's shaft, falling down to the right | The same |
 | Supporting cues | Copper steam, fire, the pasta cane | The same |
-| Visibility | 7.71 (5.35 to 9.23) | 6.66 (5.65 to 7.80) |
-| Browser status | Sunray 354,043; cane at x 647 to 886, y 26 to 200 | Sunray 164,021; cane at x 205 to 325, y 123 to 209 |
+| Visibility | 5.45 (3.5 to 7.8) | 6.30 (4.6 to 7.6) |
+| Browser status | Sunray 396,719; cane at x 640 to 782, y 30 to 132 | Sunray 183,017; cane at x 204 to 325, y 123 to 210 |
 
 Two corrections from the live look: the portrait cane had been read at x .25 to .55 off the dense full-frame grid and
 hung in the air left of the rod, and both sunrays leaned the wrong way for a window on the left. Both re-measured.
@@ -106,13 +109,13 @@ empty. The street-door sunray's angle was reversed after the live look, to fall 
 | Field | Wide | Portrait |
 | --- | --- | --- |
 | Pictured source | Whey running off the draining table's cloth lip into the pail, which draws its own ring; cut curd in the copper; the cut wheel; the door onto the Agro Romano; the olive beside it; an empty wooden peg on the lime wash | The same, the peg at x .893 to .905 |
-| Boundary | Signature `drip` [.486, .582, .512, .763], period 1.4, splash on; sunray [.56, 0, .86, .72]; leaves [.72, .09, .82, .26] (8, size 1.6); hung `it-garlic-braid` fx .838 fy .095 fw .036 | Drip [.573, .525, .611, .622], splash on; sunray [.30, 0, .70, .52]; leaves [.42, .10, .56, .24]; birds [.60, .06, .86, .16] |
+| Boundary | Signature `drip` [.486, .582, .512, .763], period 1.4, splash on; sunray [.56, 0, .86, .72], drift .15; leaves [.70, .065, .805, .235] (8, size 1.6); hung `it-garlic-braid` fx .838 fy .095 fw .036 | Drip [.573, .525, .611, .622], splash on; sunray [.30, 0, .70, .52]; leaves [.70, .085, .795, .20]; birds [.60, .065, .795, .115] |
 | Anchor | Lip (.494, .582), through (.4995, .620) and (.5005, .700), surface in the pail (.5015, .763) | Lip (.5815, .525), through (.589, .560) and (.596, .600), surface (.601, .622) |
 | Forbidden overlap | **No steam source and no fire anywhere.** The copper holds cold curd | The same |
 | Dominant cue | Whey dripping into the pail | The same |
 | Supporting cues | Door light, olive leaves, the garlic braid on the peg | Door light, olive leaves, birds over the hills |
-| Visibility | 3.08 (0.92 to 3.69) | 3.53 (1.11 to 4.80) |
-| Browser status | Drip 411, sunray 192,200, leaves 46,892; braid at x 1072 to 1123, y 64 to 160 | Drip 270, sunray 80,887, leaves 17,475, birds 8,275 |
+| Visibility | 3.80 (0.9 to 4.4) | 4.15 (0.9 to 5.5) |
+| Browser status | Drip 411, sunray 193,084, leaves 51,881; braid at x 1077 to 1124, y 65 to 159 | Drip 270, sunray 77,490, leaves 4,568, birds 8,032 |
 
 The portrait peg's tip is at x .900; a braid wide enough to read would cross .906, so the portrait hangs nothing, as
 the Stage B note asked. Both cells measured 2.0 on the first pass and were strengthened (below).
@@ -122,12 +125,12 @@ the Stage B note asked. Both cells measured 2.0 on the first pass and were stren
 | Field | Wide | Portrait |
 | --- | --- | --- |
 | Pictured source | Sardines tipped along the wet marble, crates of green crabs, cuttlefish, the iron canopy, the lagoon, an empty hook on a cast-iron column | The same |
-| Boundary | Signature sunray [.46, 0, .90, .62]; mist [.12, .25, .62, .34] alpha .42; birds [.62, .09, .88, .18]; hung `it-gull` fx .53 fy .085 fw .07 | Sunray [.44, .02, .88, .50]; mist [.10, .22, .60, .29]; birds [.30, .10, .62, .18]; gull fx .55 fy .125 fw .12 |
-| Forbidden overlap | Nothing on the fish, the marble or the gondolas' water; no steam | The same |
+| Boundary | Signature sunray [.46, 0, .90, .62], drift .14; mist [.525, .14, .585, .34] alpha .42; birds [.62, .09, .88, .18] (period 6, scale 1.6); hung `it-gull` fx .53 fy .085 fw .07 | Sunray [.44, .02, .88, .50], drift .16; mist [.48, .19, .655, .285]; birds [.35, .10, .62, .18]; gull fx .55 fy .125 fw .12 |
+| Forbidden overlap | Nothing on the fish, the marble or any face: the haze keeps to the water and the far quay between the old man's cap and the girl's headscarf; no steam | The same; the haze stops above the fishmonger's cap and the old man's |
 | Dominant cue | First light down the canopy | The same |
 | Supporting cues | Lagoon haze, distant gulls, the gliding gull | The same |
-| Visibility | 4.04 (3.72 to 4.20) | 3.46 (3.33 to 3.51) |
-| Browser status | Sunray 206,630, mist 76,210, birds 29,469; gull at x 675 to 769, y 56 to 133 | Sunray 79,936, mist 25,815, birds 409; gull at x 219 to 277, y 102 to 149 |
+| Visibility | 4.05 (0.5 to 4.5) | 3.70 (0.4 to 4.5) |
+| Browser status | Sunray 211,290, mist 22,908, birds 30,130; gull at x 679 to 770, y 58 to 131 | Sunray 86,171, mist 20,441, birds 3,559; gull at x 218 to 277, y 101 to 149 |
 
 The column hook (bend at (.225, .115)) is inside the wide heading block and stays empty; the gull flies, it does not
 hang. The portrait gull was lowered to fy .125 to clear the heading line.
@@ -137,26 +140,26 @@ hang. The portrait gull was lowered to fy .125 to clear the heading line.
 | Field | Wide | Portrait |
 | --- | --- | --- |
 | Pictured source | Wine drawn from the cask's brass tap into a small glass, six cold dishes, a lit oil lamp on the shelf, the canal door, an empty brass chain and ring over the counter | The same |
-| Boundary | Signature glint [.174, .440, .198, .588]; light [.53, .225, .60, .32]; sunray [.52, 0, .98, .74]; hung `it-lamp` fx .475 fy .091 fw .05 | Glint [.189, .448, .212, .546]; light [.49, .235, .56, .315]; sunray [.50, .02, .90, .60]; lamp fx .455 fy .084 fw .085 |
+| Boundary | Signature glint [.174, .440, .198, .588]; light [.53, .225, .60, .32]; sunray [.52, 0, .98, .74]; hung `it-lamp` fx .475 fy .091 fw .05 | Glint [.189, .448, .212, .546]; light [.49, .235, .56, .315]; sunray [.50, .02, .90, .60]; nothing hung (since 2026-09-23) |
 | Anchor | Tap (.1805, .440), through (.186, .500) and (.189, .550), wine in the glass (.1905, .588); the lamp's ring on the painted ring at (.500, .093) | Tap (.1955, .448), through (.199, .490), (.2025, .520), surface (.2045, .546); ring (.4975, .086) |
 | Forbidden overlap | No steam: stockfish, sardines in saor, octopus and wine are all cold | The same |
 | Dominant cue | The ombra drawn from the cask | The same |
-| Supporting cues | The oil lamp, the canal door's light, the unlit hung lamp | The same |
-| Visibility | 4.25 (0.83 to 6.12) | 4.43 (1.43 to 5.78) |
-| Browser status | Glint 463, light 18,012, sunray 300,991; lamp at x 603 to 672, y 61 to 177 | Glint 388, light 6,596, sunray 83,835; lamp at x 173 to 215, y 67 to 139 (its chain crosses the heading line) |
+| Supporting cues | The oil lamp, the canal door's light, the unlit hung lamp | The oil lamp, the canal door's light |
+| Visibility | 5.70 (0.5 to 7.2) | 4.30 (1.0 to 5.8) |
+| Browser status | Glint 464, light 18,088, sunray 300,964; lamp at x 608 to 672, y 62 to 175 | Glint 387, light 6,622, sunray 83,837; no sprite (the lamp's chain had crossed the heading line) |
 
 ### The lagoon kitchen, `it_laguna` (hot)
 
 | Field | Wide | Portrait |
 | --- | --- | --- |
 | Pictured source | A soft crab lifted dripping out of the beaten egg, which draws its own ring; the floating cage at the step; halved artichokes; the copper of rice, the pan of fish and the polenta; the hearth; the canal through the door; an empty iron hook | The same; the cage at x .049 to .200, the hook at (.598, .195) |
-| Boundary | Signature `drip` [.633, .505, .652, .682], period 1.4, splash on; steam (.91, .475) 180, (.88, .62) 160, (.51, .745) 150; fire (.885, .795) rx 55 ry 20; mist [.02, .30, .21, .46] | Drip [.596, .425, .616, .508]; steam (.83, .405) 150, (.82, .505) 140, (.52, .625) 130; fire (.858, .60) rx 30 ry 16; hung `it-gull` fx .13 fy .178 fw .11 |
+| Boundary | Signature `drip` [.633, .505, .652, .682], period 1.4, splash on; steam (.91, .475) 180, (.88, .62) 160, (.51, .745) 150, (.89, .87) 170; fire (.885, .795) rx 55 ry 20; mist [.03, .30, .185, .46] | Drip [.596, .425, .616, .508]; steam (.83, .405) 150, (.82, .505) 140, (.52, .625) 130, (.87, .69) 110; fire (.858, .60) rx 30 ry 16; hung `it-gull` fx .13 fy .178 fw .11 |
 | Anchor | Crab's underside (.6395, .505), through (.6415, .550), (.6425, .620), egg surface (.6435, .682) | Underside (.6035, .425), through (.605, .460), (.607, .490), surface (.6085, .508). The cage's touch sits on its right portion at (.165, .435), inside the band, per the owner ruling |
-| Forbidden overlap | The egg, the crab, the artichokes, the small fish and the biscuits stay dry | The same |
+| Forbidden overlap | The egg, the crab, the artichokes, the small fish and the biscuits stay dry; the canal haze stops short of the boy's cap | The same |
 | Dominant cue | Egg falling back off the crab | The same |
-| Supporting cues | Steam off three vessels, the hearth, haze on the canal | Steam, the hearth, the gull over the canal |
-| Visibility | 5.62 (5.21 to 6.22) | 12.71 (12.41 to 12.82) |
-| Browser status | Drip 402, mist 51,268 | Drip 2,860; gull at x 15 to 70, y 146 to 191 |
+| Supporting cues | Steam off four vessels (the rice copper, the fish pan, the polenta and the bowl of rice and peas), the hearth, haze on the canal | The same four plumes, the hearth, the gull over the canal |
+| Visibility | 6.65 (6.2 to 7.3) | 15.35 (12.9 to 18.0) |
+| Browser status | Drip 402, mist 41,824, rice-and-peas plume 80,054 (box [.82, .70, .96, .86]) | Drip 2,860, rice-and-peas plume 24,037 (box [.80, .55, .906, .70]); gull at x 17 to 70, y 147 to 190 |
 
 The assigned sprite is a gull, which flies; the painted hook stays empty in both. The wide painting's only sky is the
 top-left corner under the heading, so the gull flies in the portrait alone. It was first placed at fy .122 and drew
@@ -181,38 +184,39 @@ wide window is under the heading.
 | Field | Wide | Portrait |
 | --- | --- | --- |
 | Pictured source | Chickpea squares sliding into the lard, the copper of spleen, the second pan, the charcoal under the pan, the lane, an empty iron hook on the stone jamb | The same, hook at (.710, .132) |
-| Boundary | Signature sunray [.10, 0, .46, .72]; steam (.74, .615) 230, (.16, .555) 240, (.91, .50) 140; fire (.735, .765) rx 60 ry 18; pot (.74, .655) rx 130 ry 22; hung `it-awning` fx .4355 fy .112 fw .12 | Sunray [.12, .02, .46, .52]; steam (.76, .515) 200, (.12, .475) 220; fire (.765, .605) rx 34 ry 16; pot (.76, .545) rx 90 ry 16; awning fx .62 fy .132 fw .18 |
+| Boundary | Signature sunray [.10, 0, .46, .72]; steam (.74, .615) 230, (.16, .555) 240, (.91, .50) 140; fire (.735, .765) rx 60 ry 18; pot (.74, .655) rx 130 ry 22; nothing hung (since 2026-09-23) | Sunray [.12, .02, .46, .52]; steam (.76, .515) 200, (.12, .475) 220; fire (.765, .605) rx 34 ry 16; pot (.76, .545) rx 90 ry 16; nothing hung |
 | Dominant cue | Hard sun down the lane | The same |
-| Supporting cues | The lard and the spleen steaming, the charcoal, the lard's surface, the awning | The same |
-| Visibility | 9.64 (8.97 to 10.43) | 12.53 (11.55 to 12.95) |
-| Browser status | Sunray 369,552; awning at x 552 to 712, y 73 to 156 | Sunray 144,819; awning at x 253 to 339, y 108 to 149 |
+| Supporting cues | The lard and the spleen steaming, the charcoal, the lard's surface | The same |
+| Visibility | 8.15 (7.1 to 10.4) | 12.55 (10.7 to 14.3) |
+| Browser status | Sunray 342,030; no sprite | Sunray 151,754; no sprite |
 
 ### Ballarò, `it_ballaro` (cold)
 
 | Field | Wide | Portrait |
 | --- | --- | --- |
 | Pictured source | Water thrown from a bucket across the swordfish, wild fennel, a board of tomato estratto, the palm, the sky, an empty hook on the cane frame | The same, hook at (.503, .098) |
-| Boundary | Signature glint [.312, .375, .470, .535]; sunray [.40, 0, .84, .60]; birds [.62, .04, .86, .14]; hung `it-awning` fx .4595 fy .118 fw .16 | Glint [.282, .392, .400, .478]; sunray [.22, 0, .86, .56]; birds [.30, .05, .62, .14]; leaves [.60, .06, .82, .26] (8, size 1.6) |
+| Boundary | Signature glint [.312, .375, .470, .535]; sunray [.40, 0, .84, .60]; birds [.62, .04, .86, .14]; leaves on the palm [.70, .03, .80, .19] (8, size 1.6); nothing hung (since 2026-09-23) | Glint [.282, .392, .400, .478]; sunray [.22, 0, .86, .56]; birds [.52, .005, .76, .07]; leaves on the palm [.76, .04, .90, .19] (8, size 1.6) |
 | Anchor | Bucket rim (.318, .375), through (.375, .445) and (.420, .490), onto the flank (.455, .530) | Rim (.288, .392), through (.335, .425) and (.365, .455), flank (.385, .478) |
 | Forbidden overlap | Nothing cooked, nothing steams | The same |
 | Dominant cue | The morning water over the slab | The same |
-| Supporting cues | Sun, birds, the awning on the cane frame | Sun, birds, the palm |
-| Visibility | 3.61 (1.67 to 4.63) | 5.06 (1.08 to 7.57) |
-| Browser status | Glint 821, sunray 183,584, birds 32,971; awning at x 582 to 794, y 76 to 187 | Glint 6,287, sunray 140,088, birds 7,927, leaves 41,684 |
+| Supporting cues | Sun, birds, the palm | Sun, birds, the palm |
+| Visibility | 3.45 (0.4 to 4.2) | 5.75 (1.1 to 8.1) |
+| Browser status | Glint 818, sunray 188,893, birds 36,353, leaves 33,294 | Glint 6,287, sunray 141,734, birds 16,225, leaves 12,472 |
 
-The portrait hook's bend at y .098 is on the heading line, so the portrait hangs nothing.
+The portrait hook's bend at y .098 is on the heading line, so the portrait hangs nothing. Since 2026-09-23 the wide
+hangs nothing either: the awning on its chain read as a striped cloth dangling in the sky (walkthrough 36).
 
 ### The pasticceria, `it_pasticceria` (cold)
 
 | Field | Wide | Portrait |
 | --- | --- | --- |
 | Pictured source | Ricotta piped into a shell, the cut cassata, the ice tub with its crank, a lit oil lamp on the shelf, the doorway onto the bay, an empty brass chain and ring | The same |
-| Boundary | Signature sunray [.56, 0, .95, .76]; light [.075, .115, .115, .175]; birds [.80, .13, .94, .22]; hung `it-lamp` fx .48 fy .09 fw .05 | Sunray [.46, .02, .90, .62]; light [.085, .105, .135, .165]; birds [.72, .13, .90, .21]; lamp fx .4525 fy .084 fw .085 |
+| Boundary | Signature sunray [.56, 0, .95, .76], drift .15; light [.075, .115, .115, .175]; birds [.80, .13, .94, .22]; hung `it-lamp` fx .48 fy .09 fw .05 | Sunray [.46, .02, .90, .62], drift .15; light [.085, .105, .135, .165]; birds [.72, .13, .90, .21]; nothing hung (since 2026-09-23) |
 | Forbidden overlap | **No steam anywhere**: ricotta, almond, candied fruit and ice | The same |
 | Dominant cue | The doorway's daylight | The same |
-| Supporting cues | The oil lamp, birds over the bay, the unlit hung lamp | The same |
-| Visibility | 4.99 (3.48 to 5.19) | 4.83 (3.81 to 5.14) |
-| Browser status | Sunray 268,097, light 6,504, birds 25,562; lamp at x 610 to 679, y 60 to 176 | Sunray 87,652, light 3,154, birds 14,138; lamp at x 172 to 213, y 67 to 139 |
+| Supporting cues | The oil lamp, birds over the bay, the unlit hung lamp | The oil lamp, birds over the bay |
+| Visibility | 4.60 (2.1 to 5.8) | 3.60 (2.4 to 5.6) |
+| Browser status | Sunray 271,400, light 6,522, birds 28,077; lamp at x 614 to 679, y 61 to 175 | Sunray 89,323, light 3,160, birds 14,101 |
 
 The painted oil lamp at the upper left is under the wide heading, so its `light` patch reads in the gaps of the text
 only; it is the patch the room would lose first.
@@ -232,10 +236,13 @@ only; it is the patch the room would lose first.
 
 ## Loop counts
 
-`LOOPS_SHOW='^it_' node scripts/tests/room-loops.mjs` puts every room at exactly four always-on loops in both
-orientations. The engine keeps `3 - heat - flyers` patches, so the four fire-and-steam rooms without a patch
-(`it_pasta`, `it_veneto`, `it_friggitoria`, and the trattoria in portrait) run signature, steam, fire and sprite; the
-cold rooms run signature, two or three patches and a sprite where one can hang.
+`LOOPS_SHOW='^it_' node scripts/tests/room-loops.mjs` puts every room at three or four always-on loops in both
+orientations. The engine keeps `3 - heat - flyers` patches, so the fire-and-steam rooms without a patch (`it_pasta`,
+`it_veneto`) run signature, steam, fire and sprite; the cold rooms run signature, two or three patches and a sprite
+where one can hang. Since the walkthrough fixes of 2026-09-23 six orientations run on three: the trattoria portrait
+(pour, steam, firebox), the friggitoria in both (sun, steam, charcoal, with the lard's surface moving in its pan),
+and the market, osteria and pasticceria portraits (the sprite that made their fourth loop hung inside the heading).
+Each clears its floor on motion (below).
 
 ## Hot and cold
 
@@ -253,14 +260,15 @@ None. Every hanging motion is a delivered `it-*` sprite over clean wall, cane, c
 
 | Sprite | Hung in | Not hung, and why |
 | --- | --- | --- |
-| `it-salumi` | `it_trattoria` portrait | Trattoria wide: hook under the heading |
-| `it-awning` | `it_market` portrait, `it_friggitoria` both, `it_ballaro` wide | Market wide and Ballarò portrait: hook under the heading |
+| `it-salumi` | Nowhere since 2026-09-23 | Trattoria wide: hook under the heading. Trattoria portrait: it hung across the oste's face |
+| `it-awning` | Nowhere since 2026-09-23 | Market wide and Ballarò portrait: hook under the heading. Market portrait: inside the heading block. Friggitoria both and Ballarò wide: a scrap on one hook or on a chain reads as a flag in the sky |
 | `it-pasta-cane` | `it_pasta` both | — |
 | `it-garlic-braid` | `it_casale` wide, `it_veneto` both | Casale portrait: peg at x .900 |
 | `it-gull` | `it_pescaria` both, `it_laguna` portrait, `it_tonnara` both | Laguna wide: no sky outside the heading |
-| `it-lamp` | `it_bacaro` both, `it_pasticceria` both | — |
+| `it-lamp` | `it_bacaro` wide, `it_pasticceria` wide | Both portraits: the ring is inside the heading block and the chain crossed the room's name |
 
-All six sprites are used. The forno has none by contract.
+Four of the six sprites are used. `it-salumi` and `it-awning` came out with the walkthrough fixes of 2026-09-23 (see
+below): neither has a painted fitting clear of a face, the heading and open sky. The forno has none by contract.
 
 ## Measured motion
 
@@ -274,21 +282,23 @@ the Vietnam record describes. Pairs are saved as `.data/it-motion/rm-IT<w|p>-<ro
 
 | Room | Wide median (range of four) | Portrait median (range of four) | Floor |
 | --- | --- | --- | --- |
-| `it_trattoria` | 7.19 (6.58 to 7.68) | 15.54 (12.36 to 17.27) | 3% |
-| `it_market` | 4.88 (4.10 to 5.05) | 5.78 (3.55 to 6.89) | 3% |
-| `it_pasta` | 7.71 (5.35 to 9.23) | 6.66 (5.65 to 7.80) | 3% |
+| `it_trattoria` | 7.20 (5.3 to 8.0), six pairs, 2026-09-23 | 14.05 (12.9 to 15.3), six pairs | 3% |
+| `it_market` | 4.20 (0.4 to 5.5), six pairs | 4.90 (3.0 to 7.9), six pairs | 3% |
+| `it_pasta` | 5.45 (3.5 to 7.8), six pairs | 6.30 (4.6 to 7.6), six pairs | 3% |
 | `it_forno` | 6.33 (5.14 to 7.21) | 16.71 (16.32 to 18.49) | 3% |
-| `it_casale` | 3.08 (0.92 to 3.69) | 3.53 (1.11 to 4.80) | 3% |
-| `it_pescaria` | 4.04 (3.72 to 4.20) | 3.46 (3.33 to 3.51) | 3% |
-| `it_bacaro` | 4.25 (0.83 to 6.12) | 4.43 (1.43 to 5.78) | 3% |
-| `it_laguna` | 5.62 (5.21 to 6.22) | 12.71 (12.41 to 12.82) | 3% |
+| `it_casale` | 3.80 (0.9 to 4.4), six pairs | 4.15 (0.9 to 5.5), six pairs | 3% |
+| `it_pescaria` | 4.05 (0.5 to 4.5), six pairs | 3.70 (0.4 to 4.5), six pairs | 3% |
+| `it_bacaro` | 5.70 (0.5 to 7.2), six pairs | 4.30 (1.0 to 5.8), six pairs | 3% |
+| `it_laguna` | 6.65 (6.2 to 7.3), six pairs | 15.35 (12.9 to 18.0), six pairs | 3% |
 | `it_veneto` | 6.79 (6.65 to 7.40) | 19.33 (16.29 to 19.62) | 3% |
-| `it_friggitoria` | 9.64 (8.97 to 10.43) | 12.53 (11.55 to 12.95) | 3% |
-| `it_ballaro` | 3.61 (1.67 to 4.63) | 5.06 (1.08 to 7.57) | 3% |
-| `it_pasticceria` | 4.99 (3.48 to 5.19) | 4.83 (3.81 to 5.14) | 3% |
+| `it_friggitoria` | 8.15 (7.1 to 10.4), six pairs | 12.55 (10.7 to 14.3), six pairs | 3% |
+| `it_ballaro` | 3.45 (0.4 to 4.2), six pairs | 5.75 (1.1 to 8.1), six pairs | 3% |
+| `it_pasticceria` | 4.60 (2.1 to 5.8), six pairs | 3.60 (2.4 to 5.6), six pairs | 3% |
 | `it_tonnara` | 7.16 (6.42 to 8.14) | 11.89 (11.59 to 13.62) | 3% |
 
-Every cell clears 3 per cent on the median. Five cells did not on the first pass:
+Every cell clears 3 per cent on the median. The Stage E review re-measured `it_casale` wide at 2.45 (four pairs, all
+in the first five seconds, near the beam's first turning point); the fixes below lift it to 3.80 on six pairs spread
+over the whole cycle. Five cells did not on the first pass:
 
 | Cell | First pass | Now | What changed |
 | --- | --- | --- | --- |
@@ -328,6 +338,47 @@ behaviour exists to test.
 - **The touch reactions.** `prop-reactions.mjs` and `room-controls.mjs` pass, but no Italy touch was clicked live.
 - **The heading overlaps in portrait** for the trattoria salumi, both lamps and the market awning were judged from
   measured boxes and composites without the HTML heading drawn on them, not from a phone screenshot.
+
+## Fixes from the walkthrough, 2026-09-23
+
+A fix agent (Room maker's files only) worked the room items of "Owner walkthrough (second reviewer), 2026-09-23" in
+[italy-world.md](italy-world.md), items 32 to 46, and the failed room lines R3, R11 and R13 of the Stage E review.
+Every box below was read off a gridded crop of the delivered painting at that orientation, and then drawn over both
+paintings with the measured live UI zones (at 390 x 844: Back x 18 to 191, y 16 to 52; name y 64 to 94 from x 16 to
+between 159 and 322; story button x 16 to 119, y 110 to 143) to check it against faces, jambs and the heading.
+
+| Item | Room | What changed |
+| --- | --- | --- |
+| 32, 33 | `it_pescaria` | The haze band ([.12, .25, .62, .34] wide, [.10, .22, .60, .29] portrait) lay across the fishmonger's head, the man behind him and the fishmonger's cap. Re-boxed to the water and the far quay only: wide [.525, .14, .585, .34], the gap between the old man's cap and the girl's headscarf; portrait [.48, .19, .655, .285], above the heads. Alpha stays .42 (at .55 the narrow wide box read as a pale column). The canopy light's drift went from .095 / .085 to .14 / .16 and the birds to scale 1.6 every 6 s to hold the floor; the portrait flock now starts at x .35, clear of the story button |
+| 34 | `it_trattoria` | The portrait salumi, which hung across the oste's face, is gone. The hook at (.424, .078) is the only fitting on that wall, so there is nowhere clear to move it. The portrait runs on pour, steam and firebox |
+| 35 | `it_friggitoria` | The awning scrap is gone in both compositions. The wide canvas beam could carry a valance, but the sprite swings as one rigid board about its centre, and the portrait beam is inside the heading block |
+| 36 | `it_ballaro` | The wide awning on its chain in the sky is gone; the wide takes the palm's leaves instead, boxed to the crown [.70, .03, .80, .19] |
+| 37 | `it_ballaro` | Portrait leaves re-boxed from [.60, .06, .82, .26], over the dome, to the palm's crown [.76, .04, .90, .19]. The portrait flock, which crossed behind the room's name, now flies above the dome at [.52, .005, .76, .07] |
+| 38 | `it_casale` | Leaves re-boxed to the olive inside the door opening: portrait [.70, .085, .795, .20] (they had sat on the wooden door), wide [.70, .065, .805, .235] (they had crossed the right jamb at .81). The portrait birds keep to the sky inside the opening, [.60, .065, .795, .115], not the plaster beside it |
+| 39 | `it_market` | The portrait awning is gone. The portrait leaves were cut to the canopy under the story button, [.10, .17, .30, .235] (they had also run over the woman's headscarf); the wide leaves stop at x .605, short of the plinth; the portrait sun's drift went from .08 to .12 |
+| 40 | `it_bacaro`, `it_pasticceria` | Both portrait lamps are gone: their rings at y .086 are inside the heading block, so no lamp can hang from them clear of it. The pasticceria's doorway drift went from .11 to .15 in both compositions |
+| 41 | eight rooms | The empty painted iron hooks at the top of the frame are part of the paintings, which were generated with them for the sprites. Accepted, no action. Six more hooks are now empty (trattoria portrait, market portrait, friggitoria both, Ballarò wide, and the two portrait rings), by the same reasoning |
+| 42, R3 | `it_laguna` | The front bowl of rice and peas steams: wide (.89, .87) width 170, portrait (.87, .69) width 110. Its plume lights 80,054 canvas pixels wide and 24,037 at 390 wide. The canal haze was also trimmed to [.03, .30, .185, .46], clear of the boy's cap |
+| 43, 44 | `it_market`, `it_veneto` | Summer squash beside winter artichokes, and children at glasses of wine: the paintings' content. Accepted, no action |
+| 45 | `it_pasta` | The wide cane's nests now hang on the left half of the painted cane only (fx .50, fw .11, ending at x .61, y .117), well above and left of the ribbons the woman lifts (x .60 to .70, from y .24). They read as two things |
+| 46, R11 | `it_casale` | Wide re-measured at 3.80 percent (median of six pairs across the cycle) against the 3 percent floor. The only change is the door light's drift, .11 to .15: the whey drip and the olive leaves are small by nature and stay so, and nothing in the room steams |
+| R13 | all thirteen | Every patch, glint, steam point and sprite drawn over both paintings. Besides the items above, two boxes crossed an edge and were trimmed (the market's wide leaves, the lagoon kitchen's haze). The sunrays are broad beams that follow each painting's light and pass over figures by nature, as the walkthrough accepted; they were not moved |
+
+**How it was measured.** The rooms were opened with `openLivingScene` straight from `ITALY_SCENES` in a tab loaded
+on a plain image URL with `WebSocket` stubbed, so no reload could touch it, at 1280 x 720 and 390 x 844, and ticked
+by hand at 1/60 s. The composite sets `width` and `height` on each SVG clone. Six pairs per cell start at frames 60,
+284, 508, 732, 956 and 1180, two seconds apart within each pair: that spreads them across the 22.4 s cycle of a beam's
+drift, so two of the six land near a turning point (the low figures in each range) and the median reads the room as
+a visitor sees it. Pairs are in `.data/it-fix-motion/rm-ITF<w|p>-<room>-<offset>-<a|b>.jpg`;
+`uv run --with pillow --with numpy scripts/audit/room-motion.py .data/it-fix-motion 2.5` reproduces them. Lit
+pixels are the maximum over 600 stepped frames (10 s) on the room's own effect canvas. The ten fixed regions were
+also read as ten-second filmstrips (a composite every second), in both orientations.
+
+**Not verified in this pass.** Real-time watching in a displayed pane: the pane was hidden throughout, so every
+room was stepped and read from composites and filmstrips, not watched live. The three rooms not touched here
+(`it_forno`, `it_veneto`, `it_tonnara`) keep their Stage C four-pair figures; in the ten touched rooms both
+orientations were re-measured. Reduced motion, the world route (`__fw.open`), the touch reactions and `npm run build:pages` were
+not run.
 
 ## Status
 

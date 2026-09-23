@@ -139,10 +139,12 @@ const rooms: Record<string, Room> = {
     title: 'The lagoon kitchen', zh: 'Cusina de laguna',
     caption: 'A fisherman’s house on Burano: the goby, the soft crab and the first artichoke off Sant’Erasmo.',
     heat: {
-      // The open copper of rice, the pan of fish on the hearth and the polenta. The crab in its beaten egg, the
-      // halved artichokes, the small fish on the board and the biscuits are all cold.
-      steam: { wide: [[.910, .475, 180, 9, .24], [.880, .620, 160, 8, .24], [.510, .745, 150, 7, .24]],
-        phone: [[.830, .405, 150, 9, .24], [.820, .505, 140, 8, .24], [.520, .625, 130, 7, .24]] },
+      // The open copper of rice, the pan of fish on the hearth, the polenta, and the bowl of rice and peas served
+      // at the front right (wide: surface x .80 to .98 at y .88; portrait: x .80 to 1.0 at y .70), which the
+      // second-reviewer walkthrough of 2026-09-23 found dry: risi e bisi is eaten hot, so it steams. The crab in
+      // its beaten egg, the halved artichokes, the small fish on the board and the biscuits are all cold.
+      steam: { wide: [[.910, .475, 180, 9, .24], [.880, .620, 160, 8, .24], [.510, .745, 150, 7, .24], [.890, .870, 170, 8, .24]],
+        phone: [[.830, .405, 150, 9, .24], [.820, .505, 140, 8, .24], [.520, .625, 130, 7, .24], [.870, .690, 110, 7, .24]] },
       fire: { wide: [[.885, .795, 55, 20]], phone: [[.858, .600, 30, 16]] },   // the open hearth at the right
     },
     touches: [

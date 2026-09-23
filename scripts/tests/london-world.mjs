@@ -40,40 +40,16 @@ const measured={overWater:{},hidden:{},crowded:{}};
  *  not appear. `LONDON_DUMP=1 node scripts/tests/london-world.mjs` prints the current measurements.
  *
  *  Re-measured at Stage D (2026-09-22) after every rotation in `london-objects.ts` was brought inside the
- *  camera's swing, [-0.75, 0.75]. Positions did not change; turning 25 stands to face +z moved their fronts
- *  and backs, so the three tables were taken again from the rotated stands and are the ceilings from here.
- *  docs/london-world.md, "Stage D", lists what got worse and what got better, for the shared-ground pass. */
-/** Vertices of a stand over water. `forthBridge` is by design: its span reaches north-west over the firth. */
-const OVER_WATER={
-  'roastPub':1188, 'lascarUk':564, 'cocklesUk':1401, 'smokehouseUk':90, 'hopsUk':24, 'mushroomsCe':2537,
-  'orchardUk':3548, 'leeksUk':1363, 'herringUk':98, 'bigBen':90, 'forthBridge':695, 'engineHouseUk':41,
-};
-/** 'a<b': stand b is the first thing on n of stand a's ten arrival rays. */
-const HIDDEN={
-  'teaRoomUk<bigBen':9, 'boroughUk<redBus':3, 'boroughUk<roastPub':4, 'pieMashUk<mushroomsCe':1, 'pieMashUk<hopKitchenUk':3,
-  'pieMashUk<hopsUk':1, 'chippyUk<bigBen':3, 'breakfastUk<hopKitchenUk':2, 'lascarUk<hopsUk':2, 'hopKitchenUk<mushroomsCe':2,
-  'dairyUk<bigBen':1, 'dairyUk<chippyUk':4, 'dairyUk<teaRoomUk':3, 'cocklesUk<leeksUk':4, 'pastryCe<bigBen':2,
-  'pastryCe<roastPub':6, 'oystersUk<lascarUk':7, 'oystersUk<towerBridge':1, 'sheepUk<bigBen':2, 'rhubarbUk<chippyUk':4,
-  'rhubarbUk<teaRoomUk':2, 'rhubarbUk<pastryCe':2, 'rhubarbUk<dairyUk':1, 'towerBridge<pieMashUk':3, 'towerBridge<lascarUk':5,
-  'redBus<towerBridge':3, 'phoneBox<roastPub':1, 'forthBridge<dairyUk':1, 'forthBridge<rhubarbUk':2, 'engineHouseUk<orchardUk':2,
-  'engineHouseUk<pastyUk':6,
-};
-/** Footprint overlap in units, positive for an overlap, for pairs under a unit apart. */
-const CROWDED={
-  'roastPub/teaRoomUk':0.8, 'roastPub/boroughUk':3.67, 'roastPub/pastryCe':2.46, 'roastPub/bigBen':1.24, 'roastPub/redBus':4.38,
-  'roastPub/phoneBox':2.89, 'teaRoomUk/chippyUk':2.66, 'teaRoomUk/dairyUk':1.95, 'teaRoomUk/pastryCe':1, 'teaRoomUk/sheepUk':-0.08,
-  'teaRoomUk/rhubarbUk':-0.49, 'teaRoomUk/bigBen':2.4, 'teaRoomUk/phoneBox':2.09, 'boroughUk/pastryCe':1.36, 'boroughUk/redBus':3.16,
-  'boroughUk/phoneBox':0.35, 'pieMashUk/breakfastUk':4.2, 'pieMashUk/lascarUk':2.09, 'pieMashUk/hopKitchenUk':4.22, 'pieMashUk/oystersUk':1.48,
-  'pieMashUk/hopsUk':-0.71, 'pieMashUk/towerBridge':3.56, 'chippyUk/dairyUk':4.99, 'chippyUk/sheepUk':4.99, 'chippyUk/rhubarbUk':2.55,
-  'breakfastUk/lascarUk':3, 'breakfastUk/hopKitchenUk':2.28, 'breakfastUk/towerBridge':-0.24, 'lascarUk/hopKitchenUk':0.18, 'lascarUk/oystersUk':0.78,
-  'lascarUk/hopsUk':0.26, 'lascarUk/towerBridge':2.86, 'hopKitchenUk/hopsUk':1.72, 'hopKitchenUk/mushroomsCe':-0.53, 'dairyUk/pastryCe':-0.33,
-  'dairyUk/sheepUk':3.73, 'dairyUk/rhubarbUk':5.39, 'pastyUk/orchardUk':3.92, 'pastyUk/engineHouseUk':3.81, 'cocklesUk/orchardUk':-0.15,
-  'cocklesUk/leeksUk':1.91, 'smokehouseUk/distilleryUk':2.19, 'smokehouseUk/rhubarbUk':-0.36, 'smokehouseUk/oatsUk':-0.15, 'smokehouseUk/forthBridge':1.72,
-  'distilleryUk/oatsUk':3.48, 'pastryCe/rhubarbUk':-0.59, 'pastryCe/bigBen':0.56, 'pastryCe/redBus':1.15, 'pastryCe/phoneBox':0.25,
-  'oystersUk/towerBridge':4.05, 'hopsUk/mushroomsCe':3.35, 'sheepUk/rhubarbUk':1.87, 'sheepUk/oatsUk':-0.09, 'rhubarbUk/herringUk':-0.25,
-  'rhubarbUk/forthBridge':1.49, 'orchardUk/engineHouseUk':1.31, 'herringUk/forthBridge':4.87, 'bigBen/redBus':-0.58, 'bigBen/phoneBox':3.76,
-  'redBus/phoneBox':1.06,
-};
+ *  camera's swing, [-0.75, 0.75], and again after the shared-ground pass (2026-09-23), which moved the stands
+ *  instead of turning them: every stand-on-stand ray and every crowded footprint is closed, so those two
+ *  tables are empty and any entry that appears is a failure. docs/london-world.md, "Shared-ground pass". */
+/** Vertices of a stand over water. `forthBridge` is by design: its own firth plate and span reach over the
+ *  Firth of Forth it crosses. Every other stand is dry. */
+const OVER_WATER={ 'forthBridge':230 };
+/** 'a<b': stand b is the first thing on n of stand a's ten arrival rays. None since 2026-09-23. */
+const HIDDEN={};
+/** Footprint overlap in units, positive for an overlap, for pairs under a unit apart. None since 2026-09-23. */
+const CROWDED={};
 
 const temp=await mkdtemp(join(tmpdir(),'london-world-'));
 try {
@@ -251,12 +227,10 @@ try {
     // The world is only ever seen from +z (main.ts: camera on +z, orbit clamped to plus or minus 0.75), so every
     // rotation lies in [-0.75, 0.75] and a stand never turns its back to find its road (Stage D, 2026-09-22).
     // The door is the centre of the stand's solid front: the furthest +z reach, in the stand's own frame, of
-    // every mesh that is not a figure and stands above 0.35. It must meet a road edge within 2.0. The three
-    // below are more than 2.0 from any road with their fronts to the camera — Big Ben and the seamen's kitchen
-    // because the river or the strait is in front and their road is behind, the distillery because the Fife
-    // cottage stands in front of its door — and positions are fixed at Stage D. They are ceilings for the
-    // shared-ground pass: each may not get worse, and no other stand may join them.
-    const DOOR_BEHIND={ bigBen:2.11, lascarUk:4.44, distilleryUk:2.77 };
+    // every mesh that is not a figure and stands above 0.35. It must meet a road edge within 2.0. Stage D left
+    // three over it (Big Ben, the seamen's kitchen, the distillery) as ceilings; the shared-ground pass
+    // (2026-09-23) moved them and brought the roads to every door, so the table is empty and no stand may join it.
+    const DOOR_BEHIND={};   // emptied by the shared-ground pass, 2026-09-23: every front door is within 2.0
     const isFigure=o=>{for(let p=o;p;p=p.parent)if(p.userData?.legs)return true;return false;};
     const edgeOf=(x,z)=>Math.min(...LD_ROADS.map(r=>distToRoute(x,z,r.points)-r.width/2));
     const turned=[], farDoors=[];

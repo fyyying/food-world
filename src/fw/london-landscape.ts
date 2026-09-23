@@ -39,15 +39,16 @@ export const SEA_RING: Pt[] = [[-82, -28], [-31.4, -28], [-31.4, 28], [-82, 28]]
  *  it, the strait's west shore with the river-mouth notch, the south coast, and the west coast with the
  *  Bristol Channel cut into it. This polygon is the **hole** in the shape above. */
 export const ISLAND: Pt[] = [
-  [-79.4, -24], [-77, -25.4], [-73, -26], [-69, -25.6], [-65, -26.4], [-62, -26], [-58.6, -26.2],   // the north coast
-  [-58.4, -20.6], [-56.8, -20.8], [-56.6, -26],                                                     // the Firth of Forth, cut south to z -20.6
+  [-79.8, -24], [-77, -25.4], [-73, -26], [-69, -25.6], [-65, -26.4], [-62, -26], [-57.3, -26.2],   // the north coast
+  [-58.0, -20.6], [-56.6, -20.8], [-56.2, -26],                                                     // the Firth of Forth, cut south to z -20.6
   [-53, -26.2], [-49, -25.6], [-45, -26.2], [-41, -25.8], [-37.4, -26], [-35.8, -24],                // on to the north-east cape
-  [-35.6, -20], [-35.8, -14], [-35.6, -8], [-35.6, -2], [-36.2, 2.6], [-36, 5.6], [-35.8, 10],       // the strait's west shore, notched for the river mouth
-  [-36, 16], [-36.6, 20], [-38, 21.6],
-  [-42, 22], [-46, 22], [-50, 21.6], [-54, 22], [-58, 21.8], [-62, 22], [-66, 21.8], [-69, 22],      // the south coast
-  [-72.6, 22], [-76, 21.4], [-79, 20.2], [-79.6, 18.8],
-  [-76, 17.8], [-71.8, 16.6], [-71.4, 14], [-73.5, 12.6], [-77, 11.8], [-79.6, 10.8],                // the Bristol Channel, its head at x -71.4
-  [-79.7, 6], [-79.5, 0], [-79.7, -6], [-79.4, -12], [-79.6, -18],                                   // the west coast, back to the start
+  [-35.6, -20], [-35.8, -14], [-35.6, -8], [-35.6, -2], [-36.2, 2.6], [-36, 5.6],                    // the strait's west shore, notched for the river mouth,
+  [-36.3, 6.0], [-40.2, 6.0], [-40.2, 8.1], [-37.9, 8.1], [-37.9, 12.6], [-35.9, 12.7],               // then the dock basin under Tower Bridge, where the coaster and the oyster smacks lie
+  [-36, 16], [-36, 23], [-37.2, 25.6],
+  [-40, 26], [-44, 25.9], [-48, 25.8], [-52, 26], [-56, 25.8], [-60, 26], [-64, 25.8], [-68, 26],      // the south coast
+  [-72, 25.8], [-76, 25.5], [-79, 24.6], [-79.7, 21.5], [-79.6, 18.8],
+  [-76, 17.8], [-71.8, 16.6], [-71.4, 14], [-73.5, 13.5], [-77, 13.2], [-79.6, 12.4],                // the Bristol Channel, its head at x -71.4
+  [-79.7, 6], [-79.5, 0], [-79.7, -6], [-79.4, -12], [-79.8, -18],                                   // the west coast, back to the start
 ];
 /** How far the drawn coast wobbles off the traced line. The blueprint asks the strait to stay at least 4.0
  *  wide after the jitter and it is only 4.2 at its narrowest, so the strait's own shore — every island vertex
@@ -183,7 +184,7 @@ export const LD_WATERWAYS: { id: string; points: Pt[]; width: number }[] = [
 /** The head of the Bristol Channel east of x -75.5 is wet sand, not open water: the sand tint under a
  *  low-alpha sheet, ribbed and draining, with the cockle beds on it. Two polygons, because the western half
  *  lies over the sea and the eastern half is the dry flat the cockle stall stands on. */
-export const CHANNEL_SAND_WET: Pt[] = [[-75.5, 12.14], [-73.5, 12.6], [-71.4, 14], [-71.0, 14.2], [-71.0, 16.7], [-71.8, 16.6], [-75.5, 17.66]];
+export const CHANNEL_SAND_WET: Pt[] = [[-75.5, 13.33], [-73.5, 13.5], [-71.4, 14], [-71.0, 14.2], [-71.0, 16.7], [-71.8, 16.6], [-75.5, 17.66]];
 export const CHANNEL_SAND_DRY: Pt[] = [[-71.2, 14.1], [-68.4, 14.2], [-68.4, 16.2], [-71.2, 16.8]];
 
 /** Is this point in water? The sea is the ring **minus** the island, so a point inside the island's coast is
@@ -213,35 +214,44 @@ export const seaDrawn = () => SEA_DRAWN, islandDrawn = () => ISLAND_DRAWN, river
 // ---------------------------------------------------------------------------------------------------------
 
 export type Road = { id: string; width: number; points: Pt[] };
-/** One continuous ribbon each, at the blueprint widths. Every door in the object list meets one of these.
+/** One continuous ribbon each. Every door in the object list meets one of these.
  *
- *  Three departures from the blueprint's own points, each one because a road end must finish at something
- *  rather than in the grass (playbook section 5, and the owner's defect of 2026-09-22):
- *
- *  - **LD-R1** gains [-41.6, -1.4] and [-41.5, 0.9]. At the blueprint's last point [-42, -4.3] the Strand
- *    stopped two and a half units past the bridge junction with nothing at its end. It now turns down to the
- *    river stairs and finishes 1.0 clear of the water, which is what the end of the Strand was
- *  - **LD-R6b** gains [-53.6, -22.4]. At [-54.8, -20.6] the herring quay's own kitchen was 3.78 away, half a
- *    unit outside the 2.6 a door needs. The spur now runs the last stretch down to the quay
- *  - **LD-R4b**, the oast track, is new: 1.4 wide, from a point on the hop road to the hop garden's gate. The
- *    hop garden was 2.89 from the hop road, and a hop garden with an oast in it is reached by a track
- *
- *  One departure at Stage D (2026-09-22), when every stand's front was turned to the +z camera side: **LD-R6**
- *  no longer stops behind the oat mill. It runs on round the west side of the oat field, [-74, -20.2]
- *  [-74.2, -14.4], and north to meet the west road at its corner [-74, -9], so the mill, turned -0.6 toward
- *  it, has a road 1.6 from its door on the side it faces. It keeps west of x -73 so the open-fell walls and
- *  the flock's pen at x -71 to -64 keep their ground. Roads come to the door; the stand does not turn.
+ *  Re-laid in the shared-ground pass (2026-09-23, docs/london-world.md). Every stand's front faces the camera
+ *  (+z), so a road runs across the front of every door, within 2.0 of it, and the stands no longer turn to find
+ *  their road. The network is one piece: Whitehall and the Embankment (LD-R1) along the river's north bank with
+ *  the Westminster row on its north side; the bridge road (LD-R2) over Westminster Bridge; the dock quay (LD-R3)
+ *  under Tower Bridge; Borough High Street and the West Country lane (LD-SB) along the south bank and round the
+ *  engine house to the west road; the hop road (LD-R4), the dock road (LD-R3b), the orchard lane (LD-OL), the
+ *  cockle lane (LD-CL) and the south coast road (LD-SC) in the south; the dale road (LD-R5) between the tea room
+ *  and the pastry board to the flock, the moor road (LD-R5c) to the dairy and the herring quay, the chippy and
+ *  forcing-shed lane (LD-R5b), the firth road (LD-R6) and the west road (LD-R7) round the river's tarn. No road
+ *  but LD-R2 crosses water, and it crosses on the bridge.
  */
 export const LD_ROADS: Road[] = [
-  { id: 'LD-R1', width: 2.4, points: [[-59, -5.1], [-55, -5.25], [-51, -5.25], [-47, -5.25], [-44.5, -4.9], [-42, -4.3], [-41.6, -1.4], [-41.5, 0.9]] },
-  { id: 'LD-R2', width: 1.8, points: [[-44.5, -4.9], [-44.3, -1.2], [-44, 2.85], [-44.1, 5.6], [-44.2, 7.9]] },
-  { id: 'LD-R3', width: 2.2, points: [[-44.2, 7.9], [-41, 7.9], [-39, 8.1], [-37.6, 8.5]] },
-  { id: 'LD-R4', width: 1.8, points: [[-44.2, 7.9], [-45.2, 11], [-45.6, 14.6], [-45.2, 18.6], [-44.6, 20.2]] },
-  { id: 'LD-R4b', width: 1.4, points: [[-45.45, 16.1], [-42.6, 17]] },
-  { id: 'LD-R5', width: 1.8, points: [[-59, -5.1], [-60, -8.5], [-59.5, -12.2], [-57.5, -15.8], [-59, -19.2]] },
-  { id: 'LD-R6', width: 1.8, points: [[-59, -19.2], [-61, -21.5], [-64.5, -22.5], [-68, -22.8], [-71, -21.5], [-74, -20.2], [-74.2, -14.4], [-74, -9]] },
-  { id: 'LD-R6b', width: 1.4, points: [[-59, -19.2], [-56.6, -19.4], [-54.8, -20.6], [-53.6, -22.4]] },
-  { id: 'LD-R7', width: 1.8, points: [[-60, -8.5], [-65, -8], [-70, -8.6], [-74, -9], [-78, -9], [-78.2, -4], [-77.9, 1], [-76.8, 6], [-74.5, 10], [-71, 10.8], [-67.8, 12.6], [-67.4, 16], [-70, 17.8], [-73.5, 19.2]] },
+  { id: 'LD-R1', width: 2.4, points: [[-72.6, -8.4], [-71.7, -8.2], [-68, -7.0], [-64, -6.0], [-60, -4.8], [-56, -3.5], [-52, -2.6], [-48, -1.7], [-44.6, -1.1], [-41, -0.9], [-37.4, -0.7]] },
+  { id: 'LD-R2', width: 1.8, points: [[-44.6, -1.1], [-44.6, 2.85], [-44.6, 5.6], [-44.4, 7.9]] },
+  { id: 'LD-R3', width: 1.4, points: [[-44.4, 7.9], [-41.2, 7.9], [-40.4, 9.0], [-38.7, 9.0]] },
+  { id: 'LD-R3b', width: 1.4, points: [[-50.5, 15.3], [-45.3, 15.2], [-40, 15.7], [-36.5, 15.9]] },
+  { id: 'LD-R4', width: 1.4, points: [[-50.5, 7.95], [-50.5, 15.3], [-55.5, 15.2]] },
+  { id: 'LD-SB', width: 1.8, points: [[-44.4, 7.9], [-46.3, 8.4], [-49.5, 8.3], [-51.6, 7.5], [-54.2, 6.9], [-57, 6.9], [-62, 7.4], [-63.6, 8.2], [-64.3, 10.6], [-70.75, 10.6], [-70.75, 4.2], [-73.3, 3.8], [-78.4, 3.8]] },
+  { id: 'LD-OL', width: 1.4, points: [[-70.75, 10.6], [-71.8, 11.9], [-75.5, 11.4]] },
+  { id: 'LD-CL', width: 1.4, points: [[-64.3, 10.6], [-63.6, 12.0], [-63.6, 18.8], [-67, 19.0], [-71.2, 19.2], [-71.2, 23.9]] },
+  { id: 'LD-SC', width: 1.4, points: [[-76.6, 23.9], [-71.2, 23.9], [-66, 24.8], [-58, 24.8], [-54.5, 24.72], [-50, 24.6], [-44, 24.4], [-39.5, 24.2]] },
+  { id: 'LD-R5', width: 1.2, points: [[-52.95, -3.1], [-52.95, -10.5], [-49.5, -10.65], [-45.2, -10.9]] },
+  { id: 'LD-R5c', width: 1.2, points: [[-49.5, -10.65], [-49.5, -15.4], [-49.5, -17.5], [-46.13, -17.5], [-39.2, -17.5], [-37.4, -17.5]] },
+  { id: 'LD-R5b', width: 1.2, points: [[-49.5, -15.4], [-52.4, -15.4], [-55.5, -14.2], [-59.8, -14.1]] },
+  { id: 'LD-R6', width: 1.4, points: [[-77.5, -9.0], [-77.8, -12.5], [-77.6, -16.1], [-68.95, -16.1], [-65.0, -16.1], [-65.0, -21.3], [-59.3, -21.3]] },
+  // Short spurs from a road to the doorstep of a stand whose front stands deep in front of its anchor.
+  { id: 'LD-S-piemash', width: 1.2, points: [[-37.4, -0.7], [-38, -1.6], [-38, -2.8]] },
+  { id: 'LD-S-breakfast', width: 1.2, points: [[-45.46, 24.42], [-45.46, 23.9]] },
+  { id: 'LD-S-hops', width: 1.2, points: [[-54.5, 24.72], [-54.5, 23.4]] },
+  { id: 'LD-S-dairy', width: 1.2, points: [[-46.13, -17.5], [-46.13, -18.4]] },
+  { id: 'LD-S-herring', width: 1.2, points: [[-39.2, -17.5], [-39.19, -18.9]] },
+  { id: 'LD-S-cockles', width: 1.2, points: [[-67, 19.0], [-68.31, 17.6]] },
+  { id: 'LD-S-distillery', width: 1.2, points: [[-68.95, -16.1], [-68.95, -17.4]] },
+  { id: 'LD-S-oats', width: 1.2, points: [[-77.6, -16.1], [-76.3, -17.6]] },
+  { id: 'LD-S-engine', width: 1.2, points: [[-73.3, 3.8], [-73.3, 3.15]] },
+  { id: 'LD-R7', width: 1.4, points: [[-72.6, -8.4], [-77.5, -9.0], [-78.5, -6.8], [-78.5, -1.0], [-78.4, 3.8]] },
 ];
 export const road = (id: string) => LD_ROADS.find(r => r.id === id)!;
 
@@ -249,11 +259,11 @@ export const road = (id: string) => LD_ROADS.find(r => r.id === id)!;
  *  whole of Britain, and this is it. */
 export type Crossing = { at: Pt; span: number; road: string };
 export const LD_CROSSINGS: Crossing[] = [
-  { at: [-44, 2.85], span: 6.0, road: 'LD-R2' },
+  { at: [-44.6, 2.85], span: 6.0, road: 'LD-R2' },
 ];
 /** Deck centres, in the shape `spain-town.ts` uses: Westminster Bridge, which carries the bridge road, and
  *  Tower Bridge, which carries no road and is the landmark. */
-export const LD_BRIDGES: Pt[] = [[-44, 2.85], [-39.4, 3.9]];
+export const LD_BRIDGES: Pt[] = [[-44.6, 2.85], [-37.7, 3.4]];
 export const BRIDGE_SPAN = 6.0, BRIDGE_DECK_Y = ROAD_LIFT;
 
 /** Straight walking segments cut from the road table, so a walker never rounds a corner into a wall.
@@ -265,19 +275,22 @@ function segments(r: Road, first: number, last: number, walkers: number[], seeds
     walkers: walkers[i], seed: seeds[i], pace,
   }));
 }
-/** The blueprint's four peopled loops: the street, the docks, the dale road and the west road. Twenty
+/** Four peopled loops: the Westminster street, the docks, the dale road and the West Country lane. Twenty
  *  residents in all, at 0.009 on the Westminster street and 0.007 everywhere else. */
 export const LD_LANES: Lane[] = [
-  ...segments(road('LD-R1'), 0, 4, [2, 1, 2, 1], [11, 1, 0, 9], .009),
-  ...segments(road('LD-R3'), 0, 3, [2, 1, 1], [3, 6, 17], .007),
-  ...segments(road('LD-R2'), 3, 4, [1], [13], .007),
-  ...segments(road('LD-R5'), 1, 3, [2, 2], [6, 20], .007),
-  ...segments(road('LD-R7'), 7, 12, [1, 1, 1, 1, 1], [4, 7, 14, 21, 26], .007),
+  ...segments(road('LD-R1'), 5, 8, [2, 2, 2], [11, 1, 0], .009),
+  ...segments(road('LD-R3b'), 0, 3, [2, 1, 1], [3, 6, 17], .007),
+  ...segments(road('LD-R2'), 2, 3, [1], [13], .007),
+  ...segments(road('LD-R5'), 0, 3, [2, 1, 1], [6, 20, 23], .007),
+  ...segments(road('LD-SB'), 8, 12, [1, 1, 1, 1], [4, 7, 14, 21], .007),
+  ...segments(road('LD-CL'), 2, 3, [1], [26], .007),
 ];
 /** The lane the pit pony is led along, and the two lanes whose walkers carry cockle baskets. */
-export const PONY_LANE = 'LD-R5-1', COCKLE_LANES = ['LD-R7-10', 'LD-R7-11'];
-// The street walkers stop short of both ends of Whitehall and the Strand, where the omnibus and the cabs turn.
-for (const lane of LD_LANES) { if (lane.id === 'LD-R1-0') lane.range = [.35, .93]; if (lane.id === 'LD-R1-3') lane.range = [.07, .6]; }
+export const PONY_LANE = 'LD-R5-1', COCKLE_LANES = ['LD-CL-2', 'LD-SB-11'];
+// The omnibus and the cabs run on the stretch of Whitehall in front of the palace; the street's walkers keep to
+// the stretch east of it, past the tea room, the pastry board and the pillar box, and the dale road's walkers
+// start clear of the junction.
+for (const lane of LD_LANES) { if (lane.id === 'LD-R5-0') lane.range = [.2, .93]; }
 
 // ---------------------------------------------------------------------------------------------------------
 // Placement rules: what the Builder may put down, and where.
@@ -365,8 +378,18 @@ export function tryPlace<T extends THREE.Object3D>(ctx: LayoutCtx, o: T, x: numb
   // wedge: the stands in `props-london.ts` are four to ten units across, and against them the wedge left the
   // Weald without a tree and the fell without a wall. `inCameraWedge` stays exported for comparison.
   const b = box as THREE.Box3 | null;
-  if (wet || (b && (!clearOfObjects(b) || onRoad(b) || !raysClear(o)))) { ctx.group.remove(o); return null; }
+  if (wet || (b && (!clearOfObjects(b) || onRoad(b) || onHouse(ctx, b) || !raysClear(o)))) { ctx.group.remove(o); return null; }
   return o;
+}
+/** True when the box stands inside a decorative house already built, so the country is never planted through
+ *  a wall. The houses are built first (`london-town.ts`), then the countryside round them. */
+function onHouse(ctx: LayoutCtx, box: THREE.Box3): boolean {
+  for (const h of ctx.group.children) {
+    if (h.name !== 'britain-house') continue;
+    const hb = new THREE.Box3().setFromObject(h);
+    if (box.min.x < hb.max.x + .2 && box.max.x > hb.min.x - .2 && box.min.z < hb.max.z + .2 && box.max.z > hb.min.z - .2) return true;
+  }
+  return false;
 }
 /** The exact form of the owner's rule, for buildings. The hundred-degree wedge is right for a tree or a wall,
  *  but for a house it is so much stricter than the rule it stands in for that not one of the blueprint's five
@@ -471,7 +494,7 @@ function wetSand(): THREE.Mesh {
     }
     return pts[x < pts[0][0] ? 0 : pts.length - 1][1];
   };
-  const south: Pt[] = [[-75.5, 12.14], [-73.5, 12.6], [-71.4, 14], [-70.6, 14.3]];
+  const south: Pt[] = [[-75.5, 13.33], [-73.5, 13.5], [-71.4, 14], [-70.6, 14.3]];
   const north: Pt[] = [[-75.5, 17.66], [-71.8, 16.6], [-70.6, 16.5]];
   const steps = 24, position: number[] = [], color: number[] = [], index: number[] = [];
   const dry = new THREE.Color('#d6caa6'), wet = new THREE.Color('#a99d7c');
@@ -494,17 +517,18 @@ export function londonLandscape(ctx: LayoutCtx) {
   const { group, tickers, tint, TOP } = ctx;
 
   // ---------- the ground tints, one per cluster, laid before anything solid ----------
-  tint(-51, -4.5, 9, 4, '#b8b4ad');            // Westminster: wet paving along the street
-  tint(-39, 7, 7, 5, '#a89c86');               // the Docks: brown dock mud and stone, no paving
-  tint(-45, 18, 8, 6, '#7fae5a');              // the Weald: hop green in strings
-  tint(-47, 21, 5, 3, '#5f7a46', .1);          // and the darker green under the wood on the south coast
-  tint(-59, -14, 8, 7, '#9fb08a');             // the Dales: wet green
-  tint(-60, -13, 5, 5, '#8a8a80', -.2);      // cut by drystone walls
-  tint(-72, 10, 9, 10, '#8fa06a');             // the West Country: moor green
-  tint(-76, 4, 4, 5, '#9a8f80', .1);           // over granite
+  tint(-55, -5.5, 11, 3.2, '#b8b4ad');         // Westminster: wet paving along Whitehall and the Embankment
+  tint(-56, 6, 6, 2.6, '#b8b4ad');             // and Southwark across the bridge
+  tint(-42, 13, 6.5, 4, '#a89c86');            // the Docks: brown dock mud and stone, no paving
+  tint(-56, 16, 7, 5, '#7fae5a');              // the Weald: hop green in strings
+  tint(-62, 22.5, 4.5, 2.6, '#5f7a46', .1);    // and the darker green under the wood on the south coast
+  tint(-50, -16, 9, 6, '#9fb08a');             // the Dales: wet green
+  tint(-48, -15, 4, 3, '#8a8a80', -.2);        // cut by drystone walls
+  tint(-71, 9, 8, 8, '#8fa06a');               // the West Country: moor green
+  tint(-73.3, 0, 4, 3, '#9a8f80', .1);         // over granite
   tint(-70.5, 15.2, 3.4, 2.0, '#d9cfae');      // and the wet sand at the channel head
-  tint(-64, -25, 8, 4, '#93a884');             // the Firths: cold green
-  tint(-67, -24, 4, 2.5, '#8a8a80', .15);      // with rock
+  tint(-68, -19, 10, 5, '#93a884');            // the Firths: cold green
+  tint(-73, -22, 4, 2.5, '#8a8a80', .15);      // with rock
 
   // ---------- the one sea: the ring, the island as its hole, one rim, one shader ----------
   const sea = seaWater(), tarnW = freshWater();
@@ -548,8 +572,8 @@ export function londonLandscape(ctx: LayoutCtx) {
   // thin bands on the sand read as boards lying on the beach, and the owner's rule is no sticks.
 
   // ---------- the air over the water: gulls on both coasts, rooks inland ----------
-  const channelGulls = birds(6, 8, 8); channelGulls.position.set(-74, TOP, 15); group.add(channelGulls); tickers.push(channelGulls.userData.tick!);
-  const northGulls = birds(5, 7, 9); northGulls.position.set(-60, TOP, -24); group.add(northGulls); tickers.push(northGulls.userData.tick!);
-  const estuaryGulls = birds(6, 7, 7); estuaryGulls.position.set(-38, TOP, 6); group.add(estuaryGulls); tickers.push(estuaryGulls.userData.tick!);
-  const rooks = birds(4, 6, 10); rooks.position.set(-52, TOP, -14); group.add(rooks); tickers.push(rooks.userData.tick!);
+  const channelGulls = birds(6, 8, 12); channelGulls.position.set(-74, TOP, 15); group.add(channelGulls); tickers.push(channelGulls.userData.tick!);
+  const northGulls = birds(5, 7, 12); northGulls.position.set(-60, TOP, -24); group.add(northGulls); tickers.push(northGulls.userData.tick!);
+  const estuaryGulls = birds(6, 5, 13); estuaryGulls.position.set(-34.5, TOP, 8); group.add(estuaryGulls); tickers.push(estuaryGulls.userData.tick!);
+  const rooks = birds(4, 6, 13); rooks.position.set(-52, TOP, -14); group.add(rooks); tickers.push(rooks.userData.tick!);
 }

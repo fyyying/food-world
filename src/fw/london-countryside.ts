@@ -191,62 +191,51 @@ export function londonCountryside(ctx: LayoutCtx) {
     return n;
   };
 
-  // ---------- the Weald: the hop gardens' bine rows, the oak and hornbeam wood on the south coast ----------
-  // The blueprint's hop strings run from [-44, 15] to [-39, 20], east of the hop garden the stand works.
-  // The blueprint's strings run from [-44, 15] to [-39, 20], which is the ground the hop garden, the oast and
-  // the cookhouse stand on themselves; the decorative rows fill the rest of the Weald round them.
-  scatter(i => hopRow(2.2 + (i % 3) * .4), 'hop-row', -44, -39, 15, 20, 1.6, 12, 1.3);
-  scatter(i => hopRow(2.2 + (i % 3) * .4), 'hop-row', -54, -38, 12, 21, 1.7, 10, 1.3);
-  scatter(i => oak(.95 + (i % 3) * .12), 'weald-oak', -50, -44, 19, 22, 1.6, 8, 1.4);
-  scatter(i => hornbeam(.9 + (i % 2) * .15), 'weald-hornbeam', -50, -43.5, 18.6, 22, 1.5, 7, 1.4);
-  // The wood the blueprint draws along the coast is the mushroom stand's own ground, so the Weald's oak and
-  // hornbeam carry on west along the south coast, where nothing else stands.
-  scatter(i => oak(.95 + (i % 3) * .12), 'weald-oak', -60, -48, 13, 20.6, 2.0, 10, 1.4);
-  scatter(i => hornbeam(.9 + (i % 2) * .15), 'weald-hornbeam', -59, -47, 14, 20.6, 1.9, 8, 1.4);
-  // Hedged and ditched fields between the Weald and the river.
-  for (const [a, b] of [[[-50, 8.5], [-50, 13.5]], [[-50, 13.5], [-46.8, 13.5]], [[-50.6, 10.8], [-47.2, 10.8]],
-    [[-52.4, 8.6], [-52.4, 13.2]], [[-52.4, 13.2], [-50, 13.2]]] as [number, number][][])
+  // The regions below are the ground the shared-ground pass of 2026-09-23 left between the stands; `tryPlace`
+  // re-tests every piece against the water, the roads, every stand's pad and every stand's ten arrival rays,
+  // so a region only says where the country is, not what fits in it.
+
+  // ---------- the Weald: bine rows between the public house and the cookhouse, oak and hornbeam by the coast ----------
+  scatter(i => appleTree(.9 + (i % 3) * .1), 'orchard-tree', -62.4, -58.4, 10.8, 13.2, 1.2, 3, .9);   // a Kentish orchard by the road
+  scatter(i => hopRow(2.2 + (i % 3) * .4), 'hop-row', -62.8, -57.8, 11.8, 18.8, 1.6, 10, 1.1);
+  scatter(i => oak(.95 + (i % 3) * .12), 'weald-oak', -70.4, -66.6, 20.2, 23.2, 1.7, 4, 1.2);
+  scatter(i => hornbeam(.9 + (i % 2) * .15), 'weald-hornbeam', -70.4, -66.6, 19.8, 23.2, 1.6, 4, 1.2);
+  scatter(i => oak(.95 + (i % 3) * .12), 'weald-oak', -62.8, -57.8, 16, 19.2, 1.8, 3, 1.2);
+  // Hedged and ditched fields on the south bank, west of the public house.
+  for (const [a, b] of [[[-69, -0.4], [-64, -0.4]], [[-69, -0.4], [-69, 3.2]]] as [number, number][][])
     runAlong(len => hedgeBank(len), 'hedge-bank', a as [number, number], b as [number, number], 2.2, 4);
-  { const gate = tryPlaceAny(ctx, () => fieldGate(1.3), [[-50, 11.4, 0], [-51.2, 13.5, Math.PI / 2], [-52.4, 11.0, 0]]); if (gate) gate.name = 'field-gate'; }
+  { const gate = tryPlaceAny(ctx, () => fieldGate(1.3), [[-64.2, 2.6, Math.PI / 2], [-66.5, -0.4, 0], [-62.4, 12.4, 0]]); if (gate) gate.name = 'field-gate'; }
 
-  // ---------- the Dales: drystone walls climbing the fell, and the flock's own pen at the top ----------
-  for (const [a, b] of [[[-63, -10], [-55, -18]], [[-64.4, -13.4], [-58.6, -19.4]], [[-61.6, -8.4], [-64.6, -14.6]],
-    [[-56.4, -11.2], [-62.2, -17.6]], [[-66, -11], [-62.4, -17]],
-    // and the open fell west of the flock, between the west road and the moor
-    [[-71, -10.6], [-64, -10.6]], [[-71, -13.6], [-64, -13.6]], [[-71, -16.6], [-64, -16.6]], [[-67.5, -10.6], [-67.5, -16.6]]] as [number, number][][])
+  // ---------- the Dales: drystone walls on the fell behind the palace, and the flock's own pen ----------
+  for (const [a, b] of [[[-69, -11.6], [-63.6, -11.6]], [[-69, -15.2], [-63.6, -15.2]], [[-69, -11.6], [-69, -15.2]],
+    [[-42.2, -11.4], [-36.4, -11.4]], [[-42.2, -16.4], [-36.4, -16.4]], [[-58.6, -12.2], [-55.6, -12.2]]] as [number, number][][])
     runAlong(len => drystoneRun(len), 'drystone-wall', a as [number, number], b as [number, number], 2.4, 5);
-  { const pen = tryPlaceAny(ctx, () => sheepPen(tickers), [[-64.6, -9.4, .2], [-66.6, -12.2, .1], [-69.4, -12.1, 0], [-69.4, -15.1, 0], [-65.6, -15.1, 0], [-63.4, -7.4, .25], [-67.4, -15.4, .15]]); if (pen) pen.name = 'fell-sheep-pen'; }
-  // Ewes hefted on the open fell above the walls, standing still and grazing.
+  { const pen = tryPlaceAny(ctx, () => sheepPen(tickers), [[-66.3, -13.4, 0], [-66.8, -13.2, .1], [-65.8, -13.6, 0], [-39.3, -13.9, 0], [-39.6, -13.6, .1]]); if (pen) pen.name = 'fell-sheep-pen'; }
+  // Ewes hefted on the open fell, standing still and grazing.
   scatter(i => { const e = daleSheep(.85 + (i % 3) * .08); const own = e.userData.tick as ((t: number) => void) | undefined; e.userData.tick = undefined; tickers.push((t: number) => own?.(t + i)); return e; },
-    'fell-ewe', -71, -62, -16, -10, 1.7, 7, 1.3);   // on the open fell, never down on the palace forecourt
-  scatter(i => oak(.8 + (i % 2) * .1), 'dale-oak', -66, -54, -8, -4, 2.0, 4, 1.6);
+    'fell-ewe', -63.4, -56.8, -15.4, -11.8, 1.5, 6, 1.0);
+  scatter(i => oak(.8 + (i % 2) * .1), 'dale-oak', -42, -36.4, -16.2, -11.6, 2.0, 2, 1.2);
 
-  // ---------- the north-west: moor and bracken, peat cut in lines, barley behind the distillery ----------
-  scatter(i => bracken(.8 + (i % 3) * .1), 'moor-bracken', -72, -66, -22, -16, 1.3, 24, 1.2);
-  scatter(i => bracken(.8 + (i % 3) * .1), 'moor-bracken', -78, -64, -18, -10, 1.4, 30, 1.2);
-  scatter(i => gorse(.9 + (i % 3) * .12), 'moor-gorse', -73, -66, -21.4, -15.4, 1.6, 12, 1.3);
-  for (let line = 0; line < 3; line++) for (let i = 0; i < 4; i++) {
-    const stack = tryPlace(ctx, peatStack(), -69.4 + i * 1.1, -24.6 + line * .9, .1 + line * .05);
+  // ---------- the north-west: moor and bracken, peat cut in lines, barley on the coastal strip ----------
+  scatter(i => bracken(.8 + (i % 3) * .1), 'moor-bracken', -69, -63.8, -15.3, -11.2, 1.1, 14, 1.0);
+  scatter(i => bracken(.8 + (i % 3) * .1), 'moor-bracken', -76.6, -74.8, -15.4, -9.6, 1.0, 8, .9);
+  scatter(i => bracken(.8 + (i % 3) * .1), 'moor-bracken', -63.4, -52, -21.4, -19.9, 1.0, 10, .9);
+  scatter(i => gorse(.9 + (i % 3) * .12), 'moor-gorse', -76.6, -74.8, -15.4, -9.6, 1.4, 4, 1.0);
+  for (let line = 0; line < 3; line++) for (let i = 0; i < 3; i++) {
+    const stack = tryPlace(ctx, peatStack(), -51.9 + i * 1.0, -25.2 + line * .9, .1 + line * .05);
     if (stack) stack.name = 'peat-stack';
   }
-  scatter(() => barleyTuft(), 'barley', -72, -66, -25.6, -24.2, .9, 30, 1.1);
-  scatter(() => barleyTuft(), 'barley', -64, -59, -25.8, -24.4, .9, 22, 1.1);
+  scatter(() => barleyTuft(), 'barley', -78.6, -72.6, -25.6, -23.6, .9, 20, 1.0);
+  scatter(() => barleyTuft(), 'barley', -63.8, -52, -21.9, -19.9, .9, 16, 1.0);
 
-  // ---------- the West Country: granite hedgebanks and gorse, and the cider orchard's rows ----------
-  for (const [a, b] of [[[-78, 0], [-73, 0]], [[-78, 4.4], [-73.4, 4.4]], [[-77.4, 8.6], [-73, 8.6]],
-    [[-78, 12], [-73.4, 12]], [[-75.2, 0], [-75.2, 12]],
-    // and the fields east of the west road, between the river and the channel, which the stands leave open
-    [[-72, 1.8], [-63, 1.8]], [[-72, 4.8], [-63, 4.8]], [[-71, 7.8], [-63.4, 7.8]], [[-68, 1.8], [-68, 7.8]]] as [number, number][][])
-    runAlong(len => hedgebankStone(len), 'granite-hedgebank', a as [number, number], b as [number, number], 2.2, 4);
-  scatter(i => gorse(.95 + (i % 3) * .1), 'west-gorse', -78, -73, 0, 12, 1.5, 16, 1.3);
-  scatter(i => gorse(.95 + (i % 3) * .1), 'west-gorse', -73, -56, 9, 13, 1.6, 12, 1.3);
-  scatter(i => gorse(.95 + (i % 3) * .1), 'west-gorse', -66, -56, 13, 20.5, 1.8, 10, 1.3);
-  // The cider orchard's rows above the channel's north shore, west of the beds the orchard stand works.
-  scatter(i => appleTree(.95 + (i % 3) * .1), 'orchard-tree', -79.4, -75.2, 5.6, 12.4, 1.5, 10, 1.3);
-  // The orchard stand fills the channel's north shore itself, so the rest of the cider country is the fields
-  // east of the west road, inside the granite hedgebanks.
-  scatter(i => appleTree(.9 + (i % 3) * .1), 'orchard-tree', -72, -63.5, 2.4, 9.6, 1.5, 12, 1.3);
-  scatter(i => oak(.9 + (i % 2) * .14), 'moor-oak', -74, -68, 4, 10, 2.0, 5, 1.5);
+  // ---------- the West Country: granite hedgebanks and gorse, and the cider trees beyond the orchard ----------
+  for (const [a, b] of [[[-70.4, 20.2], [-66.8, 20.2]], [[-70.4, 23.2], [-66.8, 23.2]], [[-71, 12.9], [-66, 12.9]]] as [number, number][][])
+    runAlong(len => hedgebankStone(len), 'granite-hedgebank', a as [number, number], b as [number, number], 1.8, 0);
+  scatter(i => gorse(.95 + (i % 3) * .1), 'west-gorse', -70.4, -66.6, 19.8, 23.3, 1.3, 8, 1.0);
+  scatter(i => gorse(.95 + (i % 3) * .1), 'west-gorse', -71, -63.8, 12.2, 13.4, 1.3, 6, 1.0);
+  scatter(i => gorse(.95 + (i % 3) * .1), 'west-gorse', -69, -63.6, 0.3, 3.4, 1.3, 6, 1.0);
+  scatter(i => appleTree(.95 + (i % 3) * .1), 'orchard-tree', -69, -63.6, 0.4, 3.2, 1.4, 6, 1.0);
+  scatter(i => oak(.9 + (i % 2) * .14), 'moor-oak', -69, -64, -15, -11.4, 2.0, 2, 1.2);
 
   // ---------- the cockle sand: the rakes and the withy baskets left on the ebb ----------
   // The blueprint's donkey and cart are not built. The dry flat at the channel head is 2.8 by 2.7 and the
@@ -262,7 +251,7 @@ export function londonCountryside(ctx: LayoutCtx) {
   }
 
   // ---------- scattered oaks in the hedgerows, which is where an English oak actually stands ----------
-  scatter(i => oak(.9 + (i % 3) * .12), 'hedgerow-oak', -56, -40, 8, 16, 2.2, 6, 1.6);
-  scatter(i => oak(.85 + (i % 2) * .12), 'westminster-oak', -60, -46, -14, -9, 2.2, 4, 1.7);
+  scatter(i => oak(.9 + (i % 3) * .12), 'hedgerow-oak', -51, -45.4, 3.6, 7.0, 2.0, 2, 1.2);
+  scatter(i => oak(.85 + (i % 2) * .12), 'westminster-oak', -46.4, -41.4, -10.6, -6.6, 2.0, 2, 1.2);
   void group;
 }

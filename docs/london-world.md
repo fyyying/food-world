@@ -384,7 +384,7 @@ Britain's own water:
 
 The river rises in the western hills at [-75, -6] — two units east of the Researcher's [-76, -6], so the west road can pass between its source and the west coast without a bridge — runs east past the Dales, through the Westminster cluster, widens past the Docks and reaches the strait at [-35.8, 4.2]. **The old Thames curve and its Westminster Bridge on the continent side are removed**, together with the `decks` entries at [-19,-22] and [-19.5,-9]; the Chain Bridge's [6.5,-4,6.5] stays and the two Britain decks are added.
 
-Clusters and their ground tints. Positions are final; every one of the twenty-nine objects appears exactly once.
+Clusters and their ground tints. Every one of the twenty-nine objects appears exactly once. **These were the Stage B positions; the shared-ground pass of 2026-09-23 moved every object and re-laid the roads, and its section at the end of this document is the positional record now.**
 
 | Cluster | Centre | Tint | Holds |
 | --- | --- | --- | --- |
@@ -540,3 +540,96 @@ The check ran on the running `food-tour-web` preview in a tab of its own, after 
 - **Seen and not fixed** (positions are fixed at Stage D): Tower Bridge's lifting bascules sit behind the pie shop's and the porters' stall's roofs from the approach camera. In the Dales, the fried fish shop, the flock, the dale farmhouse and the dairy crowd one another.
 
 Contact sheet: `scratchpad/london-stage-d.png` from this session (the arrival, the dale flock mid-reaction with the fried fish shop facing the camera, the public house room, and the 215 zoom limit), composed from `.data/shots/ld-d-*.jpg`.
+
+## Shared-ground pass, 2026-09-23
+
+The Stage D ceilings, all closed. The owner's bar is Spain after its walkthroughs: every clickable fully visible from the arrival camera with nothing in front of it, no stand sharing ground with another, no stand over water, and roads that come to every front door. Stage D had turned 25 stands to face the camera without moving them, which put the Westminster river row and the dock row with their backs to their roads and left the Dales crowding one another. This pass moved the stands instead of turning them.
+
+### What the live page measured, before and after
+
+The ten-ray check, the footprint check, the over-water count and the front-door check were run on the `food-tour-web` preview in a tab of its own, after a fresh page load (the server was restarted through the preview tool for the final run), with `window.__fwInstant` and the `__fw` hooks. The rays are the owner's rule: nine at each clickable's camera-facing front face at three heights, one at the diamond cue over its anchor, along the arrival direction (2, 48, 60); the first thing each ray meets must be that object, and every house, tree, wall and lamp counts as a blocker.
+
+| Check | Before (Stage D, live) | After (live, fresh load) |
+| --- | --- | --- |
+| Clickables clear on all ten rays | 12 of 29 | **29 of 29** |
+| Stand-on-stand pairs / rays | 31 pairs / 97 rays (plus one ray to the estuary gulls) | **0 / 0** |
+| Footprint pairs under 1.0 clear | 61 (48 overlapping) | **0**; the closest pair is 1.05 apart, and 25 samples through the reactions never went under 1.04 |
+| Stands with vertices over water | 12 | **1**: the Forth Bridge, 230 vertices, down from 695 (its own firth plate and span, by design) |
+| Front doors more than 2.0 from a road | 3 (6 with the road behind) | **0**; the farthest is 1.56 (the oyster smacks), and no road is behind any stand |
+| Decorative houses built | 5, all at fallback spots away from their clusters | **5**, each in its own cluster |
+
+`london-world.mjs` passes with the new ceilings: `HIDDEN`, `CROWDED` and `DOOR_BEHIND` are empty, so any entry is a failure, and `OVER_WATER` holds only `forthBridge: 230`. `london-reactions.mjs` passes with every rotation at 0 (the oyster smacks at -0.1).
+
+### The method
+
+A layout search placed the 29 stands against the exact footprints, the water and a box-by-box version of the ray test (per-cluster target zones, simulated annealing, several seeds). It was used to find where clusters could go, not to decide them; the final positions were set by hand and checked with the exact ray test on the live page after each batch. Three facts drove the layout:
+
+- **The arrival rays climb at 0.8 per unit.** A stand of height H hides anything whose front stands less than (H - 0.8) / 0.8 behind it. Big Ben (7.2) needs 8 units of clear ground behind it, Tower Bridge's walkway (4.6) and towers (6.8) need 5 to 8, and a 4.2-tall shop needs 4.3. So stands in one column stand about 11 apart, and neighbouring columns alternate.
+- **Tower Bridge's front is its coaster.** The coaster sits 3.9 in front of the bridge, so the bridge's rays start on the dock quay: nothing tall may stand south of the bridge within about 5. That is why the dock row could not stay between the estuary and the Weald.
+- **The island was too small for 29 separated stands**, so the south coast moved out from z 22 to z 26 (the table edge is 28, the same two-unit margin as the north coast), the Bristol Channel's south shore moved south by about a unit so the orchard and the bakehouse fit above it, the north-west coast moved out 0.4, and a dock basin was cut under Tower Bridge so the coaster and the oyster smacks float instead of lying on the quay. The sea follows the island as before: one polygon, one rim.
+
+### The moves
+
+Every rotation is now 0 (the oyster smacks -0.1): fronts face the camera and the roads come to the doors.
+
+| Object | Stage D `pos`, `rot` | Now | Why |
+| --- | --- | --- | --- |
+| `bigBen` | [-56, -3.4], -0.15 | **[-63.87, -8.89]** | The palace heads the north-bank row at its west end, with Whitehall and the Embankment in front of it; the ground behind it, which it hides for 8 units, holds only walls, bracken and the flock's pen |
+| `phoneBox` | [-52.8, -3.4], -0.3 | **[-44, -4.3]** | The pillar box stands at the corner of Whitehall and the bridge road, where its lamp and box hide nothing |
+| `pastryCe` | [-51.2, -7.1], 0 | **[-50.11, -5.35]** | North-bank row, between the dale road and the pillar box |
+| `teaRoomUk` | [-54.4, -7.1], 0 | **[-55.83, -7.0]** | North-bank row, east of the palace; its terrace comes onto the street, so the omnibus and the cabs run west of it |
+| `roastPub` | [-49.6, -3.4], -0.25 | **[-60.3, 4.97]** | Across the river on Borough High Street (the south bank, Southwark), facing the camera with the street in front of it; it had stood on the river bank with Whitehall behind it |
+| `boroughUk` | [-47.6, -7.1], 0 | **[-53.85, 3.95]** | Borough Market goes where it belongs, on the south bank beside the public house |
+| `redBus` | [-46.8, -3.4], 0.3 | **[-45.29, 11.2]** | The omnibus and the hansom stand at the south foot of the bridge road, on the dock road |
+| `pieMashUk` | [-42.8, 9.65], -0.55 | **[-38, -5.45]** | The East End is north of the river: the pie shop faces the Strand, far enough behind Tower Bridge for its walkway to pass under the rays |
+| `breakfastUk` | [-40.1, 9.65], 0 | **[-45.46, 20.84]** | The porters' coffee stall on the south-coast quay road, out of Tower Bridge's line |
+| `lascarUk` | [-37.4, 10.3], -0.25 | **[-39.5, 21.03]** | The seamen's kitchen on the last wharf of the south-east coast, facing the quay road; its roof clears the oyster smacks' rays |
+| `towerBridge` | [-39.4, 3.9], 0 | **[-37.7, 3.4]** | 1.7 east and 0.5 north, so its approach girder clears Westminster Bridge and nothing but the flat quay and the low omnibus stands in front of it: **the bascules lift in full view** |
+| `oystersUk` | [-36, 4.3], -0.1 | **[-34.2, 13.2]**, -0.1 | Moored in the new dock basin and the strait, both smacks afloat |
+| `hopKitchenUk` | [-43.65, 13.35], -0.55 | **[-54.2, 12.9]** | The Weald moves west to the ground south of Southwark: the cookhouse on the hop road |
+| `hopsUk` | [-41.5, 17.5], -0.45 | **[-54.5, 21.6]** | The hop garden and its oast on the south coast road, in front of the cookhouse and low enough not to hide it |
+| `mushroomsCe` | [-46.8, 20.2], 0.45 | **[-62.43, 22.2]** | The wood on the widened south coast, all on dry land |
+| `chippyUk` | [-58, -10.1], -0.5 | **[-52.53, -17.37]** | The Dales spread across the north: the fried fish shop at the head of the dale road, clear of the Forth Bridge's rays by 0.25 |
+| `dairyUk` | [-56.9, -13.1], -0.35 | **[-46.13, -21.2]** | On the north-east coast road, 1.1 clear of the flock |
+| `sheepUk` | [-61.5, -12.5], 0.3 | **[-45.21, -13.95]** | The flock on the open fell between the dairy and the pie shop, low enough to hide nothing |
+| `rhubarbUk` | [-55, -16], -0.75 | **[-59.82, -17.24]** | The forcing shed on its own lane west of the fish shop; the four Dales stands are now 7 to 15 apart instead of overlapping by up to 5.4 |
+| `herringUk` | [-52.5, -23.6], -0.2 | **[-39.19, -21.9]** | The herring quay on the north-east coast |
+| `forthBridge` | [-55.1, -22.5], -0.3 | **[-59.4, -24.54]**, 0 | Squared to the table across the firth, its west cantilever on the shore; the firth was narrowed to 1.2 under it so the bridge's anchor stands on land and its east tower on the far shore |
+| `distilleryUk` | [-66.1, -20.9], 0 | **[-68.95, -20.5]** | North coast, between the oat mill and the bridge; the Fife cottage no longer stands in front of its door |
+| `oatsUk` | [-69.5, -19], -0.6 | **[-76.3, -20.66]** | The north-west corner, facing the firth road |
+| `smokehouseUk` | [-62.1, -23.7], 0.15 | **[-71.7, -11.36]** | Inland on the west road where it rounds the tarn, off the crowded north coast |
+| `engineHouseUk` | [-76, 2.7], 0.3 | **[-73.3, 0]** | South of the tarn, clear of the river, facing the West Country lane |
+| `orchardUk` | [-77.5, 9.5], 0.75 | **[-75.5, 8.2]** | Above the channel's moved shore, all on land (it had 3,548 vertices over the channel) |
+| `pastyUk` | [-74.1, 7.1], 0.1 | **[-67.25, 8.05]** | East of the orchard, out of the engine house's rays |
+| `cocklesUk` | [-69.4, 14.5], 0 | **[-68.31, 14.98]** | On the dry sand at the channel head, 2 south of the bakehouse so it hides nothing |
+| `leeksUk` | [-71, 20.2], -0.75 | **[-75.5, 21.9]** | The cottage bed on the widened south-west peninsula, all on land |
+
+### Roads
+
+The road table in `london-landscape.ts` is re-laid: 23 routes, one piece, every end on another route, on a shore or at a door. **LD-R1** (Whitehall and the Embankment, 2.4) runs along the river's north bank from the west road to the river stairs past the palace, the tea room, the pastry board, the pillar box and the pie shop; **LD-R2** crosses Westminster Bridge, now at x -44.6; **LD-R3** is the quay under Tower Bridge; **LD-SB** is Borough High Street and the West Country lane round the engine house to the west road; **LD-R4**, **LD-R3b**, **LD-OL**, **LD-CL** and **LD-SC** are the hop road, the dock road, the orchard lane, the cockle lane and the south coast road; **LD-R5**, **LD-R5c** and **LD-R5b** are the dale road between the tea room and the pastry board, the moor road to the dairy and the herring quay, and the fish-shop and forcing-shed lane; **LD-R6** is the firth road and **LD-R7** the west road round the tarn. Nine short spurs (`LD-S-*`) come to the doorsteps of the stands whose front stands deep in front of their anchor, so the harness's anchor rule (2.6) holds as well as the front-door rule (2.0). The omnibus and the two cabs run on the stretch of Whitehall in front of the palace, where no stand's front reaches onto the road; the street's walkers keep to the stretch east of it. The four peopled loops are re-cut on the new roads: 20 residents, the pit pony on the dale road (`LD-R5-1`).
+
+### Houses and decor
+
+All five houses are built, each in its own cluster, each off the roads and first on none of any stand's ten rays:
+
+| House | Stage D | Now |
+| --- | --- | --- |
+| `uk-westminster-terrace` | [-50.5, -11.5] | **[-66.3, 1.5]**, Lambeth, on the south bank opposite the palace |
+| `uk-dock-warehouse` | [-48, 8] | **[-47.9, 5.0]**, Bankside, on the river at the south foot of Westminster Bridge |
+| `uk-kentish-cottage` | [-51, 15] | **[-60.3, 15.2]**, among the Weald's hop rows and its orchard |
+| `uk-dale-farmhouse` | [-64, -12] | **[-36.1, -13.2]**, on the north-east fell by the flock and the herring coast |
+| `uk-fife-cottage` | [-71.5, -24.5] | **[-71.5, -24.5]**, behind the distillery on the north coast (unchanged) |
+
+The countryside's regions in `london-countryside.ts` are re-drawn onto the ground the stands left: hop rows and a Kentish orchard patch between the public house and the cookhouse, oak and hornbeam on the south-west coast, hedged fields on the south bank, drystone walls, bracken, ewes and the flock's pen in the ground behind the palace (which the palace hides, so nothing tall stands there), peat and barley on the north coast, granite hedgebanks and gorse in the West Country. `tryPlace` now also refuses anything that would stand inside a house. The gas lamps are laid along every road at least 4.5 apart. The gull flocks fly higher (12 to 13), so a passing gull no longer counts as a blocker on a ray.
+
+### The owner's view
+
+Looked at on the live page: the overview at 95, each of the six clusters at approach zoom (30), and the 215 zoom-out limit at 1280 x 720, where the whole table reads with only a light haze at the far corner. Tower Bridge's bascules and coaster are in open view from the approach camera, with the pie shop visible above the walkway; the coaster and the smacks float in the dock basin. The Dales read as four separate places. Contact sheet: `scratchpad/london-shared-ground.png` from this session, composed from `.data/shots/ld-sg-*.jpg`.
+
+### What remains
+
+- **The Forth Bridge's 230 vertices over water** are its own firth plate and its span over the Firth of Forth. They are the only over-water ceiling.
+- **The Firth of Forth is 1.2 to 1.4 wide** where it was 1.6 to 2.0, so the bridge's anchor stands on land at the harness's ±1.4 proxy while the firth's head is still water at [-57.6, -21.4].
+- **`world-ceurope.ts` still lists the old Britain decks** at [-44, 2.85] and [-39.4, 3.9]. Only the Budapest walkers read that table, so nothing in Britain rides on it; the Britain walkers use `LD_CROSSINGS`, which moved with the bridge. It is not this pass's file.
+- **The hop row nearest the Kentish cottage** stands close in front of its wall (the house rule keeps it 0.2 clear of the box); from the Weald's approach it reads as a trellis by the door. Worth a look on the next walkthrough.
+- **Not verified:** the rooms (nothing here touched a room or a scene), the phone-width world at 390 x 844, and the Pages run.

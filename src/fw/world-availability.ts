@@ -1,4 +1,4 @@
-const PUBLISHED_WORLDS = new Set(['china', 'middle-east', 'mediterranean']);
+const PUBLISHED_WORLDS = new Set(['china', 'middle-east', 'mediterranean', 'italy', 'central-europe']);
 
 /** Static sharing exposes only finished worlds; local development keeps the full workshop available. */
 export function isWorldAvailable(world: string, staticBuild: boolean) {

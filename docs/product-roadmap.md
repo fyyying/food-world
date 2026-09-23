@@ -175,6 +175,15 @@ Story cards should have depth in food history, ingredients, and dishes. The [new
 
 **Open:** The first connections to develop, how visitors find and follow them, and how they relate to the exploration pass as more worlds become available.
 
+## 12. The landing page as a world map
+
+Requested by the owner on 2026-09-23, for next week or later. The Food World landing page today shows the worlds as separate plates. She wants one cute world map instead: a single drawn map of the world in the house style, where only the areas that are built are coloured and lit, and the unbuilt areas stay in the paper tone. Each built area keeps the clickable raise-on-hover effect the plates have now and opens its world on click. Nothing else on the page changes.
+
+- Built areas: today China (Sichuan, Jiangnan, the north and Xinjiang), Turkey, Spain, Italy and Britain; Thailand and Vietnam when they ship. The set is `PUBLISHED_WORLDS` plus each world's finished areas, so the map lights up as areas publish.
+- Unbuilt areas: paper-coloured, not clickable, no label, so the map reads as "this much of the world so far".
+- The raise effect, the plate shadow and the world names carry over from the plates; the map is one image or one SVG with per-area hit regions, sized for the phone first.
+- Open questions for the design pass: projection and framing (the whole globe or the inhabited belt), how an area smaller than a country (Sichuan) is lit inside its country, and whether the lit areas carry a tiny painted landmark each.
+
 ## How to continue
 
 The first UI pass is complete. No implementation order has been agreed for topics 2–11.

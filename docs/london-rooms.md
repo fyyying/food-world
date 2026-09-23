@@ -24,6 +24,10 @@ x .022 to .281, y .094 to .249 of the wide painting; at 390 x 844 it covers the 
 y .079 to .173. The market's wide S-hook at (.259, .158) is inside the wide rectangle, so the wide market hangs
 nothing (see "Sprites"). Every gull, being free to fly, was moved clear of the heading; the fixed fittings were not.
 
+**Superseded on 2026-09-23.** The per-room tables below, the loop counts, the sprite table and the measured motion
+are the Stage C record. Where they differ from "Fixes from the walkthrough, 2026-09-23" at the end of this file, the
+fixes section is the current state of the files.
+
 ## How to read the matrix
 
 One row per room and orientation. Dominant cue is the room's `PAINTED_SIGNATURES` entry; supporting cues are the
@@ -341,3 +345,102 @@ the band. The three moved gulls were checked arithmetically after the move (x .3
    heading are worth a regeneration, or stay as they are here.
 3. `scripts/tests/room-loops.mjs`, `scene-ambience.mjs`, `room-audit.html` and `rooms.html` now carry both the
    London and the Italy registrations on the same lines.
+
+## Fixes from the walkthrough, 2026-09-23
+
+A fix agent (Room maker's files only) worked the room items of "Owner walkthrough (second reviewer), 2026-09-23" in
+[london-world.md](london-world.md), items 31 to 46, and the failed room lines R3, R11 and R13 of the Stage E review.
+Every steam source, patch box and sprite was drawn over both paintings on a fraction grid together with the live UI
+zones measured in the room itself, and then checked on the live page as the envelope of every pixel the room's own
+effect canvas lit over ten seconds, laid over the painting. The UI zones: at 1280 x 720 the back button is x 18 to
+191, y 16 to 52, the room name starts at x 28, y 68 and ends at y 134 (x 216 to 419 by the length of the name), and
+the story button is x 28 to 131, y 146 to 179; at 390 x 844 the back button is the same, the name runs from x 16,
+y 68 to y 90 (y 112 for the two-line names of the pie shop and the cookhouse), and the story button is x 16 to 119,
+y 110 to 143 (132 to 165 under a two-line name). A phone shows x .0895 to .9105 of a portrait painting.
+
+A plume in this engine rises about 250 stage units, a quarter of the wide frame and more than a quarter of the
+portrait, and widens by 70 units as it goes, whatever its width setting. So a plume clears a face only when its source
+sits low enough or to the side of it, and its width and alpha set how far it spreads. Where no position clears a face,
+the vessel stays still and is listed below: the face rule wins over "every hot vessel steams".
+
+| Item | Room | What changed |
+| --- | --- | --- |
+| 31, 44 | `uk_pub` portrait | The grate is at the painting's left edge, so the portrait signature is now the lit pair of gas globes on the bar back, `light` [.360, .110, .440, .150], just under the room's name. The grate keeps a smaller glow on the part of its flames inside the band, [.094, .195, .140, .240], above the old drinker's cap. The Stage C globe patch [.176, .036, .240, .064] sat behind the back button and was moved to the street's gas lamps through the door, [.700, .112, .820, .198]. Lit on the portrait's effect canvas: 2,776, 1,794 and 8,913 canvas pixels (the signature lit 1,086 before, at the same density) |
+| 44 | `uk_distillery`, `uk_cockles` portrait | The distillery's fire ellipse (.105, .400) rx 62 ry 105 sat mostly off the left edge and over the peat man's face; it is now the kiln's upper flames at (.117, .322) rx 11 ry 18. The cockles' fire, boil and plume sat .13 too low, on the donkey; the copper on its tripod is at (.13, .20) with its fire at (.13, .232), so the fire is now (.130, .232) rx 16 ry 10 and the boil (.126, .198). Both portraits' fire boxes are inside x .0895 to .9105 |
+| 32, 33, R3 | `uk_pub` | The joint's plume came from under the carver's face. It now rises small and faint from the bone end (wide (.345, .585) 60 at .18; portrait (.715, .550) 20 at .07, below the barmaid's face). The hot sides steam: wide, the roast potatoes and the tin of Yorkshire puddings (.270, .820) 240 and the cabbage and carrots (.460, .735) 160, beside the gravy copper (.130, .745); portrait, the potatoes (.380, .720), the carrots (.790, .680) and the gravy (.200, .645). Four sources in each, the engine's limit, so the puddings and potatoes share one |
+| 34 | `uk_tearoom` | Only the cup being filled steams among the cups: wide (.295, .690) 200, portrait (.372, .665) 20 at .12. The right-hand table's cup, the reader's cup, the portrait's front cup and its far cups each stand directly under a face (the woman in the hat, the reader, the girl) and stay still. In wide the silver hot-water jug steams from its spout (.372, .628) 40; its plume stops under the woman in the hat's chin |
+| 35 | `uk_market` portrait | The sunray, which crossed the cheesemonger's face, falls on the goods below his hands, [.340, .480, .906, .840]. The haze was cut to the glazing between the room's name and his hair, [.360, .112, .720, .178]; the lamp box starts at x .686, where the name ends |
+| 36, R11 | `uk_market` wide | Re-measured at **5.05 per cent** (six pairs, 1.5 to 5.8) against the 3 per cent floor. The sunray left the roof glazing, where it stayed above every head but measured 1.1 to 1.5 per cent, and now lies on the wet cobbles of the aisle below the porter's chin, [.480, .360, .860, 1], drift .13; the haze is stronger (alpha .58 to .66) and stops at y .27, over the porter's crate. The wide S-hook's belly at (.262, .163) is clear of the name at desktop size ("The market" ends at x 218, y 134), so the game brace now hangs there, fx .247 fy .158 fw .030, x 312 to 352, y 111 to 164, above the woman's headscarf; the second lamp patch gave it the loop. Nothing steams |
+| 37 | `uk_piemash` | Wide: the copper's plume is small and faint from its right side (.345, .520) 80 at .16, the tray of pies' from its right end (.470, .430) 50, and the plated pie's (.235, .625) 180 stops under the pieman's chin. The eating diner's plate stays still: it is directly under his face. Portrait: the stewed tray steams faintly from its front (.470, .520) 20 at .10, the plate (.400, .665) and the copper (.120, .560); the tray of pies stays still between the pieman and the man in the cap. The portrait gas globe (.47, .05) is behind the back button and was dropped; the wide globe box is widened to [.395, .065, .475, .165] |
+| 38 | `uk_breakfast` | The tap's pour is three traced threads across the painted stream's full width, lip to landing, in a lighter tea colour (#eab26a): wide [.384, .558, .396, .600], portrait [.832, .426, .857, .457]. Lit: 429 canvas pixels wide at device pixel ratio 2 (107 CSS pixels; one thread lit 75 at ratio 1 before) and 572 portrait (162 before). The stream is short in both paintings, 4 and 3 per cent of the frame's height, so this is all of it. The griddle's plume rises from its front edge (.215, .740) 170, topping out at the stallholder's apron; the boiler's from its own lid (.345, .305). Portrait: the griddle from the bacon under his apron (.660, .690) 90; the portrait boiler stands past x .92, outside the phone band, so its plume (over his head) is gone. The portrait flare is behind the back button and the name, so the portrait light is the coals under the griddle, [.350, .765, .520, .840] |
+| 39, R13 | `uk_distillery` | Wide glint from the funnel through the air and down inside the glass bowl to the spirit at its bottom, [.770, .349, .786, .418], two threads over the stream's width (Stage C stopped at the bowl's rim, .03 short). Portrait: three threads from the ribbon at the copper spout down to the spirit's surface, [.836, .478, .862, .566]. Lit: 784 canvas pixels wide at ratio 2 (196 CSS; 71 before at ratio 1) and 1,593 portrait (510 before). The window shafts leaned the wrong way for their windows: wide [.220, .250, .620, .950] angle -.70, from the window at the upper left down to the right across the washback and the malt, right of the maltman; portrait [.300, .740, .906, 1] angle .50, on the green malt below every face (a beam kept in the window's own plaster was light on light and measured under 1 per cent). The portrait kiln sits under the room's heading, so its plume came out; `phone: []` keeps the wide plumes off the phone |
+| 40 | `uk_dairy` | Wide beam [.420, .390, .780, 1], starting below every face and falling to the left across the press bench, the pail and the flags; portrait [.380, .360, .906, .720] angle -.35, on the press and its curd. The haze stops above the girl's headscarf and inside the jambs (wide [.675, .100, .855, .290], portrait [.096, .180, .270, .300]); the leaves are boxed to the tree's crown [.675, .150, .740, .285]. Still no heat of any kind |
+| 41 | `uk_pasty` | Portrait: the oven tray is past x .906 and its plume rose across the old baker's face, so it steams in wide only; the broken pasty's plume (.500, .700) 120 stops under the woman's hands and between the children. The portrait flame and glow keep right of his face, fire (.886, .290) rx 10, light [.862, .240, .906, .330]. Wide: the doorway's sky is behind the back button, the name and the story button at desktop size, so the wide gulls are gone (the wide room runs on three loops: the oven light, two plumes and the flame); the portrait gulls fly at [.170, .182, .320, .236], under the story button |
+| 42 | `uk_smokehouse` | The table's plume rises from the right-hand pile (.220, .665) 80, below and right of the gutting woman's face. Portrait pit plume (.620, .665) 60, below the curer's face and the girls either side |
+| 43 | six rooms, portrait | The tea-room lamp, the pub bine, the cookhouse bine, the market brace, the seamen's kitchen lamp and the smokehouse speet hung from fittings at portrait y .04 to .11, so each hung through the room's name; none can move off its fitting, so all six are dropped from the portrait. The portrait smokehouse gull flies above the name, fx .520 fy .012 (x 202 to 253, y 4 to 50, right of the back button); its old place sat on the right-hand girl's headscarf. The three portrait gulls left are all clear of the heading. Wide sprites are unchanged apart from the market brace (item 36) |
+| — | `uk_chippy`, `uk_lascar`, `uk_hopkitchen`, `uk_cockles` | Found in the R13 re-check. Chippy portrait plumes narrowed (they spread over the girl's chin); the portrait rain box, which lay behind the back button, the name and the story button, is now the window's lower panes [.100, .178, .215, .262]. Lascar plumes rise from the pan surfaces, the curry's from the pot's right half beside the spice fall; the portrait lost its lamp (item 43) and takes the range fire's glow [.400, .655, .800, .770]. Cookhouse: the cauldron's plume rises from its right half (wide (.385, .640) 120; portrait (.500, .600) 100, stopping under the cook's chin). Cockles portrait: the copper's plume rose behind the heading and the bakestone plume the wide config lent the phone rose over the riddle, so the portrait has `phone: []` and takes low sun across the heap and the wet sand, [.300, .700, .906, .980]. Tea room portrait: the window's light across the tablecloth, [.094, .700, .906, 1], below every face |
+| 45, 46 | — | Empty painted fittings by contract, and the stills-only caveat: no action |
+| R13 | all thirteen | Every patch box, steam source, fire, glint and sprite drawn over both paintings and read live against faces, the band's edges and the UI zones in both orientations. Besides the items above: the pie shop's portrait rain box was trimmed to start under the two-line name. No plume, beam, haze or sprite now crosses a face or the heading in the envelopes measured |
+
+Vessels left still because every position crosses a face: the tea room's other cups (both), the eating diner's plate
+in the pie shop (wide), the tray of pies (portrait), the breakfast boiler and the bakehouse's oven tray (portrait,
+both outside the phone band), and the cockle copper and the distillery kiln (portrait, under the heading).
+
+### Measured motion after the fixes
+
+Six pairs per cell at frame offsets 60, 284, 508, 732, 956 and 1180, two seconds apart within each pair, so they
+spread across the 22.4 s cycle of a beam's drift; the median, then the weakest and strongest. Pairs are in
+`.data/uk-fix-motion-final/rm-UKF<w|p>-<room>-<offset>-<a|b>.jpg`; `uv run --with pillow --with numpy
+scripts/audit/room-motion.py .data/uk-fix-motion-final 3` reproduces them.
+
+**The portrait method changed, so portrait figures are not comparable with the Stage C column.**
+`LivingScene.snapshot()` draws each SVG layer without a size, so in portrait it squashes the painting into a strip
+down the middle while the effect canvas keeps its full size; the Stage C portrait figures (7 to 21 per cent) and a
+first pass here were read off that. The figures below come from a composite that gives each SVG clone the
+viewport's width and height (as the Italy fix pass did), so a portrait figure is a share of a phone screen. Wide
+figures are unaffected.
+
+| Room | Wide at 1280 x 720 | Portrait at 390 x 844 |
+| --- | --- | --- |
+| `uk_pub` | 5.75 (5.0 to 6.3) | 8.00 (6.7 to 8.7) |
+| `uk_tearoom` | 3.10 (2.8 to 3.5) | 4.00 (0.4 to 4.7) |
+| `uk_market` | 5.05 (1.5 to 5.8) | 3.50 (2.1 to 4.9) |
+| `uk_piemash` | 3.55 (3.0 to 4.0) | 4.45 (3.9 to 6.2) |
+| `uk_chippy` | 5.45 (4.8 to 6.3) | 6.80 (6.5 to 7.5) |
+| `uk_breakfast` | 3.10 (2.6 to 3.3) | 5.25 (2.7 to 6.0) |
+| `uk_lascar` | 3.35 (2.9 to 3.7) | 3.40 (2.0 to 4.3) |
+| `uk_hopkitchen` | 3.20 (2.9 to 3.5) | 4.65 (3.1 to 5.2) |
+| `uk_dairy` | 4.20 (0.7 to 4.9) | 4.00 (0.7 to 4.3) |
+| `uk_pasty` | 4.85 (3.9 to 5.2) | 3.55 (2.2 to 5.0) |
+| `uk_cockles` | 3.25 (2.6 to 4.1) | 3.40 (0.8 to 3.8) |
+| `uk_smokehouse` | 3.20 (2.7 to 3.8) | 7.25 (6.0 to 8.9) |
+| `uk_distillery` | 6.25 (4.5 to 8.3) | 3.05 (0.2 to 3.5) |
+
+Every cell clears the 3 per cent floor on its median. Moving the plumes off the faces cost most rooms a third to a
+half of their motion, and six wide cells first measured 1.3 to 2.3; each was brought back within the rules (wider
+plumes from their own vessels, the dairy and market beams moved onto the floor, the pie shop's globe box widened).
+The low samples in the market, dairy, tea room, cockles and distillery cells are the `sunray` stall, twice per 22.4 s
+cycle; `uk_distillery` portrait is the thinnest cell, 3.05, and its low phases are near zero because its beam is
+the only large cue on a phone.
+
+**Every cue draws at 390 wide.** The room's own effect canvas at 390 x 844, device pixel ratio 2, over 600 stepped
+frames (1,380 for the three beam rooms), counted inside each configured box: `uk_pub` signature 2,776, grate 1,794,
+street lamps 8,913; `uk_tearoom` glint 6,674, rain 15,945, sunray 90,043; `uk_market` sunray 135,454, haze 22,604,
+lamp 3,490; `uk_piemash` glint 3,796, rain 3,682; `uk_chippy` glint 36,277, rain 3,114; `uk_breakfast` glint 572,
+coals 11,015; `uk_lascar` glint 2,573, fire glow 39,839; `uk_hopkitchen` glint 3,630; `uk_dairy` drip 876, sunray
+100,535, haze 18,812, rack drip 2,607; `uk_pasty` oven light 3,413, gulls 6,278; `uk_cockles` glint 13,512, sunray
+68,403; `uk_smokehouse` embers 21,529; `uk_distillery` glint 1,593, sunray 102,222. Every plume lights its column, and
+every visible portrait sprite lies inside x 0 to 390 and below or right of the heading. `room-loops.mjs`: every room
+at three or four loops in both orientations.
+
+**How it was checked.** The dev server `food-tour-web` through the preview tool, in the fix agent's own tab, loaded
+on a plain image URL with `WebSocket` stubbed and the rooms built from `LONDON_SCENES`, at 1280 x 720 and 390 x 844,
+ticked by hand at 1/60 s. The pane was hidden and the server was restarted once by another agent part way through,
+so every room was stepped and read from composites and lit-pixel envelopes. Contact sheet of all thirteen rooms,
+wide and portrait, live composites at frame 284 with the back button, the name and the story button outlined in red
+and the hung sprites in yellow: the fix agent's `london-fix-rooms.png`.
+
+**Not verified in this pass.** Real-time watching in a displayed pane; the world route (`__fw.open`) and the touch
+responses; reduced motion; `npm run build:pages`; a physical phone. The face check is by eye on the lit envelopes
+over the paintings, not a face detector. `docs/quality-baseline.md` still carries no Britain motion numbers (item 1 of
+"Left for the lead" above).

@@ -220,16 +220,24 @@ export const PAINTED_SIGNATURES: Record<string, AmbientPatch> = {
   // or sparks off a pit. Every box and path is in docs/london-rooms.md with the pixels it was read off.
   // The coal grate in the settle corner. There is no pour anywhere in this room — every glass is filled and either
   // standing or held — so the fire the room is lit and warmed by is its signature, and it takes no fire ellipse on
-  // top of it. A phone shows only x .094 to .906 of the portrait painting and the grate runs from the painting's
-  // left edge to x .122, so the phone box is the grate's right-hand edge, above the drinker's cap at y .245; the
-  // portrait's other loop for the same light is the gas globe in london-ambience.ts.
-  uk_pub: {kind:'light',wide:[.884,.378,.956,.504],phone:[.094,.204,.126,.243],color:'#f3a34b'},
+  // top of it. A phone shows only x .094 to .906 of the portrait painting and the portrait grate runs from the
+  // painting's left edge to x .132, so on a phone it was a sliver (walkthrough 31). Since 2026-09-23 the portrait
+  // signs with the lit pair of gas globes on the bar back (x .37 to .43, y .095 to .14), the box starting at
+  // y .106, just under the room's name at 390 wide, and the grate's visible edge keeps a smaller glow among the
+  // patches in london-ambience.ts.
+  uk_pub: {kind:'light',wide:[.884,.378,.956,.504],phone:[.360,.110,.440,.150],color:'#ffc47a'},
   // The tea through the strainer. Wide: the pot's spout lip (.2813, .574), the thread through (.2907, .620) and
   // (.2941, .650), landing where it meets the strainer over the cup at (.2971, .678).
   // Portrait: lip (.3562, .5677), through (.3721, .6097) and (.3814, .6266), the tea in the cup at (.3840, .6639).
   uk_tearoom: {kind:'stream-glint',wide:[.276,.572,.304,.681],phone:[.350,.566,.392,.666],color:'#c98a3c',
     paths:[[[[.19,0],[.52,.44],[.65,.72],[.75,1]]],[[[.15,0],[.53,.44],[.75,.61],[.81,1]]]]},   // the pot, the strainer and the cup
-  uk_market: {kind:'sunray',wide:[.520,0,.920,.600],phone:[.240,0,.880,.460],angles:[-.32,.30],sway:[.090,.080]},   // first light down the aisle, through the iron and glass roof
+  // First light through the iron and glass roof. Since 2026-09-23 neither beam crosses a head: the Stage C beams ran
+  // from the roof down the aisle through the porter's and the women's faces, and in portrait through the
+  // cheesemonger's (walkthrough 35). The wide beam now starts below the lowest face (the porter's chin at y .35)
+  // and lies on the wet cobbles of the aisle; the portrait's falls on the goods, the cut truckle and the butter
+  // below the cheesemonger's hands (from y .48). The drift went from .09 / .08 to .13, to hold the wide room over
+  // its floor.
+  uk_market: {kind:'sunray',wide:[.480,.360,.860,1],phone:[.340,.480,.906,.840],angles:[-.32,.30],sway:[.130,.130]},
   // The green liquor. Wide: the ladle's lip (.2478, .5055), the thread almost straight down at x .246, landing in
   // the liquor already pooled on the pie at (.2460, .6120), measured on the pixels with a colour key.
   // Portrait: the ladle's sheet narrows to a thread at (.459, .586) and runs at x .464 down to the mash at
@@ -242,12 +250,15 @@ export const PAINTED_SIGNATURES: Record<string, AmbientPatch> = {
   uk_chippy: {kind:'stream-glint',wide:[.142,.551,.222,.641],phone:[.575,.468,.815,.580],color:'#ffe9b0',
     paths:[[[[.10,0],[.12,1]],[[.33,0],[.35,1]],[[.58,0],[.60,1]],[[.85,0],[.87,1]]],
       [[[.10,0],[.11,1]],[[.29,0],[.30,1]],[[.48,0],[.49,1]],[[.67,0],[.68,1]],[[.89,0],[.90,1]]]]},   // fat off the basket into the pan
-  // The boiler tap. Wide: the brass nozzle at (.3889, .5616) down to the mug standing on the board at (.3916,
-  // .5979). Portrait: the same tap at (.8452, .4276) down to the tea in the mug at (.8426, .4522) — and there the
-  // mug is **held**, which the Stage B acceptance row flagged, so the thread is anchored on the mug's rim as
-  // painted rather than on a board the portrait does not show.
-  uk_breakfast: {kind:'stream-glint',wide:[.384,.560,.398,.600],phone:[.836,.426,.852,.454],color:'#b8641f',
-    paths:[[[[.35,0],[.43,.50],[.54,1]]],[[[.58,0],[.47,.50],[.41,1]]]]},   // the boiler tap filling a mug
+  // The boiler tap. Wide: the brass nozzle at (.3895, .5625) down to the mug standing on the board at (.3905,
+  // .598). Portrait: the same tap at (.845, .428) down to the tea in the mug at (.8425, .455) — and there the mug
+  // is **held**, which the Stage B acceptance row flagged, so the thread is anchored on the mug's rim as painted.
+  // Since 2026-09-23 each glint is three traced threads across the painted stream's full width, lip to landing,
+  // in a lighter tea colour: one thread lit 64 canvas pixels at 1280 and 56 at 390 and could not be seen
+  // (walkthrough 38). The portrait box is .025 wide so the engine draws its full two-unit line.
+  uk_breakfast: {kind:'stream-glint',wide:[.384,.558,.396,.600],phone:[.832,.426,.857,.457],color:'#eab26a',
+    paths:[[[[.40,.10],[.48,.95]],[[.46,.10],[.54,.95]],[[.52,.10],[.60,.95]]],
+      [[[.30,.06],[.34,.94]],[[.50,.06],[.42,.94]],[[.70,.06],[.50,.94]]]]},   // the boiler tap filling a mug
   // The ground spice off the tilted slab. Wide: the slab's lip (.3558, .4766), through (.3606, .5248) and
   // (.3648, .5682), landing on the curry at (.3677, .5995). Portrait: lip (.5747, .5109), through (.5839, .5492)
   // and (.5931, .5817), landing at (.596, .600).
@@ -266,18 +277,26 @@ export const PAINTED_SIGNATURES: Record<string, AmbientPatch> = {
     paths:[[[[.42,0],[.44,.51],[.46,1]]],[[[.37,0],[.45,.51],[.52,1]]]]},   // whey off the press spout into the pail
   // The granite oven's open mouth. The phone box stops at x .903: the oven arch runs past the right edge of the
   // slice a 390-wide viewport shows, and this is the brightest thing inside it.
-  uk_pasty: {kind:'light',wide:[.870,.225,.960,.400],phone:[.845,.240,.903,.325],color:'#f3a34b'},
+  // Since 2026-09-23 the phone box starts at x .862, right of the old baker's face, which the glow had reached.
+  uk_pasty: {kind:'light',wide:[.870,.225,.960,.400],phone:[.862,.240,.906,.330],color:'#f3a34b'},
   // The wet sand through the riddle, in separate falls, from the riddle's underside to the heap on the shore.
   // Wide: from y .532 to y .800, at x .768 to .820. Portrait: from y .600 to y .745, at x .40 to .80.
   uk_cockles: {kind:'stream-glint',wide:[.762,.532,.824,.800],phone:[.345,.600,.865,.745],color:'#e7d9bd',
     paths:[[[[.25,0],[.18,1]],[[.45,0],[.42,1]],[[.62,0],[.66,1]],[[.80,0],[.86,1]]],
       [[[.11,0],[.09,1]],[[.26,0],[.25,1]],[[.41,0],[.41,1]],[[.57,0],[.58,1]],[[.72,0],[.74,1]],[[.88,0],[.90,1]]]]},   // sand off the riddle onto the sand
   uk_smokehouse: {kind:'embers',wide:[.380,.770,.550,.860],phone:[.440,.645,.760,.715],color:'#ffcf6e'},   // sparks off the hardwood fire in the sunk barrel
-  // The middle cut running in the spirit safe, which is the clearest pour in the set. Wide: the brass funnel
-  // (.7773, .3505) down to the spirit in the glass bowl at (.7781, .3855). Portrait: the copper spout (.8416,
-  // .4803), through (.8429, .5155) and (.8443, .5440), landing on the spirit at (.8437, .5604).
-  uk_distillery: {kind:'stream-glint',wide:[.770,.349,.786,.387],phone:[.834,.478,.852,.562],color:'#eef4f7',
-    paths:[[[[.46,0],[.49,.50],[.51,1]]],[[[.42,0],[.49,.45],[.57,.79],[.54,1]]]]},   // the spirit through the glass of the safe
+  // The middle cut running in the spirit safe, which is the clearest pour in the set. Since 2026-09-23 each glint
+  // covers the whole painted stream (walkthrough 39: it had lit 56 and 168 canvas pixels). Wide: from the funnel
+  // (.7768, .352) through the air and on down inside the glass bowl to the spirit pooled at its bottom (.7775,
+  // .416), as two threads over the painted stream's three-pixel width; Stage C stopped at the bowl's rim, .03
+  // short. The thread in the upper glass above the funnel stays still: one box over both runs made the dash too
+  // long and too fast for either. Portrait: the stream leaves the
+  // copper spout as a ribbon (.8405 to .8595 at y .482) and narrows to the spirit's surface in the bowl (.8425 to
+  // .8465 at y .562), traced as three threads, left, middle and right.
+  uk_distillery: {kind:'stream-glint',wide:[.770,.349,.786,.418],phone:[.836,.478,.862,.566],color:'#eef4f7',
+    paths:[[[[.37,.04],[.40,.49],[.42,.97]],[[.48,.04],[.51,.49],[.53,.97]]],
+      [[[.18,.05],[.18,.25],[.20,.48],[.22,.70],[.25,.95]],[[.56,.05],[.42,.25],[.33,.48],[.31,.70],[.33,.95]],
+        [[.91,.05],[.65,.25],[.46,.48],[.40,.70],[.41,.95]]]]},   // the spirit through the glass of the safe
   // Italy: one signature per room, measured on that room's own wide.jpg and portrait.jpg. No Italy room uses a
   // breeze crop and none needed one — every painting was generated with an empty hook, peg, chain, rail or cane and
   // its hanging object arrived as a separate keyed sprite, so the hanging motion of this world is an `it-*` sprite

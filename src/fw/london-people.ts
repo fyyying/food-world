@@ -370,3 +370,60 @@ export function daleSheep(s = 1): P {
   g.userData.tick = (t: number) => { head.rotation.z = -.35 + Math.abs(Math.sin(t * .35)) * .35; };
   return g;
 }
+
+/** A closed round at a steady pace with two short halts a lap: the pit pony's handler in the dale yard. The
+ *  pony used to trail a walker up and down a 3.4-unit lane and swing round behind him at every turn, which put
+ *  it through the tea room's back wall and made it jump sixfold in speed (walkthrough item 20, 2026-09-23). On
+ *  a ring nobody turns back, so the pony simply follows the same curve at the same pace. `lead` is how far
+ *  along the curve the walker is ahead of the returned position function's zero. */
+export function ringWalk(p: P, curve: THREE.CatmullRomCurve3, pace: number, halt = 2.2) {
+  const length = curve.getLength(), speed = pace * 100 * (p.userData.pace as number), lap = length / speed;
+  const stops = [.18, .68], period = lap + halt * stops.length;
+  /** Distance along the ring at time t: walking, with a halt at each of the two stops. */
+  const along = (t: number) => {
+    let q = ((t % period) + period) % period, d = 0;
+    for (const s of stops) {
+      const walk = (s * length - d) / speed;
+      if (q < walk) return d + q * speed;
+      q -= walk; d = s * length;
+      if (q < halt) return d;
+      q -= halt;
+    }
+    return Math.min(length, d + q * speed);
+  };
+  const state = { along: 0, length };
+  p.userData.ringState = state;
+  const tick = (t: number, dt: number) => {
+    const d = along(t), u = d / length;
+    const at = curve.getPointAt(u), ahead = curve.getPointAt((u + .002) % 1);
+    p.position.set(at.x, .034, at.z); p.rotation.y = Math.atan2(ahead.x - at.x, ahead.z - at.z);
+    state.along = d;
+    p.userData.tick?.(t, dt);
+  };
+  return tick;
+}
+
+/** The pony on the same ring, 1.4 behind its handler along the curve, facing the way it goes. */
+export function ringPony(pony: P, leader: P, curve: THREE.CatmullRomCurve3, group: THREE.Object3D) {
+  const rope = new THREE.Mesh(new THREE.CylinderGeometry(.012, .012, 1, 5), mat('#8A7A5A')); rope.name = 'pony-lead'; group.add(rope);
+  const hand = new THREE.Vector3(), halter = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0), was = new THREE.Vector3();
+  let first = true;
+  return (t: number, dt: number) => {
+    const s = leader.userData.ringState as { along: number; length: number } | undefined; if (!s) return;
+    const u = (((s.along - 1.4) / s.length) % 1 + 1) % 1;
+    const at = curve.getPointAt(u), ahead = curve.getPointAt((u + .002) % 1);
+    was.copy(pony.position);
+    pony.position.set(at.x, .034, at.z);
+    // The head (local +x) points the way the pony actually went since the last frame; on the ring that is the
+    // curve's own direction, and after a jump in time it is still the way it moved.
+    const mx = at.x - was.x, mz = at.z - was.z;
+    pony.rotation.y = !first && Math.hypot(mx, mz) > 1e-5 ? Math.atan2(-mz, mx) : first ? Math.atan2(-(ahead.z - at.z), ahead.x - at.x) : pony.rotation.y;
+    first = false;
+    pony.userData.tick?.(t, dt);
+    hand.set(0, .6, 0); leader.localToWorld(hand); group.worldToLocal(hand);
+    halter.set(.86, .72, 0); pony.localToWorld(halter); group.worldToLocal(halter);
+    rope.position.copy(hand).add(halter).multiplyScalar(.5);
+    rope.scale.y = Math.max(.01, hand.distanceTo(halter));
+    rope.quaternion.setFromUnitVectors(up, halter.clone().sub(hand).normalize());
+  };
+}

@@ -5,19 +5,19 @@
  *  The road, bridge and lane tables live in `london-landscape.ts`, because the countryside is cut round them;
  *  they are re-exported here so a caller may import them from either file, in the shape `spain-town.ts` uses.
  *
- *  Tower Bridge is **not** built here. It is the clickable landmark `towerBridge` at [-39.4, 3.9] and its
+ *  Tower Bridge is **not** built here. It is the clickable landmark `towerBridge` at [-37.7, 3.4] and its
  *  geometry is the Stand maker's `towerBridge` prop in `props-london.ts`; building a second one over it would
- *  put two bascule bridges in one place. Both deck centres are in `LD_BRIDGES` and in the `decks` table of
- *  `world-ceurope.ts` all the same, so anything crossing either one rides up onto it.
+ *  put two bascule bridges in one place. Both deck centres are in `LD_BRIDGES`; `world-ceurope.ts` takes its
+ *  Westminster Bridge deck from `LD_CROSSINGS`, and nobody walks over either bridge.
  */
 import * as THREE from 'three';
 import { add, mat, type P } from './props';
 import { block, masonry } from './turkey-architecture';
 import { LD, ukHouse, gasLamp, type UkStyle } from './london-architecture';
-import { londonResident, londonWalk, pitPony, followPony } from './london-people';
+import { londonResident, londonWalk, pitPony, ringWalk, ringPony } from './london-people';
 import {
   LD_ROADS, LD_CROSSINGS, LD_BRIDGES, LD_LANES, BRIDGE_SPAN, BRIDGE_DECK_Y, PONY_LANE,
-  tryPlace, placeBuilding, isWet, type Lane, type Pt, type Road,
+  tryPlace, placeBuilding, isWet, inRoomApproach, road, type Lane, type Pt, type Road,
 } from './london-landscape';
 import { LONDON_OBJECTS } from './london-objects';
 import type { LayoutCtx } from './worldkit';
@@ -256,7 +256,7 @@ function costerBarrow(): P {
  *
  *  - `uk-westminster-terrace` [-66.3, 1.5]: Lambeth, on the south bank opposite the palace
  *  - `uk-dock-warehouse` [-47.9, 5.0]: Bankside, on the river at the south foot of Westminster Bridge
- *  - `uk-kentish-cottage` [-60.3, 15.2]: among the Weald's hop rows
+ *  - `uk-kentish-cottage` [-60.4, 17.9]: among the Weald's hop rows, behind the public house's approach camera
  *  - `uk-dale-farmhouse` [-36.1, -13.2]: on the north-east fell by the flock
  *  - `uk-fife-cottage` [-71.5, -24.5]: behind the distillery on the north coast
  */
@@ -265,8 +265,9 @@ const HOUSES: { id: string; style: UkStyle; w: number; d: number; h: number; sto
     spots: [[-66.3, 1.5, 0], [-66.6, 1.3, 0], [-65.9, 1.7, 0]] },
   { id: 'uk-dock-warehouse', style: 'dockWarehouse', w: 3.0, d: 2.0, h: 1.25, storeys: 4,
     spots: [[-47.9, 5.0, 0], [-47.8, 5.1, 0], [-47.6, 5.1, 0]] },
+  // Moved south from [-60.3, 15.2] on 2026-09-23: the public house's approach camera stood inside it.
   { id: 'uk-kentish-cottage', style: 'kentishCottage', w: 2.8, d: 2.0, h: 1.15, storeys: 2,
-    spots: [[-60.3, 15.2, 0], [-60.3, 15.8, 0], [-60.8, 14.6, 0]] },
+    spots: [[-60.4, 17.9, 0], [-60.7, 17.8, 0], [-60.1, 18.0, 0]] },
   { id: 'uk-dale-farmhouse', style: 'daleFarm', w: 2.4, d: 1.9, h: 1.9,
     spots: [[-36.1, -13.2, 0], [-36.1, -13.0, 0], [-64, -12.5, 0]] },
   { id: 'uk-fife-cottage', style: 'fifeCottage', w: 2.4, d: 1.8, h: 1.8,
@@ -276,7 +277,7 @@ const HOUSES: { id: string; style: UkStyle; w: number; d: number; h: number; sto
 /** Hand-picked gas standards; `londonTown` then lays more along every road, at least 4.5 apart. Each is
  *  dropped if it would crowd a clickable, stand on a lane, reach into the water or hide a stand. */
 const LAMPS: [number, number][] = [
-  [-45.9, -2.6], [-43.1, 1.0], [-43.1, 5.0], [-46.2, 8.9], [-57.9, 9.3], [-51.6, -11.8],
+  [-45.9, -2.6], [-43.1, 1.0], [-43.1, 5.0], [-57.9, 9.3],
 ];
 
 export function londonTown(ctx: LayoutCtx) {
@@ -315,7 +316,10 @@ export function londonTown(ctx: LayoutCtx) {
   // come first.
   let lamps = 0;
   const lit: [number, number][] = [];
-  const spaced = (x: number, z: number) => lit.every(([lx, lz]) => Math.hypot(lx - x, lz - z) >= 4.5);   // a standard every few doors, never a cluster
+  const ts0 = road('LD-TS').points;
+  const offTerminus = (x: number, z: number) => !(x > ts0[1][0] - 2.4 && x < ts0[0][0] + 2.4 && Math.abs(z - ts0[0][1]) < 2.3);   // the omnibus swings wide at its turns
+  const yd = road('LD-YD').points, offYard = (x: number, z: number) => !(x > Math.min(...yd.map(p => p[0])) - 1.3 && x < Math.max(...yd.map(p => p[0])) + 1.3 && z > Math.min(...yd.map(p => p[1])) - 1.3 && z < Math.max(...yd.map(p => p[1])) + 1.3);   // the pony's ring is drawn rounder than its table
+  const spaced = (x: number, z: number) => offTerminus(x, z) && offYard(x, z) && lit.every(([lx, lz]) => Math.hypot(lx - x, lz - z) >= 4.5);   // a standard every few doors, never a cluster
   for (const [i, [x, z]] of LAMPS.entries()) {
     if (!spaced(x, z)) continue;
     const lamp = tryPlace(ctx, gasLamp(2.5 + (i % 2) * .2), x, z, i * .7);
@@ -358,63 +362,70 @@ export function londonTown(ctx: LayoutCtx) {
     const barrow = tryPlace(ctx, costerBarrow(), x, z, rot); if (barrow) barrow.name = 'coster-barrow';
   }
 
-  // ---------- the traffic on the Westminster street: one 1907 omnibus and two hansom cabs ----------
+  // ---------- the street traffic: one 1907 omnibus and two hansom cabs ----------
   // No red bus and no black cab anywhere on this table: both are post-war objects and the blueprint retires
-  // them with the old London rectangle. They run on the stretch of Whitehall in front of the palace, x -66 to
-  // -59.6, where no stand's front reaches onto the road, 0.6 either side of the crown, and the street's walkers
-  // keep to the stretch east of it (shared-ground pass, 2026-09-23).
-  // All three run at one speed a third of the loop apart, so none ever overtakes another.
-  // The loop: the north lane east-bound, a half circle short of the tea room, the south lane back, a half
-  // circle short of the west road. Each lane follows the street's own centreline, so it bends where the
-  // street bends.
-  const crown = (x: number) => {
-    const pts = LD_ROADS[0].points;
-    for (let i = 0; i < pts.length - 1; i++) { const [ax, az] = pts[i], [bx, bz] = pts[i + 1]; if ((x - ax) * (x - bx) <= 0) return az + (bz - az) * (x - ax) / ((bx - ax) || 1); }
-    return pts[0][1];
-  };
-  const WEST = -65.5, EAST = -60.2, SIDE = .6, loop: THREE.Vector3[] = [];
-  for (let k = 0; k <= 12; k++) { const x = WEST + (EAST - WEST) * k / 12; loop.push(new THREE.Vector3(x, 0, crown(x) - SIDE)); }
-  for (let k = 1; k < 8; k++) { const a = -Math.PI / 2 + Math.PI * k / 8; loop.push(new THREE.Vector3(EAST + Math.cos(a) * SIDE, 0, crown(EAST) + Math.sin(a) * SIDE)); }
-  for (let k = 0; k <= 12; k++) { const x = EAST + (WEST - EAST) * k / 12; loop.push(new THREE.Vector3(x, 0, crown(x) + SIDE)); }
-  for (let k = 1; k < 8; k++) { const a = Math.PI / 2 + Math.PI * k / 8; loop.push(new THREE.Vector3(WEST + Math.cos(a) * SIDE, 0, crown(WEST) + Math.sin(a) * SIDE)); }
+  // them with the old London rectangle. On Whitehall the omnibus and the cabs ran along the palace's front, so
+  // they crossed Big Ben's arrival rays on every frame, turned inside one another in a loop too short for
+  // three, and filled the tea room's room approach (walkthrough items 17, 22 and 29, 2026-09-23). They now keep
+  // to the omnibus terminus at the south foot of Westminster Bridge (LD-TS), a stretch of Borough High Street no
+  // stand faces and no room approach looks across: the omnibus and one hansom turn its loop half a lap apart,
+  // one on each side of the street, so they meet only side by side on the straight; the second hansom waits at
+  // the kerb on the hop road, with its horse to the north.
+  const ts = road('LD-TS').points, cz = ts[0][1], WEST = ts[1][0] + .1, EAST = ts[0][0] - .1, SIDE = .62, loop: THREE.Vector3[] = [];
+  for (let k = 0; k <= 8; k++) loop.push(new THREE.Vector3(WEST + (EAST - WEST) * k / 8, 0, cz + SIDE));
+  for (let k = 1; k < 8; k++) { const a = Math.PI / 2 - Math.PI * k / 8; loop.push(new THREE.Vector3(EAST + Math.cos(a) * SIDE, 0, cz + Math.sin(a) * SIDE)); }
+  for (let k = 0; k <= 8; k++) loop.push(new THREE.Vector3(EAST + (WEST - EAST) * k / 8, 0, cz - SIDE));
+  for (let k = 1; k < 8; k++) { const a = -Math.PI / 2 - Math.PI * k / 8; loop.push(new THREE.Vector3(WEST + Math.cos(a) * SIDE, 0, cz + Math.sin(a) * SIDE)); }
   const street = new THREE.CatmullRomCurve3(loop, true);
   const streetLength = street.getLength();
   // Each vehicle is set by two points on the loop, its rear axle and its front (the horse, or the omnibus's
-  // front wheels), so the whole body follows the curve through the turns instead of its nose swinging out
-  // across the walkers on the crown.
+  // front wheels), so the whole body follows the curve through the turns.
   const traffic: { v: P; rear: number; reach: number }[] = [
-    { v: motorOmnibus(), rear: -1.15, reach: 2.5 }, { v: hansomCab(), rear: 0, reach: 2.0 }, { v: hansomCab('#2A2420'), rear: 0, reach: 2.0 },
+    { v: motorOmnibus(), rear: -1.15, reach: 2.5 }, { v: hansomCab(), rear: 0, reach: 2.0 },
   ];
   traffic.forEach(({ v }) => { group.add(v); v.name = 'street-vehicle'; });
   tickers.push((t, dt) => traffic.forEach(({ v, rear, reach }, i) => {
-    const u = (t * .011 + i / traffic.length) % 1;
+    const u = (t * .012 + i / traffic.length) % 1;
     const front = street.getPointAt(u), back = street.getPointAt(((u - reach / streetLength) % 1 + 1) % 1);
     const dx = front.x - back.x, dz = front.z - back.z, l = Math.hypot(dx, dz) || 1;
     v.position.set(back.x - dx / l * rear, TOP + .04, back.z - dz / l * rear);
     v.rotation.y = Math.atan2(dx, dz) - Math.PI / 2;
     v.userData.tick?.(t, dt);
   }));
+  { const waiting = hansomCab('#2A2420'); waiting.name = 'street-vehicle'; group.add(waiting);
+    waiting.position.set(-50.5, TOP + .04, 12.4); waiting.rotation.y = Math.PI / 2; tickers.push((t, dt) => waiting.userData.tick?.(t, dt)); }
 
-  // ---------- four peopled loops, twenty residents, one leading a pit pony up the dale ----------
-  const led: [P, P][] = [];
+  // ---------- five peopled lanes, twenty residents, one leading a pit pony round the dale yard ----------
   for (const lane of LD_LANES) {
     const lift = londonBridgeLift(lane);
+    const dx = lane.to[0] - lane.from[0], dz = lane.to[1] - lane.from[1], len = Math.hypot(dx, dz) || 1, nx = -dz / len, nz = dx / len;
     for (let i = 0; i < lane.walkers; i++) {
       const seed = lane.seed + i * 3;
       const p = londonResident(seed);
       p.name = 'britain-walker'; p.userData.lane = lane.id; group.add(p);
-      tickers.push(londonWalk(p, lane.from, lane.to, lane.range, seed + i * 5, lift, lane.pace));
-      if (lane.id === PONY_LANE && i === 0) { const pony = pitPony(); pony.name = 'britain-pony'; group.add(pony); led.push([pony, p]); }
+      if (lane.id === PONY_LANE) {
+        // The dale yard: the handler leads the pit pony round the ring at a steady walk, halting twice a lap.
+        const ring = road('LD-YD').points.slice(0, -1);
+        const curve = new THREE.CatmullRomCurve3(ring.map(([x, z]) => new THREE.Vector3(x, 0, z)), true);
+        tickers.push(ringWalk(p, curve, lane.pace));
+        const pony = pitPony(); pony.name = 'britain-pony'; group.add(pony);
+        tickers.push(ringPony(pony, p, curve, group));
+        continue;
+      }
+      const off = lane.strips ? lane.strips[i % lane.strips.length] : 0;
+      const from: Pt = [lane.from[0] + nx * off, lane.from[1] + nz * off], to: Pt = [lane.to[0] + nx * off, lane.to[1] + nz * off];
+      tickers.push(londonWalk(p, from, to, lane.range, seed + i * 5, lift, lane.pace));
     }
   }
-  for (const [pony, handler] of led) tickers.push(followPony(pony, handler, group));
 
   // ---------- neighbours who stand and talk: the street corner, the market row, the quay and the fell gate ----------
   // A standing figure does not translate, so it does not step.
   for (const [i, [x, z, n]] of ([[-59.2, -12.3, 2], [-47.8, 6.1, 2], [-47.3, 17.3, 2], [-56.3, -12.5, 2], [-67.0, 12.6, 2], [-65.5, -13.0, 2]] as [number, number, number][]).entries()) {
     for (let k = 0; k < n; k++) {
       const a = (k / n) * Math.PI * 2 + i;
-      const neighbour = place(londonResident(60 + i * 3 + k), x + Math.cos(a) * .55, z + Math.sin(a) * .55, -a - Math.PI / 2);
+      const nx = x + Math.cos(a) * .55, nz = z + Math.sin(a) * .55;
+      if (inRoomApproach(new THREE.Box3(new THREE.Vector3(nx - .25, 0, nz - .25), new THREE.Vector3(nx + .25, 1.3, nz + .25)))) continue;
+      const neighbour = place(londonResident(60 + i * 3 + k), nx, nz, -a - Math.PI / 2);
       neighbour.name = 'britain-neighbour';
     }
   }

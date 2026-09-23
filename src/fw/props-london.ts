@@ -2,8 +2,8 @@
  * Britain stands (area id `london`): one builder per `prop` name in the object list of docs/london-world.md.
  * Owned by the Stand maker, Stage C of docs/agent-team-playbook.md.
  *
- * Every room stand follows the hotpot table in docs/building-a-world.md section 5: a building or shelter from the
- * region, a visible work surface, modelled food, an always-on loop, six to nine people with idle motion, a walker
+ * Every room stand follows the hotpot table in docs/building-a-world.md section 5: its own period building from its
+ * region (the thirteen buildings below, no two with the same wall and roof), a visible work surface, modelled food, an always-on loop, six to nine people with idle motion, a walker
  * whose legs step with the distance it covers, lamps under a beam, steam at every hot source, and a click chain
  * that moves the food or material first, the worker second, one bystander third and speaks last. The ten
  * ingredient stops and the six landmarks are simpler, but each has a real prop and a 3D reaction of its own.
@@ -25,6 +25,7 @@
  * harness greps this file for all of them.
  */
 import * as THREE from "three";
+import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { add, mat, rnd, wear, bubble, ambientChat, tickChildren, person, type P } from "./props";
 import { UK_LINES } from "./london-speech";
 
@@ -321,7 +322,7 @@ function pacer(p: Figure, from: THREE.Vector3, to: THREE.Vector3, speed = .32, p
   };
 }
 
-// ---------- lamps, signs, shelters ----------
+// ---------- lamps, signs, walls ----------
 
 /**
  * A hanging lamp: a gas lantern in a glazed box on the street, an oil hurricane lamp in a yard, a bare filament
@@ -389,72 +390,11 @@ function sign(g: THREE.Object3D, text: string, w: number, h: number, x: number, 
   const face = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshStandardMaterial({ map: signTexture(text, w, h, ink, paper), roughness: .85 })); face.position.z = .015; b.add(face);
 }
 
-type Style = "londonBrick" | "shopFront" | "dockShed" | "kentish" | "daleStone" | "cornishCob" | "welshLong" | "fifeCrow" | "ironHall";
-const WALLS: Record<Style, { wall: string; roof: string; trim: string; pitch: number; slate: boolean }> = {
-  londonBrick: { wall: LD.londonStock, roof: LD.slateNorth, trim: LD.pubGreen, pitch: .52, slate: true },
-  shopFront: { wall: LD.portlandStone, roof: LD.slateNorth, trim: LD.oxbloodTile, pitch: .48, slate: true },
-  dockShed: { wall: "#8A6A4E", roof: LD.slateNorth, trim: LD.oakSmoke, pitch: .34, slate: true },
-  kentish: { wall: "#C9B89C", roof: LD.kentPeg, pitch: .82, trim: LD.oakSmoke, slate: false },
-  daleStone: { wall: LD.millstoneGrit, roof: "#5E6058", trim: LD.oakSmoke, pitch: .60, slate: true },
-  cornishCob: { wall: "#C2B49A", roof: "#8A7A5A", trim: LD.oakSmoke, pitch: .74, slate: false },
-  welshLong: { wall: LD.moorGranite, roof: "#4E5450", trim: LD.oakSmoke, pitch: .68, slate: true },
-  fifeCrow: { wall: LD.whitewash, roof: "#5A4A42", trim: LD.slateNorth, pitch: .78, slate: false },
-  ironHall: { wall: LD.portlandStone, roof: "#5E6A6E", trim: "#3E4A50", pitch: .30, slate: true },
-};
-/** A pitched roof over a bay: slate in courses, Kent peg tile in rolls, thatch in combed strips. Returns the ridge. */
-function roofOver(g: THREE.Object3D, style: Style, w: number, d: number, y: number, z: number) {
-  const { roof, pitch, slate } = WALLS[style], half = (d + .7) / 2, slope = Math.sqrt(half * half + (half * pitch) ** 2);
-  for (const side of [-1, 1]) {
-    const r = add(g, box(w + .5, .09, slope, roof), 0, y + .14 + (half * pitch) / 2, z + (side * half) / 2);
-    r.rotation.x = side * Math.atan(pitch);
-    if (slate) for (let i = 0; i < Math.floor(slope / .26); i++) add(r, box(w + .5, .02, .05, "#3E444C"), 0, .05, -slope / 2 + .13 + i * .26);
-    else for (let i = 0; i < Math.floor((w + .5) / .24); i++) add(r, cyl(.045, .045, slope, roof === LD.kentPeg ? "#96502E" : "#7A6A4A", 6), -(w + .5) / 2 + .12 + i * .24, .05, 0).rotation.x = Math.PI / 2;
-  }
-  add(g, box(w + .6, .10, .13, slate ? "#3E444C" : "#7A6A4A"), 0, y + .19 + half * pitch, z);
-  return y + .19 + half * pitch;
-}
 /** A brick chimney stack with pots, on the ridge line. The Builder's smoke anchor is the top of the pot. */
 function chimney(g: THREE.Object3D, x: number, y: number, z: number, h = .9, pots = 2) {
   add(g, box(.42, h, .38, LD.londonStock), x, y + h / 2, z);
   for (let i = 0; i < pots; i++) add(g, cyl(.075, .085, .26, "#B4644A", 10), x - .1 + i * .2, y + h + .13, z);
   return y + h + .26;
-}
-/**
- * An open-front working bay: a house mass behind, back and side walls, a pitched roof, and a front beam on two
- * posts where the lamps hang. The floor is a low plinth inside the walls only, so it is never coplanar with the
- * town paving, and the front posts stand outside the width of the work surface so neither crosses the arrival
- * camera's line to the food.
- */
-function shelter(g: P, style: Style, w = 4.0, d = 2.6, h = 2.3, opts: { sign?: string; ink?: string; paper?: string; storeys?: number; stack?: boolean } = {}) {
-  const { wall, trim } = WALLS[style], zBack = -d / 2 - .5, zFront = d / 2 - .5;
-  const storeys = opts.storeys ?? 1, hh = 2.4 * storeys;
-  add(g, box(w - .2, hh, 2.2, wall), 0, hh / 2, zBack - 1.2);
-  // sash windows in the mass behind, two to a storey, with a stone lintel and a sill
-  for (const side of [-1, 1]) for (let s = 0; s < storeys; s++) {
-    add(g, box(.05, .82, .52, LD.glass), side * ((w - .2) / 2 + .02), s * 2.4 + 1.16, zBack - 1.2 + side * .58);
-    add(g, box(.06, .07, .60, LD.portlandStone), side * ((w - .2) / 2 + .03), s * 2.4 + 1.62, zBack - 1.2 + side * .58);
-    add(g, box(.08, .06, .60, LD.portlandStone), side * ((w - .2) / 2 + .03), s * 2.4 + .72, zBack - 1.2 + side * .58);
-  }
-  const ridge = roofOver(g, style, w - .2, 2.2, hh, zBack - 1.2);
-  if (opts.stack !== false) chimney(g, -(w - .2) / 2 + .35, ridge - .1, zBack - 1.2, .8);
-  // the bay itself
-  add(g, box(w, .07, d, style === "daleStone" || style === "welshLong" ? "#8A8A80" : "#B4AC9C"), 0, .035, -.5);
-  add(g, box(w, h, .16, wall), 0, h / 2, zBack);
-  for (const x of [-w / 2 + .08, w / 2 - .08]) add(g, box(.16, h, d, wall), x, h / 2, -.5);
-  for (const x of [-w / 2 + .11, w / 2 - .11]) add(g, cyl(.075, .085, h, LD.oakSmoke, 8), x, h / 2, zFront + .1);
-  const beam = add(g, box(w + .1, .15, .18, LD.oakSmoke), 0, h + .075, zFront + .1); beam.name = "front-beam";
-  add(g, box(w + .1, .15, .18, LD.oakSmoke), 0, h + .075, zBack);
-  roofOver(g, style, w, d, h, -.5);
-  if (opts.sign) sign(g, opts.sign, Math.min(2.2, w * .52), .32, 0, h - .30, zFront + .21, opts.ink ?? LD.brass, opts.paper ?? WALLS[style].trim);
-  return { beam, y: h + .075, zFront: zFront + .1, zBack, floor: .07 };
-}
-/** A light open shade on four posts: a market awning, a field shelter, a quay canopy. Reads as a shade from above. */
-function shade(g: P, w: number, d: number, h: number, x = 0, z = 0, colour = "#C9BCA0") {
-  for (const px of [-w / 2 + .14, w / 2 - .14]) for (const pz of [-d / 2 + .14, d / 2 - .14]) add(g, cyl(.055, .065, h, LD.oakSmoke, 6), x + px, h / 2, z + pz);
-  add(g, box(w, .07, d, colour), x, h + .035, z);
-  for (let i = 0; i < Math.floor(w / .3); i++) add(g, box(.05, .035, d, "#A89C80"), x - w / 2 + .15 + i * .3, h + .09, z);
-  const beam = add(g, box(w + .1, .12, .14, LD.oakSmoke), x, h - .07, z + d / 2 - .14); beam.name = "front-beam";
-  return { beam, y: h - .07, zFront: z + d / 2 - .14 };
 }
 /** A drystone wall in courses, the Dales and the Pennines. */
 function drystone(g: THREE.Object3D, x: number, z: number, len: number, angle: number, h = .62) {
@@ -472,6 +412,175 @@ function hedge(g: THREE.Object3D, x: number, z: number, len: number, angle: numb
   add(h, box(len, .30, .55, "#5E6E44"), 0, .15, 0);
   for (let i = 0; i < Math.floor(len / .42); i++) add(h, ball(.30, i % 2 ? "#5A7A3E" : "#4E6E38", 6), -len / 2 + .21 + i * .42, .42, (i % 2) * .06).scale.set(1, .85, .9);
   return h;
+}
+
+// ---------- period buildings: each room stand is its own building, read from its research and its painting ----------
+
+/**
+ * Merge a static shell by colour, so a whole building is a handful of meshes and a roof of three hundred slates
+ * costs no more to draw than a box. Only static parts go in: people, food, lamps, signs with painted faces and
+ * anything named for a harness stay outside it.
+ */
+function solid(shell: THREE.Group): THREE.Group {
+  const by = new Map<string, { m: THREE.Material; geos: THREE.BufferGeometry[] }>();
+  shell.updateMatrixWorld(true);
+  shell.traverse((o) => {
+    if (!(o instanceof THREE.Mesh)) return;
+    const m = o.material as THREE.MeshStandardMaterial;
+    const key = `${m.color.getHexString()}|${m.emissive?.getHexString()}|${m.emissiveIntensity}|${m.transparent}|${m.opacity}|${m.side}`;
+    const geo = o.geometry.index ? o.geometry.toNonIndexed() : o.geometry.clone();
+    geo.applyMatrix4(o.matrixWorld);
+    for (const name of Object.keys(geo.attributes)) if (name !== "position" && name !== "normal" && name !== "uv") geo.deleteAttribute(name);
+    if (!geo.attributes.normal) geo.computeVertexNormals();
+    if (!geo.attributes.uv) geo.setAttribute("uv", new THREE.Float32BufferAttribute(new Float32Array(geo.attributes.position.count * 2), 2));
+    geo.clearGroups();
+    const slot = by.get(key) ?? { m, geos: [] }; slot.geos.push(geo); by.set(key, slot);
+  });
+  const out = new THREE.Group(); out.name = "uk-building";
+  for (const { m, geos } of by.values()) {
+    const merged = mergeGeometries(geos, false);
+    if (!merged) throw new Error("props-london: a building shell would not merge");
+    const mesh = new THREE.Mesh(merged, m); mesh.castShadow = true; mesh.receiveShadow = true; out.add(mesh);
+    geos.forEach((geo) => geo.dispose());
+  }
+  shell.traverse((o) => { if (o instanceof THREE.Mesh) o.geometry.dispose(); });
+  return out;
+}
+/** A round bar between two points: a truss member, a bracket, a hoop stay, a driftwood post. */
+function strut(parent: THREE.Object3D, a: THREE.Vector3, b: THREE.Vector3, r: number, colour: string, seg = 6) {
+  const d = b.clone().sub(a), m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, d.length(), seg), mat(colour));
+  m.position.copy(a).add(b).multiplyScalar(.5); m.quaternion.setFromUnitVectors(V(0, 1, 0), d.normalize()); parent.add(m);
+  return m;
+}
+/** A flat square bar between two points: a lattice web, a rail, a glazing bar seen on edge. */
+function bar(parent: THREE.Object3D, a: THREE.Vector3, b: THREE.Vector3, w: number, t: number, colour: string) {
+  const d = b.clone().sub(a), m = box(w, d.length(), t, colour);
+  m.position.copy(a).add(b).multiplyScalar(.5); m.quaternion.setFromUnitVectors(V(0, 1, 0), d.normalize()); parent.add(m);
+  return m;
+}
+
+/** How a roof is covered, and what an overview sees on it: courses of slate or tile, graded stone, rolls, battens. */
+type Cover = { colour: string; line: string; every: number; kind: "line" | "graded" | "roll" | "batten" | "seam" | "none"; thick?: number };
+const COVERS = {
+  /** Blue-grey Welsh slate, the London roof: close thin courses. The public house. */
+  welshSlate: { colour: "#56616C", line: "#434D57", every: .19, kind: "line" },
+  /** Red plain clay tile, the Queen Anne shop of the 1890s. The tea room. */
+  plainTile: { colour: "#A4523A", line: "#86422E", every: .14, kind: "line" },
+  /** Pennine stone slate, heavy and graded, big at the eaves and small at the ridge. The fried fish shop. */
+  stoneFlag: { colour: "#857A68", line: "#645A4C", every: .30, kind: "graded", thick: .14 },
+  /** Westmorland-grey graded slate with a stone ridge. The dale dairy. */
+  gradedSlate: { colour: "#6A6670", line: "#524E58", every: .26, kind: "graded", thick: .12 },
+  /** Cornish scantle slate: small, steep, wet-dark. The bakehouse. */
+  scantle: { colour: "#3E4448", line: "#2C3236", every: .11, kind: "line" },
+  /** Speyside slate over white harl. The distillery. */
+  highlandSlate: { colour: "#5E6A70", line: "#4A555A", every: .22, kind: "line" },
+  /** Heather and straw thatch, thick and roped. The Angus bothy. */
+  thatch: { colour: "#8E7650", line: "#6E5A3A", every: .16, kind: "seam", thick: .30 },
+  /** Tarred felt on boards with battens down the slope. The Shadwell lean-to. */
+  tarFelt: { colour: "#34302C", line: "#22201E", every: .42, kind: "batten" },
+  /** A hop-picker's tarpaulin, olive and patched. The Weald cookhouse. */
+  tarpaulin: { colour: "#76704C", line: "#5E5A3C", every: .75, kind: "seam", thick: .04 },
+  /** An old tan sail. The cockle shelter. */
+  sailcloth: { colour: "#9C5E3A", line: "#7E4A2E", every: .6, kind: "seam", thick: .04 },
+  /** The coffee stall's weathered red canvas. */
+  redCanvas: { colour: "#8E4A38", line: "#76392A", every: .55, kind: "seam", thick: .04 },
+} satisfies Record<string, Cover>;
+
+/** Courses laid across one slope, in the slope's own frame: `eave` is the local z of the eave edge (+L/2 or -L/2). */
+function coverSlope(slope: THREE.Object3D, cover: Cover, length: number, L: number, thick: number, eave: number) {
+  const top = thick / 2 + .008, dir = -Math.sign(eave);
+  if (cover.kind === "line") for (let s = cover.every / 2; s < L - .05; s += cover.every) add(slope, box(length, .022, .035, cover.line), 0, top, eave + dir * s);
+  if (cover.kind === "graded") { let s = .08, step = cover.every * 1.35; while (s < L - .05) { add(slope, box(length, .04, .05, cover.line), 0, top, eave + dir * s); s += step; step = Math.max(cover.every * .55, step * .88); } }
+  if (cover.kind === "roll") for (let x = -length / 2 + cover.every / 2; x < length / 2; x += cover.every) add(slope, cyl(.045, .045, L, cover.line, 6), x, top, 0).rotation.x = Math.PI / 2;
+  if (cover.kind === "batten") for (let x = -length / 2 + cover.every / 2; x < length / 2; x += cover.every) add(slope, box(.05, .04, L, cover.line), x, top, 0);
+  if (cover.kind === "seam") for (let x = -length / 2 + cover.every; x < length / 2 - .1; x += cover.every) add(slope, box(.025, .012, L, cover.line), x, top, 0);
+}
+/**
+ * A double-pitched roof over a rectangle w (along x) by d (along z), eaves at `y`, ridge along x. `ends` closes
+ * each gable with a triangle of wall. Returns the ridge height. A roof whose ridge runs front to back is this one
+ * inside a group turned a quarter.
+ */
+function gableRoof(g: THREE.Object3D, w: number, d: number, y: number, rise: number, cover: Cover, o: { x?: number; z?: number; over?: number; ridge?: string; ends?: string; verge?: number } = {}) {
+  const x = o.x ?? 0, z = o.z ?? 0, over = o.over ?? .22, thick = cover.thick ?? .09, half = d / 2 + over, L = Math.hypot(half, rise * half / (d / 2)), angle = Math.atan2(rise, d / 2);
+  const length = w + 2 * over;
+  for (const side of [-1, 1]) {
+    const slope = add(g, box(length, thick, L, cover.colour), x, y + rise / 2 - over * Math.tan(angle) / 2, z + side * half / 2);
+    slope.rotation.x = side * angle;
+    coverSlope(slope, cover, length, L, thick, side * L / 2);
+  }
+  add(g, box(length + .04, .12, .16, o.ridge ?? cover.line), x, y + rise + .03, z);
+  if (o.ends) for (const sx of [-1, 1]) add(g, gableEnd(d, rise, .16, o.ends), x + sx * (w / 2 - .08), y, z);
+  if (o.verge) for (const sx of [-1, 1]) for (const side of [-1, 1]) {   // a stone verge on each rake, which is what makes a gable read as stone
+    const v = add(g, box(o.verge, .10, L - .1, o.ends ?? cover.line), x + sx * (length / 2 - o.verge / 2), y + rise / 2 - over * Math.tan(angle) / 2 + .07, z + side * half / 2);
+    v.rotation.x = side * angle;
+  }
+  return y + rise;
+}
+/** A triangle of wall filling a gable: base d along z, apex `rise` above its foot, `t` thick along x. */
+function gableEnd(d: number, rise: number, t: number, colour: string) {
+  const shape = new THREE.Shape([new THREE.Vector2(-d / 2, 0), new THREE.Vector2(d / 2, 0), new THREE.Vector2(0, rise)]);
+  const geo = new THREE.ExtrudeGeometry(shape, { depth: t, bevelEnabled: false }); geo.translate(0, 0, -t / 2);
+  const m = new THREE.Mesh(geo, mat(colour)); m.rotation.y = Math.PI / 2; return m;
+}
+/** A hipped roof on four faces, eaves W by D at `y`, with courses on the two long faces and a roll down each hip. */
+function hipRoof(g: THREE.Object3D, W: number, D: number, y: number, rise: number, cover: Cover, o: { x?: number; z?: number; ridge?: string } = {}) {
+  const x = o.x ?? 0, z = o.z ?? 0, rx = Math.max(.2, W / 2 - D / 2 * .85);
+  const p = [-W / 2, y, -D / 2, W / 2, y, -D / 2, W / 2, y, D / 2, -W / 2, y, D / 2, -rx, y + rise, 0, rx, y + rise, 0];
+  const geo = new THREE.BufferGeometry(); geo.setAttribute("position", new THREE.Float32BufferAttribute(p, 3));
+  geo.setIndex([0, 4, 5, 0, 5, 1, 1, 5, 2, 2, 5, 4, 2, 4, 3, 3, 4, 0]);
+  const flat = geo.toNonIndexed(); flat.computeVertexNormals();
+  const roof = add(g, new THREE.Mesh(flat, mat(cover.colour, { side: THREE.DoubleSide })), x, 0, z);
+  const angle = Math.atan2(rise, D / 2), slope = Math.hypot(D / 2, rise);
+  for (const side of [-1, 1]) for (let s = cover.every / 2; s < slope - .08; s += cover.every) {
+    const f = s / slope, len = W - 2 * f * (W / 2 - rx);
+    const c = add(roof, box(len, .022, .035, cover.line), 0, y + f * rise + .02, side * (D / 2) * (1 - f));
+    c.rotation.x = side * angle;
+  }
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) strut(roof, V(sx * W / 2, y + .02, sz * D / 2), V(sx * rx, y + rise + .02, 0), .045, o.ridge ?? cover.line, 5);
+  add(roof, box(2 * rx + .08, .1, .12, o.ridge ?? cover.line), 0, y + rise + .03, 0);
+  return y + rise;
+}
+/** A sash window with its frame, glazing bars and a sill, on a face turned toward `face` (+z front, +x or -x side). */
+function sash(g: THREE.Object3D, x: number, y: number, z: number, w: number, h: number, frame: string, face: "z" | "x" | "-x" = "z", glass = "#5E7078") {
+  const p = add(g, new THREE.Group(), x, y, z); p.rotation.y = face === "x" ? Math.PI / 2 : face === "-x" ? -Math.PI / 2 : 0;
+  add(p, box(w + .08, h + .08, .05, frame), 0, 0, 0);
+  add(p, box(w, h, .03, glass), 0, 0, .025);
+  add(p, box(w, .035, .04, frame), 0, 0, .04);
+  add(p, box(.03, h, .04, frame), 0, 0, .04);
+  add(p, box(w + .16, .06, .12, frame), 0, -h / 2 - .06, .05);
+  return p;
+}
+/** Quoins: dressed stones at a corner, alternating long and short, the mark of a stone building. */
+function quoins(g: THREE.Object3D, x: number, z: number, h: number, colour: string, faceX: number, faceZ: number) {
+  for (let i = 0, y = .14; y < h - .1; i++, y += .26) {
+    const long = i % 2 === 0;
+    add(g, box(long ? .34 : .2, .22, .06, colour), x - faceX * (long ? .17 : .1), y, z + faceZ * .03);
+    add(g, box(.06, .22, long ? .2 : .34, colour), x + faceX * .03, y, z - faceZ * (long ? .1 : .17));
+  }
+}
+/** Rubble: a scatter of stones standing proud of a face, so a stone wall does not read as a painted box. */
+function rubble(g: THREE.Object3D, x0: number, x1: number, y0: number, y1: number, z: number, colour: string, n: number, seed = 1) {
+  for (let i = 0; i < n; i++) {
+    const u = (Math.sin(i * 12.9898 + seed * 78.233) * 43758.5453) % 1, v = (Math.sin(i * 39.3468 + seed * 11.135) * 24634.6345) % 1;
+    add(g, box(.18 + Math.abs(u) * .14, .1 + Math.abs(v) * .06, .03, colour), x0 + Math.abs(u) * (x1 - x0), y0 + Math.abs(v) * (y1 - y0), z);
+  }
+}
+/** A brick stack with its pots on a roof. Returns the top of the pots, where a kitchen fire's smoke is published. */
+function stack(g: THREE.Object3D, x: number, y0: number, z: number, h: number, colour: string, pots = 2, w = .46, d = .40) {
+  add(g, box(w, h, d, colour), x, y0 + h / 2, z);
+  add(g, box(w + .1, .08, d + .1, "#C9BFAE"), x, y0 + h, z);
+  for (let i = 0; i < pots; i++) add(g, cyl(.07, .085, .28, "#B4644A", 8), x - (pots - 1) * .09 + i * .18, y0 + h + .18, z);
+  return y0 + h + .34;
+}
+/** A spoked wheel in the plane of its travel: iron tyre, felloe, spokes and a hub on the axle, which is along z. */
+function wheel(r: number, spokes: number, felloe = LD.oak, spoke = LD.cream, tyre = LD.iron, solidTyre = 0): THREE.Group {
+  const w = new THREE.Group(); w.name = "uk-wheel";
+  add(w, new THREE.Mesh(new THREE.TorusGeometry(r - .02, Math.max(.035, r * .09), 6, 20), mat(felloe)), 0, 0, 0);
+  add(w, new THREE.Mesh(new THREE.TorusGeometry(r + .012, solidTyre || .022, 5, 20), mat(tyre)), 0, 0, 0);
+  for (let n = 0; n < spokes; n++) { const s = add(w, cyl(.016, .022, r * 1.9, spoke, 5), 0, 0, 0); s.rotation.z = (n * Math.PI) / spokes; }
+  add(w, cyl(r * .2, r * .2, .16, felloe, 10), 0, 0, 0).rotation.x = Math.PI / 2;
+  add(w, cyl(r * .1, r * .12, .22, tyre, 8), 0, 0, 0).rotation.x = Math.PI / 2;
+  return w;
 }
 
 // ---------- animals and vehicles, exported for the Builder's decor as well as for the stands ----------
@@ -529,11 +638,8 @@ export function horseOmnibus(): P {
   for (let i = 0; i < 5; i++) add(ladder, cyl(.02, .02, .36, LD.iron, 5), 0, .02 + i * .33, 0).rotation.x = Math.PI / 2;
   const wheels = [[-1.0, -.72], [-1.0, .72], [1.0, -.72], [1.0, .72]].map(([x, z], i) => {
     const r = i < 2 ? .42 : .34;
-    const w = add(bus, new THREE.Group(), x, r, z);
-    add(w, new THREE.Mesh(new THREE.TorusGeometry(r, .04, 6, 16), mat(LD.oak)), 0, 0, 0).rotation.y = Math.PI / 2;
-    for (let n = 0; n < 10; n++) add(w, cyl(.014, .014, r * 1.9, LD.cream, 4), 0, 0, 0).rotation.z = (n * Math.PI) / 10;
-    add(w, cyl(.06, .06, .1, LD.iron, 8), 0, 0, 0).rotation.x = Math.PI / 2;
-    return w;
+    // the wheel stands in the plane it rolls in, with its felloe, tyre and hub, so from above it reads as a wheel
+    return add(bus, wheel(r, 10, "#8A2A22", LD.cream), x, r, z);
   });
   add(bus, box(1.0, .10, .10, LD.oak), 1.8, .78, -.32); add(bus, box(1.0, .10, .10, LD.oak), 1.8, .78, .32);   // the pole and traces
   const pair = [-1, 1].map((side) => horseBody(bus, 2.9, side * .45, side > 0 ? "#4A3628" : "#5E4634", 0));
@@ -555,11 +661,7 @@ export function hansomCab(withFare = true): P {
   add(cab, box(.05, .60, .96, LD.glass), .66, 1.02, 0);
   add(cab, box(.9, .07, 1.0, LD.oak), .1, .48, 0);
   const wheels = [-1, 1].map((side) => {
-    const w = add(cab, new THREE.Group(), -.06, .62, side * .70);
-    add(w, new THREE.Mesh(new THREE.TorusGeometry(.60, .04, 6, 18), mat(LD.oak)), 0, 0, 0).rotation.y = Math.PI / 2;
-    for (let n = 0; n < 12; n++) add(w, cyl(.013, .013, 1.16, LD.cream, 4), 0, 0, 0).rotation.z = (n * Math.PI) / 12;
-    add(w, cyl(.055, .055, .1, LD.iron, 8), 0, 0, 0).rotation.x = Math.PI / 2;
-    return w;
+    return add(cab, wheel(.60, 12, LD.iron, "#C9A83A"), -.06, .62, side * .70);
   });
   const perch = add(cab, box(.52, .08, .60, LD.oak), -.62, 1.66, 0);
   add(cab, box(.10, .46, .60, LD.oak), -.86, 1.90, 0); void perch;
@@ -580,7 +682,7 @@ export function hansomCab(withFare = true): P {
 export function motorOmnibus(): P {
   const g = group();
   const bus = add(g, new THREE.Group(), 0, 0, 0); bus.name = "motor-body";
-  add(bus, box(3.2, 1.10, 1.35, "#2E4432"), 0, .92, 0);
+  add(bus, box(3.2, 1.10, 1.35, LD.oxbloodTile), 0, .92, 0);                        // the General's red, the livery of 1907, same as the horse bus
   add(bus, box(3.24, .07, 1.40, LD.cream), 0, 1.50, 0);
   add(bus, box(2.6, .28, 1.24, LD.cream), 0, 1.38, 0);
   for (let i = 0; i < 4; i++) for (const dz of [-1, 1]) add(bus, box(.5, .44, .04, LD.glass), -1.0 + i * .68, .98, dz * .69);
@@ -589,9 +691,7 @@ export function motorOmnibus(): P {
   add(bus, box(2.4, .06, .30, LD.oak), 0, 1.80, 0); add(bus, box(2.4, .42, .07, LD.oak), 0, 2.00, 0);
   for (let i = 0; i < 4; i++) add(bus, cyl(.02, .02, .38, LD.iron, 5), -1.55, 1.56 + i * .12, 0).rotation.x = Math.PI / 2;
   for (const [x, z] of [[-1.15, -.72], [-1.15, .72], [1.25, -.72], [1.25, .72]]) {
-    const w = add(bus, new THREE.Group(), x, .40, z);
-    add(w, new THREE.Mesh(new THREE.TorusGeometry(.40, .09, 6, 14), mat(LD.iron)), 0, 0, 0).rotation.y = Math.PI / 2;
-    for (let n = 0; n < 8; n++) add(w, cyl(.016, .016, .74, "#9C9488", 4), 0, 0, 0).rotation.z = (n * Math.PI) / 8;
+    add(bus, wheel(.40, 10, "#6E2420", "#9C9488", "#1E1E1E", .07), x, .40, z);   // the artillery wheel on its solid rubber tyre
   }
   const driver = seatFigure(bus, resident("carter", false), 1.35, 0, Math.PI / 2, 1.42);
   arms(driver).left.rotation.x = -1.3; arms(driver).right.rotation.x = -1.3;
@@ -607,9 +707,7 @@ export function costerBarrow(flare = false): P {
   add(b, box(1.54, .06, .88, LD.oak), 0, .86, 0);
   for (const side of [-1, 1]) add(b, box(1.5, .18, .05, LD.oak), 0, .95, side * .42);
   for (const side of [-1, 1]) {
-    const w = add(b, new THREE.Group(), -.1, .36, side * .50);
-    add(w, new THREE.Mesh(new THREE.TorusGeometry(.34, .035, 6, 14), mat(LD.oak)), 0, 0, 0).rotation.y = Math.PI / 2;
-    for (let n = 0; n < 8; n++) add(w, cyl(.012, .012, .66, LD.deal, 4), 0, 0, 0).rotation.z = (n * Math.PI) / 8;
+    add(b, wheel(.34, 8, LD.oak, LD.deal), -.1, .36, side * .50);
   }
   for (const side of [-1, 1]) add(b, cyl(.03, .035, 1.1, LD.oak, 5), 1.0, .62, side * .32).rotation.z = 1.50;
   for (const side of [-1, 1]) add(b, cyl(.035, .045, .58, LD.oak, 5), -.72, .30, side * .32);
@@ -624,14 +722,547 @@ export function cockleDonkey(): P {
   for (const side of [-1, 1]) add(cart, box(1.25, .22, .05, LD.oak), 0, .72, side * .41);
   add(cart, box(.05, .22, .82, LD.oak), -.62, .72, 0);
   for (const side of [-1, 1]) {
-    const w = add(cart, new THREE.Group(), -.02, .34, side * .52);
-    add(w, new THREE.Mesh(new THREE.TorusGeometry(.32, .035, 6, 14), mat(LD.oak)), 0, 0, 0).rotation.y = Math.PI / 2;
-    for (let n = 0; n < 8; n++) add(w, cyl(.012, .012, .62, LD.deal, 4), 0, 0, 0).rotation.z = (n * Math.PI) / 8;
+    add(cart, wheel(.32, 8, LD.oak, LD.deal), -.02, .34, side * .52);
   }
   for (const side of [-1, 1]) add(cart, cyl(.028, .034, 1.15, LD.oak, 5), .92, .56, side * .30).rotation.z = 1.52;
   const donkey = donkeyBody(g, 2.0, 0, "#8A7A68", 0);
   g.userData.cart = cart; g.userData.donkey = donkey;
   return g;
+}
+
+// ---------- the thirteen buildings ----------
+//
+// Walls and roofs, one pair per room and no pair repeated (docs/london-research.md section 1.3 and each room's
+// setting in section 3.1):
+//
+//   public house        red brick over green glazed tile   blue Welsh slate, hipped, terracotta ridge
+//   tea room            cream stucco                        red plain tile behind a shaped gable
+//   market              green cast-iron columns             glass on iron glazing bars, a ridge lantern
+//   pie and mash shop   yellow stock brick, green tile      lead flat behind a parapet, party-wall stacks
+//   fried fish shop     dark Accrington brick, blue bands   Pennine stone slate, graded
+//   coffee stall        a painted barrow                    a cambered red canvas on iron hoops
+//   seamen's kitchen    soot-black stock brick              tarred felt lean-to
+//   hop cookhouse       corrugated-iron hopper hut          an olive tarpaulin on a ridge pole
+//   dale dairy          grey limestone rubble, quoins       graded Westmorland slate, stone verges
+//   bakehouse           Cornish granite, slate-hung flank   dark scantle slate, the oven stack
+//   cockle shelter      driftwood                           an old tan sail
+//   curing yard bothy   red sandstone rubble                roped heather thatch
+//   distillery          white harl, grey margins            Speyside slate, the kiln and its pagoda
+//
+// Every building keeps the room's working front open to the street, so the food is seen through it, and every one
+// stands inside the ground the stand had before (the shared-ground pass is done and london-world.mjs holds it).
+
+/** A floor inside the room, the block of the building behind the room, and the room's two flanks. */
+function room(s: THREE.Object3D, w: number, zB: number, zR: number, zF: number, h: number, wall: string, floor: string, flankH = h) {
+  add(s, box(w - .24, .07, zF - zR, floor), 0, .035, (zF + zR) / 2);
+  add(s, box(w, h, zR - zB, wall), 0, h / 2, (zB + zR) / 2);
+  for (const sx of [-1, 1]) add(s, box(.16, flankH, zF - zR, wall), sx * (w / 2 - .08), flankH / 2, (zF + zR) / 2);
+}
+/**
+ * The fascia over a shop's open front: the board the lamps hang from, named `front-beam` for the harness, with the
+ * lettering on its face and a moulded cornice over it. Returns what `lamps()` needs: the lamps' anchor lies on the
+ * board's underside.
+ */
+function fascia(g: P, w: number, y0: number, z: number, colour: string, text: string, ink: string, cornice: string, x = 0, rot = 0) {
+  const f = add(g, new THREE.Group(), x, 0, z); f.rotation.y = rot;
+  const beam = add(f, box(w, .30, .16, colour), 0, y0 + .15, 0); beam.name = "front-beam";
+  add(f, box(w + .14, .08, .26, cornice), 0, y0 + .34, .03);
+  if (text) sign(f, text, Math.min(2.5, w * .7), .22, 0, y0 + .15, .095, ink, colour);
+  return { beam, y: y0 + .08, zFront: z };
+}
+/** A prism standing on the plan outline `pts` (x, z pairs), h tall from its foot: a chamfered corner. Place it with
+ *  `add(parent, prism(...), 0, y0, 0)`, since `add` sets the position. */
+function prism(pts: [number, number][], h: number, colour: string) {
+  const shape = new THREE.Shape(pts.map(([x, z]) => new THREE.Vector2(x, -z)));
+  const geo = new THREE.ExtrudeGeometry(shape, { depth: h, bevelEnabled: false });
+  const m = new THREE.Mesh(geo, mat(colour)); m.rotation.x = -Math.PI / 2; return m;
+}
+/** A wall in a plane of constant x whose outline in (z, y) is `pts`: a lean-to's end. Place it with `add(..., x, 0, 0)`. */
+function flank(pts: [number, number][], t: number, colour: string) {
+  const shape = new THREE.Shape(pts.map(([z, y]) => new THREE.Vector2(-z, y)));
+  const geo = new THREE.ExtrudeGeometry(shape, { depth: t, bevelEnabled: false }); geo.translate(0, 0, -t / 2);
+  const m = new THREE.Mesh(geo, mat(colour)); m.rotation.y = Math.PI / 2; return m;
+}
+/** A single-pitch roof from a high back edge to a low front edge, both along x. */
+function leanRoof(s: THREE.Object3D, w: number, zBack: number, yBack: number, zFront: number, yFront: number, cover: Cover, over = .2) {
+  const run = zFront - zBack, drop = yBack - yFront, angle = Math.atan2(drop, run), L = Math.hypot(run, drop) + over * 1.6, thick = cover.thick ?? .08;
+  const slope = add(s, box(w + 2 * over, thick, L, cover.colour), 0, (yBack + yFront) / 2 + .05, (zBack + zFront) / 2 + over * .3);
+  slope.rotation.x = angle;
+  coverSlope(slope, cover, w + 2 * over, L, thick, L / 2);
+  return slope;
+}
+
+/**
+ * The public house: a two-storey corner house of the 1890s rebuilding, red brick over a ground floor faced in green
+ * glazed tile, etched glass in the flank windows, two canted oriels over the fascia, a hipped Welsh slate roof
+ * with a terracotta ridge and a stack on each flank. The bar is the open ground floor under the fascia, so the
+ * carving board faces the street. The painted sign hangs off an iron bracket at the corner (the stand swings it).
+ */
+function publicHouse(g: P) {
+  const s = new THREE.Group(), brick = "#8E4A38", tile = "#2F5C42", stone = "#DCD0B8";
+  const w = 3.8, zB = -3.9, zR = -1.8, zF = .9, h = 2.2, up = 2.0, top = h + .3 + up;
+  room(s, w, zB, zR, zF, top, brick, "#7A6450", h + .3);
+  for (const sx of [-1, 1]) {
+    add(s, box(.03, .95, zF - zB + .02, tile), sx * (w / 2 + .012), .475, (zF + zB) / 2);             // the tiled dado round the flanks
+    add(s, box(.30, h + .3, .26, tile), sx * (w / 2 - .05), (h + .3) / 2, zF + .02);                   // the tiled pilasters
+    add(s, box(.38, .10, .32, stone), sx * (w / 2 - .05), h + .35, zF + .02);
+    const etched = add(s, new THREE.Group(), sx * (w / 2 + .02), 1.5, -.35); etched.rotation.y = sx * Math.PI / 2;
+    add(etched, box(1.3, .92, .04, LD.oakSmoke), 0, 0, 0);
+    add(etched, box(1.18, .80, .03, "#D2DEDA"), 0, 0, .025);                                           // frosted
+    for (let i = 0; i < 5; i++) for (let j = 0; j < 3; j++) add(etched, box(.07, .07, .02, "#F6FAF8"), -.44 + i * .22, -.22 + j * .22, .045).rotation.z = Math.PI / 4;
+    for (const z of [-.4, -2.9]) sash(s, sx * (w / 2 + .01), h + 1.35, z, .5, .9, stone, sx > 0 ? "x" : "-x");
+  }
+  // the upper storey over the bar, a stone band, the cornice, and the two canted oriels
+  add(s, box(w, up, zF - zR, brick), 0, h + .3 + up / 2, (zF + zR) / 2);
+  add(s, box(w + .08, .1, zF - zB + .08, stone), 0, h + .33, (zF + zB) / 2);
+  add(s, box(w + .22, .16, zF - zB + .22, stone), 0, top, (zF + zB) / 2);
+  for (const x of [-.95, .95]) {
+    const o = add(s, new THREE.Group(), x, h + .3, zF);
+    add(o, box(.76, .14, .46, stone), 0, .3, .2);
+    for (const [dx, dz, ry, ww] of [[0, .38, 0, .54], [-.36, .22, .95, .34], [.36, .22, -.95, .34]] as [number, number, number, number][]) {
+      const p = add(o, new THREE.Group(), dx, 1.02, dz); p.rotation.y = ry;
+      add(p, box(ww, 1.2, .06, "#E8E0CC"), 0, 0, 0); add(p, box(ww - .1, 1.0, .04, "#5E7078"), 0, .03, .03); add(p, box(.03, 1.0, .05, "#E8E0CC"), 0, .03, .045);
+    }
+    add(o, box(.86, .1, .54, "#6E767A"), 0, 1.68, .2);                                                  // the lead cap
+  }
+  hipRoof(s, w + .36, zF - zB + .36, top + .08, 1.3, COVERS.welshSlate, { z: (zF + zB) / 2, ridge: "#A8503A" });
+  for (const sx of [-1, 1]) stack(s, sx * 1.45, top - .2, -2.9, 1.9, brick, 3);
+  g.add(solid(s));
+  const f = fascia(g, w - .56, h, zF + .1, tile, "FREE HOUSE", LD.brass, stone);
+  // the sign on its bracket: the stand swings the board on its hooks
+  const bracket = add(g, new THREE.Group(), -w / 2 + .02, h + 1.0, zF + .12);
+  strut(bracket, V(0, 0, 0), V(0, 0, .66), .026, LD.iron, 5);
+  strut(bracket, V(0, -.42, 0), V(0, 0, .52), .016, LD.iron, 4);
+  add(bracket, ball(.04, LD.brass, 6), 0, 0, .68);
+  const board = add(bracket, new THREE.Group(), 0, -.02, .40); board.name = "pub-signboard";
+  for (const dx of [-.2, .2]) add(board, cyl(.008, .008, .10, LD.iron, 4), dx, -.05, 0);
+  sign(board, "THE RED LION", .58, .42, 0, -.33, 0, LD.brass, "#7A2A24");
+  return { ...f, zBack: zR, floor: .07, board };
+}
+
+/**
+ * The tea room: a stucco shop of two floors under a red plain-tile roof whose ridge runs back from a shaped gable,
+ * a striped awning over the pavement, and a bow window of curved glass beside the door. The first table stands in
+ * the door under the awning, where the pot is poured.
+ */
+function teaShop(g: P) {
+  const s = new THREE.Group(), stucco = "#E6DBC4", line = "#CDC0A6", trim = "#6E2A26", paint = "#EFE7D4";
+  // narrower than its neighbours and only one storey at the back, so the chippy's and the forcing shed's rays pass
+  const w = 3.6, zB = -3.9, zR = -1.8, zU = -2.0, zF = .9, h = 2.2, up = 1.8, top = h + .3 + up;
+  room(s, w, zB, zR, zF, h + .3, stucco, "#9A8872");
+  add(s, box(w, up, zF - zU, stucco), 0, h + .3 + up / 2, (zF + zU) / 2);
+  add(s, box(w + .06, .06, zU - zB + .06, "#7E868A"), 0, h + .33, (zU + zB) / 2);                           // the lead flat over the back
+  for (const sx of [-1, 1]) for (let i = 0; i < 5; i++) add(s, box(.02, .03, zF - zB, line), sx * (w / 2 + .006), .38 + i * .44, (zF + zB) / 2);   // rusticated ground floor
+  add(s, box(w + .1, .1, zF - zB + .1, paint), 0, h + .33, (zF + zB) / 2);
+  for (const sx of [-1, 1]) {
+    add(s, box(.24, h + .3, .2, paint), sx * (w / 2 - .06), (h + .3) / 2, zF + .03);                    // the pilasters
+    add(s, box(.3, .3, .28, paint), sx * (w / 2 - .06), h + .12, zF + .06);                              // the consoles
+    sash(s, sx * .9, h + .3 + .95, zF + .02, .56, .9, paint);
+    sash(s, sx * (w / 2 + .01), h + .3 + .95, -1.9, .5, .8, paint, sx > 0 ? "x" : "-x");
+  }
+  // the bow window, right of the door: a panelled stall riser, curved glass on its bars, a lead-covered head
+  const bow = add(s, new THREE.Group(), 1.0, 0, zF); bow.scale.z = .58;
+  add(bow, new THREE.Mesh(new THREE.CylinderGeometry(.66, .66, .5, 16, 1, false, -Math.PI / 2, Math.PI), mat(trim)), 0, .3, 0);
+  add(bow, new THREE.Mesh(new THREE.CylinderGeometry(.64, .64, 1.4, 16, 1, true, -Math.PI / 2, Math.PI), mat("#6E828A", { side: THREE.DoubleSide })), 0, 1.25, 0);
+  for (let i = 1; i < 6; i++) { const a = -Math.PI / 2 + i * Math.PI / 6; add(bow, box(.035, 1.4, .035, paint), Math.sin(a) * .65, 1.25, Math.cos(a) * .65); }
+  add(bow, new THREE.Mesh(new THREE.CylinderGeometry(.72, .72, .14, 16, 1, false, -Math.PI / 2, Math.PI), mat("#747C80")), 0, 2.02, 0);
+  // the striped awning over the pavement, run out from under the cornice
+  const aw = add(s, new THREE.Group(), 0, h + .32, zF + .16); aw.rotation.x = .42;
+  for (let i = 0; i < 12; i++) add(aw, box((w - .3) / 12, .03, .9, i % 2 ? "#2F5A44" : "#EDE6D2"), -(w - .3) / 2 + (i + .5) * (w - .3) / 12, 0, .45);
+  for (let i = 0; i < 12; i++) add(aw, box((w - .3) / 12 - .02, .16, .02, i % 2 ? "#2F5A44" : "#EDE6D2"), -(w - .3) / 2 + (i + .5) * (w - .3) / 12, -.06, .9).rotation.x = -.42;
+  // the shaped gable over the front, and a red tile roof whose ridge runs back from it
+  const gs = new THREE.Shape([new THREE.Vector2(-1.84, 0), new THREE.Vector2(1.84, 0), new THREE.Vector2(1.84, .38), new THREE.Vector2(1.42, .38), new THREE.Vector2(1.42, .58)]);
+  gs.quadraticCurveTo(1.38, 1.0, .74, 1.02); gs.lineTo(.74, 1.22); gs.absarc(0, 1.22, .74, 0, Math.PI, false);
+  gs.lineTo(-.74, 1.02); gs.quadraticCurveTo(-1.38, 1.0, -1.42, .58); gs.lineTo(-1.42, .38); gs.lineTo(-1.84, .38);
+  const gable = add(s, new THREE.Mesh(new THREE.ExtrudeGeometry(gs, { depth: .22, bevelEnabled: false, curveSegments: 8 }), mat(paint)), 0, top, zF - .06);
+  void gable;
+  add(s, cyl(.26, .26, .05, "#C9B89A", 14), 0, top + 1.24, zF + .17).rotation.x = Math.PI / 2;           // the roundel in the gable
+  add(s, box(.12, .34, .12, paint), 0, top + 2.12, zF + .05);                                              // the finial
+  const turned = add(s, new THREE.Group(), 0, 0, (zF + zU) / 2); turned.rotation.y = Math.PI / 2;
+  gableRoof(turned, zF - zU, w, top, 1.2, COVERS.plainTile, { over: .05, ridge: "#8A3E2A" });
+  add(s, gableEnd(w, 1.2, .16, stucco), 0, top, zU + .08).rotation.y = 0;
+  stack(s, 1.3, top + .3, -1.6, 1.5, "#B49C7E", 2);
+  g.add(solid(s));
+  const f = fascia(g, w - .5, h, zF + .1, trim, "TEA ROOM", LD.brass, paint);
+  return { ...f, zBack: zR, floor: .07 };
+}
+
+/**
+ * The market hall: green cast-iron columns with their capitals and spandrel brackets, a lattice girder each way, a
+ * glass roof on iron glazing bars with a raised lantern down the ridge, and a fan of iron in each open gable. A cold
+ * hall, open on every side.
+ */
+function marketHall(g: P) {
+  const s = new THREE.Group(), iron = "#2F4A3E", w = 4.3, d = 2.9, h = 2.45;
+  add(s, box(4.4, .07, 3.0, "#B0A898"), 0, .035, 0);
+  const posts: [number, number][] = [[-1.95, -1.25], [0, -1.25], [1.95, -1.25], [-1.95, 1.25], [1.95, 1.25]];
+  for (const [x, z] of posts) {
+    add(s, box(.30, .22, .30, "#8A8478"), x, .11, z);
+    add(s, cyl(.075, .10, h - .2, iron, 10), x, .2 + (h - .2) / 2, z);
+    add(s, cyl(.17, .09, .16, iron, 10), x, h - .06, z);
+    for (const dz of [-.08, .08]) for (let i = 0; i < 3; i++) add(s, box(.02, .06, .02, iron), x + (i - 1) * .06, .5 + i * .02, z + dz);
+    for (const dx of [-1, 1]) if (Math.abs(x + dx * .4) < 2.1) {                                          // the spandrel brackets
+      const arc = add(s, new THREE.Mesh(new THREE.TorusGeometry(.32, .025, 4, 10, Math.PI / 2), mat(iron)), x + dx * .32, h - .32, z);
+      arc.rotation.z = dx > 0 ? Math.PI / 2 : 0;
+    }
+  }
+  for (const z of [-1.25, 1.25]) {
+    if (z < 0) add(s, box(w, .14, .16, iron), 0, h + .08, z);
+    add(s, box(w, .08, .10, iron), 0, h + .5, z);
+    for (let i = 0; i < 14; i++) bar(s, V(-w / 2 + .15 + i * .3, h + .16, z), V(-w / 2 + .3 + i * .3, h + .46, z), .035, .04, iron);
+  }
+  for (const x of [-1.95, 0, 1.95]) add(s, box(.10, .10, d, iron), x, h + .5, 0);
+  gableRoof(s, w, d, h + .54, .82, { colour: "#A9C8D0", line: iron, every: .3, kind: "batten", thick: .05 }, { over: .06, ridge: iron });
+  // the lantern down the ridge: louvred sides and its own shallow glass roof
+  for (const sz of [-1, 1]) { add(s, box(2.8, .26, .04, "#6E8A86"), 0, h + 1.47, sz * .3); for (let i = 0; i < 10; i++) add(s, box(.03, .28, .05, iron), -1.35 + i * .3, h + 1.47, sz * .3); }
+  gableRoof(s, 2.8, .6, h + 1.6, .16, { colour: "#A9C8D0", line: iron, every: .3, kind: "batten", thick: .04 }, { over: .1, ridge: iron });
+  // a fan of iron in each open gable
+  for (const sx of [-1, 1]) {
+    const x = sx * (w / 2 + .1);
+    add(s, box(.06, .08, d, iron), x, h + .54, 0);
+    for (let i = 0; i <= 6; i++) { const a = Math.PI * i / 6; bar(s, V(x, h + .56, 0), V(x, h + .56 + Math.sin(a) * .74, Math.cos(a) * 1.3), .03, .03, iron); }
+    const rib = add(s, new THREE.Mesh(new THREE.TorusGeometry(1.0, .03, 4, 14, Math.PI), mat(iron)), x, h + .56, 0); rib.rotation.y = Math.PI / 2; rib.scale.set(1, .74, 1.3);
+  }
+  g.add(solid(s));
+  const beam = add(g, box(w, .14, .18, iron), 0, h + .08, 1.25); beam.name = "front-beam";
+  return { beam, y: h + .08, zFront: 1.25 };
+}
+
+/**
+ * The pie and mash shop: a narrow shop of two floors in yellow stock brick, the ground floor in green and white
+ * glazed tile with the marble counter at the window, gauged red arches over the upper sashes, and a flat lead roof
+ * behind a parapet between two party-wall stacks, which is how a London terrace shop reads from above.
+ */
+function pieShopFront(g: P) {
+  const s = new THREE.Group(), stock = "#BBA67E", tileG = "#2E6A4A", tileW = "#E6EAE2", stone = "#DAD2C0";
+  const w = 3.8, zB = -3.9, zR = -1.8, zF = .9, h = 2.2, up = 2.0, top = h + .3 + up;
+  room(s, w, zB, zR, zF, top, stock, "#C9B48A", h + .3);
+  add(s, box(w, up, zF - zR, stock), 0, h + .3 + up / 2, (zF + zR) / 2);
+  for (const sx of [-1, 1]) {
+    add(s, box(.30, h + .3, .24, tileG), sx * (w / 2 - .05), (h + .3) / 2, zF + .02);
+    for (let i = 0; i < 6; i++) add(s, box(.31, .05, .25, tileW), sx * (w / 2 - .05), .3 + i * .36, zF + .02);   // the white bands in the green
+    add(s, box(.03, 1.0, zF - zB + .02, tileG), sx * (w / 2 + .012), .5, (zF + zB) / 2);
+    add(s, box(.035, .06, zF - zB + .03, tileW), sx * (w / 2 + .014), 1.02, (zF + zB) / 2);
+  }
+  add(s, box(3.0, .66, .03, tileG), -.1, .4, 1.15);                                                        // the tiled front of the counter
+  add(s, box(3.0, .05, .035, tileW), -.1, .72, 1.155);
+  for (const x of [-1.2, 0, 1.2]) {
+    sash(s, x, h + .3 + 1.0, zF + .02, .52, 1.0, stone);
+    add(s, box(.66, .18, .06, "#A4523A"), x, h + .3 + 1.6, zF + .03);                                     // the gauged red arch
+  }
+  add(s, box(w + .08, .1, zF - zB + .08, stone), 0, h + .33, (zF + zB) / 2);
+  // the parapet, its coping, and the lead flat behind it with its standing rolls
+  for (const sz of [-1, 1]) add(s, box(w, .5, .14, stock), 0, top + .25, sz > 0 ? zF - .07 : zB + .07);
+  for (const sx of [-1, 1]) add(s, box(.14, .5, zF - zB, stock), sx * (w / 2 - .07), top + .25, (zF + zB) / 2);
+  add(s, box(w + .1, .07, .24, stone), 0, top + .52, zF - .07);
+  add(s, box(w - .28, .05, zF - zB - .28, "#7E868A"), 0, top + .04, (zF + zB) / 2);
+  for (let i = 0; i < 8; i++) add(s, cyl(.025, .025, zF - zB - .3, "#6A7276", 5), -1.6 + i * .46, top + .09, (zF + zB) / 2).rotation.x = Math.PI / 2;
+  for (const sx of [-1, 1]) stack(s, sx * 1.6, top, -1.3, 1.1, stock, 4, .52, 1.0);
+  stack(s, 0, top, -3.5, .8, stock, 2);
+  g.add(solid(s));
+  const f = fascia(g, w - .56, h, zF + .1, tileG, "PIE & MASH", LD.whitewash, stone);
+  return { ...f, zBack: zR, floor: .07 };
+}
+
+/**
+ * The fried fish shop: a two-storey corner shop in dark mill-town brick with blue-brick bands, the door in the
+ * cut corner, the coal range standing in the shop window where the street sees it, and a roof of graded Pennine
+ * stone slate. The range's flue is the stack at the back, and the smoke comes out of it.
+ */
+function cornerShop(g: P) {
+  const s = new THREE.Group(), brick = "#6E3A2E", blue = "#2E3440", stone = "#CFC6B2";
+  // 3.75 wide and set .125 east of the stand's centre, so the Forth Bridge's rays pass west of it
+  const w = 3.75, cx = .125, zB = -3.9, zR = -1.8, zF = 1.2, h = 2.2, up = 2.0, top = h + .3 + up, ch = .4, L = -w / 2;
+  add(s, box(w - .24, .07, zF - zR, "#8A7E70"), 0, .035, (zF + zR) / 2);
+  add(s, box(w, top, zR - zB, brick), 0, top / 2, (zB + zR) / 2);
+  add(s, box(.16, h + .3, zF - zR, brick), w / 2 - .08, (h + .3) / 2, (zF + zR) / 2);
+  add(s, box(.16, h + .3, zF - ch - zR, brick), L + .08, (h + .3) / 2, (zF - ch + zR) / 2);
+  // the cut corner, with the shop door in it under a fanlight
+  const cut = add(s, new THREE.Group(), L + ch / 2, 0, zF - ch / 2); cut.rotation.y = -Math.PI / 4;
+  add(cut, box(ch * Math.SQRT2, h + .3, .16, brick), 0, (h + .3) / 2, 0);
+  add(cut, box(.5, 1.75, .04, "#2A3A30"), 0, .9, .09);
+  add(cut, box(.5, .26, .03, "#6E828A"), 0, 1.95, .09);
+  // the upper storey follows the corner round
+  add(s, prism([[L + ch, zR], [w / 2, zR], [w / 2, zF], [L + ch, zF], [L, zF - ch], [L, zR]], up, brick), 0, h + .3, 0);
+  for (const y of [.25, h + .32, top - .1]) add(s, prism([[L - .02, zB - .02], [w / 2 + .02, zB - .02], [w / 2 + .02, zF + .02], [L + ch, zF + .02], [L - .02, zF - ch], [L - .02, zB - .02]], .1, blue), 0, y - .05, 0);
+  for (const x of [-.5, .5, 1.5]) sash(s, x, h + .3 + 1.0, zF + .02, .5, .9, stone);
+  const up2 = add(s, new THREE.Group(), L + ch / 2 + .03, 0, zF - ch / 2 + .03); up2.rotation.y = -Math.PI / 4;
+  sash(up2, 0, h + .3 + 1.0, .02, .34, .9, stone);
+  for (const z of [-.6, -2.9]) sash(s, w / 2 + .01, h + .3 + 1.0, z, .5, .9, stone, "x");
+  // the shop window: brick piers, a mullion between the range and the slab, and a row of top lights
+  for (const x of [.98, w / 2 - .1]) add(s, box(.2, h + .3, .22, brick), x, (h + .3) / 2, zF);   // no pier at the cut corner: the street sees the pan past it
+  add(s, box(w - ch, .08, .2, stone), (L + ch + w / 2) / 2, 1.98, zF);
+  for (let i = 0; i < 8; i++) add(s, box(.36, .16, .03, "#8FA2A8"), L + ch + .3 + i * .38, 2.1, zF + .02);
+  // hipped, as a corner shop is, so the rays from the Forth Bridge behind it pass over the corner
+  hipRoof(s, w, zF - zB + .1, top, 1.35, COVERS.stoneFlag, { z: (zF + zB) / 2, ridge: "#5E5448" });
+  const flue = stack(s, -1.3, top + .3, -2.7, 1.5, brick, 2);
+  add(g, solid(s), cx, 0, 0);
+  const f = fascia(g, w - ch - .3, h, zF + .1, LD.oxbloodTile, "FRIED FISH", LD.whitewash, stone, cx + (L + ch + w / 2) / 2);
+  const corner = fascia(g, ch * Math.SQRT2 - .1, h, zF - ch / 2 + .07, LD.oxbloodTile, "", LD.whitewash, stone, cx + L + ch / 2 - .07, -Math.PI / 4);
+  return { ...f, corner, zBack: zR, floor: .07, flue: V(cx - 1.3, flue + .1, -2.7), cornerAt: V(cx + L + ch / 2 - .12, 0, zF - ch / 2 + .12) };
+}
+
+/**
+ * The coffee stall: a painted barrow with its boiler, under a cambered red canvas on iron hoops and four stanchions,
+ * a scalloped valance with the lettering along it, and the naphtha flare on its own stick at the corner, outside
+ * the canvas where a flame belongs.
+ */
+function coffeeBarrow(g: P) {
+  const s = new THREE.Group(), body = "#2E4A3A", line = "#8A2A22", iron = LD.iron;
+  add(s, box(2.9, .86, 1.10, body), 0, .58, 0);
+  for (const sz of [-1, 1]) { add(s, box(2.8, .04, .02, line), 0, .40, sz * .56); add(s, box(2.8, .04, .02, line), 0, .92, sz * .56); for (const x of [-1.0, 0, 1.0]) add(s, box(.7, .4, .02, "#3A5A48"), x, .66, sz * .56); }
+  add(s, box(3.0, .07, 1.20, "#C9BCA0"), 0, 1.03, 0);
+  for (const side of [-1, 1]) add(s, cyl(.03, .036, 1.1, LD.oak, 5), 1.74, .56, side * .38).rotation.z = 1.50;
+  for (const x of [-1.46, 1.46]) for (const z of [-.56, 1.0]) add(s, cyl(.03, .035, 2.1, iron, 6), x, 1.05, z);
+  // the canvas: a shallow arc across the stall on three iron hoops
+  const R = 2.13, a = .49;
+  const canvas = add(s, new THREE.Mesh(new THREE.CylinderGeometry(R, R, 3.3, 14, 1, true, Math.PI / 2 - a, 2 * a), mat(COVERS.redCanvas.colour, { side: THREE.DoubleSide })), 0, 2.35 - R, .22);
+  canvas.rotation.z = Math.PI / 2;
+  for (const x of [-1.5, 0, 1.5]) { const hoop = add(s, new THREE.Mesh(new THREE.TorusGeometry(R - .02, .018, 4, 12, 2 * a), mat(iron)), x, 2.35 - R, .22); hoop.rotation.set(0, Math.PI / 2, Math.PI / 2 - a); }
+  for (let i = 0; i < 6; i++) { const seam = add(s, new THREE.Mesh(new THREE.CylinderGeometry(R + .005, R + .005, .03, 14, 1, true, Math.PI / 2 - a, 2 * a), mat(COVERS.redCanvas.line, { side: THREE.DoubleSide })), -1.4 + i * .56, 2.35 - R, .22); seam.rotation.z = Math.PI / 2; }
+  for (let i = 0; i < 11; i++) add(s, cyl(.075, .075, .02, "#EDE2C8", 10, ), -1.5 + i * .3, 1.84, 1.02).rotation.x = Math.PI / 2;   // the scallops
+  // the naphtha flare's stick at the corner
+  add(s, cyl(.026, .03, 2.2, iron, 5), -1.92, 1.1, .92);
+  add(s, box(.3, .03, .03, iron), -1.78, 2.2, .92);
+  g.add(solid(s));
+  const beam = add(g, box(3.3, .18, .06, "#EDE2C8"), 0, 1.95, 1.03); beam.name = "front-beam";
+  sign(g, "HOT COFFEE", 1.5, .14, 0, 1.95, 1.07, LD.oxbloodTile, "#EDE2C8");
+  return { beam, y: 1.94, zFront: 1.03, flare: V(-1.92, 2.26, .92) };
+}
+
+/**
+ * The seamen's kitchen: the back room of a Shadwell boarding house, a lean-to of soot-black stock brick with small
+ * barred windows and a tarred felt roof, against the tall back of the house with its own small windows and stacks.
+ * The street side is a wide doorway under a timber lintel, and the cooking fire is at the door.
+ */
+function seamensRoom(g: P) {
+  const s = new THREE.Group(), soot = "#5C5248", dark = "#3E3830", w = 3.8, zB = -3.9, zR = -1.8, zF = .9, hF = 2.2, hB = 2.95, hH = 4.3;
+  add(s, box(w - .24, .07, zF - zR, "#6E685E"), 0, .035, (zF + zR) / 2);
+  add(s, box(w, hH, zR - zB, soot), 0, hH / 2, (zB + zR) / 2);
+  add(s, box(w + .1, .08, zR - zB + .1, "#8A8276"), 0, hH, (zB + zR) / 2);
+  add(s, box(w - .2, .05, zR - zB - .2, "#2A2624"), 0, hH - .02, (zB + zR) / 2);
+  for (const x of [-1.0, 1.0]) {                                                                          // the house's back windows over the lean-to
+    sash(s, x, 3.7, zR + .02, .38, .48, "#8A7A66");
+    for (let i = 0; i < 3; i++) add(s, box(.02, .5, .02, LD.iron), x - .1 + i * .1, 3.7, zR + .07);
+  }
+  for (const sx of [-1, 1]) {
+    add(s, flank([[zR, 0], [zF, 0], [zF, hF], [zR, hB]], .16, soot), sx * (w / 2 - .08), 0, 0);
+    const win = add(s, new THREE.Group(), sx * (w / 2 + .01), 1.35, -.45); win.rotation.y = sx * Math.PI / 2;
+    add(win, box(.52, .46, .05, dark)); add(win, box(.42, .36, .04, "#4E5E66"), 0, 0, .02);
+    for (let i = 0; i < 3; i++) add(win, box(.02, .4, .03, LD.iron), -.12 + i * .12, 0, .05);
+    add(win, box(.62, .08, .1, "#8A8276"), 0, .28, .03);
+    sash(s, sx * (w / 2 + .01), 3.2, -2.9, .38, .5, "#8A7A66", sx > 0 ? "x" : "-x");
+  }
+  rubble(s, -1.9, 1.9, 2.4, 4.2, zR + .015, dark, 16, 3);
+  leanRoof(s, w, zR, hB, zF + .12, hF, COVERS.tarFelt, .16);
+  for (const sx of [-1, 1]) stack(s, sx * 1.35, hH, -2.9, 1.0, soot, 3);
+  g.add(solid(s));
+  const beam = add(g, box(w, .22, .18, LD.oakSmoke), 0, hF - .13, zF); beam.name = "front-beam";
+  sign(g, "SEAMEN'S HOME", 2.0, .18, 0, hF - .13, zF + .1, LD.cream, "#3A4A5E");
+  return { beam, y: hF - .16, zFront: zF, zBack: zR, floor: .07 };
+}
+
+/**
+ * The hop-pickers' cookhouse: an olive tarpaulin over a ridge pole on its uprights, pegged to a rail front and back,
+ * with the fire under its front edge; a corrugated-iron hopper hut behind on the left and the ends of three hop rows
+ * behind on the right, poles, wirework and bines. The rows are kept low enough that the market's rays pass over them.
+ */
+function hopFly(g: P) {
+  const s = new THREE.Group(), pole = "#6E5236", zR = -.2;
+  for (const sx of [-1, 1]) {
+    add(s, cyl(.05, .06, 2.85, pole, 6), sx * 2.05, 1.425, zR);
+    for (const z of [-1.5, 1.1]) add(s, cyl(.04, .05, 2.15, pole, 6), sx * 2.05, 1.075, z);
+  }
+  add(s, cyl(.045, .045, 4.4, pole, 6), 0, 2.85, zR).rotation.z = Math.PI / 2;
+  add(s, box(4.3, .1, .1, pole), 0, 2.15, -1.5);
+  gableRoof(s, 4.3, 2.6, 2.15, .7, COVERS.tarpaulin, { z: zR, over: .12, ridge: "#5E5A3C" });
+  add(s, box(.7, .02, .6, "#8A8458"), -1.0, 2.62, .35).rotation.x = .5;                                  // a patch
+  // the hopper hut: corrugated iron on a timber frame, a curved roof, a door and its number
+  const hut = add(s, new THREE.Group(), -1.3, 0, -2.55);
+  add(hut, box(1.7, 1.45, 1.3, "#8E9290"), 0, .725, 0);
+  for (let i = 0; i < 14; i++) add(hut, box(.03, 1.45, 1.32, "#7A7E7C"), -.8 + i * .123, .725, 0);
+  const roof = add(hut, new THREE.Mesh(new THREE.CylinderGeometry(.72, .72, 1.84, 12, 1, false, -Math.PI / 2, Math.PI), mat("#7E8280")), 0, 1.45, 0); roof.rotation.z = Math.PI / 2; roof.scale.set(1, 1, .5);
+  add(hut, box(.5, 1.1, .04, "#4A3A2C"), .35, .55, .67);
+  add(hut, box(.2, .14, .02, "#E9E2CC"), .35, 1.2, .69);
+  // the ends of three hop rows: poles, the wirework, strings and bines
+  for (let r = 0; r < 3; r++) {
+    const z = -2.2 - r * .6;
+    for (const x of [.3, 1.15, 2.0]) add(s, cyl(.035, .045, 2.25, "#7A6448", 5), x, 1.125, z);
+    add(s, box(1.8, .02, .02, "#3A3A3A"), 1.15, 2.22, z);
+    for (let i = 0; i < 5; i++) {
+      const x = .35 + i * .4, lean = (i % 2 ? .12 : -.12);
+      strut(s, V(x, 0, z), V(x + lean, 2.2, z), .012, "#B4A47E", 4);
+      for (let k = 0; k < 5; k++) add(s, ball(.07, k % 2 ? "#6E8A42" : "#5E7A38", 5), x + lean * (.3 + k * .15), .6 + k * .32, z).scale.set(.8, 1.3, .8);
+    }
+  }
+  g.add(solid(s));
+  const beam = add(g, box(4.3, .1, .1, pole), 0, 2.15, 1.1); beam.name = "front-beam";
+  return { beam, y: 2.18, zFront: 1.1 };
+}
+
+/**
+ * The dale dairy: a long low range of grey limestone rubble with dressed quoins and a graded slate roof on stone
+ * verges, its working side open under one heavy timber lintel, and a low door in the stone at the end. No chimney:
+ * a dairy is kept cold.
+ */
+function dairyRange(g: P) {
+  const s = new THREE.Group(), lime = "#A9A597", quoin = "#CDC9BA", dark = "#8E8A7E", w = 4.2, zB = -3.9, zR = -1.8, zF = .9, h = 2.15;
+  room(s, w, zB, zR, zF, h, lime, "#8A8A80");
+  add(s, box(.58, h, .22, lime), -w / 2 + .29, h / 2, zF - .02);                                          // the stone end with the low door
+  add(s, box(.2, h, .22, lime), w / 2 - .1, h / 2, zF - .02);
+  add(s, box(.40, 1.12, .04, "#3E3226"), -w / 2 + .3, .56, zF + .1);
+  add(s, box(.54, .14, .1, quoin), -w / 2 + .3, 1.2, zF + .1);
+  for (const [x, z, fx, fz] of [[-w / 2, zF + .09, -1, 1], [w / 2, zF + .09, 1, 1], [-w / 2, zB, -1, -1], [w / 2, zB, 1, -1]] as [number, number, number, number][]) quoins(s, x, z, h, quoin, fx, fz);
+  for (const sx of [-1, 1]) rubble(s, sx * (w / 2 + .012), sx * (w / 2 + .012), .2, h - .1, 0, dark, 0);
+  for (const sx of [-1, 1]) for (let i = 0; i < 14; i++) {
+    const z = zB + .3 + (i % 7) * .62, y = .3 + Math.floor(i / 7) * .9 + (i % 3) * .18;
+    add(s, box(.03, .12, .24, i % 2 ? dark : "#B8B4A6"), sx * (w / 2 + .012), y, z);
+  }
+  rubble(s, -2.05, -1.55, .2, 1.9, zF + .1, dark, 5, 7);
+  const turnedWin = add(s, new THREE.Group(), w / 2 + .01, 1.3, -2.8); turnedWin.rotation.y = Math.PI / 2;     // the dairy's slatted north light
+  add(turnedWin, box(.6, .44, .05, quoin)); for (let i = 0; i < 5; i++) add(turnedWin, box(.5, .03, .04, "#6E6A60"), 0, -.16 + i * .08, .03);
+  gableRoof(s, w, zF - zB, h, 1.25, COVERS.gradedSlate, { z: (zF + zB) / 2, over: .16, ends: lime, ridge: "#9A968A", verge: .16 });
+  g.add(solid(s));
+  const beam = add(g, box(3.5, .24, .22, "#5A4632"), .2, h - .12, zF); beam.name = "front-beam";
+  return { beam, y: h - .16, zFront: zF, zBack: zR, floor: .07 };
+}
+
+/**
+ * The Cornish bakehouse: granite rubble with dressed quoins and a granite lintel over the open front, slate hung on
+ * the weather flank, a steep roof of small dark scantle slate, and the oven's own tall stack rising through the
+ * back slope over the oven.
+ */
+function graniteBakehouse(g: P) {
+  const s = new THREE.Group(), granite = "#8E8C86", dressed = "#AAA8A0", speck = "#74726C", w = 4.2, zB = -3.9, zR = -1.8, zF = .9, h = 2.3;
+  room(s, w, zB, zR, zF, h, granite, "#7E7A72");
+  for (const sx of [-1, 1]) add(s, box(.16, h, .22, dressed), sx * (w / 2 - .08), h / 2, zF - .04);   // slim dressed jambs: the oven is seen past them
+  for (const [x, fx] of [[-w / 2, -1], [w / 2, 1]] as [number, number][]) quoins(s, x, zB, h, dressed, fx, -1);
+  rubble(s, -1.9, 1.9, .3, 2.1, zB - .01, speck, 12, 5);
+  for (let i = 0; i < 9; i++) add(s, box(.03, .03, zF - zB + .02, "#4A5054"), -w / 2 - .016, .25 + i * .24, (zF + zB) / 2);   // slate hung on the weather side
+  add(s, box(.02, 2.2, zF - zB, "#5E6468"), -w / 2 - .012, 1.1, (zF + zB) / 2);
+  for (let i = 0; i < 10; i++) add(s, box(.03, .1, .16, i % 2 ? speck : dressed), w / 2 + .014, .3 + (i % 5) * .4, -3.4 + i * .5);
+  gableRoof(s, w, zF - zB, h, 1.55, COVERS.scantle, { z: (zF + zB) / 2, over: .14, ends: granite, ridge: "#6E7276" });
+  // the oven's stack, granite to the roof and brick above it
+  add(s, box(.86, 2.6, .86, granite), 1.15, h + 1.3, -2.55);
+  add(s, box(.72, .9, .72, "#9A5A42"), 1.15, h + 3.05, -2.55);
+  add(s, box(.84, .1, .84, dressed), 1.15, h + 3.55, -2.55);
+  g.add(solid(s));
+  const beam = add(g, box(w - .6, .26, .26, dressed), 0, h - .13, zF); beam.name = "front-beam";
+  return { beam, y: h - .18, zFront: zF, zBack: zR, floor: .07, flue: V(1.15, h + 3.8, -2.55) };
+}
+
+/**
+ * The cockle shelter on the sand: grey driftwood posts leaning a little, a driftwood rail front and back, an old tan
+ * sail lashed over them with a patch in it, and a windbreak of washed-up planks along the back and the weather end.
+ */
+function beachShelter(g: P) {
+  const s = new THREE.Group(), drift = "#A09A8C", dark = "#7E786C";
+  // kept as low as the old shade, 2.2 at the back, so the bakehouse's rays pass over the sail
+  const posts: [number, number, number, number, number][] = [[-1.75, -1.2, 2.14, .05, -.03], [0, -1.25, 2.18, -.04, 0], [1.75, -1.2, 2.12, -.06, .02], [-1.95, 1.0, 1.92, .04, .03], [1.95, 1.0, 1.9, -.05, .02]];
+  for (const [x, z, h, lx, lz] of posts) { strut(s, V(x, 0, z), V(x + lx, h, z + lz), .065, drift, 6); add(s, ball(.08, dark, 5), x + lx * .5, h * .55, z + lz * .5).scale.set(1, .6, 1); }
+  strut(s, V(-2.0, 2.14, -1.22), V(2.0, 2.1, -1.18), .06, drift, 6);
+  // the sail, sloping from the back rail to the front log, lashed at the corners
+  const sail = add(s, new THREE.Group(), 0, 2.06, -.1); sail.rotation.x = Math.atan2(.24, 2.3);
+  // a tanned sail, sagging between its lashings, with a paler patch sewn into it and its bolt rope round the edge
+  const sagged = (w: number, d: number, sag: number, cx = 0, cz = 0) => {
+    const geo = new THREE.PlaneGeometry(w, d, 10, 6); geo.rotateX(-Math.PI / 2);
+    const pos = geo.attributes.position;
+    for (let i = 0; i < pos.count; i++) { const x = pos.getX(i) + cx, z = pos.getZ(i) + cz; pos.setY(i, -sag * (1 - (2 * x / 4.1) ** 2) * (1 - (2 * z / 2.46) ** 2)); }
+    geo.computeVertexNormals(); return geo;
+  };
+  add(sail, new THREE.Mesh(sagged(4.1, 2.46, .16), mat(COVERS.sailcloth.colour, { side: THREE.DoubleSide })), 0, 0, 0);
+  add(sail, new THREE.Mesh(sagged(1.0, .8, .16, .9, .3), mat("#C8A87A", { side: THREE.DoubleSide })), .9, .012, .3);
+  for (const x of [-1.37, 0, 1.37]) add(sail, new THREE.Mesh(sagged(.03, 2.4, .16, x, 0), mat(COVERS.sailcloth.line, { side: THREE.DoubleSide })), x, .01, 0);   // the cloths' seams
+  add(sail, box(4.12, .03, .05, "#E4DCC8"), 0, .02, 1.22);
+  for (const x of [-2.0, 2.0]) for (const z of [-1.2, 1.2]) add(sail, cyl(.02, .02, .14, "#C9BCA0", 4), x, -.05, z);
+  // the windbreak of planks
+  for (let i = 0; i < 11; i++) { const p = add(s, box(.34, .9 + (i % 3) * .18, .05, i % 2 ? drift : dark), -1.8 + i * .36, .45 + (i % 3) * .09, -1.3); p.rotation.z = (i % 2 ? .05 : -.04); }
+  for (let i = 0; i < 4; i++) { const p = add(s, box(.05, .8 + (i % 2) * .2, .34, i % 2 ? dark : drift), -2.02, .42, -1.0 + i * .34); p.rotation.x = (i % 2 ? .05 : -.05); }
+  g.add(solid(s));
+  const beam = add(g, cyl(.075, .085, 4.1, drift, 7), 0, 1.9, 1.0); beam.rotation.z = Math.PI / 2 + .01; beam.name = "front-beam";
+  return { beam, y: 1.9, zFront: 1.0 };
+}
+
+/**
+ * The curing yard's bothy on the Angus shore: a low house of red sandstone rubble with quoins, a door and one small
+ * window, a stack on the west gable, and a thick heather thatch roped over the ridge with stones hung on the ropes
+ * against the sea wind. Under its eave is the rail the tied fish and the lamps hang from.
+ */
+function bothy(g: P) {
+  // It stands on the west side of the yard: the oat mill's rays pass west of it and the distillery's east of it.
+  const s = new THREE.Group(), sand = "#9A5E4A", dark = "#7E4A3A", quoin = "#B4745C", w = 2.65, cx = -.725, zB = -3.45, zF = -1.6, h = 1.9;
+  add(s, box(w, h, zF - zB, sand), 0, h / 2, (zB + zF) / 2);
+  rubble(s, -1.15, 1.15, .2, 1.75, zF + .01, dark, 14, 9);
+  for (const [x, fx] of [[-w / 2, -1], [w / 2, 1]] as [number, number][]) quoins(s, x, zF, h, quoin, fx, 1);
+  add(s, box(.6, 1.35, .05, "#3E2E22"), -.45, .68, zF + .03);
+  add(s, box(.78, .16, .1, quoin), -.45, 1.43, zF + .05);
+  sash(s, .72, 1.12, zF + .02, .38, .38, quoin);
+  gableRoof(s, w, zF - zB, h, 1.3, COVERS.thatch, { z: (zB + zF) / 2, over: .15, ends: sand, ridge: "#8A7448" });
+  const e = (zF - zB) / 2 + .15, dip = .15 * 1.3 / ((zF - zB) / 2);                                             // the eave edge, and how far it falls below the wall head
+  for (const sz of [-1, 1]) add(s, cyl(.15, .15, w + .3, "#7A6444", 8), 0, h - dip + .02, (zB + zF) / 2 + sz * (e - .08)).rotation.z = Math.PI / 2;   // the rounded eaves
+  add(s, cyl(.2, .2, w + .2, "#6E5A3A", 8), 0, h + 1.32, (zB + zF) / 2).rotation.z = Math.PI / 2;                // the ridge roll
+  for (let i = 0; i < 5; i++) {                                                                                   // the ropes and their stones
+    const x = -1.0 + i * .5, zm = (zB + zF) / 2;
+    for (const sz of [-1, 1]) {
+      strut(s, V(x, h + 1.45, zm), V(x, h - dip + .06, zm + sz * (e + .02)), .03, "#3E3222", 4);
+      add(s, ball(.1, "#8A8680", 6), x, h - dip - .3, zm + sz * (e + .05)).scale.set(1, .8, 1);
+      add(s, cyl(.01, .01, .22, "#5A4A32", 3), x, h - dip - .12, zm + sz * (e + .04));
+    }
+  }
+  stack(s, -w / 2 + .3, h + .6, (zB + zF) / 2, 1.3, sand, 1, .5, .5);
+  add(g, solid(s), cx, 0, 0);
+  // the rail under the eave, run out on iron brackets past the gables so the lamps hang clear of the walls
+  const beam = add(g, box(w + .5, .1, .1, LD.oak), cx, 1.5, -1.36); beam.name = "front-beam";
+  for (const x of [cx - w / 2 + .05, cx + w / 2 - .05]) add(g, box(.06, .06, .3, LD.iron), x, 1.5, -1.5);
+  return { beam, y: 1.53, zFront: -1.36, xs: [cx - w / 2 - .1, cx + w / 2 + .1] };
+}
+
+/**
+ * The distillery: a long whitewashed range, harled, with dressed grey margins round the openings and at the
+ * corners, a Speyside slate roof with a louvred ridge vent, and the kiln rising out of its back at the east end
+ * under a steep slate pyramid that carries the pagoda vent. The malting floor is the open front.
+ */
+function distilleryRange(g: P) {
+  const s = new THREE.Group(), harl = "#ECE7DA", margin = "#8A867C", w = 4.4, zB = -3.9, zR = -1.8, zF = .9, h = 2.3;
+  room(s, w, zB, zR, zF, h, harl, "#9A948A");
+  for (const sx of [-1, 1]) {
+    add(s, box(.3, h, .26, margin), sx * (w / 2 - .15), h / 2, zF);
+    const win = add(s, new THREE.Group(), sx * (w / 2 + .01), 1.25, -1.0); win.rotation.y = sx * Math.PI / 2;
+    add(win, box(.62, .82, .05, margin)); add(win, box(.46, .66, .04, "#4E5E66"), 0, 0, .02);
+    for (let i = 0; i < 2; i++) add(win, box(.46, .03, .05, "#E9E4D6"), 0, -.11 + i * .22, .03);
+  }
+  for (const [x, z, fx, fz] of [[-w / 2, zB, -1, -1], [w / 2, zB, 1, -1]] as [number, number, number, number][]) quoins(s, x, z, h, margin, fx, fz);
+  gableRoof(s, w, zF - zB, h, 1.2, COVERS.highlandSlate, { z: (zF + zB) / 2, over: .16, ends: harl, ridge: "#3E464A" });
+  for (let i = 0; i < 3; i++) { add(s, box(.5, .24, .34, harl), -1.6 + i * .7, h + 1.3, (zF + zB) / 2); add(s, box(.62, .06, .5, "#4A555A"), -1.6 + i * .7, h + 1.45, (zF + zB) / 2); }
+  // the kiln: a tall harled block through the back of the range, with its pyramid roof
+  add(s, box(1.6, 3.9, 1.6, harl), 1.45, 1.95, -2.8);
+  for (const [x, z, fx, fz] of [[.65, -2.0, -1, 1], [2.25, -2.0, 1, 1]] as [number, number, number, number][]) quoins(s, x, z, 3.9, margin, fx, fz);
+  add(s, box(1.76, .1, 1.76, margin), 1.45, 3.9, -2.8);
+  add(s, cone(1.22, .72, COVERS.highlandSlate.colour, 4), 1.45, 4.3, -2.8).rotation.y = Math.PI / 4;
+  g.add(solid(s));
+  const beam = add(g, box(w - .5, .24, .22, margin), 0, h - .12, zF); beam.name = "front-beam";
+  return { beam, y: h - .16, zFront: zF, zBack: zR, floor: .07, pagoda: V(1.45, 4.56, -2.8) };
+}
+
+/**
+ * The pastrycook's shop behind the pastry board: a one-storey shop of stock brick with a painted timber front in
+ * deep blue, its pilasters and fascia picked out in cream, and a hipped roof of green Westmorland slate. It is the
+ * only shop of its kind on the table and shares no wall and roof with any room's building.
+ */
+function pastryShop(g: P) {
+  const s = new THREE.Group(), stock = "#B4A07C", paint = "#2E3E5E", cream = "#E9DFC8", w = 3.6, zB = -3.6, zR = -1.7, zF = .8, h = 2.2;
+  room(s, w, zB, zR, zF, h + .3, stock, "#A89C88");
+  for (const sx of [-1, 1]) {
+    add(s, box(.26, h + .3, .2, paint), sx * (w / 2 - .06), (h + .3) / 2, zF + .02);
+    add(s, box(.32, .12, .26, cream), sx * (w / 2 - .06), h + .36, zF + .02);
+    for (let i = 0; i < 3; i++) add(s, box(.03, .6, .21, cream), sx * (w / 2 - .06), .5 + i * .7, zF + .03);
+  }
+  add(s, box(w + .12, .12, zF - zB + .12, cream), 0, h + .36, (zF + zB) / 2);
+  hipRoof(s, w + .24, zF - zB + .24, h + .42, 1.0, { colour: "#5E6E66", line: "#4A5852", every: .2, kind: "line" }, { z: (zF + zB) / 2, ridge: "#7E868A" });
+  stack(s, -1.2, h + .6, -2.6, 1.0, stock, 2);
+  g.add(solid(s));
+  const f = fascia(g, w - .52, h, zF + .1, paint, "PASTRYCOOK", cream, cream);
+  return { ...f, zBack: zR, floor: .07 };
 }
 
 // ---------- the thirteen room stands ----------
@@ -643,9 +1274,9 @@ export function cockleDonkey(): P {
  */
 export function pub(): P {
   const g = group();
-  const sh = shelter(g, "londonBrick", 3.8, 2.6, 2.3, { sign: "FREE HOUSE", ink: LD.brass, paper: LD.pubGreen });
-  lamps(g, sh.y, sh.zFront, [-1.66, 1.66], .85);
-  // the etched glass screen and the tiled dado of the street front
+  const sh = publicHouse(g);
+  lamps(g, sh.y, sh.zFront, [-1.5, 1.5], .85);
+  // the etched glass screen and the tiled dado along the back of the bar
   for (let i = 0; i < 3; i++) add(g, box(.92, .86, .04, LD.glass), -1.2 + i * 1.2, 1.46, sh.zBack + .10);
   for (let i = 0; i < 8; i++) add(g, box(.42, .52, .03, i % 2 ? LD.oxbloodTile : "#8A3A30"), -1.5 + i * .44, .40, sh.zBack + .10);
   // the mahogany counter across the bay, the brass rail, and the hand pumps
@@ -689,10 +1320,11 @@ export function pub(): P {
   const atBar = [0, 1].map((i) => { const p = add(g, own(resident(i ? "coster" : "shawl", false)), 1.05 + i * .55, sh.floor, 1.40) as Figure; p.rotation.y = Math.PI + i * .2; arms(p).right.rotation.x = -.8; return p; });
   const potboy = add(g, own(resident("server")), .92, sh.floor, .28) as Figure; potboy.rotation.y = -.5;
   arms(potboy).left.rotation.x = -1.4;
-  const walker = resident("clerk", false); add(g, walker, -2.4, 0, 3.30);
-  const walk = pacer(walker, V(-2.4, 0, 3.30), V(2.4, 0, 3.35), .30, .8);
+  const walker = resident("clerk", false); add(g, walker, -2.4, 0, 2.95);
+  const walk = pacer(walker, V(-2.4, 0, 2.95), V(2.4, 0, 3.0), .30, .8);
   const sliceRest = slice.position.clone(), tinRest = tin.position.clone();
   return life(g, "roastPub", [carver, settle[0], atBar[0], atBar[1], settle[1], potboy, walker], (t, k) => {
+    sh.board.rotation.x = Math.sin(t * .9) * .06 + beat(k, .3, 1) * Math.sin(t * 6) * .12;   // the sign on its hooks
     flames.forEach((f, i) => { const s = .8 + Math.sin(t * 8 + i * 2) * .2 + beat(k, .1, .8) * .35; f.scale.set(s, s, s); f.rotation.y = t * 1.6 + i; });
     pints.forEach((p, i) => { p.position.y = boardTop + .10 + Math.sin(t * 1.1 + i) * .003; });
     // 1. food first: the knife draws across the joint and the slice separates and falls onto the plate
@@ -720,16 +1352,18 @@ export function pub(): P {
  */
 export function teaRoom(): P {
   const g = group();
-  const sh = shelter(g, "shopFront", 3.8, 2.6, 2.3, { sign: "TEA ROOM", ink: LD.oxbloodTile, paper: LD.cream });
-  lamps(g, sh.y, sh.zFront, [-1.66, 1.66], .8);
-  for (let i = 0; i < 2; i++) add(g, box(1.35, 1.10, .04, LD.glass), -.85 + i * 1.7, 1.38, sh.zBack + .10);
-  add(g, box(3.4, .10, .34, LD.oxbloodTile), 0, 1.98, sh.zBack + .22);                    // the blind box over the window
-  // the marble table at the front of the bay, where the arrival camera reaches it
-  const top = .78;
+  const sh = teaShop(g);
+  lamps(g, sh.y, sh.zFront, [-1.55, .2], .8);   // one each side of the door; the bow window keeps the right-hand end
+  // the counter at the back with its urn, and the marble tables: the first in the door under the awning, where the
+  // arrival camera reaches it, the second inside behind the bow window
+  add(g, box(1.5, .86, .5, LD.oakSmoke), .55, .43, -1.5);
+  add(g, box(1.56, .05, .56, "#E9E4D6"), .55, .88, -1.5);
+  add(g, cyl(.16, .18, .42, LD.brass, 12), .95, 1.12, -1.5); add(g, cyl(.05, .05, .1, LD.brass, 8), .95, 1.38, -1.5);
+  const top = .78, t2 = V(1.05, 0, -.05);
   add(g, cyl(.07, .09, top, LD.iron, 10), -.75, top / 2, 1.06);
   const marble = add(g, cyl(.52, .52, .06, "#E9E4D6", 20), -.75, top, 1.06); void marble;
-  add(g, cyl(.07, .09, top, LD.iron, 10), 1.05, top / 2, .74);
-  add(g, cyl(.46, .46, .06, "#E9E4D6", 18), 1.05, top, .74);
+  add(g, cyl(.07, .09, top, LD.iron, 10), t2.x, top / 2, t2.z);
+  add(g, cyl(.46, .46, .06, "#E9E4D6", 18), t2.x, top, t2.z);
   // the pot, the strainer and the cup: the pour that the click makes
   const pot = add(g, new THREE.Group(), -.98, top + .14, 1.06); pot.name = "tearoom-pot";
   add(pot, ball(.155, "#D9CFC0", 12), 0, 0, 0).scale.set(1, .82, 1);
@@ -745,8 +1379,8 @@ export function teaRoom(): P {
   const rings = splashRings(g, 3, -.52, top + .11, 1.10, .055, "#A85A2A");
   // bread and butter, scones, and a cake stand: three modelled foods
   for (let i = 0; i < 4; i++) add(g, box(.14, .012, .10, "#F2E4C0"), -.95 + i * .10, top + .04, .84).rotation.y = i * .3;
-  for (let i = 0; i < 3; i++) { add(g, cyl(.075, .08, .09, "#D9BC86", 10), .92 + (i % 2) * .22, top + .08, .62 + Math.floor(i / 2) * .2); add(g, cyl(.07, .07, .015, "#E9D9A8", 10), .92 + (i % 2) * .22, top + .13, .62 + Math.floor(i / 2) * .2); }
-  const stand = add(g, new THREE.Group(), 1.28, top + .02, .84);
+  for (let i = 0; i < 3; i++) { add(g, cyl(.075, .08, .09, "#D9BC86", 10), t2.x - .13 + (i % 2) * .22, top + .08, t2.z - .12 + Math.floor(i / 2) * .2); add(g, cyl(.07, .07, .015, "#E9D9A8", 10), t2.x - .13 + (i % 2) * .22, top + .13, t2.z - .12 + Math.floor(i / 2) * .2); }
+  const stand = add(g, new THREE.Group(), t2.x + .23, top + .02, t2.z + .1);
   add(stand, cyl(.012, .012, .34, LD.brass, 5), 0, .17, 0);
   for (let i = 0; i < 2; i++) { add(stand, cyl(.17 - i * .05, .17 - i * .05, .012, LD.cream, 14), 0, .06 + i * .20, 0); for (let n = 0; n < 4; n++) add(stand, box(.05, .03, .05, n % 2 ? "#E9C4A8" : "#D9A8B4"), Math.cos(n * 1.6) * .09, .08 + i * .20, Math.sin(n * 1.6) * .09); }
   g.userData.steam = V(-.52, top + .22, 1.10);
@@ -757,9 +1391,10 @@ export function teaRoom(): P {
   // the visitor: a bystander is behind the food, never in front of it
   const alone = seatFigure(g, resident("lady", false), -.75, .40, 0, .46);
   add(g, cyl(.16, .17, .46, LD.oak, 10), -.75, .23, .28);
-  const pair = [seatFigure(g, resident("shawl", false), .70, 1.10, -1.2, .46), seatFigure(g, resident("clerk", false), 1.40, 1.10, 1.2, .46)];
-  for (const [x, z] of [[.70, 1.22], [1.40, 1.22]]) add(g, cyl(.16, .17, .46, LD.oak, 10), x, .23, z);
-  const atCounter = add(g, own(resident("lady", false)), 1.52, sh.floor, -.20) as Figure; atCounter.rotation.y = -1.9;
+  // the pair at the second table, one each side of it, behind the bow window
+  const pair = [seatFigure(g, resident("shawl", false), t2.x - .62, t2.z, Math.PI / 2, .46), seatFigure(g, resident("clerk", false), t2.x + .62, t2.z, -Math.PI / 2, .46)];
+  for (const [x, a] of [[t2.x - .62, Math.PI / 2], [t2.x + .62, -Math.PI / 2]]) add(g, cyl(.16, .17, .46, LD.oak, 10), x - Math.sin(a) * .11, .23, t2.z);
+  const atCounter = add(g, own(resident("lady", false)), .35, sh.floor, -.98) as Figure; atCounter.rotation.y = Math.PI - .2;
   const child = add(g, own(resident("child")), .28, sh.floor, 1.52) as Figure; child.rotation.y = .4;
   const walker = resident("shawl", false); add(g, walker, -2.4, 0, 3.40);
   const walk = pacer(walker, V(-2.4, 0, 3.40), V(2.4, 0, 3.45), .28, 1.1);
@@ -793,17 +1428,9 @@ export function teaRoom(): P {
  */
 export function boroughMarket(): P {
   const g = group();
-  // the iron roof of the hall: light columns, a lattice truss and a glazed ridge, so it reads as a shed from above
-  for (const x of [-1.85, 1.85]) for (const z of [-1.25, 1.25]) {
-    add(g, cyl(.10, .13, 2.45, "#3E4A50", 8), x, 1.22, z);
-    add(g, box(.34, .10, .34, "#3E4A50"), x, 2.46, z);
-  }
-  for (const z of [-1.25, 1.25]) { add(g, box(4.1, .13, .16, "#3E4A50"), 0, 2.56, z); for (let i = 0; i < 7; i++) add(g, box(.05, .34, .05, "#4E5A60"), -1.8 + i * .6, 2.74, z).rotation.z = i % 2 ? .4 : -.4; }
-  add(g, box(4.3, .10, 2.9, "#5E6A6E"), 0, 2.94, 0);
-  add(g, box(1.5, .07, 2.9, "#9FC2CC"), 0, 3.02, 0);                                      // the glazed strip down the ridge
-  const beam = add(g, box(4.3, .14, .18, "#3E4A50"), 0, 2.30, 1.25); beam.name = "front-beam";
-  lamps(g, 2.30, 1.25, [-1.5, 1.5], .8, true);
-  add(g, box(4.4, .07, 3.0, "#B0A898"), 0, .035, 0);
+  // the hall: cast-iron columns, lattice girders, a glass roof and its lantern (marketHall above)
+  const hall = marketHall(g);
+  lamps(g, hall.y, hall.zFront, [-1.5, 1.5], .8, true);
   // the cheese stall at the front: the truckle, the wire, the wedge that falls away, the board
   const stallTop = .84;
   add(g, box(2.2, .80, .78, LD.deal), -.55, .40, .95);
@@ -881,8 +1508,8 @@ export function boroughMarket(): P {
  */
 export function pieShop(): P {
   const g = group();
-  const sh = shelter(g, "shopFront", 3.8, 2.6, 2.3, { sign: "PIE & MASH", ink: LD.whitewash, paper: LD.pubGreen });
-  lamps(g, sh.y, sh.zFront, [-1.66, 1.66], .8);
+  const sh = pieShopFront(g);
+  lamps(g, sh.y, sh.zFront, [-1.5, 1.5], .8);
   for (let i = 0; i < 10; i++) for (let r = 0; r < 3; r++) add(g, box(.34, .34, .03, r % 2 ? "#E9E4D6" : "#C9D4CE"), -1.62 + i * .36, .32 + r * .36, sh.zBack + .10);
   for (let i = 0; i < 2; i++) add(g, box(.90, .70, .03, "#C9D2D4"), -.8 + i * 1.6, 1.62, sh.zBack + .10);   // the mirrors
   // the marble counter and the marble-topped table, the whole point of the room
@@ -920,8 +1547,9 @@ export function pieShop(): P {
   const atTable = [seatFigure(g, resident("coster", false), .92, 3.05, 1.4, .46), seatFigure(g, resident("porter", false), 2.00, 3.05, -1.4, .46)];
   for (const [x, z] of [[.80, 3.05], [2.12, 3.05]]) add(g, cyl(.15, .16, .46, LD.oak, 10), x, .23, z);
   const standing = [0, 1].map((i) => { const p = add(g, own(resident(i ? "shawl" : "mill", false)), -1.75 + i * .60, sh.floor, 3.10 + i * .22) as Figure; p.rotation.y = Math.PI - i * .3; return p; });
+  // the pavement walk stops short of the strait: the shop's east end is 2.4 from the water (walkthrough item 21)
   const walker = resident("coster", false); add(g, walker, -2.4, 0, 3.40);
-  const walk = pacer(walker, V(-2.4, 0, 3.40), V(2.4, 0, 3.45), .30, .3);
+  const walk = pacer(walker, V(-2.4, 0, 3.40), V(1.3, 0, 3.45), .30, .3);
   const ladleRest = ladle.position.clone(), from = V(), to = V();
   return life(g, "pieMashUk", [pieman, atTable[0], boy, standing[0], atTable[1], standing[1], walker], (t, k) => {
     eels.forEach((e, i) => { e.rotation.y = i + Math.sin(t * .8 + i) * .2; e.position.y = top + .27 + Math.sin(t * 1.4 + i) * .006; });
@@ -951,12 +1579,14 @@ export function pieShop(): P {
  */
 export function chipShop(): P {
   const g = group();
-  const sh = shelter(g, "daleStone", 4.0, 2.6, 2.3, { sign: "FRIED FISH", ink: LD.whitewash, paper: LD.oxbloodTile });
-  lamps(g, sh.y, sh.zFront, [-1.74, 1.74], .8);
+  const sh = cornerShop(g);
+  // one lamp on the cut corner over the door, one at the far end of the window: neither between the street and the pan
+  add(g, ukLamp(.8, true), sh.cornerAt.x, sh.corner.y - .08 - .32, sh.cornerAt.z);
+  add(g, ukLamp(.8, true), 1.72, sh.y - .08 - .32, sh.zFront);
   for (let i = 0; i < 2; i++) add(g, box(1.15, .92, .04, LD.glass), -.75 + i * 1.5, 1.34, sh.zBack + .10);
   // the range: a brick arch, the coal fire under it, two pans of dripping
-  add(g, box(2.6, .92, .76, "#8A5A46"), -.35, .46, .70);
-  add(g, box(2.7, .07, .84, LD.iron), -.35, .95, .70);
+  add(g, box(2.45, .92, .76, "#8A5A46"), -.3, .46, .70);
+  add(g, box(2.55, .07, .84, LD.iron), -.3, .95, .70);
   add(g, new THREE.Mesh(new THREE.TorusGeometry(.42, .09, 6, 14, Math.PI), mat("#7A4A38")), -.35, .92, .35).rotation.x = Math.PI;
   const coals = Array.from({ length: 6 }, (_, i) => { const c = add(g, ball(.055, i % 2 ? "#D9541E" : "#8A2A16", 6), -.95 + i * .22, .30, .66); c.name = "chippy-coal"; return c; });
   const pans = [-.95, .30].map((x, i) => {
@@ -980,8 +1610,8 @@ export function chipShop(): P {
   const scraps = add(g, cyl(.19, .16, .10, LD.iron, 12), 1.42, .88, 1.22);
   for (let i = 0; i < 6; i++) add(scraps, ball(.033, "#E4C486", 5), Math.cos(i) * .10, .06, Math.sin(i) * .10).scale.y = .6;
   add(g, cyl(.04, .035, .16, LD.glass, 10), 1.72, .90, 1.16); add(g, cyl(.045, .04, .11, LD.iron, 10), 1.86, .87, 1.12);
-  for (let i = 0; i < 4; i++) add(g, box(.22, .008, .16, "#D9CFB4"), -1.85, .96 + i * .012, .50).rotation.y = i * .2;   // the newspaper
-  g.userData.steam = V(-.95, 1.42, .70); g.userData.smoke = V(-1.55, 2.0, .10);
+  for (let i = 0; i < 4; i++) add(g, box(.22, .008, .16, "#D9CFB4"), 1.78, .845 + i * .012, 1.02).rotation.y = i * .2;   // the newspaper on the slab
+  g.userData.steam = V(-.95, 1.42, .70); g.userData.smoke = sh.flue;   // the range's flue is the stack at the back
   // seven people: the frier, the salter, three in the queue, a child, a walker on the street
   const frier = add(g, own(resident("cook")), -.95, sh.floor, .12) as Figure; frier.rotation.y = 0;
   arms(frier).right.rotation.x = -1.5; arms(frier).left.rotation.x = -1.1;
@@ -1018,21 +1648,14 @@ export function chipShop(): P {
  */
 export function coffeeStall(): P {
   const g = group();
-  // the stall itself: a barrow body with a canvas tilt over it, which reads as a shade from above
-  add(g, box(2.9, .86, 1.10, LD.deal), 0, .58, 0);
-  add(g, box(3.0, .07, 1.20, "#C9BCA0"), 0, 1.03, 0);
-  for (const side of [-1, 1]) {
-    const w = add(g, new THREE.Group(), -.5, .36, side * .66);
-    add(w, new THREE.Mesh(new THREE.TorusGeometry(.34, .035, 6, 14), mat(LD.oak)), 0, 0, 0).rotation.y = Math.PI / 2;
-    for (let n = 0; n < 8; n++) add(w, cyl(.012, .012, .66, LD.deal, 4), 0, 0, 0).rotation.z = (n * Math.PI) / 8;
-  }
-  for (const side of [-1, 1]) add(g, cyl(.03, .036, 1.1, LD.oak, 5), 1.74, .56, side * .38).rotation.z = 1.50;
-  const tilt = shade(g, 3.2, 2.0, 2.10, 0, .30, "#D9D2C2");
-  lamps(g, tilt.y, tilt.zFront, [-1.35, 1.35], .75, false);
-  // the naphtha flare on its stick: the light the stall works by, always alive
-  add(g, cyl(.022, .026, 1.3, LD.iron, 5), -1.52, 1.68, .32);
-  const flare = add(g, cone(.11, .30, LD.flameHot, 8), -1.52, 2.42, .32); flare.name = "breakfast-flare";
-  add(g, cone(.09, .12, LD.brass, 8), -1.52, 2.30, .32);
+  // the stall itself: a painted barrow under a cambered canvas on iron hoops (coffeeBarrow above)
+  const sh = coffeeBarrow(g);
+  for (const side of [-1, 1]) add(g, wheel(.46, 10, LD.oxbloodTile, "#C9A83A"), -.5, .46, side * .66);
+  lamps(g, sh.y, sh.zFront, [-1.25, 1.25], .75, false);
+  // the naphtha flare on its stick at the corner, outside the canvas: the light the stall works by, always alive
+  add(g, cone(.09, .12, LD.brass, 8), sh.flare.x, sh.flare.y - .06, sh.flare.z);
+  const flare = add(g, cone(.11, .30, LD.flameHot, 8), sh.flare.x, sh.flare.y + .15, sh.flare.z); flare.name = "breakfast-flare";
+  (flare.material as THREE.MeshStandardMaterial).emissive.set("#E9822A"); (flare.material as THREE.MeshStandardMaterial).emissiveIntensity = .7;
   // the boiler with its tap, the griddle, the rashers, the mugs
   const boiler = add(g, cyl(.27, .29, .52, LD.brass, 16), -1.0, 1.32, .06); boiler.name = "breakfast-boiler";
   add(g, cyl(.24, .24, .05, "#9C7A2A", 16), -1.0, 1.60, .06);
@@ -1051,7 +1674,7 @@ export function coffeeStall(): P {
   const others = Array.from({ length: 3 }, (_, i) => { const r = add(g, box(.28, .022, .09, "#A8483A"), .62 + (i % 2) * .16, 1.13, -.14 + i * .13); r.userData.foodReaction = "hop"; return r; });
   for (let i = 0; i < 4; i++) { add(g, box(.20, .05, .14, "#E9DCB4"), 1.24, 1.08 + i * .05, .24); add(g, box(.20, .012, .14, "#E9C86A"), 1.24, 1.11 + i * .05, .24); }   // bread and butter
   for (let i = 0; i < 4; i++) add(g, cyl(.07, .058, .12, "#D9D2C2", 12), 1.22 - i * .19, 1.09, -.28);
-  g.userData.steam = V(-1.0, 1.72, .06); g.userData.smoke = V(-1.52, 2.62, .32);
+  g.userData.steam = V(-1.0, 1.72, .06); g.userData.smoke = V(sh.flare.x, sh.flare.y + .42, sh.flare.z);
   // seven people: the stallholder, a porter taking his mug, three more at the stall, a boy, a walker
   const holder = add(g, own(resident("cook")), -.2, 0, -.92) as Figure; holder.rotation.y = 0;
   arms(holder).right.rotation.x = -1.3; arms(holder).left.rotation.x = -1.1;
@@ -1093,8 +1716,8 @@ export function coffeeStall(): P {
  */
 export function lascarKitchen(): P {
   const g = group();
-  const sh = shelter(g, "dockShed", 3.8, 2.6, 2.2, { sign: "SEAMEN'S HOME", ink: LD.cream, paper: "#3A4A5E" });
-  lamps(g, sh.y, sh.zFront, [-1.66, 1.66], .8, false);
+  const sh = seamensRoom(g);
+  lamps(g, sh.y, sh.zFront, [-1.5, 1.5], .8, false);
   for (let i = 0; i < 8; i++) add(g, box(.42, 2.0, .05, "#7A5A42"), -1.55 + i * .44, 1.1, sh.zBack + .09);
   // the grinding slab at the front: the subject, and the spices heaped along it
   const slabTop = .80;
@@ -1115,11 +1738,12 @@ export function lascarKitchen(): P {
   add(pan, new THREE.Mesh(new THREE.SphereGeometry(.30, 14, 8, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), mat(LD.iron)), 0, 0, 0);
   add(pan, cyl(.30, .28, .02, "#D9B462", 16), 0, -.02, 0);
   add(pan, cyl(.014, .014, .34, LD.iron, 5), -.36, .04, 0).rotation.z = .5;
-  const pot = add(g, cyl(.24, .20, .30, LD.iron, 14), 1.35, .95, .82);
-  add(g, cyl(.22, .22, .03, "#E9E4D2", 14), 1.35, 1.10, .82);
-  add(g, cyl(.26, .26, .025, LD.iron, 14), 1.35, 1.13, .82);
-  for (let i = 0; i < 3; i++) { const f = add(g, ball(.10, "#B9C2C4", 7), 1.62 + i * .0, .90, 1.16 + i * .16); f.scale.set(1.8, .5, .7); f.userData.foodReaction = "hop"; }
-  add(g, box(.9, .72, .56, LD.deal), 1.45, .36, -.10);
+  // the rice pot and the morning's fish on a scrubbed table by the door
+  add(g, box(.9, .72, .56, LD.deal), 1.45, .36, .70);
+  const pot = add(g, cyl(.24, .20, .30, LD.iron, 14), 1.28, .87, .70);
+  add(g, cyl(.22, .22, .03, "#E9E4D2", 14), 1.28, 1.02, .70);
+  add(g, cyl(.26, .26, .025, LD.iron, 14), 1.28, 1.05, .70);
+  for (let i = 0; i < 3; i++) { const f = add(g, ball(.10, "#B9C2C4", 7), 1.70, .77, .52 + i * .18); f.scale.set(1.8, .5, .7); f.userData.foodReaction = "hop"; }
   g.userData.steam = V(.62, 1.10, 1.00); g.userData.smoke = V(.62, .95, 1.00);
   // seven people: the cook, the grinder, three on the bench, a man at the door, a walker on the wharf
   const cook = add(g, own(resident("lascar", false)), .62, sh.floor, .34) as Figure; cook.rotation.y = 0;
@@ -1160,13 +1784,8 @@ export function lascarKitchen(): P {
  */
 export function hopCookhouse(): P {
   const g = group();
-  const sh = shade(g, 4.4, 2.8, 2.30, 0, -.20, "#B9A46A");
-  lamps(g, sh.y, sh.zFront, [-1.85, 1.85], .8, false);
-  // the hop-pickers' hut behind: a lime-washed single room with a tin roof, the "hopper hut" of the farm
-  add(g, box(3.0, 1.9, 1.8, "#C9C2AE"), -.2, .95, -2.5);
-  add(g, box(3.2, .09, 2.0, "#7A6A58"), -.2, 1.95, -2.5);
-  for (let i = 0; i < 6; i++) add(g, box(.05, .09, 2.0, "#8A7A66"), -1.55 + i * .55, 2.0, -2.5);
-  add(g, box(.7, 1.3, .06, LD.oakSmoke), -.9, .65, -1.58);
+  const sh = hopFly(g);
+  lamps(g, sh.y, sh.zFront, [-1.8, 1.8], .8, false);
   // the fire, the tripod and the pot: the subject
   add(g, cyl(.62, .70, .10, "#6E6A5E", 14), .10, .05, .70);
   const logs = Array.from({ length: 5 }, (_, i) => add(g, cyl(.05, .06, .58, "#5A4632", 6), .10 + Math.cos(i * 1.26) * .16, .12, .70 + Math.sin(i * 1.26) * .16).rotation.set(.2, i * 1.26, 1.3));
@@ -1187,7 +1806,7 @@ export function hopCookhouse(): P {
   add(ladle, cyl(.012, .012, .42, LD.oak, 5), .18, .16, 0).rotation.z = -.6;
   const drip = pourFall(g, "hop-drip", "#8A6A32", .02);
   // the hop bin, the picked hops, the loaf and the kettle: the modelled food round the fire
-  const bin = add(g, new THREE.Group(), -1.75, 0, .95); bin.name = "hop-bin";
+  const bin = add(g, new THREE.Group(), -1.35, 0, .95); bin.name = "hop-bin";
   for (const dx of [-.62, .62]) for (const dz of [-.38, .38]) add(bin, cyl(.05, .06, .78, LD.oak, 6), dx, .39, dz);
   add(bin, box(1.34, .05, .86, "#9C8A66"), 0, .60, 0);
   for (let i = 0; i < 9; i++) add(bin, cone(.075, .16, "#8AA84A", 6), -.5 + (i % 5) * .25, .70, -.2 + Math.floor(i / 5) * .26).rotation.x = Math.PI;
@@ -1197,10 +1816,10 @@ export function hopCookhouse(): P {
   // seven people: the cook at the pot, a woman at the bin, two pickers, a child, a measurer, a walker
   const cook = add(g, own(resident("shawl")), .58, 0, 1.44) as Figure; cook.rotation.y = Math.PI - .3;
   arms(cook).right.rotation.x = -1.4;
-  const binner = add(g, own(resident("picker", false)), -1.75, 0, 1.64) as Figure; binner.rotation.y = Math.PI;
+  const binner = add(g, own(resident("picker", false)), -1.35, 0, 1.64) as Figure; binner.rotation.y = Math.PI;
   arms(binner).right.rotation.x = -1.2; arms(binner).left.rotation.x = -1.1;
   const pickers = [0, 1].map((i) => { const p = add(g, own(resident(i ? "shawl" : "picker", false)), -2.45 + i * .1, 0, .30 - i * .7) as Figure; p.rotation.y = 1.2 + i * .3; arms(p).right.rotation.x = -1.35; return p; });
-  const child = add(g, own(resident("child")), -1.05, 0, 1.70) as Figure; child.rotation.y = 2.6;
+  const child = add(g, own(resident("child")), -.62, 0, 1.92) as Figure; child.rotation.y = 2.6;
   const measurer = add(g, own(resident("farmer", false)), 1.86, 0, 1.70) as Figure; measurer.rotation.y = -2.1;
   const walker = resident("picker", false); add(g, walker, -2.7, 0, 3.60);
   const walk = pacer(walker, V(-2.7, 0, 3.60), V(2.7, 0, 3.65), .30, .7);
@@ -1235,8 +1854,8 @@ export function hopCookhouse(): P {
  */
 export function daleDairy(): P {
   const g = group();
-  const sh = shelter(g, "daleStone", 4.2, 2.8, 2.2, { sign: "DAIRY", ink: LD.slateNorth, paper: LD.whitewash, stack: false });
-  lamps(g, sh.y, sh.zFront, [-1.84, 1.84], .8, false);
+  const sh = dairyRange(g);
+  lamps(g, sh.y, sh.zFront, [-1.3, 1.72], .8, false);
   for (let i = 0; i < 12; i++) for (let r = 0; r < 4; r++) add(g, box(.36, .22, .04, r % 2 ? "#8E8C84" : "#7E7C74"), -1.85 + i * .34 + (r % 2) * .1, .22 + r * .24, sh.zBack + .09);
   add(g, box(.95, .70, .05, "#C9D4D8"), -1.0, 1.50, sh.zBack + .10);                        // the north light
   // the press: two uprights, a cross head, a screw that turns down, a follower on the hoop
@@ -1260,9 +1879,9 @@ export function daleDairy(): P {
   const run = pourFall(g, "dairy-whey", "#E9E9DC", .017);
   const rings = splashRings(g, 3, -.45, .20, 1.26, .05, "#DCDCCE");
   // the cold food of the room: a cheese ladder of truckles, a bowl of curd, a churn, a bowl of cream
-  for (let i = 0; i < 6; i++) { const c = add(g, cyl(.19, .19, .16, "#EFE4C4", 16), 1.05 + (i % 3) * .46, .48 + Math.floor(i / 3) * .58, -.32); c.userData.foodReaction = "hop"; add(g, cyl(.195, .195, .02, "#D9C89A", 16), 1.05 + (i % 3) * .46, .56 + Math.floor(i / 3) * .58, -.32); }
-  for (let r = 0; r < 2; r++) add(g, box(1.8, .06, .44, LD.oak), 1.51, .38 + r * .58, -.32);
-  for (const dx of [.68, 2.34]) add(g, box(.09, 1.0, .44, LD.oak), dx, .5, -.32);
+  for (let i = 0; i < 6; i++) { const c = add(g, cyl(.19, .19, .16, "#EFE4C4", 16), .72 + (i % 3) * .46, .48 + Math.floor(i / 3) * .58, -.32); c.userData.foodReaction = "hop"; add(g, cyl(.195, .195, .02, "#D9C89A", 16), .72 + (i % 3) * .46, .56 + Math.floor(i / 3) * .58, -.32); }
+  for (let r = 0; r < 2; r++) add(g, box(1.8, .06, .44, LD.oak), 1.18, .38 + r * .58, -.32);
+  for (const dx of [.35, 1.97]) add(g, box(.09, 1.0, .44, LD.oak), dx, .5, -.32);
   const curd = add(g, cyl(.30, .26, .20, "#D9D2C2", 16), 1.10, .90, 1.05);
   for (let i = 0; i < 6; i++) add(curd, box(.09, .06, .09, "#F6F2E6"), Math.cos(i) * .13, .10, Math.sin(i) * .13).rotation.y = i;
   add(g, box(1.3, .80, .62, LD.deal), 1.10, .40, 1.05);
@@ -1274,7 +1893,7 @@ export function daleDairy(): P {
   arms(maid).right.rotation.x = -1.45; arms(maid).left.rotation.x = -1.30;
   const churner = add(g, own(resident("mill", false)), 1.92, sh.floor, 1.62) as Figure; churner.rotation.y = Math.PI;
   arms(churner).right.rotation.x = -1.5; arms(churner).left.rotation.x = -1.5;
-  const atLadder = [0, 1].map((i) => { const p = add(g, own(resident(i ? "farmer" : "shawl", false)), 1.25 + i * .8, sh.floor, .35) as Figure; p.rotation.y = -1.4 + i * .3; return p; });
+  const atLadder = [0, 1].map((i) => { const p = add(g, own(resident(i ? "farmer" : "shawl", false)), .95 + i * .8, sh.floor, .35) as Figure; p.rotation.y = -1.4 + i * .3; return p; });
   const child = add(g, own(resident("child")), .85, sh.floor, 3.20) as Figure; child.rotation.y = 2.8;
   const walker = resident("farmer", false); add(g, walker, -2.6, 0, 3.50);
   const walk = pacer(walker, V(-2.6, 0, 3.50), V(2.6, 0, 3.55), .28, 1.5);
@@ -1311,8 +1930,8 @@ export function daleDairy(): P {
  */
 export function pastyBakehouse(): P {
   const g = group();
-  const sh = shelter(g, "cornishCob", 4.2, 2.8, 2.2, { sign: "BAKEHOUSE", ink: LD.whitewash, paper: "#5A4A3A" });
-  lamps(g, sh.y, sh.zFront, [-1.84, 1.84], .8, false);
+  const sh = graniteBakehouse(g);
+  lamps(g, sh.y, sh.zFront, [-1.55, 1.55], .8, false);
   // the oven in the back wall: a granite arch, a glowing mouth, an iron door leaning beside it
   const mouth = add(g, new THREE.Group(), 1.15, .92, sh.zBack + .16); mouth.name = "pasty-oven";
   add(g, box(1.5, 1.7, .42, LD.moorGranite), 1.15, .85, sh.zBack + .30);
@@ -1348,7 +1967,7 @@ export function pastyBakehouse(): P {
   for (let i = 0; i < 5; i++) add(filling, box(.07, .05, .07, i % 2 ? "#E9D9A8" : "#9C4A3A"), Math.cos(i * 1.26) * .09, .07, Math.sin(i * 1.26) * .09);
   add(g, ball(.24, "#E9E2CC", 9), -1.72, boardTop + .10, 1.24).scale.y = .6;
   add(g, box(.56, .01, .46, "#F2EEE0"), -1.72, boardTop + .18, 1.24);
-  g.userData.steam = V(1.15, 1.42, sh.zBack + .30); g.userData.smoke = V(-1.65, 3.0, -1.60);
+  g.userData.steam = V(1.15, 1.42, sh.zBack + .30); g.userData.smoke = sh.flue;   // the oven's stack
   // seven people: the baker at the board, the oven man, two women bringing pasties, a child, a miner, a walker
   const baker = add(g, own(resident("cook")), -.55, sh.floor, .34) as Figure; baker.rotation.y = 0;
   arms(baker).right.rotation.x = -1.5; arms(baker).left.rotation.x = -1.35;
@@ -1389,11 +2008,11 @@ export function pastyBakehouse(): P {
  */
 export function cockleStall(): P {
   const g = group();
-  const sh = shade(g, 3.8, 2.4, 2.20, 0, -.10, "#C9BCA0");
+  const sh = beachShelter(g);
   lamps(g, sh.y, sh.zFront, [-1.55, 1.55], .75, false);
   // the wet sand the stall works on, ribbed and draining
   add(g, box(6.4, .05, 4.4, LD.sand), 0, .025, .90);
-  for (let i = 0; i < 12; i++) add(g, box(6.2, .015, .12, "#C9BFA0"), 0, .05, -.9 + i * .30);
+  for (let i = 0; i < 12; i++) add(g, box(5.9, .015, .12, "#C9BFA0"), .1, .05, -.9 + i * .30);
   add(g, box(6.4, .02, 1.1, "#9CB0AE"), 0, .045, 2.70);                                    // the tide's edge at the far side
   // the boiling copper on its fire: the one hot thing on the sand
   add(g, cyl(.42, .48, .42, "#7A6A58", 14), 1.35, .21, .55);
@@ -1419,7 +2038,8 @@ export function cockleStall(): P {
   for (let i = 0; i < 5; i++) add(rake, box(.025, .11, .025, LD.iron), -.18 + i * .09, -.02, -.32);
   const crock = add(g, cyl(.17, .14, .22, "#4A4238", 12), 1.90, .11, 1.30);
   add(g, cyl(.15, .15, .03, "#3A5A3A", 12), 1.90, .23, 1.30);
-  const cart = add(g, cockleDonkey(), -2.35, 0, 2.55); cart.rotation.y = 1.1;
+  // the donkey stands at the weather end of the shelter with her cart behind her, out of everyone's way
+  const cart = add(g, cockleDonkey(), -2.55, 0, 1.9); cart.rotation.y = Math.PI / 2;
   for (let i = 0; i < 4; i++) add(cart, cyl(.15, .17, .30, "#B4A488", 10), -.3 + (i % 2) * .34, .78, -.2 + Math.floor(i / 2) * .3);
   g.userData.steam = V(1.35, .96, .55); g.userData.smoke = V(1.35, .60, .55);
   // seven people: the riddler, the woman at the copper, two gathering, a child, a man loading, a walker
@@ -1428,11 +2048,13 @@ export function cockleStall(): P {
   arms(riddler).right.rotation.x = -1.5; arms(riddler).left.rotation.x = -1.5;
   const atCopper = add(g, own(resident("fishwife")), 1.35, 0, -.15) as Figure; atCopper.rotation.y = 0;
   arms(atCopper).right.rotation.x = -1.35;
-  const gathering = [0, 1].map((i) => { const p = add(g, own(resident("shawl", false)), -2.0 + i * 1.1, 0, 2.90 + i * .2) as Figure; p.rotation.y = .4 - i * .5; arms(p).right.rotation.x = -1.2; upper(p).rotation.x = .38; return p; });
+  const gathering = [0, 1].map((i) => { const p = add(g, own(resident("shawl", false)), -1.75 + i * .65, 0, 2.95 + i * .1) as Figure; p.rotation.y = .4 - i * .5; arms(p).right.rotation.x = -1.2; upper(p).rotation.x = .38; return p; });
   const child = add(g, own(resident("child")), .45, 0, 3.30) as Figure; child.rotation.y = -2.6;
-  const loader = add(g, own(resident("fishwife", false)), -2.35, 0, 3.35) as Figure; loader.rotation.y = -1.0;
-  const walker = resident("shawl", false); add(g, walker, -2.6, 0, .30);
-  const walk = pacer(walker, V(-2.6, 0, .30), V(2.6, 0, .25), .28, 1.0);
+  const loader = add(g, own(resident("fishwife", false)), -2.78, 0, 3.0) as Figure; loader.rotation.y = Math.PI - .3;
+  // the walker goes along the sand in front of the shelter, between the heap and the women gathering, and never
+  // through the sacks, the copper or the donkey
+  const walker = resident("shawl", false); add(g, walker, -1.0, 0, 2.15);
+  const walk = pacer(walker, V(-1.0, 0, 2.15), V(2.6, 0, 2.2), .28, 1.0);
   const riddleRest = riddle.position.clone(), basketRest = netBasket.position.clone();
   void rake; void crock;
   return life(g, "cocklesUk", [riddler, atCopper, gathering[0], child, gathering[1], loader, walker], (t, k) => {
@@ -1464,17 +2086,11 @@ export function cockleStall(): P {
  */
 export function smokehouse(): P {
   const g = group();
-  // the curing yard: a flagged floor, a low wall against the sea wind, and the smokehouse shed behind
+  // the curing yard: a flagged floor in front of the bothy, whose eave rail carries the lamps and the tied fish
   add(g, box(5.0, .06, 3.6, "#8E8C84"), 0, .03, .20);
-  drystone(g, 0, -1.70, 5.0, 0, .70);
-  // a lean-to over the back of the yard, against the wall, where the tied fish hang and the oil lamps hang from its beam
-  const lean = shade(g, 4.6, 1.3, 2.10, 0, -1.05, "#6E6258");
-  lamps(g, lean.y, lean.zFront, [-2.0, 2.0], .75, false);
-  add(g, box(2.4, 2.0, 1.8, LD.whitewash), -1.55, 1.0, -2.85);
-  add(g, box(2.6, .09, 2.0, "#5A4A42"), -1.55, 2.05, -2.85);
-  for (let i = 0; i < 5; i++) add(g, box(.05, .09, 2.0, "#4A3E38"), -2.55 + i * .5, 2.10, -2.85);
-  chimney(g, -2.35, 2.05, -2.85, .7, 1);
-  add(g, box(.66, 1.25, .06, LD.oakSmoke), -1.05, .63, -1.94);
+  const lean = bothy(g);
+  lamps(g, lean.y, lean.zFront, lean.xs, .75, false);
+  drystone(g, 2.35, .6, 2.2, Math.PI / 2, .6);                                                   // a low wall on the sea side
   // the pit: a sunk barrel, the fire in it, and the hessian folded on the rim
   const pit = add(g, new THREE.Group(), .55, 0, .80);
   add(pit, cyl(.60, .56, .50, "#5A4632", 18), 0, .25, 0);
@@ -1499,8 +2115,7 @@ export function smokehouse(): P {
   add(g, box(1.1, .78, .62, LD.deal), -1.95, .39, 1.55);
   add(g, box(1.16, .06, .68, "#C9B89C"), -1.95, .81, 1.55);
   for (let i = 0; i < 4; i++) { const f = add(g, ball(.10, "#B4783A", 8), -2.25 + i * .2, .88, 1.55); f.scale.set(.6, 1.5, .55); f.userData.foodReaction = "hop"; }
-  const ties = [0, 1].map((i) => { const s = add(g, new THREE.Group(), -1.05 + i * .0, 1.60, -1.40); s.userData.foodReaction = "sway"; add(s, cyl(.008, .008, .26, "#C9BCA0", 4), 0, -.13, 0); for (let n = 0; n < 3; n++) { const f = add(s, ball(.085, LD.haddock, 7), Math.cos(n * 2.1) * .08, -.34, Math.sin(n * 2.1) * .08); f.scale.set(.6, 1.5, .55); } return s; });
-  add(g, cyl(.02, .02, 1.6, LD.oak, 5), -1.05, 1.66, -1.40).rotation.z = Math.PI / 2;
+  const ties = [0, 1].map((i) => { const s = add(g, new THREE.Group(), -.35 + i * .5, lean.y - .08, lean.zFront); s.userData.foodReaction = "sway"; add(s, cyl(.008, .008, .26, "#C9BCA0", 4), 0, -.13, 0); for (let n = 0; n < 3; n++) { const f = add(s, ball(.085, LD.haddock, 7), Math.cos(n * 2.1) * .08, -.34, Math.sin(n * 2.1) * .08); f.scale.set(.6, 1.5, .55); } return s; });
   g.userData.smoke = V(.55, .90, .80);
   // six people: the curer, his mate, two women tying pairs, a child, a walker along the wall
   // the curer stands on the far side of the pit, facing the visitor over it, so the speet is never behind him
@@ -1510,8 +2125,8 @@ export function smokehouse(): P {
   arms(mate).right.rotation.x = -1.2;
   const tying = [0, 1].map((i) => { const p = add(g, own(resident("fishwife", false)), -2.25 + i * .0, .06, 2.95 + i * .55) as Figure; p.rotation.y = Math.PI - i * .3; arms(p).right.rotation.x = -1.35; arms(p).left.rotation.x = -1.3; return p; });
   const child = add(g, own(resident("child")), -.70, .06, 3.30) as Figure; child.rotation.y = 2.5;
-  const walker = resident("highland", false); add(g, walker, -2.5, 0, -.90);
-  const walk = pacer(walker, V(-2.5, 0, -.90), V(2.5, 0, -.95), .28, 1.3);
+  const walker = resident("highland", false); add(g, walker, -2.3, 0, -.78);
+  const walk = pacer(walker, V(-2.3, 0, -.78), V(1.9, 0, -.8), .28, 1.3);
   const speetRest = speet.position.clone(), hessianRest = hessian.position.clone();
   void chips;
   return life(g, "smokehouseUk", [curer, tying[0], mate, child, tying[1], walker], (t, k) => {
@@ -1540,12 +2155,10 @@ export function smokehouse(): P {
  */
 export function distillery(): P {
   const g = group();
-  const sh = shelter(g, "fifeCrow", 4.4, 2.8, 2.3, { sign: "DISTILLERY", ink: LD.slateNorth, paper: LD.whitewash, stack: false });
-  lamps(g, sh.y, sh.zFront, [-1.94, 1.94], .8, false);
-  // the kiln and its pagoda vent, behind and to one side, so it never crosses the line to the floor
-  add(g, box(1.9, 2.6, 1.7, LD.whitewash), 1.85, 1.30, -2.30);
-  add(g, box(2.05, .09, 1.85, "#5A4A42"), 1.85, 2.66, -2.30);
-  const pagoda = add(g, new THREE.Group(), 1.85, 2.72, -2.30); pagoda.name = "distillery-pagoda";
+  const sh = distilleryRange(g);
+  lamps(g, sh.y, sh.zFront, [-1.75, 1.75], .8, false);
+  // the pagoda vent on the kiln's pyramid, behind and to one side, so it never crosses the line to the floor
+  const pagoda = add(g, new THREE.Group(), sh.pagoda.x, sh.pagoda.y, sh.pagoda.z); pagoda.name = "distillery-pagoda";
   add(pagoda, box(1.15, .10, 1.05, "#5A4A42"), 0, .05, 0);
   add(pagoda, cone(.80, .50, "#5A4A42", 4), 0, .34, 0).rotation.y = Math.PI / 4;
   add(pagoda, box(.60, .10, .55, "#5A4A42"), 0, .60, 0);
@@ -1580,7 +2193,7 @@ export function distillery(): P {
   for (const dx of [-.22, .22]) add(g, new THREE.Mesh(new THREE.TorusGeometry(.295, .022, 5, 14), mat(LD.iron)), 1.55 + dx, .30, 1.30).rotation.y = Math.PI / 2;
   for (let i = 0; i < 3; i++) add(g, cyl(.13, .13, .05, LD.brass, 12), -1.90 + i * .26, .82, 1.30);
   add(g, box(1.0, .76, .56, LD.deal), -1.90, .38, 1.30);
-  g.userData.steam = V(-1.55, 2.10, -.20); g.userData.smoke = V(1.85, 3.90, -2.30);
+  g.userData.steam = V(-1.55, 2.10, -.20); g.userData.smoke = V(sh.pagoda.x, sh.pagoda.y + 1.3, sh.pagoda.z);
   // seven people: the maltman, the stillman at the safe, two on the floor, a cooper, a child, a walker
   // he drives the shiel from behind it, facing the visitor down the floor, so the piece stays in front of him
   const maltman = add(g, own(resident("highland", false)), .95, 0, .02) as Figure; maltman.rotation.y = -.4;
@@ -1628,8 +2241,8 @@ export function distillery(): P {
 /** The pastry board beside the pub: butter, flour and suet, and the four pastries a British kitchen turns out. */
 export function bakeryCe(): P {
   const g = group();
-  const sh = shelter(g, "shopFront", 3.6, 2.4, 2.2, { sign: "PASTRY", ink: LD.oxbloodTile, paper: LD.cream });
-  lamps(g, sh.y, sh.zFront, [-1.55, 1.55], .75);
+  const sh = pastryShop(g);
+  lamps(g, sh.y, sh.zFront, [-1.45, 1.45], .75);
   const top = .84;
   add(g, box(2.8, .80, .72, LD.deal), 0, .40, .90);
   add(g, box(2.9, .07, .80, "#C9B89C"), 0, top, .90);
@@ -1883,9 +2496,23 @@ export function daleFlock(): P {
     for (const [dx, dz] of [[-.2, -.14], [-.2, .14], [.2, -.14], [.2, .14]]) add(l, box(.07, .38, .07, "#3A3630"), dx, .20, dz);
     return l;
   });
-  // the fleece on the wall, the shepherd's crook and a bracken heap
+  // the fleece on the wall, the shepherd's crook, and two hay ricks for the winter, each a round stack of hay on a
+  // bed of stones with a thatched top roped down and weighted, which is how a Dales rick kept the weather out
   for (let i = 0; i < 3; i++) add(g, ball(.20, "#CFC4AA", 7), -2.85 + i * .34, .78, -2.00).scale.set(1.1, .6, .9);
-  for (let i = 0; i < 5; i++) add(g, cone(.24, .50, "#8A6A38", 6), 2.55 + (i % 2) * .4, .25, -1.10 + Math.floor(i / 2) * .5);
+  for (const [x, z, r] of [[2.55, -1.05, .46], [3.5, -.45, .38]] as [number, number, number][]) {
+    const rick = add(g, new THREE.Group(), x, 0, z); rick.name = "flock-rick";
+    for (let i = 0; i < 7; i++) add(rick, box(.18, .08, .14, "#8A8880"), Math.cos(i * .9) * r * .9, .04, Math.sin(i * .9) * r * .9);
+    add(rick, cyl(r, r * 1.08, r * 1.5, "#C9B070", 12), 0, .06 + r * .75, 0);
+    for (const y of [.35, .75]) add(rick, new THREE.Mesh(new THREE.TorusGeometry(r * 1.02, .018, 4, 16), mat("#6E5A3A")), 0, y * r * 1.5 / .9, 0).rotation.x = Math.PI / 2;
+    add(rick, cone(r * 1.22, r * 1.25, "#9C8250", 12), 0, .06 + r * 1.5 + r * .6, 0);
+    add(rick, cyl(r * 1.2, r * 1.2, .05, "#8A7244", 12), 0, .08 + r * 1.5, 0);
+    add(rick, ball(.07, "#8A7244", 6), 0, .06 + r * 1.5 + r * 1.25, 0);
+    for (let k = 0; k < 4; k++) {                                                                        // the ropes over the thatch and their stones
+      const a = k * Math.PI / 2 + .4;
+      strut(rick, V(0, .06 + r * 2.7, 0), V(Math.cos(a) * r * 1.2, .1 + r * 1.5, Math.sin(a) * r * 1.2), .012, "#5A4A32", 3);
+      add(rick, ball(.06, "#8A8680", 5), Math.cos(a) * r * 1.24, r * 1.25, Math.sin(a) * r * 1.24);
+    }
+  }
   // three people: the shepherd, a boy, and a woman coming up the wall side
   const shepherd = add(g, own(resident("farmer", false)), -2.35, 0, 2.55) as Figure; shepherd.rotation.y = 1.1;
   const crook = add(shepherd, cyl(.022, .022, 1.5, LD.oak, 5), .24, .78, .04);
@@ -1924,46 +2551,69 @@ export function daleFlock(): P {
 export function forcingShed(): P {
   const g = group();
   add(g, box(6.2, .05, 4.4, "#6E5A44"), 0, .025, .30);
-  // the shed: a long low black building with a hipped roof, set behind the working end and off the sight line
+  // the shed: long, low and black, its two doors swung wide on the street side so the dark inside can be seen,
+  // and the forced rhubarb growing in rows in there by candlelight, which is the only place forced rhubarb grows
   const shed = add(g, new THREE.Group(), -1.30, 0, -1.30); shed.name = "rhubarb-shed";
-  add(shed, box(4.4, 1.85, 2.2, "#3E3630"), 0, .92, 0);
-  add(shed, box(4.6, .09, 2.4, "#4A4238"), 0, 1.92, 0);
-  for (const side of [-1, 1]) add(shed, box(4.6, .08, 1.4, "#4A4238"), 0, 2.16, side * .62).rotation.x = side * .55;   // each slope rises to the ridge
-  add(shed, box(1.0, 1.45, .08, LD.oakSmoke), 1.30, .72, 1.11);
-  for (let i = 0; i < 3; i++) add(shed, box(.5, .38, .05, "#2E2A26"), -1.6 + i * .8, 1.30, 1.11);
-  // the working end: the beds of forced crowns in the dark, each under its own candle
+  const sh = new THREE.Group(), tar = "#3A322C", x0 = -2.2, x1 = 2.2, zb = -1.1, zf = 1.1, h = 1.85, o0 = -.6, o1 = 1.8;   // the door opening, in shed coordinates
+  add(sh, box(x1 - x0, .03, zf - zb, "#241E1A"), 0, .06, 0);                                                    // the black earth floor
+  add(sh, box(x1 - x0, h, .12, tar), 0, h / 2, zb + .06);
+  for (const sx of [-1, 1]) add(sh, box(.12, h, zf - zb, tar), sx * (x1 - .06), h / 2, 0);
+  add(sh, box(o0 - x0, h, .12, tar), (x0 + o0) / 2, h / 2, zf - .06);
+  add(sh, box(x1 - o1, h, .12, tar), (o1 + x1) / 2, h / 2, zf - .06);
+  add(sh, box(o1 - o0, h - 1.45, .12, tar), (o0 + o1) / 2, 1.45 + (h - 1.45) / 2, zf - .06);                   // over the door
+  for (let i = 0; i < 16; i++) add(sh, box(.03, h, .02, "#2A2420"), x0 + .15 + i * .28, h / 2, zf + .005);       // the boarding
+  for (const [x, dir] of [[o0, -1], [o1, 1]] as [number, number][]) {                                           // the doors, swung back flat against the wall
+    add(sh, box(1.18, 1.4, .06, "#4A3E34"), x + dir * .6, .72, zf + .06);
+    for (const yy of [.3, 1.1]) add(sh, box(1.1, .08, .02, "#2E2620"), x + dir * .6, yy, zf + .1);
+  }
+  gableRoof(sh, x1 - x0, zf - zb, h, .55, COVERS.tarFelt, { over: .08, ends: tar, ridge: "#22201E" });
+  add(sh, cyl(.08, .1, .9, "#2A2622", 8), x0 + .5, h + .5, -.4);                                               // the stove's flue
+  shed.add(solid(sh));
+  // inside: three rows of pale forced stalks with their small yellow leaves, and the candles between them
   const sticks: THREE.Group[] = [];
-  for (let bed = 0; bed < 2; bed++) for (let i = 0; i < 6; i++) {
-    const x = -2.2 + i * .82, z = 1.05 + bed * 1.10;
-    add(g, ball(.20, "#5A4632", 7), x, .06, z).scale.y = .5;
-    const crown = add(g, new THREE.Group(), x, .10, z);
-    for (let n = 0; n < 4; n++) {
+  for (let row = 0; row < 3; row++) for (let i = 0; i < 9; i++) {
+    const x = -2.95 + i * .44 + (row % 2) * .2, z = -.62 - row * .44;
+    const crown = add(g, new THREE.Group(), x, .09, z);
+    for (let n = 0; n < 3; n++) {
       const st = add(crown, new THREE.Group(), 0, 0, 0);
-      st.rotation.y = n * 1.6 + bed;
-      add(st, cyl(.028, .034, .62, LD.rhubarb, 6), .06, .32, 0).rotation.z = -.12;
-      add(st, cone(.13, .18, "#E4D06A", 6), .11, .68, 0).rotation.x = Math.PI;
-      if (bed === 0 && i === 2 && n === 0) st.name = "rhubarb-stick";
+      st.rotation.y = n * 2.1 + row + i;
+      add(st, cyl(.022, .028, .52, "#D65A74", 6), .05, .27, 0).rotation.z = -.1;
+      add(st, ball(.07, "#D2CC6A", 5), .08, .55, 0).scale.set(1.3, .6, 1.1);                                   // the crumpled little leaf
+      if (row === 0 && i === 5 && n === 0) st.name = "rhubarb-stick";
       sticks.push(st);
     }
   }
-  const candles = [-1.4, .4, 2.0].map((x, i) => {
-    const c = add(g, new THREE.Group(), x, 0, .30);
-    add(c, cyl(.035, .045, .60, LD.iron, 8), 0, .30, 0);
-    add(c, cyl(.055, .055, .03, LD.iron, 10), 0, .61, 0);
-    add(c, cyl(.022, .022, .13, "#E9E2CC", 8), 0, .69, 0);
-    const fl = add(c, cone(.026, .09, LD.flameHot, 6), 0, .80, 0); fl.name = "rhubarb-candle";
-    return fl;
+  const candles = [[-2.6, -.84], [-1.3, -1.28], [0, -.84], [-.65, -1.72]].map(([x, z], i) => {
+    const c = add(g, new THREE.Group(), x, .07, z);
+    add(c, cyl(.02, .025, .16, "#E9E2CC", 8), 0, .08, 0);
+    const fl = add(c, cone(.03, .09, LD.flameHot, 6), 0, .21, 0); fl.name = "rhubarb-candle";
+    fl.material = mat(LD.flameHot, { emissive: "#F2A03C", emissiveIntensity: .9 });
+    const glow = add(c, ball(.16, "#F2C46A", 8), 0, .22, 0); glow.material = mat("#F2C46A", { emissive: "#F2A03C", emissiveIntensity: .5, transparent: true, opacity: .22 });
+    void i; return fl;
   });
+  // out in the field, the crowns growing on in the open: each only a low rosette of big green leaves
+  for (let bed = 0; bed < 2; bed++) for (let i = 0; i < 6; i++) {
+    const x = -2.2 + i * .82, z = 1.05 + bed * 1.10;
+    add(g, ball(.16, "#4A3A2C", 6), x, .05, z).scale.y = .4;
+    for (let n = 0; n < 5; n++) {
+      const leaf = add(g, ball(.2, n % 2 ? "#4E7A3A" : "#5A8A42", 7), x + Math.cos(n * 1.26 + bed) * .2, .12, z + Math.sin(n * 1.26 + bed) * .2);
+      leaf.scale.set(1.2, .22, .9); leaf.rotation.y = -n * 1.26 - bed;
+    }
+    add(g, cyl(.018, .022, .14, "#9A3A4A", 5), x, .14, z);
+  }
   // the crates the sticks go into, and a barrow of them at the door
   for (let i = 0; i < 3; i++) { const cr = add(g, box(.80, .26, .50, LD.deal), 1.55 + (i % 2) * .1, .13 + i * .27, 1.90); void cr; }
   for (let i = 0; i < 6; i++) add(g, cyl(.026, .03, .56, LD.rhubarb, 6), 1.35 + (i % 3) * .14, .92, 1.90).rotation.z = .1 + (i % 2) * .1;
   const barrow = add(g, costerBarrow(false), 2.55, 0, .35); barrow.rotation.y = -1.4;
   // three people: the puller on her knees, a man with the crate, a boy holding a candle
-  const puller = add(g, own(resident("mill", false)), -.58, 0, 1.68) as Figure; puller.rotation.y = Math.PI - .3;
+  // she pulls kneeling in the door, beside the row, and the boy holds a candle up for her
+  const puller = add(g, own(resident("mill", false)), .05, .07, -.72) as Figure; puller.rotation.y = -1.9;
   arms(puller).right.rotation.x = -1.7; arms(puller).left.rotation.x = -1.3; upper(puller).rotation.x = .45;
   const crateMan = add(g, own(resident("farmer", false)), 1.95, 0, 2.35) as Figure; crateMan.rotation.y = -2.4;
   arms(crateMan).right.rotation.x = -1.3; arms(crateMan).left.rotation.x = -1.3;
-  const boy = add(g, own(resident("child")), .45, 0, 2.15) as Figure; boy.rotation.y = 3.0;
+  const boy = add(g, own(resident("child")), .75, 0, .35) as Figure; boy.rotation.y = -2.6;
+  add(arms(boy).right, cyl(.02, .025, .12, "#E9E2CC", 6), 0, arms(boy).hand - .08, .02);
+  add(arms(boy).right, cone(.025, .07, LD.flameHot, 6), 0, arms(boy).hand - .17, .02).material = mat(LD.flameHot, { emissive: "#F2A03C", emissiveIntensity: .9 });
   const target = sticks.find((s) => s.name === "rhubarb-stick")!;
   const targetRest = target.position.clone();
   return life(g, "rhubarbUk", [puller, crateMan, boy], (t, k) => {
@@ -2186,13 +2836,38 @@ export function herringQuay(): P {
   const g = group();
   add(g, box(6.8, .10, 4.2, "#8E8C84"), 0, .05, .30);
   for (let i = 0; i < 14; i++) add(g, box(.44, .02, 4.2, i % 2 ? "#8A8880" : "#7E7C74"), -3.0 + i * .47, .11, .30);
-  // the quay edge with its bollards and a boat's mast beyond
+  // the quay edge with its bollards, and beyond it on the hard a Fifie drifter drawn up on her keel, propped on
+  // her legs for the tarring, her brown lugsail hoisted to dry: the hull of the boat the mast belongs to
   add(g, box(6.8, .22, .24, "#6E6A60"), 0, .16, -1.72);
   for (const x of [-2.2, .4, 2.6]) { add(g, cyl(.13, .16, .46, LD.iron, 10), x, .23, -1.60); add(g, cyl(.17, .14, .08, LD.iron, 10), x, .48, -1.60); }
-  const mast = add(g, new THREE.Group(), 1.20, 0, -2.60);
-  add(mast, cyl(.07, .09, 3.4, LD.oak, 8), 0, 1.70, 0);
-  add(mast, box(.05, 1.4, 1.5, "#8A6A46"), .04, 1.90, .10).rotation.z = .08;
-  add(mast, cyl(.05, .06, 2.2, LD.oak, 6), .30, 1.30, 0).rotation.z = -.5;
+  add(g, box(3.4, .05, 1.3, "#7E7A70"), .7, .025, -2.45);                                                // the hard she stands on
+  for (let i = 0; i < 8; i++) add(g, box(.03, .012, 1.3, "#6A665C"), -.85 + i * .44, .055, -2.45);
+  const boat = add(g, new THREE.Group(), .72, 0, -2.45); boat.name = "herring-drifter";
+  const tar = "#2A2622", strake = "#3E6A5A";
+  for (let i = 0; i < 3; i++) add(boat, box(.3, .22, .3, "#5A4A3A"), -1.0 + i * 1.0, .11, 0);             // the keel blocks
+  add(boat, box(3.0, .12, .12, tar), 0, .28, 0);                                                          // the keel
+  add(boat, box(2.3, .52, .84, tar), 0, .6, 0);
+  add(boat, box(2.3, .38, .6, tar), 0, .4, 0);
+  for (const end of [-1, 1]) {                                                                              // the Fifie's upright stem and stern
+    const tip = add(boat, box(.42, .5, .6, tar), end * 1.3, .64, 0); tip.rotation.z = end * .08;
+    add(boat, box(.2, .46, .34, tar), end * 1.58, .68, 0);
+    add(boat, box(.08, .74, .12, LD.oak), end * 1.7, .72, 0);
+  }
+  for (const side of [-1, 1]) {
+    add(boat, box(3.1, .1, .05, strake), 0, .82, side * .43);                                               // the painted strake
+    add(boat, box(3.2, .06, .06, LD.oak), 0, .9, side * .42);                                               // the gunwale
+    add(boat, box(.8, .05, .05, "#E9E2CC"), -.9, .64, side * .44);                                          // her port letters
+    for (const x of [-.9, .2, 1.1]) strut(boat, V(x, .65, side * .42), V(x + .05, 0, side * .72), .035, LD.oak, 5);   // the legs she stands on
+  }
+  add(boat, box(2.9, .04, .8, "#8A6A48"), 0, .88, 0);
+  add(boat, box(.6, .3, .5, "#6E5236"), .7, 1.05, 0);                                                     // the hatch coaming
+  const mast = add(boat, new THREE.Group(), -.35, .88, 0);
+  add(mast, cyl(.07, .09, 3.0, LD.oak, 8), 0, 1.5, 0);
+  const yard = add(mast, cyl(.035, .04, 1.9, LD.oak, 6), .2, 2.6, .05); yard.rotation.z = Math.PI / 2 - .32;
+  const sail = add(mast, box(1.7, 1.55, .03, "#8A5A36"), .22, 1.82, .06); sail.rotation.z = -.1;
+  for (let i = 0; i < 3; i++) add(mast, box(1.6, .02, .035, "#6E4628"), .22, 1.4 + i * .36, .07).rotation.z = -.1;
+  strut(boat, V(-.35, 3.7, 0), V(1.75, 1.05, 0), .01, "#5A4A32", 3);                                     // the forestay
+  strut(boat, V(-.35, 3.7, 0), V(-1.7, 1.05, 0), .01, "#5A4A32", 3);
   // the farlane: a long trough of herring under salt, and the cran basket that tips into it
   const farlane = add(g, new THREE.Group(), -.30, 0, .95);
   add(farlane, box(3.0, .42, .90, LD.deal), 0, .32, 0);
@@ -2211,8 +2886,9 @@ export function herringQuay(): P {
   for (let i = 0; i < 5; i++) add(g, ball(.035, "#F6F2E6", 5), 2.60 + Math.cos(i * 1.26) * .30, .08, 2.10 + Math.sin(i * 1.26) * .30);
   void salt;
   // four people: three gutting at the farlane and the cooper at his block
+  // the crew gut from the far side of the farlane, facing the street, so the card's camera sees the trough past them
   const crew = [-.85, -.10, .65].map((x, i) => {
-    const p = add(g, own(resident("fishwife")), x, .10, 1.72) as Figure; p.rotation.y = Math.PI;
+    const p = add(g, own(resident("fishwife")), x, .10, .22) as Figure; p.rotation.y = 0;
     arms(p).right.rotation.x = -1.45; arms(p).left.rotation.x = -1.40; upper(p).rotation.x = .18;
     for (const side of [-1, 1]) wear(p, box(.06, .05, .05, "#D9CFC0"), side * .06, .62, .14);   // the bound fingers
     void i; return p;
@@ -2236,7 +2912,7 @@ export function herringQuay(): P {
     });
     // 2. the crew's knives keep working, 3. the cooper's hammer comes down on the hoop
     crew.forEach((p, i) => { arms(p).right.rotation.x = -1.45 - Math.abs(Math.sin(t * 3.2 + i * 1.1)) * .22 - beat(k, .4, 1) * .12; });
-    upper(crew[0]).rotation.y = Math.PI - Math.PI + beat(k, .45, 1) * .35;
+    upper(crew[0]).rotation.y = beat(k, .45, 1) * .35;
     arms(cooper).right.rotation.x = -1.6 - Math.abs(Math.sin(t * 2.4)) * .35;
     upper(cooper).rotation.x = beat(k, .5, 1) * .18;
   });
@@ -2244,71 +2920,136 @@ export function herringQuay(): P {
 
 // ---------- the six landmarks ----------
 
-/** Big Ben and the river front of the Palace of Westminster: the Clock Tower in the middle of its own frontage,
- *  the Victoria Tower beyond it, and the terrace on the water. The minute hand steps and the dials warm. */
+/**
+ * Big Ben and the river front of the Palace of Westminster. The Clock Tower stands on its own feet at the east end
+ * of the palace, the tallest thing in Westminster, well over twice the houses and stands round it: a panelled shaft,
+ * the clock stage with a dial on each face, the open belfry where the bell hangs in sight, and the iron spire with
+ * the Ayrton light in its lantern. The palace beside it is long and low, its buttresses carried up into pinnacles
+ * with their own shafts and spirelets, the Central Tower's octagon on the roof and the Victoria Tower at the west
+ * end, lower than the clock. The tower stands where the rays from the forcing shed and the distillery, north of it,
+ * pass either side of it. On the click the minute hand steps a whole minute at a stroke, the dials warm, the bell
+ * swings in the belfry and the light in the lantern comes up.
+ */
 export function bigBen(): P {
   const g = group();
-  const stone = LD.portlandStone;
-  // the river frontage, kept low and wide so the dials sit inside the arrival camera's own frame
-  add(g, box(7.6, 2.5, 2.4, stone), 0, 1.25, -.60);
-  add(g, box(7.9, .22, 2.7, LD.slateNorth), 0, 2.58, -.60);
-  for (let i = 0; i < 11; i++) { add(g, box(.24, .90, .05, "#5A6A7A"), -3.3 + i * .66, 1.00, .63); add(g, box(.30, .10, .07, stone), -3.3 + i * .66, 1.50, .64); add(g, cone(.13, .60, stone, 4), -3.3 + i * .66, 2.95, .45); }
-  for (let i = 0; i < 6; i++) add(g, box(.20, .70, .05, "#5A6A7A"), -1.65 + i * .66, 2.05, .63);
-  // the terrace and the river stair
-  add(g, box(7.6, .40, .90, "#9C9488"), 0, .20, .95);
-  for (let i = 0; i < 12; i++) add(g, box(.10, .34, .10, stone), -3.4 + i * .62, .58, 1.34);
-  add(g, box(7.6, .10, .16, stone), 0, .78, 1.34);
-  // the Clock Tower, centred on the frontage: shaft, dial stage, belfry and spire
-  const tower = add(g, new THREE.Group(), 0, 0, -1.20);
-  add(tower, box(1.70, 2.70, 1.70, stone), 0, 1.35, 0);
-  for (let k = 0; k < 4; k++) for (const sd of [-1, 1]) { add(tower, box(.26, .52, .04, "#5A6A7A"), sd * .42, .62 + k * .58, .87); add(tower, box(.04, .52, .26, "#5A6A7A"), .87, .62 + k * .58, sd * .42); }
-  add(tower, box(1.86, .18, 1.86, stone), 0, 2.80, 0);
-  const stage = add(tower, box(1.80, 1.00, 1.80, stone), 0, 3.35, 0); void stage;
+  const stone = "#D6C8A0", shade = "#B8AA84", dark = "#4A5058", iron = "#4E5652", gilt = "#C9A23A";
+  const s = new THREE.Group();
+  // the palace: a long low range with buttresses, two rows of lancets, a parapet and a steep iron roof
+  const x0 = -3.78, x1 = .35, pw = x1 - x0, pc = (x0 + x1) / 2, zb = -1.8, zf = .45, ph = 2.2;
+  add(s, box(pw, ph, zf - zb, stone), pc, ph / 2, (zb + zf) / 2);
+  add(s, box(pw + .1, .16, zf - zb + .1, shade), pc, ph + .08, (zb + zf) / 2);
+  for (let i = 0; i < 12; i++) {
+    const x = x0 + .2 + i * .355;
+    for (const y of [.75, 1.6]) add(s, box(.14, .52, .04, dark), x + .17, y, zf + .02);
+  }
+  gableRoof(s, pw, zf - zb, ph + .12, .75, { colour: "#56605E", line: "#454E4C", every: .2, kind: "line" }, { x: pc, z: (zb + zf) / 2, over: .08, ends: stone, ridge: gilt });
+  for (let i = 0; i < 18; i++) add(s, box(.03, .14, .03, gilt), x0 + .15 + i * .23, ph + .96, (zb + zf) / 2);   // the iron cresting on the ridge
+  // the buttresses, carried up past the parapet into pinnacles: an octagonal shaft, a ring, a spirelet and a finial
+  const pinnacle = (x: number, y: number, z: number, r: number) => {
+    add(s, cyl(r, r * 1.1, .5, stone, 8), x, y + .25, z);
+    add(s, cyl(r * 1.35, r * 1.35, .06, shade, 8), x, y + .52, z);
+    add(s, cone(r * 1.25, .55, stone, 8), x, y + .82, z);
+    for (let k = 0; k < 4; k++) add(s, box(.03, .06, .06, shade), x + Math.cos(k * 1.57) * r * .9, y + .72, z + Math.sin(k * 1.57) * r * .9);   // crockets
+    add(s, ball(r * .5, gilt, 5), x, y + 1.12, z);
+  };
+  for (let i = 0; i < 6; i++) {
+    const x = x0 + .35 + i * .71;
+    add(s, box(.2, ph + .1, .14, shade), x, (ph + .1) / 2, zf + .06);
+    pinnacle(x, ph + .16, zf + .06, .085);
+  }
+  for (const x of [x0 + .1, x1 - .1]) { add(s, cyl(.24, .26, ph + .5, stone, 8), x, (ph + .5) / 2, zf - .05); pinnacle(x, ph + .5, zf - .05, .14); }
+  // the Central Tower's octagon and spire on the roof, and the Victoria Tower at the west end, lower than the clock
+  add(s, cyl(.46, .5, 1.3, stone, 8), -1.5, ph + 1.0, -.7);
+  for (let k = 0; k < 8; k++) add(s, box(.1, .7, .04, dark), -1.5 + Math.cos(k * .785) * .47, ph + 1.05, -.7 + Math.sin(k * .785) * .47).rotation.y = -k * .785 + Math.PI / 2;
+  add(s, cone(.5, 1.45, "#6A7270", 8), -1.5, ph + 2.38, -.7);
+  add(s, box(1.5, 4.5, 1.5, stone), -3.2, 2.25, -.7);
+  for (const sx of [-1, 1]) for (let k = 0; k < 4; k++) add(s, box(.16, .7, .04, dark), -3.2 + sx * .38, 1.0 + k * .95, .07);
+  add(s, box(1.66, .18, 1.66, shade), -3.2, 4.55, -.7);
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) pinnacle(-3.2 + sx * .7, 4.62, -.7 + sz * .7, .1);
+  add(s, cyl(.02, .03, .6, iron, 4), -3.2, 4.95, -.7);
+  // the Clock Tower: plinth, panelled shaft, the clock stage, the belfry piers, the spire and its lantern
+  const T = V(1.0, 0, -.85), S = 1.2, shaftTop = 4.85, clockTop = 6.05, belTop = 6.9, dialY = shaftTop + .6;
+  add(s, box(S + .2, .3, S + .2, shade), T.x, .15, T.z);
+  add(s, box(S, shaftTop - .3, S, stone), T.x, .3 + (shaftTop - .3) / 2, T.z);
+  for (let f = 0; f < 4; f++) {
+    const face = add(s, new THREE.Group(), T.x, 0, T.z); face.rotation.y = f * Math.PI / 2;
+    for (const dx of [-.36, 0, .36]) add(face, box(.06, shaftTop - .6, .04, shade), dx, .3 + (shaftTop - .6) / 2 + .15, S / 2 + .01);
+    for (let k = 1; k < 5; k++) add(face, box(S + .02, .06, .05, shade), 0, .3 + k * .94, S / 2 + .01);
+    for (let k = 0; k < 4; k++) for (const dx of [-.18, .18]) add(face, box(.12, .4, .03, dark), dx, .85 + k * .94, S / 2 + .02);
+  }
+  add(s, box(S + .16, clockTop - shaftTop, S + .16, stone), T.x, (shaftTop + clockTop) / 2, T.z);
+  add(s, box(S + .26, .1, S + .26, shade), T.x, clockTop, T.z);
+  for (let f = 0; f < 4; f++) {
+    const face = add(s, new THREE.Group(), T.x, 0, T.z); face.rotation.y = f * Math.PI / 2;
+    add(face, box(1.02, 1.02, .04, gilt), 0, dialY, (S + .16) / 2 + .01);                                       // the gilded surround
+    for (const sx of [-1, 1]) for (const sy of [-1, 1]) add(face, cone(.06, .12, gilt, 4), sx * .44, dialY + sy * .44, (S + .16) / 2 + .04).rotation.x = Math.PI / 2;
+  }
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+    add(s, box(.22, belTop - clockTop - .05, .22, stone), T.x + sx * (S / 2 - .06), (clockTop + belTop) / 2, T.z + sz * (S / 2 - .06));
+    pinnacle(T.x + sx * (S / 2 + .02), belTop + .06, T.z + sz * (S / 2 + .02), .08);
+  }
+  for (let f = 0; f < 4; f++) {                                                                                 // the belfry's arches, open between the piers
+    const face = add(s, new THREE.Group(), T.x, 0, T.z); face.rotation.y = f * Math.PI / 2;
+    add(face, box(.05, .6, .06, stone), 0, clockTop + .38, S / 2 - .06);
+    for (const dx of [-.22, .22]) add(face, new THREE.Mesh(new THREE.TorusGeometry(.2, .035, 4, 8, Math.PI), mat(stone)), dx, belTop - .28, S / 2 - .06);
+    add(face, box(S - .3, .1, .06, stone), 0, belTop - .06, S / 2 - .06);
+    add(face, box(S - .3, .06, .05, shade), 0, clockTop + .14, S / 2 - .06);
+  }
+  add(s, box(S + .24, .1, S + .24, shade), T.x, belTop + .02, T.z);
+  add(s, cone(.8, .85, dark, 4), T.x, belTop + .5, T.z).rotation.y = Math.PI / 4;                              // the lower spire, in iron
+  for (let k = 0; k < 4; k++) add(s, box(.04, .95, .04, gilt), T.x + Math.cos(k * 1.57 + .785) * .38, belTop + .5, T.z + Math.sin(k * 1.57 + .785) * .38).rotation.z = 0;
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) add(s, cyl(.025, .025, .34, gilt, 4), T.x + sx * .14, belTop + 1.08, T.z + sz * .14);   // the lantern's posts
+  add(s, box(.4, .05, .4, gilt), T.x, belTop + 1.26, T.z);
+  add(s, cone(.26, .55, dark, 4), T.x, belTop + 1.55, T.z).rotation.y = Math.PI / 4;
+  add(s, cyl(.015, .02, .22, gilt, 4), T.x, belTop + 1.9, T.z);
+  add(s, ball(.06, gilt, 6), T.x, belTop + 1.84, T.z);
+  // the terrace on the river and its balustrade, and New Palace Yard's railing east of the tower
+  add(s, box(7.6, .40, .90, "#9C9488"), 0, .20, .95);
+  for (let i = 0; i < 12; i++) add(s, box(.10, .34, .10, stone), -3.4 + i * .62, .58, 1.34);
+  add(s, box(7.6, .10, .16, stone), 0, .78, 1.34);
+  for (let i = 0; i < 14; i++) add(s, cyl(.012, .012, .7, "#2E2B2A", 4), 1.95 + i * .13, .75, -.55);
+  add(s, box(1.9, .04, .04, "#2E2B2A"), 2.8, 1.05, -.55);
+  g.add(solid(s));
+  // the moving parts, outside the merged stone: four dials with their hands, the bell, the Ayrton light
   const dials = [0, 1, 2, 3].map((rot) => {
-    const face = new THREE.Group(); face.rotation.y = rot * Math.PI / 2; face.position.y = 3.35; tower.add(face);
-    const plate = add(face, cyl(.62, .62, .05, "#E9E2CC", 18), 0, 0, .92); plate.rotation.x = Math.PI / 2;
+    const face = new THREE.Group(); face.rotation.y = rot * Math.PI / 2; face.position.set(T.x, dialY, T.z); g.add(face);
+    const plate = add(face, cyl(.42, .42, .03, "#E9E2CC", 20), 0, 0, (S + .16) / 2 + .045); plate.rotation.x = Math.PI / 2;
     plate.material = mat("#F2EAD2", { emissive: "#E9C46A", emissiveIntensity: .08 });
     plate.name = rot === 0 ? "bigben-dial" : "";
-    add(face, new THREE.Mesh(new THREE.TorusGeometry(.62, .05, 5, 18), mat(LD.brass)), 0, 0, .94);
-    for (let i = 0; i < 12; i++) add(face, box(.035, .10, .02, LD.iron), Math.sin(i * .524) * .50, Math.cos(i * .524) * .50, .96);
-    const hour = add(face, box(.045, .36, .02, LD.iron), 0, .16, .97); hour.rotation.z = .9;
-    const minute = add(face, box(.035, .54, .02, LD.iron), 0, .25, .98);
+    add(face, new THREE.Mesh(new THREE.TorusGeometry(.42, .03, 5, 20), mat(LD.iron)), 0, 0, (S + .16) / 2 + .06);
+    for (let i = 0; i < 12; i++) add(face, box(.03, .08, .015, LD.iron), Math.sin(i * .524) * .34, Math.cos(i * .524) * .34, (S + .16) / 2 + .065);
+    const hour = add(face, box(.04, .26, .015, LD.iron), 0, .1, (S + .16) / 2 + .075); hour.rotation.z = .9;
+    const minute = add(face, box(.03, .38, .015, LD.iron), 0, .17, (S + .16) / 2 + .085);
     if (rot === 0) minute.name = "bigben-minute";
-    (face.userData as { minute?: THREE.Mesh; hour?: THREE.Mesh; plate?: THREE.Mesh }).minute = minute;
-    (face.userData as { hour?: THREE.Mesh }).hour = hour;
-    (face.userData as { plate?: THREE.Mesh }).plate = plate;
+    Object.assign(face.userData, { minute, hour, plate });
     return face;
   });
-  add(tower, box(1.72, .90, 1.72, stone), 0, 4.32, 0);
-  for (const sd of [-1, 1]) { add(tower, box(.30, .62, .05, "#3A3630"), sd * .40, 4.32, .87); add(tower, box(.05, .62, .30, "#3A3630"), .87, 4.32, sd * .40); }
-  const bell = add(tower, new THREE.Mesh(new THREE.CylinderGeometry(.24, .34, .40, 12, 1, true), mat(LD.brass, { side: THREE.DoubleSide })), 0, 4.26, 0); bell.name = "bigben-bell";
-  add(tower, cone(1.30, 1.80, LD.slateNorth, 4), 0, 5.65, 0).rotation.y = Math.PI / 4;
-  add(tower, cyl(.05, .07, .60, LD.brass, 6), 0, 6.80, 0);
-  add(tower, ball(.11, LD.brass, 8), 0, 7.14, 0);
-  for (const sx of [-1, 1]) for (const sz of [-1, 1]) add(tower, cone(.14, .70, stone, 4), sx * .80, 5.05, sz * .80);
-  // the Victoria Tower at the west end, shorter than the clock so the clock reads as the subject
-  add(g, box(1.55, 4.10, 1.55, stone), -3.20, 2.05, -.60);
-  add(g, box(1.70, .40, 1.70, stone), -3.20, 4.30, -.60);
-  for (const sx of [-1, 1]) for (const sz of [-1, 1]) add(g, cone(.14, .70, stone, 4), -3.20 + sx * .72, 4.85, -.60 + sz * .72);
-  add(g, cyl(.02, .03, .90, LD.brass, 4), -3.20, 4.95, -.60);
-  add(g, box(.28, .50, .02, "#9C2B22"), -3.06, 5.20, -.60);
-  // two people on the terrace and a lamp standard at the corner
+  const bellPivot = add(g, new THREE.Group(), T.x, belTop - .22, T.z);
+  add(g, box(S - .2, .06, .08, LD.oak), T.x, belTop - .2, T.z);
+  const bell = add(bellPivot, new THREE.Mesh(new THREE.CylinderGeometry(.16, .27, .36, 12, 1, true), mat(LD.brass, { side: THREE.DoubleSide })), 0, -.3, 0); bell.name = "bigben-bell";
+  add(bellPivot, ball(.05, LD.iron, 6), 0, -.52, 0);
+  add(bellPivot, cyl(.012, .012, .12, LD.iron, 4), 0, -.08, 0);
+  const light = add(g, ball(.1, "#F2E4A8", 8), T.x, belTop + 1.08, T.z); light.name = "bigben-ayrton";
+  light.material = mat("#F2E4A8", { emissive: "#F2C85A", emissiveIntensity: .3 });
+  // two people on the terrace and a lamp standard in the yard
   lampPost(g, 3.05, 1.30, 2.3);
-  const member = add(g, own(resident("clerk", false)), .95, .40, 1.15) as Figure; member.rotation.y = -1.9;
+  const member = add(g, own(resident("clerk", false)), 2.2, .40, 1.15) as Figure; member.rotation.y = -1.9;
   const constable = add(g, own(resident("coster", false)), -1.35, .40, 1.15) as Figure; constable.rotation.y = 1.7;
   let hands = 0;
   return life(g, "bigBen", [member, constable], (t, k, dt) => {
     // 1. the dial first: the minute hand steps a whole minute at a stroke, and the dials warm as at dusk
     hands += dt * (.22 + beat(k, 0, .55) * 9);
-    const warm = .08 + Math.sin(t * .3) * .02 + beat(k, .05, .95) * .85;
-    dials.forEach((face, i) => {
-      const u = face.userData as { minute?: THREE.Mesh; hour?: THREE.Mesh; plate?: THREE.Mesh };
-      if (u.minute) u.minute.rotation.z = -Math.floor(hands * 6) / 6;
-      if (u.hour) u.hour.rotation.z = .9 - hands * .08;
-      if (u.plate) (u.plate.material as THREE.MeshStandardMaterial).emissiveIntensity = warm;
-      void i;
+    const warm = .08 + beat(k, .05, .95) * .85;
+    dials.forEach((face) => {
+      const u = face.userData as { minute: THREE.Mesh; hour: THREE.Mesh; plate: THREE.Mesh };
+      u.minute.rotation.z = -Math.floor(hands * 6) / 6;
+      u.hour.rotation.z = .9 - hands * .08;
+      (u.plate.material as THREE.MeshStandardMaterial).emissiveIntensity = warm;
     });
-    bell.rotation.z = beat(k, .25, .85) * Math.sin(t * 14) * .10;
+    // the bell swings in the open belfry and the light in the lantern comes up
+    bellPivot.rotation.z = hold(k, .1, .85) * Math.sin(t * 3.2) * .42;
+    bellPivot.rotation.x = beat(k, .15, .9) * Math.cos(t * 2.7) * .12;
+    (light.material as THREE.MeshStandardMaterial).emissiveIntensity = .3 + beat(k, .1, .95) * 1.2;
     // 2. the member on the terrace turns to the tower, 3. the constable looks up
     upper(member).rotation.y = Math.sin(t * .3) * .08 + beat(k, .4, 1) * .5;
     upper(constable).rotation.x = -beat(k, .5, 1) * .22;
@@ -2380,28 +3121,30 @@ export function towerBridge(len = 9): P {
   });
 }
 
-/** The omnibus and the hansom cab at the Westminster stand: a knifeboard omnibus with its pair in the traces, a
- *  hansom waiting at the kerb, and a motor omnibus of 1907 standing behind them that the horses dislike. */
+/** The omnibus and the hansom cab at the Westminster stand, 1907: the knifeboard horse omnibus with its pair in the
+ *  traces and the General's new motor omnibus standing beside it at the kerb, both in the same red, and one hansom
+ *  waiting. The research's point is that the red livery came first on the horse buses and the motor bus arrived
+ *  beside them, so the card's picture is the two side by side. */
 export function omnibus(): P {
   const g = group();
   add(g, box(8.0, .07, 4.2, "#B8B4AD"), 0, .035, .30);
   for (let i = 0; i < 16; i++) add(g, box(.48, .02, 4.2, i % 2 ? "#B0ACA4" : "#BCB8B0"), -3.75 + i * .5, .08, .30);
   add(g, box(8.0, .16, .34, "#9C9890"), 0, .10, -1.85);                                     // the kerb
-  const bus = add(g, horseOmnibus(), -1.15, .07, .70); bus.rotation.y = .06;
-  const cab = add(g, hansomCab(true), 1.90, .07, 1.95); cab.rotation.y = -.22;
-  const motor = add(g, motorOmnibus(), -.60, .07, -1.05); motor.rotation.y = 3.10;
+  const bus = add(g, horseOmnibus(), -2.3, .07, .85);
+  const motor = add(g, motorOmnibus(), .2, .07, -.8); motor.name = "motor-omnibus";
+  const cab = add(g, hansomCab(true), 1.85, .07, 2.45); cab.rotation.y = -.12;
   // the stand's own furniture: a cabmen's water trough, a post and a lamp standard
-  add(g, box(1.5, .46, .52, LD.moorGranite), 3.10, .30, -1.20);
-  add(g, box(1.36, .05, .40, "#9CB0B4"), 3.10, .53, -1.20);
-  add(g, cyl(.09, .11, .90, LD.iron, 10), 3.85, .45, -1.20);
-  lampPost(g, -3.35, -1.30, 2.4);
+  add(g, box(1.2, .46, .52, LD.moorGranite), 3.45, .30, -1.30);
+  add(g, box(1.06, .05, .40, "#9CB0B4"), 3.45, .53, -1.30);
+  add(g, cyl(.09, .11, .90, LD.iron, 10), 3.85, .45, -.75);
+  lampPost(g, -3.7, -1.55, 2.4);
   const body = bus.userData.bus as THREE.Group; body.name = "omnibus-body";
   const pair = bus.userData.pair as { root: THREE.Group; head: THREE.Group; legs: THREE.Group[] }[];
   const wheels = bus.userData.wheels as THREE.Group[];
   const cabman = (cab.userData.figures as Figure[])[0];
   const cabHorse = cab.userData.horse as { root: THREE.Group; head: THREE.Group; legs: THREE.Group[] };
   // the conductor stands on the pavement calling for passengers, so nobody rides standing
-  const conductor = add(g, own(resident("carter", false)), .65, .07, 2.35) as Figure; conductor.rotation.y = -.6;
+  const conductor = add(g, own(resident("carter", false)), -.2, .07, 2.25) as Figure; conductor.rotation.y = -.6;
   arms(conductor).right.rotation.x = -.9;
   const waiting = [0, 1].map((i) => { const p = add(g, own(resident(i ? "lady" : "clerk", false)), 2.70 + i * .55, .07, .55 + i * .2) as Figure; p.rotation.y = 2.4 - i * .4; return p; });
   const busRest = bus.position.clone();
@@ -2485,53 +3228,86 @@ export function pillarBox(): P {
   });
 }
 
-/** The Forth Bridge from the east shore: two steel cantilevers over the firth, a train crossing the top member
- *  and the painters' cradle swinging under it. It stands on land; no pier of it is set in the water. */
+/**
+ * The Forth Bridge: three cantilevers in Forth red, each a pair of tall towers on granite piers with its two arms
+ * reaching out, the great tubes of the bottom chords sweeping up from the piers to the arm ends and the top chords
+ * running down to them, so each reads as the diamond it is; two short suspended spans hang between the arm ends,
+ * the second of them over the firth, and one continuous rail deck runs the whole length from the shore pier to the
+ * far one. The train stands on the deck with its last coach inside the west end and runs east along it, stopping
+ * over the suspended span with its engine still on the deck. No pier stands in the water, and no member of the
+ * bridge ends over it: the suspended span's ends sit on the arm ends either side of the narrows. The flat blue
+ * plate the old stand laid under itself is gone; the firth under the bridge is the Builder's water.
+ */
 export function forthBridge(): P {
   const g = group();
-  const steel = "#7A2A24";
-  add(g, box(4.2, .40, 3.0, "#8E8C84"), -3.60, .20, .20);                                   // the shore it stands on
-  add(g, box(12.0, .05, 2.6, "#5E7A88"), 1.60, .02, .20);                                   // the firth beyond it
-  // the granite piers on the shore and the two cantilever towers
-  const towers = [-1.60, 3.60].map((x, n) => {
-    const tw = add(g, new THREE.Group(), x, 0, 0);
-    for (const sz of [-1, 1]) {
-      add(tw, box(.90, .55, .80, "#8E8C84"), 0, .28, sz * .95);
-      const leg = add(tw, cyl(.17, .26, 5.2, steel, 8), 0, 2.85, sz * .95); leg.rotation.x = -sz * .10;
-      const leg2 = add(tw, cyl(.15, .24, 5.0, steel, 8), 0, 2.80, sz * .95); leg2.rotation.z = sz * .16; void leg2;
-      for (let i = 0; i < 6; i++) add(tw, cyl(.05, .05, 1.5, steel, 5), 0, .9 + i * .80, sz * .95 + (i % 2 ? .2 : -.2)).rotation.z = i % 2 ? .9 : -.9;
+  const red = "#9A3326", dark = "#7A2820", granite = "#8E8C84";
+  const s = new THREE.Group();
+  add(s, box(4.2, .40, 3.0, granite), -3.60, .20, .20);                                                      // the shore it stands on
+  const a = 1.4, deck = 3.1, centres = [-3.9, .1, 4.7];   // the second span's ends stand on land either side of the narrows
+  for (const c of centres) {
+    // the piers, the towers and their lateral bracing
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+      add(s, cyl(.3, .36, .5, granite, 10), c + sx * .3, .25, sz * .8);
+      strut(s, V(c + sx * .3, .5, sz * .8), V(c + sx * .3, 5.35, sz * .5), .1, red, 8);
     }
-    for (let i = 0; i < 5; i++) add(tw, cyl(.06, .06, 1.9, steel, 5), 0, 1.2 + i * 1.0, 0).rotation.x = Math.PI / 2;
-    add(tw, box(.70, .30, 2.2, steel), 0, 5.45, 0);
-    void n;
-    return tw;
-  });
-  // the top member, the deck, and the lattice between them
-  add(g, box(11.6, .26, 1.10, steel), 1.00, 3.25, 0);                                       // the rail deck
-  add(g, box(11.6, .10, 1.30, "#6E6A60"), 1.00, 3.40, 0);
-  // the girder lattice hangs under the rail deck, so the train runs on top of it in the open and the visitor
-  // sees it cross rather than glimpsing it through a cage of diagonals
-  for (const sz of [-1, 1]) for (let i = 0; i < 17; i++) add(g, cyl(.035, .035, 1.2, steel, 4), -4.4 + i * .66, 2.62, sz * .52).rotation.z = i % 2 ? .75 : -.75;
-  for (const sz of [-1, 1]) add(g, box(11.6, .14, .12, steel), 1.00, 2.08, sz * .52);
-  for (let i = 0; i < 9; i++) add(g, cyl(.05, .05, 1.2, steel, 5), -3.2 + i * 1.3, 2.10, 0).rotation.x = Math.PI / 2;
-  // the train on the deck: the subject
-  const train = add(g, new THREE.Group(), -4.20, 3.52, 0); train.name = "forth-train";
+    for (const y of [1.6, 3.0, 4.4]) { const zz = .8 - (y - .5) / 4.85 * .3; for (const sx of [-1, 1]) strut(s, V(c + sx * .3, y, -zz), V(c + sx * .3, y, zz), .05, red, 6); }
+    for (const sx of [-1, 1]) for (const [y0, y1] of [[.6, 2.3], [2.3, 4.0]] as [number, number][]) {
+      const z0 = .8 - (y0 - .5) / 4.85 * .3, z1 = .8 - (y1 - .5) / 4.85 * .3;
+      strut(s, V(c + sx * .3, y0, -z0), V(c + sx * .3, y1, z1), .035, red, 5); strut(s, V(c + sx * .3, y0, z0), V(c + sx * .3, y1, -z1), .035, red, 5);
+    }
+    for (const sz of [-1, 1]) {
+      add(s, box(.7, .22, .12, red), c, 5.38, sz * .5);
+      strut(s, V(c - .3, 3.0, sz * .66), V(c + .3, 3.0, sz * .66), .05, red, 6);
+      for (const sx of [-1, 1]) {
+        // an arm: the bottom chord from the pier up to the arm end, the top chord from the tower head down to it
+        const tip = c + sx * a, zt = sz * .62, mid = c + sx * a * .55;
+        strut(s, V(c + sx * .3, .55, sz * .8), V(mid, 1.9, sz * .7), .13, red, 8);
+        strut(s, V(mid, 1.9, sz * .7), V(tip, deck - .05, zt), .12, red, 8);
+        strut(s, V(c + sx * .3, 5.3, sz * .5), V(tip, deck + .3, zt), .08, red, 6);
+        // the web between the chords
+        strut(s, V(mid, 1.9, sz * .7), V(mid, 4.3 - (a * .25) * 1.4, sz * .56), .045, red, 5);
+        strut(s, V(c + sx * .3, 2.6, sz * .74), V(mid, 4.3 - (a * .25) * 1.4, sz * .56), .035, red, 5);
+        strut(s, V(mid, 1.9, sz * .7), V(tip - sx * .2, deck + .25, zt), .035, red, 5);
+        strut(s, V(tip, deck - .05, zt), V(tip, deck + .3, zt), .05, red, 5);
+      }
+    }
+  }
+  // the suspended spans, each hung between two arm ends: chords, end posts and one cross of diagonals a side
+  for (let k = 0; k < 2; k++) {
+    const x0 = centres[k] + a, x1 = centres[k + 1] - a;
+    for (const sz of [-1, 1]) {
+      const z = sz * .6;
+      add(s, box(x1 - x0 + .1, .1, .08, dark), (x0 + x1) / 2, deck + .5, z);
+      bar(s, V(x0 + .05, deck, z), V(x1 - .05, deck + .5, z), .05, .05, dark);
+      bar(s, V(x0 + .05, deck + .5, z), V(x1 - .05, deck, z), .05, .05, dark);
+    }
+  }
+  // the continuous deck and its rails, from the shore pier to the far pier, and the two end piers
+  add(s, box(12.0, .16, 1.0, dark), .4, deck, 0);
+  for (const sz of [-1, 1]) add(s, box(12.0, .03, .05, "#3A3A3A"), .4, deck + .1, sz * .2);
+  for (let i = 0; i < 30; i++) { const x = -5.5 + i * .4; if (x < 1.4 || x > 3.4) add(s, box(.08, .03, .6, "#5A4632"), x, deck + .09, 0); }
+  add(s, box(.7, deck - .48, 1.1, granite), -5.35, .4 + (deck - .48) / 2, 0);                               // the shore pier, on the shore
+  add(s, box(.7, deck - .08, 1.1, granite), 6.2, (deck - .08) / 2, 0);                                       // the far pier
+  g.add(solid(s));
+  // the train on the deck: the subject. Its last coach starts inside the deck's west end.
+  const train = add(g, new THREE.Group(), -.8, deck + .08, 0); train.name = "forth-train";
   const loco = add(train, new THREE.Group(), 0, 0, 0);
   add(loco, cyl(.24, .24, 1.15, "#2E3E34", 12), .10, .30, 0).rotation.z = Math.PI / 2;
   add(loco, box(.55, .52, .56, "#2E3E34"), -.55, .34, 0);
   add(loco, box(.60, .10, .62, "#2E3E34"), -.55, .62, 0);
   add(loco, cyl(.08, .10, .28, "#2E3E34", 10), .55, .62, 0);
   add(loco, cyl(.05, .05, .12, LD.brass, 8), .22, .56, 0);
-  for (const dz of [-.28, .28]) for (const dx of [-.42, .0, .42]) add(loco, new THREE.Mesh(new THREE.TorusGeometry(.17, .035, 5, 12), mat("#4A4438")), dx, .17, dz).rotation.y = Math.PI / 2;
+  for (const dz of [-.28, .28]) for (const dx of [-.42, .0, .42]) add(loco, new THREE.Mesh(new THREE.TorusGeometry(.15, .035, 5, 12), mat("#4A4438")), dx, .15, dz);
   for (let c = 0; c < 3; c++) {
     const coach = add(train, new THREE.Group(), -1.45 - c * 1.30, 0, 0);
     add(coach, box(1.15, .58, .60, c % 2 ? "#6E3A28" : "#4A3526"), 0, .40, 0);
     add(coach, box(1.18, .07, .64, "#D9D2C2"), 0, .72, 0);
     for (let i = 0; i < 3; i++) for (const dz of [-1, 1]) add(coach, box(.22, .22, .03, LD.glass), -.34 + i * .34, .46, dz * .31);
-    for (const dz of [-.26, .26]) for (const dx of [-.34, .34]) add(coach, new THREE.Mesh(new THREE.TorusGeometry(.13, .03, 5, 10), mat("#4A4438")), dx, .13, dz).rotation.y = Math.PI / 2;
+    for (const dz of [-.26, .26]) for (const dx of [-.34, .34]) add(coach, new THREE.Mesh(new THREE.TorusGeometry(.12, .03, 5, 10), mat("#4A4438")), dx, .12, dz);
   }
-  // the painters' cradle hanging from the top member
-  const cradle = add(g, new THREE.Group(), 4.60, 4.50, .78); cradle.name = "forth-cradle";   // beyond the end of the train's run
+  // the painters' cradle hanging from the far cantilever's top chord, outside the deck
+  const cx = centres[2] + .8, cy = 5.3 - (.5 / (a - .3)) * (5.3 - deck - .3);
+  const cradle = add(g, new THREE.Group(), cx, cy, .82); cradle.name = "forth-cradle";
   for (const dx of [-.42, .42]) add(cradle, cyl(.008, .008, .90, LD.iron, 4), dx, -.45, 0);
   add(cradle, box(1.05, .06, .42, LD.oak), 0, -.90, 0);
   for (const dx of [-.50, .50]) add(cradle, box(.05, .34, .42, LD.oak), dx, -.74, 0);
@@ -2542,15 +3318,14 @@ export function forthBridge(): P {
   // two people on the shore under the bridge
   const ganger = add(g, own(resident("highland", false)), -3.90, .40, 1.35) as Figure; ganger.rotation.y = .5;
   const boy = add(g, own(resident("child")), -4.60, .40, 1.05) as Figure; boy.rotation.y = .9;
-  const trainRest = train.position.clone();
-  void towers;
+  const trainRest = train.position.clone(), run = 5.18;   // from the west end to the suspended span over the firth
   return life(g, "forthBridge", [ganger, boy], (t, k) => {
     cradle.rotation.z = Math.sin(t * .8) * .035;
     cradle.rotation.x = Math.cos(t * .65) * .02;
-    // 1. the train first: it runs out of the shore span and across the top member of the near cantilever
+    // 1. the train first: it runs east along the deck, through the middle cantilever, and stops over the firth
     const cross = hold(k, .20, .84);
     train.position.copy(trainRest);
-    train.position.x = trainRest.x + cross * 6.4;
+    train.position.x = trainRest.x + cross * run;
     train.position.y = trainRest.y + Math.sin(t * 9) * .006 * (cross > .05 ? 1 : 0);
     // the cradle swings harder as the train goes over
     cradle.rotation.z = Math.sin(t * .8) * .035 + beat(k, .25, .95) * Math.sin(t * 3.4) * .22;
@@ -2598,7 +3373,7 @@ export function engineHouse(): P {
   for (const dx of [-.66, .66]) add(g, box(.16, 1.90, .16, LD.oak), 3.25 + dx, .95, -.78);
   add(g, box(1.55, .16, .18, LD.oak), 3.25, 1.88, -.78);
   const whim = add(g, new THREE.Group(), 3.25, 1.88, -.78);
-  add(whim, new THREE.Mesh(new THREE.TorusGeometry(.32, .04, 5, 14), mat(LD.iron)), 0, 0, 0).rotation.y = Math.PI / 2;
+  add(whim, new THREE.Mesh(new THREE.TorusGeometry(.32, .04, 5, 14), mat(LD.iron)), 0, 0, 0);   // the rim in the plane of its spokes
   for (let i = 0; i < 6; i++) add(whim, cyl(.016, .016, .62, LD.iron, 4), 0, 0, 0).rotation.z = (i * Math.PI) / 6;
   add(g, box(2.0, 1.60, 1.5, LD.moorGranite), -2.90, .80, 1.55);
   add(g, box(2.15, .09, 1.65, "#5A5450"), -2.90, 1.66, 1.55);

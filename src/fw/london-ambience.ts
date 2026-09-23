@@ -29,6 +29,11 @@ export const LONDON_AMBIENCE: Record<string, AmbientPatch[]> = {
     // the hearth, the steam and the two hung sprites.
     { kind: 'light', phone: [.094, .195, .140, .240], color: '#f3a34b' },
     { kind: 'light', phone: [.700, .112, .820, .198], color: '#ffc47a' },
+    // Wide only, since the second walkthrough (57, 2026-09-23): rain falling in the street through the open door,
+    // left of the hung sign and above the umbrellas on the pavement, which is what the painting is (a wet London
+    // evening). It takes the loop the hung hop bine had: the library's bine sprite is a closed round garland and read
+    // as a Christmas wreath on the beam nail, and no scaling of a round sprite makes a long trailing bine.
+    { kind: 'rain', wide: [.625, .045, .694, .265], color: '#e8f1ef' },
   ],
   uk_tearoom: [
     // Rain on the plate glass the tea room looks out of, which is what the image brief asked this window for and
@@ -84,8 +89,14 @@ export const LONDON_AMBIENCE: Record<string, AmbientPatch[]> = {
     // plumes, the fire and the lamp.
     { kind: 'light', phone: [.400, .655, .800, .770], color: '#f3a34b' },
   ],
-  // uk_hopkitchen carries no ambience patch: the ladle's pour, the cauldron's plume, the open fire and the hung
-  // hop bine are its four loops in wide; the portrait runs on the first three (its bine hung through the heading).
+  uk_hopkitchen: [
+    // Wide only, since the second walkthrough (57 and 58, 2026-09-23): the sun breaking under the Weald's cloud
+    // (the painting's bright gap on the skyline) falling across the bin of picked cones, its sacking and the bread board, below both
+    // pickers' faces and right of the girl with the plate. It takes the loop of the hung hop bine, which read as a
+    // Christmas wreath on the wire (the library sprite is a closed garland), and it lifts the wide room off its
+    // 3 per cent floor, where it stood at 2.9 to 3.0. The portrait keeps the pour, the plume and the fire.
+    { kind: 'sunray', wide: [.600, .530, .990, .900], angles: [-.35, 0], sway: [.15, .15] },
+  ],
   uk_dairy: [
     // The cold room, and the only room in the area with no heat of any kind, so it spends all three patch slots.
     // The daylight coming in at the open door. Since 2026-09-23 it starts below every face and falls down to the
@@ -150,7 +161,8 @@ export const LONDON_AMBIENCE: Record<string, AmbientPatch[]> = {
  * Nothing hangs behind a room's heading (walkthrough 43, 2026-09-23). At 390 x 844 the back button, the room's name
  * and the story button cover the top of the phone to y 143 (y 165 under a two-line name); the pub's beam nail, the
  * tea room's chain, the hop line, the market post, the seamen's kitchen hook and the smokehouse cross-bar all sit at
- * portrait y .04 to .11, so those six rooms hang nothing in portrait. Only gulls, which hang from nothing, fly in
+ * portrait y .04 to .11, so those six rooms hang nothing in portrait (and since the second walkthrough, 2026-09-23,
+ * no room hangs the `uk-hop-bine` garland at all: it read as a Christmas wreath). Only gulls, which hang from nothing, fly in
  * portrait, each clear of the heading. The pub's portrait street bracket is at x .923, outside the phone band.
  * At 1280 x 720 the name ends at y 134 and the story button at y 179, x 131; every wide sprite, including the
  * market's brace (its S-hook is right of the name "The market"), is clear of them.
@@ -166,9 +178,11 @@ export const LONDON_HUNG: Record<string, { wide?: HungSprite[]; phone?: HungSpri
     // is at (.5265, .064), on dark timber, and carries the hop bine that every bar of the period hung over it.
     // In portrait only the beam nail is inside the phone band; the street bracket's eye is at x .923.
     // The portrait bine came out on 2026-09-23: its nail is at y .04 and the bine hung down through the room's
-    // name (walkthrough 43).
-    wide: [{ name: 'uk-pub-sign', fx: .697, fy: .092, fw: .046, sway: 3.4, tone: .92 },
-      { name: 'uk-hop-bine', fx: .499, fy: .064, fw: .055, sway: 5.2, tone: .90 }],
+    // name (walkthrough 43). The wide bine followed in the second walkthrough (57): the library's `uk-hop-bine` is
+    // a closed round garland, 923 x 960, and on the nail it read as a Christmas wreath; a sprite keeps its own
+    // proportions, so no placement turns it into a long trailing bine. The nail is empty again, and the rain in
+    // the open door (above) is the fourth loop.
+    wide: [{ name: 'uk-pub-sign', fx: .697, fy: .092, fw: .046, sway: 3.4, tone: .92 }],
   },
   uk_tearoom: {
     // The brass ceiling chain over the tea room, ending in an empty ring: (.5815, .092) in wide, (.557, .050) in
@@ -198,13 +212,10 @@ export const LONDON_HUNG: Record<string, { wide?: HungSprite[]; phone?: HungSpri
     // Wide only since 2026-09-23: the portrait hook is at y .11 and the lamp hung through the room's name.
     wide: [{ name: 'uk-hanging-lamp', fx: .6055, fy: .200, fw: .045, sway: 2.8, tone: .90 }],
   },
-  uk_hopkitchen: {
-    // The empty wire line strung between two poles over the bin, with plain grey sky behind it: it crosses x .600
-    // at y .040 in wide and x .400 at y .065 in portrait. A cut bine hung on the line is what a hop garden looks
-    // like when the pickers stop for dinner.
-    // Wide only since 2026-09-23: the portrait line is at y .065 and the bine hung through the room's name.
-    wide: [{ name: 'uk-hop-bine', fx: .5675, fy: .040, fw: .065, sway: 4.6, tone: .94 }],
-  },
+  // uk_hopkitchen hangs nothing since the second walkthrough (57, 2026-09-23). The wire line between the two poles
+  // over the bin (x .600 at y .040 in wide) carried the library's `uk-hop-bine`, a closed round garland that read as
+  // a Christmas wreath on the wire; a sprite keeps its proportions, so it cannot be hung as a long trailing bine.
+  // The sunray on the bin (LONDON_AMBIENCE above) takes its loop.
   uk_cockles: {
     // No hook: the gull flies over the sands in both compositions, in the clean sky the brief reserved. The stall
     // upright's empty peg stays empty — in portrait it sits at about x .925, outside the phone band anyway.

@@ -355,8 +355,12 @@ export function drystoneRun(length: number, h = .78, colour = '#8A8A80'): P {
     const taper = 1 - c / courses * .28;
     add(g, block(length, .16, .38 * taper, c % 2 ? colour : '#93938A'), 0, .08 + c * (h - .1) / courses, 0);
   }
-  for (let i = 0; i < Math.max(2, Math.round(length / .34)); i++)
-    add(g, block(.16, .22, .3, '#9B9B90'), -length / 2 + .17 + i * .34, h + .05, 0).rotation.z = i % 2 ? .12 : -.12;   // the coping on edge
+  // The coping on edge. Second walkthrough 56 (2026-09-23): stones 0.16 wide every 0.34, 0.22 tall, left gaps as
+  // wide as the stones and from above read as battlements. They are set close now, as a Dales waller sets them,
+  // butted edge to edge and upright, in two tones, so the top of the wall is one continuous cope, not a row of teeth.
+  const copes = Math.max(2, Math.round(length / .28)), pitch = length / copes;
+  for (let i = 0; i < copes; i++)
+    add(g, block(pitch, .12, .26, i % 3 ? '#9B9B90' : '#8F8F86'), -length / 2 + pitch / 2 + i * pitch, h + .01, 0);
   return masonry(g) as P;
 }
 

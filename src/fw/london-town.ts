@@ -371,7 +371,9 @@ export function londonTown(ctx: LayoutCtx) {
   // stand faces and no room approach looks across: the omnibus and one hansom turn its loop half a lap apart,
   // one on each side of the street, so they meet only side by side on the straight; the second hansom waits at
   // the kerb on the hop road, with its horse to the north.
-  const ts = road('LD-TS').points, cz = ts[0][1], WEST = ts[1][0] + .1, EAST = ts[0][0] - .1, SIDE = .62, loop: THREE.Vector3[] = [];
+  // The loop runs 0.2 north of the street's centreline (second walkthrough 60, 2026-09-23), so its south lane
+  // keeps 1.4 clear of the omnibus stand's inner rank; the north lane stays on the widened street.
+  const ts = road('LD-TS').points, cz = ts[0][1] - .2, WEST = ts[1][0] + .1, EAST = ts[0][0] - .1, SIDE = .62, loop: THREE.Vector3[] = [];
   for (let k = 0; k <= 8; k++) loop.push(new THREE.Vector3(WEST + (EAST - WEST) * k / 8, 0, cz + SIDE));
   for (let k = 1; k < 8; k++) { const a = Math.PI / 2 - Math.PI * k / 8; loop.push(new THREE.Vector3(EAST + Math.cos(a) * SIDE, 0, cz + Math.sin(a) * SIDE)); }
   for (let k = 0; k <= 8; k++) loop.push(new THREE.Vector3(EAST + (WEST - EAST) * k / 8, 0, cz - SIDE));
@@ -393,7 +395,8 @@ export function londonTown(ctx: LayoutCtx) {
     v.userData.tick?.(t, dt);
   }));
   { const waiting = hansomCab('#2A2420'); waiting.name = 'street-vehicle'; group.add(waiting);
-    waiting.position.set(-50.5, TOP + .04, 12.4); waiting.rotation.y = Math.PI / 2; tickers.push((t, dt) => waiting.userData.tick?.(t, dt)); }
+    // 0.6 further up the hop road than it was, clear of the loop's west turn (second walkthrough 60)
+    waiting.position.set(-50.5, TOP + .04, 13.0); waiting.rotation.y = Math.PI / 2; tickers.push((t, dt) => waiting.userData.tick?.(t, dt)); }
 
   // ---------- five peopled lanes, twenty residents, one leading a pit pony round the dale yard ----------
   for (const lane of LD_LANES) {
@@ -418,9 +421,11 @@ export function londonTown(ctx: LayoutCtx) {
     }
   }
 
-  // ---------- neighbours who stand and talk: the street corner, the market row, the quay and the fell gate ----------
-  // A standing figure does not translate, so it does not step.
-  for (const [i, [x, z, n]] of ([[-59.2, -12.3, 2], [-47.8, 6.1, 2], [-47.3, 17.3, 2], [-56.3, -12.5, 2], [-67.0, 12.6, 2], [-65.5, -13.0, 2]] as [number, number, number][]).entries()) {
+  // ---------- neighbours who stand and talk: the street corner, the market row and the quay ----------
+  // A standing figure does not translate, so it does not step. The pair at the fell gate, [-65.5, -13.0], stood
+  // inside the walled pen 2.2 behind the palace and drew on its roof from the arrival camera (second walkthrough
+  // 56, 2026-09-23); the pen is gone from there, and so is the pair.
+  for (const [i, [x, z, n]] of ([[-59.2, -12.3, 2], [-47.8, 6.1, 2], [-47.3, 17.3, 2], [-56.3, -12.5, 2], [-67.0, 12.6, 2]] as [number, number, number][]).entries()) {
     for (let k = 0; k < n; k++) {
       const a = (k / n) * Math.PI * 2 + i;
       const nx = x + Math.cos(a) * .55, nz = z + Math.sin(a) * .55;

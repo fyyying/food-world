@@ -69,7 +69,13 @@ const rooms: Record<string, Room> = {
       // girl's profile and its far cups under the woman in the hat — and an engine plume rises about a quarter of
       // the frame, so from any of them it crossed that face. The face rule wins; those cups stay still, and
       // docs/london-rooms.md lists them.
-      steam: { wide: [[.295, .690, 200, 10, .24], [.372, .628, 40, 8, .18]],
+      // Second walkthrough 58 (2026-09-23): the wide room measured 2.96 to 3.06 against its 3 per cent floor. The
+      // engine caps a plume here at rate 10 and alpha .24, so the plumes are fuller by width and by source: the cup
+      // being filled steams from two sources a finger apart (its near and far rim), 220 and 120 wide, and the jug's
+      // spout plume is 110 wide, with a narrow fourth from its lid. None is taller than before, so none reaches a
+      // face: the cup's stops below the waitress's arm and left of the girl's hand, the jug's below that hand. The
+      // cup's drift passes over the spout of the pot being poured; nothing rises from the pot itself.
+      steam: { wide: [[.295, .690, 220, 10, .24], [.300, .705, 120, 10, .24], [.372, .628, 110, 10, .24], [.392, .602, 70, 10, .24]],
         phone: [[.372, .665, 20, 5, .12]] },
     },
     touches: [
@@ -140,7 +146,11 @@ const rooms: Record<string, Room> = {
       // apron and not at his face, and the boiler from its own lid; in portrait the griddle steams from the bacon
       // under the stallholder's apron, right of the porters. The portrait boiler stands at x .92 and more, outside
       // the band a phone shows, so its plume (which rose over the stallholder's head) is gone.
-      steam: { wide: [[.215, .740, 170, 10, .24], [.345, .305, 80, 7, .20]],
+      // Second walkthrough 58 (2026-09-23): 2.98 and 3.06 against the 3 per cent floor. The engine caps a plume
+      // here at rate 10 and alpha .24, so both are fuller by width: the griddle's runs 230 along the bacon and the
+      // boiler's lid plume, which rises into the night sky above the urn, 90 (at 120 its drift reached the
+      // stallholder's cap). Both keep their sources and height.
+      steam: { wide: [[.215, .740, 230, 10, .24], [.345, .305, 90, 10, .24]],
         phone: [[.660, .690, 90, 10, .24]] },
       // No fire ellipse. The room's four loops — the tap's pour, two plumes, the light and the gull — are already
       // full. The light is the naphtha flare in wide and, in portrait, the coals under the griddle (the flare is
@@ -180,7 +190,10 @@ const rooms: Record<string, Room> = {
       // loaf, the clasp knife and the enamel plates are cold, and the children's bowls are held.
       // The cauldron's plume rises from its right half since 2026-09-23: from the middle it crossed the cook's
       // chin in wide, and at 220 wide in portrait it spread to the children's faces either side.
-      steam: { wide: [[.385, .640, 120, 10, .24], [.175, .740, 120, 9, .24]],
+      // Second walkthrough 58 (2026-09-23): the wide room stood on its 3 per cent floor. The sunray on the bin
+      // (london-ambience.ts) lifts it; the cauldron's plume stays 120 wide, since at 150 its drift reached the face of
+      // the man with the sack, and the kettle's is 130.
+      steam: { wide: [[.385, .640, 120, 10, .24], [.175, .740, 130, 10, .24]],
         phone: [[.500, .600, 100, 10, .24]] },
       fire: { wide: [[.340, .900, 110, 22]], phone: [[.530, .745, 120, 22]] },   // the open wood fire under the chain
       pot: { wide: [.330, .630, 140, 24], phone: [.500, .605, 165, 26] },

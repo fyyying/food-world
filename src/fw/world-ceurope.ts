@@ -98,7 +98,12 @@ function layoutCeurope(ctx: LayoutCtx) {
   // behind them as before. The nearest of those, [-28, 22], was 10 high and still filled the lower right of the
   // oyster smacks' card view, and the card camera's swing is clamped to 0.75 radians, so no approach clears it: it
   // is 6.7 high now, a third lower, same place and radius (residual fixes, 2026-09-23).
-  snowy(5.5, 6.7, false, -28, 22); snowy(4.2, 8, true, -20, 25.5); place(mountain(3.6, 2.8, false), -22.5, 16.5); snowy(4.5, 8.5, false, -11, 25.5); place(mountain(3.0, 2.4, false), -27.8, 2.6);
+  // At 6.7 its green flank and snow still showed left of the oyster smacks' card panel (second walkthrough 15):
+  // the card camera looks down at 28 units, so it is the peak's footprint, not its height, that fills the frame.
+  // It stands 5 east and 1 south now, at [-23, 23], and 4.0 high, where the snow sits behind the card panel and
+  // only the foot of its flank reaches the panel's edge; it joins the [-20, 25.5] peak as one massif. Radius,
+  // snow cap and every other Alpine object, pine and the meadow tint are unchanged (round two, 2026-09-23).
+  snowy(5.5, 4.0, false, -23, 23); snowy(4.2, 8, true, -20, 25.5); place(mountain(3.6, 2.8, false), -22.5, 16.5); snowy(4.5, 8.5, false, -11, 25.5); place(mountain(3.0, 2.4, false), -27.8, 2.6);
   for (const [x, z, s] of [[-24, 4, 1.2], [-30, 8, 1.0], [-16, 21, 1.1], [-26, 12.5, 0.9], [-14, 3, 1.0], [-4, 24, 1.1], [-3, 14, 0.9], [-30, 16.5, 1.0]] as [number, number, number][]) place(tree("pine", s), x, z, x);
   const lift = cableCarAlps(9.55, 7); lift.position.set(-13, TOP, 19); lift.rotation.y = Math.atan2(-6.5, -7); group.add(lift); tickers.push(lift.userData.tick!);
   const rowboat = new THREE.Group(); add(rowboat, new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.3, 0.7), mat(CE.wood)), 0, 0.15, 0); const rower = local("#c0392b", { alpine: true }); rower.userData.sit?.(); rower.scale.setScalar(0.75); rower.position.set(-0.1, 0.3, 0); rowboat.add(rower); group.add(rowboat);

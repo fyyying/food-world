@@ -246,7 +246,7 @@ Six delivered, six used.
 | Sprite | Rooms and orientations | Fitting |
 | --- | --- | --- |
 | `uk-pub-sign` | `uk_pub` wide | The wrought-iron street bracket's eye |
-| `uk-hop-bine` | `uk_pub` wide and portrait, `uk_hopkitchen` wide and portrait | The J-nail under the bar beam; the wire line between the poles |
+| `uk-hop-bine` | None since 2026-09-23 (second walkthrough 57): it is a closed round garland and read as a Christmas wreath. Stage C: `uk_pub` wide and portrait, `uk_hopkitchen` wide and portrait | The J-nail under the bar beam; the wire line between the poles, both empty now |
 | `uk-game-brace` | `uk_market` portrait | The S-hook on the stall post |
 | `uk-hanging-lamp` | `uk_tearoom` and `uk_lascar`, wide and portrait | The brass ceiling ring; the chain's S-hook over the range |
 | `uk-smoke-speet` | `uk_smokehouse` wide and portrait | The bare upper cross-bar of the right-hand frame |
@@ -402,14 +402,14 @@ figures are unaffected.
 
 | Room | Wide at 1280 x 720 | Portrait at 390 x 844 |
 | --- | --- | --- |
-| `uk_pub` | 5.75 (5.0 to 6.3) | 8.00 (6.7 to 8.7) |
-| `uk_tearoom` | 3.10 (2.8 to 3.5) | 4.00 (0.4 to 4.7) |
+| `uk_pub` | 5.75 (5.0 to 6.3); round two **5.41** (4.7 to 6.3) and **5.79** (4.7 to 6.2) | 8.00 (6.7 to 8.7) |
+| `uk_tearoom` | 3.10 (2.8 to 3.5); round two **3.81** (3.4 to 4.2) and **3.89** (3.4 to 4.5) | 4.00 (0.4 to 4.7) |
 | `uk_market` | 5.05 (1.5 to 5.8) | 3.50 (2.1 to 4.9) |
 | `uk_piemash` | 3.55 (3.0 to 4.0) | 4.45 (3.9 to 6.2) |
 | `uk_chippy` | 5.45 (4.8 to 6.3) | 6.80 (6.5 to 7.5) |
-| `uk_breakfast` | 3.10 (2.6 to 3.3) | 5.25 (2.7 to 6.0) |
+| `uk_breakfast` | 3.10 (2.6 to 3.3); round two **4.18** (3.0 to 4.8) and **3.78** (3.3 to 4.4) | 5.25 (2.7 to 6.0) |
 | `uk_lascar` | 3.35 (2.9 to 3.7) | 3.40 (2.0 to 4.3) |
-| `uk_hopkitchen` | 3.20 (2.9 to 3.5) | 4.65 (3.1 to 5.2) |
+| `uk_hopkitchen` | 3.20 (2.9 to 3.5); round two **4.72** (2.8 to 5.3) and **4.24** (2.8 to 4.7) | 4.65 (3.1 to 5.2) |
 | `uk_dairy` | 4.20 (0.7 to 4.9) | 4.00 (0.7 to 4.3) |
 | `uk_pasty` | 4.85 (3.9 to 5.2) | 3.55 (2.2 to 5.0) |
 | `uk_cockles` | 3.25 (2.6 to 4.1) | 3.40 (0.8 to 3.8) |
@@ -453,3 +453,32 @@ was checked against the delivered paintings on one overlay contact sheet, `.data
 live composites at frame 284, with the back button, the room name and the story button outlined in red and the hung
 sprites outlined in yellow. This is the crop-and-overlay step "How it was checked" above describes, and the sheet is
 what the boxes in "Fixes from the walkthrough, 2026-09-23" were checked against for faces, jambs and the heading.
+
+## Fixes, round two, 2026-09-23
+
+Second walkthrough items 57 and 58 (`docs/london-world.md`, "Fixes, round two, 2026-09-23"). Wide only; no portrait
+config changed.
+
+- `uk-hop-bine` is hung nowhere. The library sprite is a closed garland (923 x 960), and a hung sprite keeps its
+  proportions, so no scale or place makes a trailing bine of it. `uk_pub` wide: the beam nail is empty, and its
+  fourth loop is `rain` in the street through the open door, [.625, .045, .694, .265], left of the sign and above
+  the umbrellas. `uk_hopkitchen` wide: the wire is empty, and its fourth loop is a `sunray` on the bin, the sacking
+  and the bread board, [.600, .530, .990, .900], angle -.35, drift .15, below both pickers' faces and right of the
+  girl with the plate. Loops: pub 4 wide (light, steam, rain, sign) and 4 portrait; cookhouse 4 wide (glint,
+  steam, fire, sunray) and 3 portrait (glint, steam, fire), as before.
+- The engine caps a British plume at rate 10 and alpha .24 (`scene-painted.ts`), so the plumes were strengthened by
+  width and by source, from vessels that already steamed, no taller than before. `uk_tearoom` wide: the cup being
+  filled from two sources, (.295, .690) 220 and (.300, .705) 120; the hot-water jug's spout (.372, .628) 110 and lid
+  (.392, .602) 70. `uk_breakfast` wide: the griddle (.215, .740) 230; the boiler lid (.345, .305) 90 (at 120 its
+  drift reached the stallholder's cap). `uk_hopkitchen` wide: the cauldron (.385, .640) 120 (at 150 its drift
+  reached the face of the man with the sack) and the kettle (.175, .740) 130. The signatures (the pours) are
+  untouched.
+- Motion, the six-pair method above (frames 60 to 1180, `LivingScene.snapshot()`, 1280 x 720), two runs each on
+  the final configs: `uk_tearoom` 3.81 and 3.89, `uk_breakfast` 4.18 and 3.78, `uk_hopkitchen` 4.72 and 4.24,
+  `uk_pub` 5.41 and 5.79. The baseline before this round, same method and harness: 3.03, 2.89 and 2.89. Pairs are in
+  `.data/ldf2-motion/` (`ldf2base` before, `ldf2g1`, `ldf2h1`, `ldf2h2` and `ldf2fin` after).
+- Faces: the union of changed pixels over all six pairs was laid over each painting (the envelope cell of the fix
+  agent's `london-fix-round2.png`). No plume covers a face or the heading; the tea room cup's drift passes over the
+  spout of the pot being poured and ends left of the girl's hand, and the cauldron's stops just short of the man
+  with the sack, as at Stage E.
+

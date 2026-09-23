@@ -53,7 +53,7 @@ export const ISLAND: Pt[] = [
   ...FIRTH,                                                                                         // the Firth of Forth, a natural inlet to z -20.6
   [-53, -26.2], [-49, -25.6], [-45, -26.2], [-41, -25.8], [-37.4, -26], [-35.8, -24],                // on to the north-east cape
   [-35.6, -20], [-35.8, -14], [-35.6, -8], [-35.6, -2], [-36.2, 2.6], [-36, 5.6],                    // the strait's west shore, notched for the river mouth,
-  [-36.3, 6.0], [-40.2, 6.0], [-40.2, 8.1], [-37.9, 8.1], [-37.9, 12.6], [-35.9, 12.7],               // then the dock basin under Tower Bridge, where the coaster and the oyster smacks lie
+  [-36.3, 5.5], [-40.2, 4.8], [-40.2, 8.1], [-37.9, 8.1], [-37.9, 12.6], [-35.9, 12.7],               // then the dock basin under Tower Bridge, where the coaster and the oyster smacks lie
   [-36, 16], [-36, 23], [-37.2, 25.6],
   [-40, 26], [-44, 25.9], [-48, 25.8], [-52, 26], [-56, 25.8], [-60, 26], [-64, 25.8], [-68, 26],      // the south coast
   [-72, 25.8], [-76, 25.5], [-79, 24.6], [-79.7, 21.5], [-79.6, 18.8],
@@ -182,8 +182,18 @@ export function riverWidth(x: number): number {
 }
 export const riverBank = (x: number) => riverWidth(x) + 1.6;
 export const RIVER_CURVE = new THREE.CatmullRomCurve3(RIVER_POINTS.map(([x, z]) => new THREE.Vector3(x, 0, z)));
-/** The estuary blend runs from x -38 to the mouth, which is the blueprint's own 2.2 units. */
-export const ESTUARY_BLEND = 2.2;
+/** The estuary blend is the blueprint's own 2.2 units, but it ends at x -40.4, where the river first meets the
+ *  dock basin, not at the mouth. The river's ribbon is 5.2 wide at the mouth and its south edge runs out over the
+ *  dock basin under Tower Bridge from x -37.7 east; with the blend ending at the mouth, that stretch of ribbon
+ *  was still nearly fresh-water turquoise and lay on the basin's dark sea as a pale cyan sheet with a straight
+ *  diagonal edge (second walkthrough 53, 2026-09-23). East of x -40.4 the river is now exactly the sea's colour
+ *  and draws with the sea's own noise and time, so the basin, the mouth and the strait are one water. */
+export const ESTUARY_BLEND = 2.2, ESTUARY_SEA_X = -40.4;
+/*  The same pass moved the dock basin's north edge from z 6.0 to 5.5 at x -36.3 and 4.8 at x -40.2, under the
+ *  river's own south edge, which runs from 5.2 at x -40 to 6.3 at x -37. With the blend fixed, the strip of rim
+ *  sand left between the two waters showed as a pale triangle with the ribbon's straight diagonal edge across it;
+ *  now the basin opens into the river along its whole width and the water is one. Two vertices move and none is
+ *  added, so every other coast vertex keeps its wobble. */
 
 /** Every still body of British water: a valid source and a valid mouth for a waterway. */
 export const LD_POOLS: { id: string; x: number; z: number; rx: number; rz: number }[] = [
@@ -667,7 +677,7 @@ export function londonLandscape(ctx: LayoutCtx) {
 
   // ---------- the one sea: the ring, the island as its hole, one rim, one shader ----------
   const sea = seaWater(), tarnW = freshWater();
-  const river = estuaryWater(RIVER_MOUTH[0], RIVER_MOUTH[1], ESTUARY_BLEND, 'x');
+  const river = estuaryWater(ESTUARY_SEA_X, RIVER_MOUTH[1], ESTUARY_BLEND, 'x');
   const waters = [sea, tarnW, river];
   tickers.push(t => { for (const w of waters) w.uniforms.uTime.value = t; });
 
@@ -715,9 +725,21 @@ export function londonLandscape(ctx: LayoutCtx) {
   // polygon: drawn as one, it read from above as a slab set on the grass. No ribs are drawn either — a row of
   // thin bands on the sand read as boards lying on the beach, and the owner's rule is no sticks.
 
-  // ---------- the air over the water: gulls on both coasts, rooks inland ----------
-  const channelGulls = birds(6, 8, 12); channelGulls.position.set(-74, TOP, 15); group.add(channelGulls); tickers.push(channelGulls.userData.tick!);
-  const northGulls = birds(5, 7, 12); northGulls.position.set(-60, TOP, -24); group.add(northGulls); tickers.push(northGulls.userData.tick!);
-  const estuaryGulls = birds(6, 5, 13); estuaryGulls.position.set(-34.5, TOP, 8); group.add(estuaryGulls); tickers.push(estuaryGulls.userData.tick!);
-  const rooks = birds(4, 6, 13); rooks.position.set(-52, TOP, -14); group.add(rooks); tickers.push(rooks.userData.tick!);
+  // ---------- the air: gulls over the strait, the moor and the south coast ----------
+  // Second walkthrough 54 (2026-09-23): at the shared size and the shared dark tone the gulls drew as black bent
+  // planks in the sky and as black arcs over the paper past the table edge. They are drawn at Italy's 0.45 with a
+  // body, pale grey-white, and low: a gull at height h over (x, z) draws, from the arrival camera (2, 48, 60), in
+  // front of the ground at (x - h / 24, z - 1.25 h), so a high flock anywhere in the north half draws over the
+  // paper, and one over the south half draws over the stands north of it. Each flock circles where that ground is
+  // the table and where no stand's ten rays or card line pass: over the strait north of the herring quay, over the
+  // moor west of the curing yard, and low along the south coast between the leek bed and the wood. The estuary
+  // flock, which crossed the pie shop's rays, and the inland rooks are gone; `london-world.mjs` checks every bird's
+  // ground point against the table and every stand's rays over 240 seconds.
+  const gull = { size: .45, tone: '#DCDAD4' };
+  const flock = (n: number, r: number, h: number, x: number, z: number) => {
+    const b = birds(n, r, h, gull); b.position.set(x, TOP, z); b.name = 'britain-birds'; group.add(b); tickers.push(b.userData.tick!);
+  };
+  flock(5, 1.5, 5, -32.5, -17.0);   // the strait, off the herring coast
+  flock(5, 1.5, 5, -77.5, -6.0);    // the moor above the west coast
+  flock(4, .8, 3, -69.0, 25.6);     // the south coast, between the leek bed and the wood
 }

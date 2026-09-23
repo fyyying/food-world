@@ -2284,11 +2284,20 @@ export function bakeryCe(): P {
 }
 
 /** The oyster smacks at the river mouth: two shallow smacks moored, the Whitstable and Colchester natives on a
- *  barrel, and a man opening them with a short knife. The only Britain stand but one that stands in water. */
+ *  barrel, and a man opening them with a short knife. The smacks are the only part of the stand in the water.
+ *
+ *  Second walkthrough 52 (2026-09-23): the barrel, the tray of opened natives, the basket, the boy and both
+ *  mooring posts stood on the open strait east of the smacks, the boy on the water beside the second smack's
+ *  bow and the basket floating. Everything but the two smacks now stands on the quay west of them, on the stone
+ *  edge between the dock basin (z 12.7) and the dock road (z 15.2), x -37.7 to -36.3 in the world: the opener
+ *  stands at his barrel facing the visitor, the tray is a trestle beside it, the boy and the basket are on the
+ *  road side, and the two posts are short bollards on the quay's lip with the first smack's bow laid against
+ *  them. The stand is turned -0.1, so the quay is at local x -3.4 to -2.0. Each smack is a group named
+ *  `oyster-smack`, and `london-world.mjs` holds every other mesh of this stand to dry ground. */
 export function oysterSmack(): P {
   const g = group();
   const boats = [0, 1].map((i) => {
-    const b = add(g, new THREE.Group(), i ? -2.60 : .10, 0, i ? -1.85 : .25); b.rotation.y = i ? .42 : -.12;
+    const b = add(g, new THREE.Group(), i ? -2.60 : .10, 0, i ? -1.85 : .25); b.rotation.y = i ? .42 : -.12; b.name = "oyster-smack";
     add(b, box(3.0, .46, 1.15, "#5A4632"), 0, -.02, 0);
     for (const end of [-1, 1]) { const tip = add(b, box(.62, .42, .74, "#5A4632"), end * 1.66, .06, 0); tip.rotation.z = end * .26; }
     add(b, box(2.9, .05, 1.02, "#8A6A48"), 0, .22, 0);
@@ -2299,30 +2308,33 @@ export function oysterSmack(): P {
     for (let n = 0; n < 4; n++) add(b, cyl(.02, .02, .40, "#9C8A66", 4), -.20 + n * .0, .60 + n * .5, 0).rotation.x = Math.PI / 2;
     return b;
   });
-  // the barrel, the opened natives, the knife, and the culch on the deck
-  const barrel = add(g, cyl(.32, .28, .56, "#6E5236", 14), 1.20, .28, 1.35);
-  for (const yy of [.10, .46]) add(g, new THREE.Mesh(new THREE.TorusGeometry(.315, .022, 5, 14), mat(LD.iron)), 1.20, yy, 1.35).rotation.x = Math.PI / 2;
-  const shell = add(g, new THREE.Group(), 1.20, .60, 1.35); shell.name = "oyster-shell";
+  // the culch on the first smack's deck, where the dredge tipped it
+  for (let i = 0; i < 9; i++) add(boats[0], ball(.06, "#8E8878", 6), -.5 + (i % 5) * .22, .27, -.15 + Math.floor(i / 5) * .26).scale.y = .4;
+  // on the quay: the barrel with the native being opened, the knife, and the tray of opened natives on a trestle
+  const QX = -2.61, QZ = 1.02;
+  const barrel = add(g, cyl(.32, .28, .56, "#6E5236", 14), QX, .28, QZ);
+  for (const yy of [.10, .46]) add(g, new THREE.Mesh(new THREE.TorusGeometry(.315, .022, 5, 14), mat(LD.iron)), QX, yy, QZ).rotation.x = Math.PI / 2;
+  const shell = add(g, new THREE.Group(), QX, .60, QZ); shell.name = "oyster-shell";
   const lower = add(shell, ball(.13, "#B4AC96", 8), 0, 0, 0); lower.scale.set(1, .32, .86);
   add(shell, cyl(.095, .095, .02, "#D9CFB8", 12), 0, .03, 0);
   const top = add(shell, ball(.13, "#9C9480", 8), 0, .06, 0); top.scale.set(1, .30, .86); top.name = "oyster-lid";
-  // the opened natives lie on a board set across the gunwale behind the barrel, where they are never between
-  // the visitor and the one being opened
-  add(g, box(1.10, .05, .52, "#9C8A66"), 1.25, .53, .66);
-  for (let i = 0; i < 6; i++) { const o = add(g, ball(.115, "#A89C84", 7), .85 + (i % 3) * .28, .58, .52 + Math.floor(i / 3) * .28); o.scale.set(1, .34, .86); o.userData.foodReaction = "hop"; }
-  add(g, box(.02, .015, .22, "#B9BCC0"), 1.52, .62, 1.10);
-  for (let i = 0; i < 9; i++) add(g, ball(.06, "#8E8878", 6), -.4 + (i % 5) * .22, .26, .10 + Math.floor(i / 5) * .26).scale.y = .4;
-  // the mooring posts and a basket of natives packed in weed
-  for (const [x, z] of [[2.00, .30], [-1.40, -2.30]]) add(g, cyl(.07, .09, 1.5, "#6E5A42", 6), x, .55, z).rotation.z = .07;
-  const basket = add(g, cyl(.26, .21, .24, LD.straw, 12), .10, .38, 1.65);
+  add(g, box(.02, .015, .22, "#B9BCC0"), QX + .30, .59, QZ - .12);
+  const TX = -3.19, TZ = .77;
+  add(g, box(.95, .05, .50, "#9C8A66"), TX, .53, TZ);
+  for (const [dx, dz] of [[-.40, -.19], [.40, -.19], [-.40, .19], [.40, .19]]) add(g, box(.05, .51, .05, LD.oak), TX + dx, .255, TZ + dz);
+  for (let i = 0; i < 6; i++) { const o = add(g, ball(.115, "#A89C84", 7), TX - .28 + (i % 3) * .28, .58, TZ - .12 + Math.floor(i / 3) * .24); o.scale.set(1, .34, .86); o.userData.foodReaction = "hop"; }
+  // two short bollards on the quay's lip, the first smack's bow against them, and a basket of natives packed in weed
+  for (const [x, z] of [[-2.18, .27], [-2.03, 1.76]]) { add(g, cyl(.09, .11, .52, "#5A4A38", 8), x, .26, z); add(g, cyl(.12, .12, .06, "#4A3C2E", 8), x, .55, z); }
+  const basket = add(g, cyl(.26, .21, .24, LD.straw, 12), -2.74, .12, 1.73);
   for (let i = 0; i < 7; i++) add(basket, ball(.06, "#A89C84", 5), Math.cos(i * .9) * .13, .12, Math.sin(i * .9) * .13).scale.y = .4;
   add(basket, box(.34, .03, .30, "#5A6E4A"), 0, .14, 0);
-  // three people: the opener on the first smack, his mate on the second, a boy on the barrel end
-  const opener = seatFigure(boats[0], resident("fishwife", false), .55, .30, -1.5, .30);
+  // three people: the opener standing at his barrel on the quay, his mate on the second smack, a boy by the basket
+  const opener = add(g, own(resident("fishwife", false)), QX - .16, 0, QZ - .62) as Figure; opener.rotation.y = .15;
   arms(opener).right.rotation.x = -1.30; arms(opener).left.rotation.x = -1.20;
   const mate = seatFigure(boats[1], resident("fishwife", false), -.35, -.12, 1.3, .30);
   arms(mate).right.rotation.x = -1.0;
-  const boy = add(g, own(resident("child")), 1.75, .26, 1.60) as Figure; boy.rotation.y = -2.2;
+  const boy = add(g, own(resident("child")), -3.31, 0, 1.59) as Figure; boy.rotation.y = 1.0;
+  void barrel;
   const lidRest = top.position.clone();
   return life(g, "oystersUk", [opener, mate, boy], (t, k) => {
     boats.forEach((b, i) => { b.rotation.z = Math.sin(t * .85 + i * 1.7) * .035; b.position.y = Math.sin(t * .75 + i) * .025; });
@@ -2365,8 +2377,14 @@ export function hopGarden(): P {
       bines.push(bine);
     }
   }
-  // the oast: a roundel with a white cowl, the stand's own building, set back behind the rows
-  const oast = add(g, new THREE.Group(), 2.55, 0, -2.45); oast.name = "hop-oast";
+  // the oast: a roundel with a white cowl, the stand's own building, set back behind the rows.
+  // Second walkthrough 59 (2026-09-23): what took one or two of the cookhouse's ten arrival rays at 10 of 66
+  // moments was not the bines but this oast. The cookhouse's box moves with its walking picker, so its east rays
+  // wander between x -52.9 and -52.4, and there they grazed the edge of the oast's cone roof and its turning cowl
+  // vane at x -52.3. The oast stands 0.85 further east now, its roof at y 3.2 ending at x -51.6 and the vane's
+  // sweep at -51.7, and the stowage moved to its west side, where it is 1.6 high and every ray passes over it at
+  // 2.2 or more. The bines, which sway 0.02 rad about their feet, were never first on a ray.
+  const oast = add(g, new THREE.Group(), 3.40, 0, -2.45); oast.name = "hop-oast";
   add(oast, cyl(1.05, 1.15, 2.4, LD.kentPeg, 16), 0, 1.20, 0);
   for (let i = 0; i < 3; i++) add(oast, new THREE.Mesh(new THREE.TorusGeometry(1.12 - i * .03, .035, 5, 18), mat("#8E4A2E")), 0, .5 + i * .8, 0).rotation.x = Math.PI / 2;
   add(oast, cone(1.10, 1.50, "#8E4A2E", 16), 0, 3.12, 0);
@@ -2375,8 +2393,8 @@ export function hopGarden(): P {
   add(cowl, box(.30, .78, .05, LD.whitewash), 0, .12, .46);                                // the vane the wind turns
   add(cowl, cyl(.05, .06, .30, LD.whitewash, 8), 0, .52, 0);
   add(oast, box(1.4, 1.7, .10, LD.oakSmoke), 0, .85, 1.12);
-  add(oast, box(1.9, 1.5, 1.6, "#C9B89C"), 1.55, .75, -.35);                                 // the stowage beside it
-  add(oast, box(2.05, .09, 1.75, LD.kentPeg), 1.55, 1.55, -.35);
+  add(oast, box(1.9, 1.5, 1.6, "#C9B89C"), -1.55, .75, -.35);                                // the stowage beside it
+  add(oast, box(2.05, .09, 1.75, LD.kentPeg), -1.55, 1.55, -.35);
   // the bin at the row end, the pokes of picked hops, the measurer's basket
   const bin = add(g, new THREE.Group(), -2.15, 0, 2.20);
   for (const dx of [-.62, .62]) for (const dz of [-.36, .36]) add(bin, cyl(.05, .06, .80, LD.oak, 6), dx, .40, dz);
@@ -2462,6 +2480,26 @@ export function mushroomWood(): P {
   });
 }
 
+/** Hay as a painted surface: close downward strokes in two golds on the stack's combed sides; on the thatch,
+ *  longer strokes in a greyer straw laid down the slope. */
+const HAY_TEX: Record<string, THREE.CanvasTexture> = {};
+function hayTexture(thatch: boolean): THREE.CanvasTexture {
+  const key = thatch ? "thatch" : "hay"; if (HAY_TEX[key]) return HAY_TEX[key];
+  const W = 128, H = 128, c = document.createElement("canvas"); c.width = W; c.height = H;
+  const ctx = c.getContext("2d")!;
+  let seed = thatch ? 17 : 13; const r = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  ctx.fillStyle = thatch ? "#9a8452" : "#c4ad66"; ctx.fillRect(0, 0, W, H);
+  const tones = thatch ? ["#b09a64", "#85703f", "#a38c56", "#6f5d36"] : ["#d8c27c", "#b39a52", "#cdb46c", "#a88f4c", "#e2cf92"];
+  for (let i = 0; i < (thatch ? 700 : 900); i++) {
+    const x = r() * W, y = r() * H, len = (thatch ? 8 : 5) + r() * (thatch ? 10 : 7), a = Math.PI / 2 + (r() - .5) * (thatch ? .35 : .9);
+    ctx.strokeStyle = tones[Math.floor(r() * tones.length)]; ctx.lineWidth = thatch ? 1.2 : 1;
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + Math.cos(a) * len, y + Math.sin(a) * len); ctx.stroke();
+  }
+  const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(thatch ? 2 : 2.5, thatch ? 1 : 1.2);
+  HAY_TEX[key] = tex; return tex;
+}
+
 /** The dale flock: horned Swaledales hefted to their own fell, a drystone wall climbing out of sight, a pen at
  *  the top, and a shepherd with his crook. The lead ewe lifts her head and steps down the fell. */
 export function daleFlock(): P {
@@ -2496,21 +2534,27 @@ export function daleFlock(): P {
     for (const [dx, dz] of [[-.2, -.14], [-.2, .14], [.2, -.14], [.2, .14]]) add(l, box(.07, .38, .07, "#3A3630"), dx, .20, dz);
     return l;
   });
-  // the fleece on the wall, the shepherd's crook, and two hay ricks for the winter, each a round stack of hay on a
-  // bed of stones with a thatched top roped down and weighted, which is how a Dales rick kept the weather out
+  // the fleece on the wall, the shepherd's crook, and the winter's hay in one long stack
   for (let i = 0; i < 3; i++) add(g, ball(.20, "#CFC4AA", 7), -2.85 + i * .34, .78, -2.00).scale.set(1.1, .6, .9);
-  for (const [x, z, r] of [[2.55, -1.05, .46], [3.5, -.45, .38]] as [number, number, number][]) {
-    const rick = add(g, new THREE.Group(), x, 0, z); rick.name = "flock-rick";
-    for (let i = 0; i < 7; i++) add(rick, box(.18, .08, .14, "#8A8880"), Math.cos(i * .9) * r * .9, .04, Math.sin(i * .9) * r * .9);
-    add(rick, cyl(r, r * 1.08, r * 1.5, "#C9B070", 12), 0, .06 + r * .75, 0);
-    for (const y of [.35, .75]) add(rick, new THREE.Mesh(new THREE.TorusGeometry(r * 1.02, .018, 4, 16), mat("#6E5A3A")), 0, y * r * 1.5 / .9, 0).rotation.x = Math.PI / 2;
-    add(rick, cone(r * 1.22, r * 1.25, "#9C8250", 12), 0, .06 + r * 1.5 + r * .6, 0);
-    add(rick, cyl(r * 1.2, r * 1.2, .05, "#8A7244", 12), 0, .08 + r * 1.5, 0);
-    add(rick, ball(.07, "#8A7244", 6), 0, .06 + r * 1.5 + r * 1.25, 0);
-    for (let k = 0; k < 4; k++) {                                                                        // the ropes over the thatch and their stones
-      const a = k * Math.PI / 2 + .4;
-      strut(rick, V(0, .06 + r * 2.7, 0), V(Math.cos(a) * r * 1.2, .1 + r * 1.5, Math.sin(a) * r * 1.2), .012, "#5A4A32", 3);
-      add(rick, ball(.06, "#8A8680", 5), Math.cos(a) * r * 1.24, r * 1.25, Math.sin(a) * r * 1.24);
+  // Second walkthrough 6 (2026-09-23): the two round ricks, banded cylinders under pointed caps, read from above as
+  // beehives. The hay is one rectangular stack now, the shape a Dales field barn's winter stack took outside: a long
+  // block of hay on a bed of stones, its sides combed down and swelling a little under the eaves, and a hipped
+  // thatch roped over and weighted with stones. Painted, not built of strips: stripes of wood on the sides read as
+  // a shed. Long side to the camera, where the ricks stood.
+  {
+    const stack = add(g, new THREE.Group(), 2.95, 0, -.80); stack.name = "flock-rick"; stack.rotation.y = -.18;
+    const L = 1.9, D = 1.0, H = .95;
+    const hayMat = new THREE.MeshStandardMaterial({ map: hayTexture(false), roughness: 1 });
+    const thatchMat = new THREE.MeshStandardMaterial({ map: hayTexture(true), roughness: 1 });
+    for (let i = 0; i < 9; i++) add(stack, box(.20, .08, .16, "#8A8880"), -L / 2 + .1 + (i % 5) * (L - .2) / 4, .04, i < 5 ? -D / 2 + .08 : D / 2 - .08);
+    add(stack, new THREE.Mesh(new THREE.BoxGeometry(L, H * .62, D), hayMat), 0, .06 + H * .31, 0);
+    add(stack, new THREE.Mesh(new THREE.BoxGeometry(L + .10, H * .38, D + .10), hayMat), 0, .06 + H * .81, 0);   // the swell under the eaves
+    const roofGeo = new THREE.ConeGeometry(.78, .62, 4, 1); roofGeo.rotateY(Math.PI / 4);                     // square, sides on the axes
+    const roof = add(stack, new THREE.Mesh(roofGeo, thatchMat), 0, .06 + H + .31, 0);
+    roof.scale.set((L + .28) / 1.1, 1, (D + .28) / 1.1);                                                         // a hipped thatch, eaves all round
+    for (const x of [-.45, .45]) for (const side of [-1, 1]) {                                                    // two ropes over it, a stone at each eave
+      strut(stack, V(x * .55, .06 + H + .52, 0), V(x, .06 + H + .02, side * (D / 2 + .12)), .012, "#4A3C28", 3);
+      add(stack, ball(.08, "#8A8680", 5), x, .06 + H - .04, side * (D / 2 + .13));                               // no rope hangs free below it
     }
   }
   // three people: the shepherd, a boy, and a woman coming up the wall side
@@ -2762,12 +2806,54 @@ export function leekBed(): P {
   });
 }
 
+/** Standing oats as a painted surface: the top is a mat of open panicles, the sides close stalks under a band of
+ *  spikelets hanging from them, greener at the foot than a wheat field and paler in the ear. */
+const OAT_TEX: Record<string, THREE.CanvasTexture> = {};
+function oatTexture(top: boolean): THREE.CanvasTexture {
+  const key = top ? "top" : "side"; if (OAT_TEX[key]) return OAT_TEX[key];
+  const W = 256, H = top ? 128 : 64;
+  const c = document.createElement("canvas"); c.width = W; c.height = H;
+  const ctx = c.getContext("2d")!;
+  let seed = top ? 11 : 5; const r = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  ctx.fillStyle = top ? "#c8bd78" : "#a9a466"; ctx.fillRect(0, 0, W, H);
+  if (!top) {
+    for (let x = 0; x < W; x += 2) { ctx.strokeStyle = r() < .5 ? "#c2b774" : "#8f9a58"; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(x + r(), H); ctx.lineTo(x + (r() - .5) * 3, H * .3); ctx.stroke(); }
+    const foot = ctx.createLinearGradient(0, H * .55, 0, H); foot.addColorStop(0, "rgba(70,80,40,0)"); foot.addColorStop(1, "rgba(70,80,40,.5)");
+    ctx.fillStyle = foot; ctx.fillRect(0, 0, W, H);
+  }
+  // spikelets: small pale drops hanging on short curved threads from a stem, in loose open heads
+  const heads = top ? 260 : 60, band = top ? H : H * .36;
+  for (let i = 0; i < heads; i++) {
+    const x = r() * W, y = r() * band;
+    ctx.strokeStyle = "#9c9258"; ctx.lineWidth = .6;
+    for (let k = 0; k < 4; k++) {
+      const a = (r() - .5) * (top ? 6.2 : 1.6) + (top ? 0 : Math.PI / 2), len = 3 + r() * 4;
+      const ex = x + Math.cos(a) * len, ey = y + Math.sin(a) * len;
+      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(ex, ey); ctx.stroke();
+      ctx.fillStyle = r() < .5 ? "#e9dfa8" : "#d6ca86"; ctx.beginPath(); ctx.ellipse(ex, ey, 1.3, 2.4, a, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+  const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(top ? 1.2 : 1.6, 1);
+  OAT_TEX[key] = tex; return tex;
+}
+
 /** The oat field and the meal mill: the grain that grows where wheat will not, a water wheel on the burn, three
  *  grades off the stone, and a girdle on the fire. The meal runs from the stone into the bin. */
 export function oatMill(): P {
   const g = group();
   add(g, box(6.6, .05, 4.8, "#93A884"), 0, .025, .40);
-  for (let i = 0; i < 40; i++) { const o = add(g, cyl(.012, .012, .50, "#D9C88A", 4), -3.0 + (i % 10) * .62, .28, 2.20 + Math.floor(i / 10) * .55); const ear = add(g, ball(.035, "#E4D49A", 5), o.position.x, .56, o.position.z); ear.scale.set(.6, 1.5, .6); }
+  // Second walkthrough 55 (2026-09-23): forty single stalks, each a thin stick with a bead on top, stood in rows on
+  // the bare plate and read as a bed of pins. The oats are one low block of standing crop now, as Italy's wheat is:
+  // its sides painted with close stalks under a band of hanging spikelets, its top a mat of open panicles that
+  // ripples as its texture slides in the wind. Knee-high at 0.32 (below the 0.35 a front-door test counts), it
+  // stands in the stand's front west corner, west of the boy and clear of the bowls, and the ground under it is
+  // the green of an oat field, not a pale bed.
+  const oatTop = oatTexture(true), oatSide = oatTexture(false);
+  const sideMat = new THREE.MeshStandardMaterial({ map: oatSide, roughness: .95 });
+  const oatField = add(g, new THREE.Mesh(new THREE.BoxGeometry(1.75, .32, 1.30), [sideMat, sideMat,
+    new THREE.MeshStandardMaterial({ map: oatTop, roughness: .95 }), new THREE.MeshStandardMaterial({ color: "#7A6A44" }), sideMat, sideMat]), -2.15, .16, 2.90);
+  oatField.name = "oat-crop"; oatField.castShadow = true; oatField.receiveShadow = true;
   // the mill: a rubble building with a wheel on its gable and a lade running to it
   add(g, box(2.6, 2.4, 2.0, LD.moorGranite), -1.20, 1.20, -1.30);
   add(g, box(2.8, .09, 2.2, "#4E5450"), -1.20, 2.48, -1.30);
@@ -2813,6 +2899,7 @@ export function oatMill(): P {
   const boy = add(g, own(resident("child")), -.35, 0, 2.05) as Figure; boy.rotation.y = 1.7;
   const mealRest = meal.scale.clone();
   return life(g, "oatsUk", [miller, baker, boy], (t, k) => {
+    oatTop.offset.set(Math.sin(t * 1.1) * .012, Math.sin(t * .8) * .02);   // the heads ripple in the wind
     wheel.rotation.z = -t * .55;
     runner.rotation.y = t * 2.2;
     fire.forEach((f, i) => { const s = .85 + Math.sin(t * 7 + i * 1.5) * .15; f.scale.set(s, s, s); });
@@ -3141,9 +3228,16 @@ export function omnibus(): P {
   add(g, box(8.0, .07, 4.2, "#B8B4AD"), 0, .035, .30);
   for (let i = 0; i < 16; i++) add(g, box(.48, .02, 4.2, i % 2 ? "#B0ACA4" : "#BCB8B0"), -3.75 + i * .5, .08, .30);
   add(g, box(8.0, .16, .34, "#9C9890"), 0, .10, -1.85);                                     // the kerb
-  const bus = add(g, horseOmnibus(), -2.3, .07, .85);
-  const motor = add(g, motorOmnibus(), .2, .07, -.8); motor.name = "motor-omnibus";
-  const cab = add(g, hansomCab(true), 1.85, .07, 2.45); cab.rotation.y = -.12;
+  // Second walkthrough 60 (2026-09-23): the three vehicles stood touching — the motor omnibus's side against the
+  // horse omnibus's, the hansom's wheel against its other side, and the motor omnibus against the terminus loop
+  // on the street outside, where the looping omnibus and hansom pass — so from above six horses and four vehicles
+  // read as one pile-up. They stand in two ranks with half a unit between every body now: the horse omnibus and
+  // its pair on the inner rank, the motor omnibus and the hansom nose to tail on the outer rank, and the strip
+  // along the kerb holds only the conductor, the two waiting passengers, the trough and the lamp, so the nearest
+  // vehicle is 1.4 clear of the looping traffic (which runs 0.2 further north than it did).
+  const bus = add(g, horseOmnibus(), -2.16, .07, .39);
+  const motor = add(g, motorOmnibus(), -2.27, .07, 2.55); motor.name = "motor-omnibus";
+  const cab = add(g, hansomCab(true), 1.64, .07, 2.55);
   // the stand's own furniture: a cabmen's water trough, a post and a lamp standard
   add(g, box(1.2, .46, .52, LD.moorGranite), 3.45, .30, -1.30);
   add(g, box(1.06, .05, .40, "#9CB0B4"), 3.45, .53, -1.30);
@@ -3155,9 +3249,9 @@ export function omnibus(): P {
   const cabman = (cab.userData.figures as Figure[])[0];
   const cabHorse = cab.userData.horse as { root: THREE.Group; head: THREE.Group; legs: THREE.Group[] };
   // the conductor stands on the pavement calling for passengers, so nobody rides standing
-  const conductor = add(g, own(resident("carter", false)), -.2, .07, 2.25) as Figure; conductor.rotation.y = -.6;
+  const conductor = add(g, own(resident("carter", false)), -3.10, .07, -1.05) as Figure; conductor.rotation.y = .5;
   arms(conductor).right.rotation.x = -.9;
-  const waiting = [0, 1].map((i) => { const p = add(g, own(resident(i ? "lady" : "clerk", false)), 2.70 + i * .55, .07, .55 + i * .2) as Figure; p.rotation.y = 2.4 - i * .4; return p; });
+  const waiting = [0, 1].map((i) => { const p = add(g, own(resident(i ? "lady" : "clerk", false)), .95 + i * .55, .07, -1.10 + i * .15) as Figure; p.rotation.y = 2.8 - i * .4; return p; });
   const busRest = bus.position.clone();
   const figures = [conductor, waiting[0], waiting[1], ...(bus.userData.figures as Figure[]), cabman];
   return life(g, "redBus", figures, (t, k) => {

@@ -1,6 +1,6 @@
 /** The land between the British clusters: oak and hornbeam along the south coast, the hop gardens' bine rows
  *  on their wirework, hedged and ditched fields between the Weald and the river, drystone walls climbing the
- *  fell with the flock's own pen at the top, moor and bracken over the north-west, barley on the coastal strip
+ *  fell, a sheepfold on the moor, moor and bracken over the north-west, barley on the coastal strip
  *  behind the distillery, peat cut in lines, granite hedgebanks and gorse over the West Country, and the cider
  *  orchard's rows above the channel.
  *
@@ -107,15 +107,16 @@ function peatStack(): P {
   return g as P;
 }
 
-/** A pen of hefted ewes on the fell: four runs of drystone, a gate and three sheep that graze without
- *  travelling. A penned animal does not step. */
-function sheepPen(tickers: LayoutCtx['tickers']): P {
+/** A sheepfold on the open moor: four short runs of drystone, a gate on its south side and three ewes that graze
+ *  without travelling. A penned animal does not step. It is 2.0 by 2.6 over its walls, the size of a hill fold,
+ *  and smaller than the pen it replaces, which was the only size of pen that found no ground anywhere else. */
+function sheepFold(tickers: LayoutCtx['tickers']): P {
   const g = new THREE.Group();
-  for (const z of [-1.6, 1.6]) add(g, drystoneRun(4.0, .66), 0, 0, z);
-  for (const x of [-2.0, 2.0]) add(g, drystoneRun(3.2, .66), x, 0, 0).rotation.y = Math.PI / 2;
-  add(g, fieldGate(1.2), 0, 0, 1.6);
-  for (const [i, [x, z, rot]] of ([[-1.0, -.5, .5], [.6, .4, 2.3], [.2, -.9, 4.0]] as [number, number, number][]).entries()) {
-    const ewe = add(g, daleSheep(.9 + (i % 2) * .1), x, 0, z); ewe.rotation.y = rot; ewe.name = 'penned-ewe';
+  for (const z of [-1.2, 1.2]) add(g, drystoneRun(1.8, .62), 0, 0, z);
+  for (const x of [-.9, .9]) add(g, drystoneRun(2.4, .62), x, 0, 0).rotation.y = Math.PI / 2;
+  add(g, fieldGate(.9), 0, 0, 1.2);
+  for (const [i, [x, z, rot]] of ([[-.3, -.55, .5], [.35, .05, 2.3], [-.2, .6, 4.0]] as [number, number, number][]).entries()) {
+    const ewe = add(g, daleSheep(.72 + (i % 2) * .08), x, 0, z); ewe.rotation.y = rot; ewe.name = 'penned-ewe';
     const own = ewe.userData.tick as ((t: number) => void) | undefined;
     ewe.userData.tick = undefined;
     tickers.push((t: number) => { own?.(t + i * 2); ewe.rotation.y = rot + Math.sin(t * .4 + i * 2) * .07; });
@@ -210,21 +211,27 @@ export function londonCountryside(ctx: LayoutCtx) {
     runAlong(len => hedgeBank(len), 'hedge-bank', a as [number, number], b as [number, number], 2.2, 4);
   { const gate = tryPlaceAny(ctx, () => fieldGate(1.3), [[-64.2, 2.6, Math.PI / 2], [-66.5, -0.4, 0], [-62.4, 12.4, 0]]); if (gate) gate.name = 'field-gate'; }
 
-  // ---------- the Dales: drystone walls on the fell behind the palace, and the flock's own pen ----------
-  for (const [a, b] of [[[-69, -11.6], [-63.6, -11.6]], [[-69, -15.2], [-63.6, -15.2]], [[-69, -11.6], [-69, -15.2]],
-    [[-42.2, -11.4], [-36.4, -11.4]], [[-42.2, -16.4], [-36.4, -16.4]], [[-58.6, -12.2], [-55.6, -12.2]]] as [number, number][][])
+  // ---------- the Dales: drystone walls on the fell, and a sheepfold on the moor ----------
+  // Second walkthrough 56 (2026-09-23): the walled field and pen on the fell north of the palace, at [-65.0, -13.4],
+  // sat 2.6 behind its back wall on the arrival line. The camera looks down at 39 degrees, so ground up to 1.25 times
+  // a building's height behind it draws against that building's roof: the pen's coped walls read as battlements
+  // and its ewes and the two neighbours at its gate as if they stood on the palace roof. The walled field (three
+  // runs), the pen, its gate pair (`london-town.ts`), the six fell ewes and the two moor oaks behind the palace are
+  // gone from x -69 to -60; only the low bracken stays there. A grid search at 0.5 over the island, with the pen's
+  // own box, found no other ground for it that is dry, off every road, outside every pad, approach and ray, and not
+  // within 1.25 heights behind a stand or a house, so the flock is a smaller hill fold now, on the moor west of the
+  // curing yard, 11 behind the engine house (6.1 high) and clear of everything's line. The Dales' flock proper is
+  // the `sheepUk` stand.
+  for (const [a, b] of [[[-42.2, -11.4], [-36.4, -11.4]], [[-42.2, -16.4], [-36.4, -16.4]], [[-58.6, -12.2], [-55.6, -12.2]]] as [number, number][][])
     runAlong(len => drystoneRun(len), 'drystone-wall', a as [number, number], b as [number, number], 2.4, 5);
-  { const pen = tryPlaceAny(ctx, () => sheepPen(tickers), [[-65.03, -13.4, 0], [-66.3, -13.4, 0], [-66.8, -13.2, .1], [-65.8, -13.6, 0], [-39.3, -13.9, 0], [-39.6, -13.6, .1]]); if (pen) pen.name = 'fell-sheep-pen'; }
-  // Ewes hefted on the open fell, standing still and grazing.
-  scatter(i => { const e = daleSheep(.85 + (i % 3) * .08); const own = e.userData.tick as ((t: number) => void) | undefined; e.userData.tick = undefined; tickers.push((t: number) => own?.(t + i)); return e; },
-    'fell-ewe', -63.4, -56.8, -15.4, -11.8, 1.5, 6, 1.0);
+  { const fold = tryPlaceAny(ctx, () => sheepFold(tickers), [[-75.8, -13.9, 0], [-75.8, -14.3, 0], [-75.8, -13.5, 0]]); if (fold) fold.name = 'fell-sheep-pen'; }
   scatter(i => oak(.8 + (i % 2) * .1), 'dale-oak', -42, -36.4, -16.2, -11.6, 2.0, 2, 1.2);
 
   // ---------- the north-west: moor and bracken, peat cut in lines, barley on the coastal strip ----------
   scatter(i => bracken(.9 + (i % 3) * .12), 'moor-bracken', -69, -63.8, -15.3, -11.2, 1.4, 8, 1.0);
-  scatter(i => bracken(.9 + (i % 3) * .12), 'moor-bracken', -76.6, -74.8, -15.4, -9.6, 1.3, 4, .9);
+  scatter(i => bracken(.9 + (i % 3) * .12), 'moor-bracken', -76.6, -74.8, -12.1, -9.6, 1.3, 4, .9);   // south of the sheepfold
   scatter(i => bracken(.9 + (i % 3) * .12), 'moor-bracken', -63.4, -52, -21.4, -19.9, 1.4, 6, .9);
-  scatter(i => gorse(.9 + (i % 3) * .12), 'moor-gorse', -76.6, -74.8, -15.4, -9.6, 1.4, 4, 1.0);
+  scatter(i => gorse(.9 + (i % 3) * .12), 'moor-gorse', -76.6, -74.8, -12.1, -9.6, 1.4, 4, 1.0);
   for (let line = 0; line < 3; line++) for (let i = 0; i < 3; i++) {
     const stack = tryPlace(ctx, peatStack(), -51.9 + i * 1.0, -25.2 + line * .9, .1 + line * .05);
     if (stack) stack.name = 'peat-stack';
@@ -239,7 +246,6 @@ export function londonCountryside(ctx: LayoutCtx) {
   scatter(i => gorse(.95 + (i % 3) * .1), 'west-gorse', -71, -63.8, 12.2, 13.4, 1.3, 6, 1.0);
   scatter(i => gorse(.95 + (i % 3) * .1), 'west-gorse', -69, -63.6, 0.3, 3.4, 1.3, 6, 1.0);
   scatter(i => appleTree(.8 + (i % 2) * .05), 'orchard-tree', -68.4, -65.2, 4.05, 4.1, 1.0, 4, .6);   // in front of the Lambeth terrace
-  scatter(i => oak(.9 + (i % 2) * .14), 'moor-oak', -69, -64, -15, -11.4, 2.0, 2, 1.2);
 
   // ---------- the cockle sand: the rakes and the withy baskets left on the ebb ----------
   // The blueprint's donkey and cart are not built. The dry flat at the channel head is 2.8 by 2.7 and the

@@ -223,6 +223,26 @@ try {
       else if(n>OVER_WATER[s.id]) soaked.push(`${s.id}: ${n} vertices over water where 2026-09-22 measured ${OVER_WATER[s.id]}; a listed overhang may not get worse`);
     }
     assert.deepEqual(soaked,[],'a stand hangs over the water');
+    // The oyster stand is afloat by design, but only its two smacks are: the barrel, the tray, the basket, the
+    // bollards and the three people stand on the quay. The second walkthrough (2026-09-23, item 52) found a boy,
+    // the tub, the tray, the basket and both mooring posts standing on the strait, which the loop above skipped
+    // because it skips every afloat stand. Every mesh of oystersUk that is not inside a group named
+    // `oyster-smack` must have every vertex on dry ground.
+    {
+      const oy=stands.find(s=>s.id==='oystersUk'); assert.ok(oy,'the oyster stand is built');
+      const inSmack=o=>{for(let p=o;p;p=p.parent)if(p.name==='oyster-smack')return true;return false;};
+      let smacks=0; oy.group.traverse(o=>{if(o.name==='oyster-smack')smacks++;});
+      assert.equal(smacks,2,'the oyster stand keeps its two moored smacks, each a group named oyster-smack');
+      const wet=[]; let decor=0;
+      oy.group.traverse(o=>{
+        if(!o.isMesh||inSmack(o))return; decor++;
+        const pos=o.geometry?.attributes?.position; if(!pos)return;
+        for(let i=0;i<pos.count;i++){ vertex.fromBufferAttribute(pos,i).applyMatrix4(o.matrixWorld); if(isWet(vertex.x,vertex.z)){ wet.push(`${o.name||o.parent?.name||'a mesh'} at ${vertex.x.toFixed(1)}, ${vertex.z.toFixed(1)}`); break; } }
+      });
+      assert.ok(decor>40,`the oyster stand's quay parts were not found (${decor} meshes)`);
+      assert.deepEqual(wet,[],'a part of the oyster stand other than its two smacks stands on the water');
+      measured.oysterQuay=decor;
+    }
     // ---------- fronts face the camera side; roads come to the door ----------
     // The world is only ever seen from +z (main.ts: camera on +z, orbit clamped to plus or minus 0.75), so every
     // rotation lies in [-0.75, 0.75] and a stand never turns its back to find its road (Stage D, 2026-09-22).
@@ -566,6 +586,49 @@ try {
   for(const name of ['britain-sea','britain-sea-rim','island-river','island-river-bank','west-tarn','cockle-sand-wet','britain-bridge','britain-house','gas-lamp','street-vehicle','hop-row','drystone-wall','granite-hedgebank','peat-stack','orchard-tree','moor-bracken','britain-walker','britain-pony'])
     if(!world.group.getObjectByName(name)) missingNames.push(name);
   assert.deepEqual(missingNames,[],'missing from the British land');
+  // ---------- the gulls: pale, small, over the table and off every stand's rays ----------
+  // Second walkthrough 54 (2026-09-23): black gulls drew as planks over the paper past the table edge and crossed
+  // the pie shop's, Tower Bridge's and the bakehouse's rays. Every British flock is named `britain-birds`. Over 240
+  // seconds, sampled every 2, each bird's point on the ground behind it from the arrival camera (2, 48, 60) must
+  // lie on the table, and no bird may come within 0.35 of any of the ten arrival rays of a stand that has props.
+  if(LONDON_PROPS){
+    const flocks=world.group.children.filter(o=>o.name==='britain-birds');
+    assert.ok(flocks.length>=3,`Britain keeps its gulls: ${flocks.length} flocks`);
+    for(const f of flocks){ let tone=null; f.traverse(o=>{ if(o.isMesh&&!tone) tone=o.material.color; }); const hex=tone?.getHexString()??'000000'; assert.ok([0,2,4].every(i=>parseInt(hex.slice(i,i+2),16)>=180),`a British flock is #${hex}; the gulls are pale grey-white`); }
+    const D=new THREE.Vector3(2,48,60).normalize(), aimsOf=[];
+    for(const st of stands){ if(st.proxy)continue; const b=new THREE.Box3().setFromObject(st.group); const floor=Math.max(b.min.y,0), aims=[];
+      for(const fx of [.2,.5,.8]) for(const dy of [.8,1.5,2.2]) aims.push(new THREE.Vector3(b.min.x+(b.max.x-b.min.x)*fx,floor+dy,b.max.z-.2));
+      aims.push(new THREE.Vector3(st.obj.pos[0],b.max.y+.7,st.obj.pos[1])); aimsOf.push([st.id,aims]); }
+    const offTable=new Set(), crossed=new Set(), p=new THREE.Vector3(), v=new THREE.Vector3();
+    for(let t=0;t<=240;t+=2){
+      world.tick(1000+t,1/60); world.group.updateMatrixWorld(true);
+      for(const f of flocks) for(const bird of f.children){
+        bird.getWorldPosition(p);
+        const gx=p.x-p.y*D.x/D.y, gz=p.z-p.y*D.z/D.y;
+        if(gx<TABLE.minX+.3||gx>TABLE.maxX-.3||gz<TABLE.minZ+.3||gz>TABLE.maxZ-.3) offTable.add(`a gull draws over the paper at ${gx.toFixed(1)}, ${gz.toFixed(1)}`);
+        for(const [id,aims] of aimsOf) for(const a of aims){ v.copy(p).sub(a); const along=v.dot(D); if(along<=0)continue; if(v.addScaledVector(D,-along).length()<.35) crossed.add(`${id}: a gull crosses a ray near ${p.x.toFixed(1)}, ${p.z.toFixed(1)}`); }
+      }
+    }
+    assert.deepEqual([...offTable],[],'a gull draws over the paper beyond the table');
+    assert.deepEqual([...crossed],[],'a gull crosses a stand\'s arrival ray');
+    measured.gulls=flocks.reduce((n,f)=>n+f.children.length,0);
+  }
+  // ---------- nothing of the Builder's stands on the palace's roof line ----------
+  // Second walkthrough 56 (2026-09-23): the walled pen, its ewes and the two neighbours at its gate stood 2 to 5
+  // behind the palace, and the arrival camera, looking down at 39 degrees, drew them on its roof. No scenery taller
+  // than 0.5 may stand within the palace's width and within 1.25 times its hall's height (4.6) plus 1.5 behind it.
+  // The rhubarb forcing shed is a stand at its own position and is not the Builder's to move; it is not scenery.
+  {
+    const palace=world.placed.find(p=>p.obj.id==='bigBen'); assert.ok(palace,'Big Ben is placed');
+    const pb=new THREE.Box3().setFromObject(palace.group), standGroups=new Set(world.placed.map(p=>p.group));
+    const behind=[];
+    for(const o of world.group.children){
+      if(standGroups.has(o)||o.isSprite||!o.name||/^(britain-sea|britain-sea-rim|island-river|island-river-bank|britain-road|britain-birds|explore-cue)$/.test(o.name))continue;
+      const b=new THREE.Box3().setFromObject(o); if(!Number.isFinite(b.min.x)||b.max.y<=.5)continue;
+      if(b.max.x>pb.min.x&&b.min.x<pb.max.x&&b.max.z<=pb.min.z+.01&&b.max.z>pb.min.z-(1.25*4.6+1.5)) behind.push(`${o.name} [${b.min.x.toFixed(1)}..${b.max.x.toFixed(1)}, ${b.min.z.toFixed(1)}..${b.max.z.toFixed(1)}] ${b.max.y.toFixed(2)} high`);
+    }
+    assert.deepEqual(behind,[],'scenery stands on the palace roof line from the arrival camera');
+  }
   // The 1907 omnibus and the two hansom cabs, and nothing else, run on the Westminster street.
   assert.equal(world.group.children.filter(o=>o.name==='street-vehicle').length,3,'one motor omnibus and two hansom cabs');
   // The decor the blueprint retired. The red bus, the black cab, the London Eye and the K6 kiosk are all
@@ -700,7 +763,7 @@ try {
   const marching=strides.filter(s=>!s.seated&&s.travelled<=.05&&s.swung>.05).map(s=>`${s.name} swung its legs ${s.swung.toFixed(2)} while standing still`);
   assert.deepEqual(marching,[],'a figure steps on the spot');
 
-  console.log(`PASS: ${LD_ROADS.length} continuous roads, ${objects.length} British objects${LONDON_PROPS?` with ${stands.length} props clear of the water`:' (props-london.ts absent: stand geometry NOT RUN)'}, ${houses.length} houses, ${bridges.length} crossing, ${walkers.length} walkers, 240 seconds of motion.`);
+  console.log(`PASS: ${LD_ROADS.length} continuous roads, ${objects.length} British objects${LONDON_PROPS?` with ${stands.length} props clear of the water (the oyster stand's ${measured.oysterQuay} quay meshes on dry ground)`:' (props-london.ts absent: stand geometry NOT RUN)'}, ${houses.length} houses, ${bridges.length} crossing, ${measured.gulls??0} pale gulls over the table and off every ray, ${walkers.length} walkers, 240 seconds of motion.`);
   console.log(`      doors: ${doors.map(([id,d])=>`${id} ${d.toFixed(2)}`).join(', ')}`);
   console.log(`      road ends: ${ends.join('; ')}`);
   for(const line of notRun) console.log(`      NOT RUN: ${line}`);

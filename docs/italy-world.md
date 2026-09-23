@@ -730,3 +730,168 @@ Looked at on the live page at the overview, each cluster at approach zoom, the l
 Left, and why: the movement audit counts the walker crossing the Rialto as in the water at the bridge's crown, because its deck heuristic does not recognise the arched deck; the walker is at deck height. The wine cart's box touches the Tiber bridge's east ramp for a few samples where the piazza street meets the bridge, as it did before the pass. The osteria's own figures touch its own counter, inside `props-italy.ts`.
 
 Not verified in this pass: the rooms (nothing in it touched a room), phone-width views of the world, and the published site.
+
+## Stage E review, 2026-09-23
+
+Second reviewer, who built none of the Italy files. Every line of the playbook's section 5 is recorded below as **pass**, **fail** or **not verified**, with the evidence. Nothing was changed in any code, scene, ambience or object file; this section and the walkthrough list below are the only edits.
+
+**How it was run.** `npm run typecheck`, `npm test` and `node scripts/audit/objects.mjs` on the working tree as it stood (HEAD `144dabf` plus other agents' uncommitted Thailand and Vietnam edits). The dev server `food-tour-web` was restarted through the preview tool, and the page was loaded fresh in the reviewer's own tab with the Recipes add-on off (`food-tour:recipes` unset). Other agents' edits made Vite full-reload the page three times in the first half hour, so the page was then loaded from an image URL with the app's own markup injected and `WebSocket` stubbed before `main.ts` ran: the same modules from the same server, a fresh boot, and no HMR client able to reload it. The pane was hidden for most of the session, so the world and the rooms were advanced with `__fw.step` at 1/60 s and read through `__fw.shot`, `__fw.sceneShot`, the rooms' own effect canvases and, at 390 wide, a composite of painting, effect canvas, fire ellipses and visible hung sprites built from the live DOM. Shots are in `.data/shots/it-e-*.jpg`; the contact sheet is `italy-review.png` in the reviewer's scratchpad.
+
+| Check | Result |
+| --- | --- |
+| `npm run typecheck` | Passes |
+| `npm test` | **23 of 25**. `italy-world.mjs` (8.3 s) and `italy-reactions.mjs` pass, and so do the other 21. `thailand-world.mjs` (`TH-R3: the road surface reaches water at -16.1, 22.8`) and `vietnam-world.mjs` (three road ends that meet nothing) fail in files other agents are editing and have not committed |
+| `node scripts/audit/objects.mjs` | rome 5 rooms, 12 card-only, 7 hit/child; venice 4, 4, 0; sicily 4, 7, 3. Unchanged from the shared-ground pass |
+| Live ten-ray check, fresh load, 1280 x 720, every mesh in the world a blocker (walkers, boats and birds included) | **35 of 36 at 10 of 10.** `gelateria` 9 of 10: the moving wine cart crossed one ray in that frame. No house, tree, stand or stand building covers any ray |
+| Fog and zoom limit | Desktop limit 215 reached; fog 198 / 439; the table reads at 215 with no haze on the far corner (sheet, top left) |
+| Room cues at 390 x 844, maximum lit pixels on each room's own effect canvas over 600 stepped frames (10 s) | Every configured signature, patch and steam source draws: smallest are the thin pours and drips (`it_tonnara` glint 202, `it_casale` drip 254, `it_bacaro` glint 387) and the Pescaria's portrait birds (448). Every portrait fire ellipse is present and lit (opacity .50 to .69). Every visible portrait sprite lies inside x 17 to 339 of 390. The measured band is x .094 to .906 of the portrait painting in all thirteen rooms |
+| Room cues at 1280 x 720, same method | All draw; the figures match `docs/italy-rooms.md` within sampling (for example `it_trattoria` glint 11,256 against 11,256, sunray 347,259 against 341,503) |
+| Motion re-measured (cells that looked doubtful), four phased pairs, `room-motion.py` | **`it_casale` wide: 1.2, 1.2, 3.7, 3.8, median 2.45 percent** against its 3 percent floor (the rooms doc has 3.08, with 0.92 at its weakest phase). `it_bacaro` wide: 3.3, 3.9, 5.9, 6.9, median 4.9, clears |
+| Fountains, sampled over 15 frames in the live world | `piazza-fountain` and `trevi-fountain` never change. Calling each one's own `userData.tick` by hand does move its jets, so the builders work and the world does not tick them |
+| `__fw.audit(30)` | Listed in the walkthrough, item 30 |
+
+### The definition of done, line by line
+
+World
+
+| # | Line | Verdict | Evidence |
+| --- | --- | --- | --- |
+| W1 | Four or more clusters, continuous roads, every door on a road | Pass | Six clusters; `italy-world.mjs` holds the per-landmass network reading (mainland, Sicily and each lagoon island), zero doors off the road |
+| W2 | Water continuous, square at the edge, correct colour; nothing stands in water | **Fail** | Square and continuous, and nothing stands in it (live, 0 over water). The lagoon's shallow sheet ends in a hard diagonal across the porto that reads from above as a glass wedge standing in the sea (walkthrough 1) |
+| W3 | Every river runs source to mouth | Pass | `italy-world.mjs`: the Tiber rises inside its spring pool and overlaps the sea at the mouth |
+| W4 | Ten stands, five ingredient stops with diamond cues, three non-food clickables per area | Pass | 13 rooms, 15 stops, 8 landmarks; every one of the 36 has its cue ring; per area rome 4, venice 3 (`rialtoIt`, `campanileIt`, `valliIt`), sicily 3 or more |
+| W5 | Three walker loops, residents in traditional clothing, steps matched | **Fail** | Five loops, 24 walkers, gait checks pass. But every clothing profile in `italy-people.ts` is `verified: false` and the harness asserts it: the traditional clothing is still unsourced |
+| W6 | Small details in every cluster | Pass | Hung swaying groups in the stand builders (salumi rail, market bunches, nets, the slaughterhouse quarters), sheep fold, pig and ox pen, hen yard, stacks and crocks seen at approach zoom |
+| W7 | House cap, nothing solid on a road, 2.5 corridors, no house on the camera line | Pass | 13 houses (4, 4, 5), one to three per style; `italy-world.mjs` passes every road, corridor and wedge check |
+| W8 | Every clickable fully visible from the arrival camera, live | Pass | 36 of 36 clear of every static blocker on the live page; the one short ray is the moving cart |
+| W9 | Every decor type reads as what it is from the overview | **Fail** | Walkthrough 1, 2, 4 to 8, 10 to 12, 20 to 22 |
+| W10 | The table reads at the zoom-out limit, fog derived | Pass | 215, fog 198 / 439, sheet top left |
+| W11 | Translating figures step; carried figures seated; animals face travel | **Fail** | Gait and mule checks pass in the harness and live (both mules and every hull travel along their own axis; the cart holds 2.06 to 2.10 behind its mule). But the rowers stand upright in the moving gondolas and sandoli (walkthrough 17), which is the letter this line was written against |
+| W12 | Every water feature ticks; smoke tinted, anchored and visible at the overview | **Fail** | Sea, Tiber and spring shaders tick; smoke reads at the 110 overview. The piazza fountain and the Trevi fountain never move (walkthrough 14) |
+| W13 | Every motion watched ten seconds and plausible | Not verified | The pane was hidden; the world was stepped and sampled, not watched in real time. What sampling found is in the walkthrough |
+| W14 | No flicker, nothing floating, no unsupported seat, no wall crossing | **Fail** | `__fw.audit(30)`: boats through boats, walkers through walkers, the mule and the cart through walkers and the market (walkthrough 3, 30). Flicker not looked for |
+
+Stands
+
+| # | Line | Verdict | Evidence |
+| --- | --- | --- | --- |
+| S1 | Each main stand meets the hotpot table | Not verified | Not counted stand by stand (people, lanterns under a beam, steam at the hot source) |
+| S2 | Fronts face +z, door within 2.0 of a road | Pass | `italy-world.mjs` asserts rot within ±0.75 and every front door |
+| S3 | Food first, worker, bystander, speech; readable after the 1.6 s approach | **Fail** | The harness order passes. On the live room approach at 1.6 s the pasta kitchen's camera ends inside the Pantheon and the forno's under the Campo pergola, so neither reaction can be seen (walkthrough 26, 27) |
+| S4 | Repeated clicks bounded, return to rest | Pass | `italy-reactions.mjs` |
+| S5 | Ambient speech in the local language plus English; bubbles never overlap | Pass | `italy-reactions.mjs` checks four to eight two-language lines per stand. Bubble overlap was not measured live (bubbles did not register in the hidden pane), and the native-reader check of the lines is still open from Stage A |
+| S6 | `italy-reactions.mjs` covers every stand and passes | Pass | 36 stands, passes |
+
+Rooms
+
+| # | Line | Verdict | Evidence |
+| --- | --- | --- | --- |
+| R1 | Two paintings each, art direction | Pass | Stage B acceptance, all 26 on disk at 1672 x 941 and 941 x 1672 |
+| R2 | Alive on entry, three or four loops, hot food steams, `room-loops.mjs` | Pass | `room-loops.mjs` passes, every room at four in both orientations |
+| R3 | Every hot vessel has its own steam source; cold stays dry | **Fail** | `it_laguna` wide: the bowl of rice and peas at the front right is dry while the rice copper steams, and the rooms record does not list it as cold (walkthrough 42) |
+| R4 | Steam needs a hot vessel and a hot process in the text; drip otherwise | Pass | Six cold rooms carry no steam or fire; `it_casale` drips |
+| R5 | Traced liquid paths lip to surface, checked live | Pass | Lit pixels confine to the configured boxes in both orientations (for example `it_trattoria` 11,256 wide, 4,494 portrait); endpoints taken from the rooms record, not re-measured on the pixels |
+| R6 | Hanging motion is a sprite over a clean painting | Pass | No breeze crop; six delivered sprites |
+| R7 | Every delivered sprite used or explained | Pass | All six used |
+| R8 | Every path and box measured on a gridded crop and checked on an overlay contact sheet | **Fail** | The rooms record describes the gridded crops but names no overlay contact sheet |
+| R9 | Every phone box and sprite inside the band, lit live | Pass | Table above: every portrait cue lit, every visible sprite inside the band |
+| R10 | Motion capture re-run after the last cue change; the baseline carries the numbers | **Fail** | `docs/quality-baseline.md` carries no Italy motion numbers |
+| R11 | 3 percent in two seconds, or 2.5 with a crisp cue | **Fail** | `it_casale` wide re-measured at a 2.45 percent median |
+| R12 | Two or three touches naming something visible, with facts and sources | Pass | Three per room, 39, from `ITALY_DISCOVERIES` |
+| R13 | Every effect stays on its source; nothing invented | **Fail** | The Pescaria's haze band lies across two faces in both orientations; Ballarò's portrait leaves drift over the cathedral dome; the casale's portrait leaves over the door; the trattoria's portrait salami hangs across the oste's face (walkthrough 32 to 34, 37, 38) |
+| R14 | Reduced motion keeps the room understandable | Not verified | Not tested here or in the rooms record |
+
+Cards and stories
+
+| # | Line | Verdict | Evidence |
+| --- | --- | --- | --- |
+| C1 | Tagline and three-to-five-paragraph blurb, dated eras, local names | Pass | Every object has a tagline and a local name. Room blurbs run 2,782 to 3,192 characters in six paragraphs, one over the line's five; Spain's shipped rooms run seven, so the band is being read in characters |
+| C2 | Every kitchen room and place-or-dish shows its repertoire | Pass | Opened live: 13 rooms' cards, `gelateria` and `stall-arancini` ("How it is served") |
+| C3 | Card-only blurbs in their band | Pass | All 23 card-only objects 905 to 984 characters in three paragraphs, and the ten children 864 to 999; none visibly shorter than its neighbours |
+| C4 | Room objects have story depth, sources and two `NEXT` | Pass | `ITALY_STORY_DEPTH`, `ITALY_SOURCES`, two `ITALY_NEXT` each |
+| C5 | World intro passes `world-intros.mjs` | Pass | In `npm test` |
+| C6 | Legends labelled | Pass | The Etruscan artichoke, the panelle, cassata and cannolo origins are all written as legend |
+| C7 | Recipes off | Pass | Walkthrough made with the add-on off; no "Related recipes" row on any card opened |
+
+Verification record
+
+| # | Line | Verdict | Evidence |
+| --- | --- | --- | --- |
+| V1 | typecheck, test, `build:pages` | **Fail** | Typecheck passes; `npm test` is 23 of 25 on this working tree (Thailand and Vietnam); `build:pages` was not run in this review |
+| V2 | Screenshots of the world, each stand and each room at both sizes | **Fail** | `.data/shots/it-d-*` has every room at both sizes and ten road views; no stand has its own shot at either size, and there was no phone-width world shot until this review's `it-e-phone-*` |
+| V3 | Animation inventory table | **Fail** | `docs/italy-world.md` promises one in its first paragraph and does not carry it |
+| V4 | Pages run and live URL | **Fail** | Italy is not published; this is Stage F |
+
+**Count: 26 pass, 16 fail, 3 not verified, of 45 lines.** Failed: W2, W5, W9, W11, W12, W14, S3, R3, R8, R10, R11, R13, V1, V2, V3, V4. Not verified: W13, S1, R14.
+
+## Owner walkthrough (second reviewer), 2026-09-23
+
+Everything that looked odd, in plain words, not yet sorted into defect or not. Sizes: overview is the 110 distance at 1280 x 720; approach is 20 to 42 at 1280 x 720; card approach is the 28-unit glide after a click; room approach is the 1.6 s low camera before a room opens. Pictures for the items marked (sheet) are on `italy-review.png`.
+
+World, from above
+
+1. `lagoon-shallows`, overview and approach: the pale shallow-water sheet ends in a hard straight diagonal across the porto between San Marco and the lido, and reads as a tilted glass pane or glass wedge standing in the sea (sheet)
+2. `italy-bridge`, the Tiber bridge at [-30.6, -5.9], approach 42: a long white staircase with dark grey slabs at both ends, wider than the river it crosses (sheet)
+3. `wine-cart`, approach 42: seen stopped against the Tiber bridge's east ramp where the piazza street meets it; the movement audit also puts it through the Campo market's corner at [-17, -7.8] and through walkers (sheet)
+4. `etnaIt`, overview and card approach: a small white cone with an orange top and a grey ball of smoke on a low green mound, lower than the Apennine cones across the strait, with three people standing on it; it reads as a bonfire or a pot on a fire, not a volcano (sheet)
+5. `lava-wall`, three rows south of Etna, approach 42: black blocks lying in the grass, read as black bars or logs
+6. The tonnara's `stand-building` sheds at [39.2, 25.7], overview and approach: two red roofs almost on the ground at the east cape, a roof with no house under it; the flat orange-roofed box beside the coppers reads as a crate (sheet)
+7. `italy-boat-ferry` on L5, overview and card approach: its square white sail reads as a billboard standing on the water beside the tonnara shore (sheet)
+8. `rialtoIt`, approach 40 and card approach: a white box with steps and two grey roofs sitting across the canal; no arch reads from above, and the gondolas pass through it (the audit counts them inside it on 56 and 39 samples) (sheet)
+9. `campanileIt`, approach 40: no taller than the red houses beside it; it does not read as the tallest thing in Venice
+10. `sheep-fold` beside `it-campagna-casale` at [-25.4, 5.2], approach 42: a ring of standing stones with sheep inside, reads as a stone circle (sheet)
+11. `campagna-thistle`, 36 of them, approach 42: purple-topped dots over every lawn and road verge in the Agro, read as purple pebbles
+12. The five Campo stall children drawn by `romeMarket`, approach 42 and the market's room approach: five bare coloured tables standing in the grass behind the canopy, most with nothing on them, read as empty picnic tables
+13. `trevi-fountain`, approach 42: squeezed into the one-house gap between the forno and the pasta kitchen, it reads as a white wall and a pool at the end of an alley
+14. `piazza-fountain` and `trevi-fountain`: they never move. Both are placed through the `scaled` holder in `italy-town.ts`, and their own jets animate only when their tick is called by hand
+15. `italyBeef`, approach 42: the ox is nearly as big as the pigs' shelter and far bigger than the people beside it
+16. The valli bank (`valliIt`), approach 40: loose stakes and poles lie and stand about on the island, and a pole rises out of a Burano boat; sticks
+17. The rowers in the gondolas (L1) and sandoli (L2), approach 40: they stand upright in moving boats
+18. `colosseoIt`, approach 42: a heap of black shapes lies on the arena floor at its south-east side
+19. The San Marco quay, approach 40: a large empty pale square with small grey scraps scattered on it in front of the campanile
+20. `riceIt`, approach 40: a dry walled garden with green spikes and round straw hats; no flooded water shows
+21. `maize-field`, two strips by the farm kitchen, approach 40: brown stripes that read as wooden decking
+22. `granoIt`, approach 40: a wooden frame with a lantern hanging from its crossbar reads as a gallows
+23. `mandorleIt`, approach 20: a thin yellow pole stands upright among the almond trees
+24. `italy-birds`, approach 20: close up the birds are black V shapes the size of a house hanging at roof height over the lemon grove
+25. `quintoQuarto`, card approach: the roofs of the caffè, forno and pasta row fill the lower half of the frame in front of the slaughterhouse
+26. `pasta`, room approach at 1.6 s: the camera ends inside the Pantheon's dome; the frame is grey and the kitchen is never seen (sheet)
+27. `oven`, room approach: the camera ends under the Campo market's pergola; its beams cross the top of the frame and market people stand in front of the forno's counter (sheet)
+28. `ragu`, room approach: a cypress covers the right end of the counter
+29. `lagunaIt`, room approach: a rower and his oar in a passing boat cross in front of the counter
+30. `__fw.audit(30)`: two sandoli on L2 pass through each other at [12.9, -22.4] (48 samples); a gondola passes through the market barge at [24.9, -18.4]; walkers pass through each other on the Albergheria lane at [-16.3, 23.2] (18) and on the piazza street; the wine cart's mule walks through piazza walkers; the osteria's own figure is inside its counter
+31. `gelateria`, live ray check after the fresh load: 9 of 10, the passing wine cart on one ray
+
+Rooms
+
+32. `it_pescaria` wide, 1280: the lagoon haze band lies across the fishmonger's head and the man behind him, and their faces look washed pale (sheet)
+33. `it_pescaria` portrait, 390: the same band crosses the fishmonger's cap
+34. `it_trattoria` portrait, 390: the hung salami hangs across the oste's face (sheet)
+35. `it_friggitoria`, both, 1280 and 390: the striped awning scrap hangs in mid-air under the canvas over the lane, like a flag in the sky
+36. `it_ballaro` wide, 1280: a striped cloth on a chain dangles in the sky in front of the cathedral (sheet)
+37. `it_ballaro` portrait, 390: the palm leaves drift across the cathedral dome and the sky, away from the palm
+38. `it_casale` portrait, 390: the olive leaves float over the wooden door and the wall instead of the tree; in the wide some cross the door jamb (sheet)
+39. `it_market` portrait, 390: the awning scrap hangs behind the heading and over the story button (sprite x 75 to 162, y 82 to 125; heading y 64 to 94, button y 110 to 143)
+40. `it_bacaro` and `it_pasticceria` portrait, 390: the lamp's chain crosses the heading line (lamp y 67 to 139)
+41. A painted iron hook hangs empty at the top of the frame in `it_forno` (both), `it_trattoria` wide, `it_market` wide, `it_pescaria` (both), `it_laguna` (both), `it_casale` portrait, `it_ballaro` portrait and `it_tonnara` (both)
+42. `it_laguna` wide, 1280: the bowl of rice and peas at the front right is dry while the rice copper steams
+43. `it_market`, both: courgette flowers and summer squash sit in the crate beside the winter artichokes
+44. `it_veneto`, both: two small children sit at glasses of red wine
+45. `it_pasta` wide, 1280: the ribbons hanging from the cane sprite come down almost into the ribbons the woman is lifting, so they read as one long strand from the rail to her hands
+46. `it_casale` wide, 1280: re-measured at a 2.45 percent median, under its 3 percent floor; on two of four phases the room changed 1.2 percent in two seconds
+47. Every room was stepped through ten seconds and read in stills; no pour was seen to crawl and no glint was seen above a lip, but no room was watched in real time (see "not verified")
+
+Cards
+
+48. `stall-arancini`: the card says three things come off the barrow, all fried, and its "How it is served" list includes sfincione, a baked bread
+49. `pastry`: its "What this kitchen cooks" list names "Frutta martorana", which the owner ruled off the pasticceria card on 2026-09-22
+50. `stall-tomato`, a stall in Rome's Campo de' Fiori, opens the card of Sicily's tomato beds (`tomato`, tagged SICILY)
+51. The ten stall and alias children carry blurbs of 864 to 999 characters that are never shown: each opens its parent's or alias's card or room instead
+
+### Not verified in this review
+
+- Real-time watching of any room or of the world in a displayed pane (the pane was hidden; everything was stepped and read from stills and canvases). Pours, glints, string swings and cups that should steam were judged from stills only.
+- Reduced motion; flicker while moving or zooming; speech-bubble overlap live; the hotpot-table count per stand (S1); the traced-path endpoints on the pixels.
+- Each stand's reaction at full size: the 36 click shots (`.data/shots/it-e-r2-*.jpg`) were read at thumbnail size for occlusion only.
+- `npm run build:pages`, and the published site (Italy is not published).
+- The Thailand and Vietnam failures in `npm test`, which belong to other agents' uncommitted files.

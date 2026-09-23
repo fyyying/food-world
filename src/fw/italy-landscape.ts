@@ -12,8 +12,8 @@
  *
  *  The materials are the ones the atlas already uses: `seaWater()` for the sea, `freshWater()` for the Tiber's
  *  upper course and its spring, and `estuaryWater(mouth, 4, 'z')` so everything past the coast line is exactly
- *  the sea's colour. The lagoon is the sea with a translucent `lagoonGreen` sheet over it, which is why its
- *  shallow green sits on the same blue rather than fighting it.
+ *  the sea's colour. The lagoon is the same sea with no sheet over it (lead ruling, 2026-09-23): it reads as
+ *  lagoon from its islands, the lido and the boats.
  */
 import * as THREE from 'three';
 import { add, mat, birds, type P } from './props';
@@ -130,7 +130,7 @@ export const SPRING = { id: 'tiber-spring', x: -5.2, z: -21.6, rx: 1.7, rz: 1.7 
 /** Heights. Tints end near .012, town paving .018, the road ribbons .036 upward, the sea rim .030, the river
  *  bank .034, the sea .060, the lagoon sheet .066, the river .090, the spring .094. Each step is at least
  *  .004, the distance at which two flat surfaces stop fighting for the depth test. */
-export const RIM_Y = .030, QUAY_Y = .032, BANK_Y = .034, SEA_Y = .060, LAGOON_Y = .066, RIVER_Y = .090, SPRING_Y = .094;
+export const RIM_Y = .030, QUAY_Y = .032, BANK_Y = .034, SEA_Y = .060, RIVER_Y = .090, SPRING_Y = .094;
 /** How far a bridge deck, and a walker on it, stands above the lane so the water passes underneath. */
 export const BRIDGE_SPAN = 5.0, BRIDGE_DECK_Y = .9;
 
@@ -531,13 +531,17 @@ export type BoatLane = { id: string; points: Pt[]; boats: number; kind: 'gondola
  *  - a lane carries one boat, or two boats half a cycle apart, which only ever meet at the lane's midpoint; there
  *    each keeps to its right by `pass` (the half-separation), eased in and out, so they pass side by side;
  *  - the gondolas (L1) run the Grand Canal under the Rialto (the Stand maker's arch of fd95d9a carries no boat of
- *    its own and clears 2.13 to 2.30 over the lane) and on up the channel between the Rialto quay and the lido; the
- *    lane starts 3 units east of the barge's water, and its midpoint, where the two gondolas pass, lies east of
- *    the bridge;
- *  - the bragozzi (L4) sail out of the porto into the open Adriatic, clear of the gondolas' channel. */
+ *    its own and clears 2.13 to 2.30 over the lane); the lane starts 3 units east of the barge's water;
+ *  - the bragozzi (L4) sail out of the porto into the open Adriatic, clear of the gondolas' channel.
+ *  Second walkthrough fixes, 2026-09-23 (items 29 and 56): no boat may enter a room's approach frame. L1 now turns
+ *  back at x 35, under the Rialto and short of the osteria's frame, instead of running on up the channel past it;
+ *  L2 left the channel between Burano and the valli bank, which is the lagoon kitchen's approach, for the open
+ *  water south of the valli bank and along the San Marco shore, behind every lagoon room's camera. That water is
+ *  too short for two hulls 4.3 long to pass in (the audit found them touching at .55 and .8 apart), so L2 carries
+ *  one sandolo, which a lane may. */
 export const IT_BOAT_LANES: BoatLane[] = [
-  { id: 'L1', points: [[22.6, -18.2], [26, -18.2], [29, -18.1], [32.35, -18.1], [36, -18.1], [40.2, -18.3], [42.6, -20.4], [43.0, -24.0], [43.0, -27.2]], boats: 2, kind: 'gondola', speed: .008, pass: .7 },
-  { id: 'L2', points: [[7.6, -22.5], [11, -22.6], [15, -22.6], [19.7, -22.4]], boats: 2, kind: 'sandolo', speed: .009, pass: .55 },
+  { id: 'L1', points: [[22.6, -18.2], [26, -18.2], [29, -18.1], [32.35, -18.1], [35.0, -18.1]], boats: 2, kind: 'gondola', speed: .008, pass: .7 },
+  { id: 'L2', points: [[13.6, -11.3], [16, -10.7], [18.6, -10.2], [21.2, -9.4], [24.2, -8.6]], boats: 1, kind: 'sandolo', speed: .009 },
   { id: 'L3', points: [[21.0, -19.0], [21.0, -16], [20.9, -13.0]], boats: 1, kind: 'barge', speed: .008 },
   { id: 'L4', points: [[43.6, -11.4], [46.2, -8.2], [47.2, -4.0], [45.6, 0.2], [41.6, 1.6]], boats: 2, kind: 'bragozzo', speed: .007, pass: 1.0 },
   { id: 'L5', points: [[31.5, 11.5], [31.8, 14], [31.4, 16.4], [30.8, 18.0]], boats: 1, kind: 'ferry', speed: .006 },
@@ -613,32 +617,10 @@ export function italyLandscape(ctx: LayoutCtx) {
   const water = new THREE.Mesh(new THREE.ShapeGeometry(shapeOf(SEA_RING, land.map(l => l.poly))), sea);
   water.rotation.x = -Math.PI / 2; water.scale.y = -1; water.position.y = TOP + SEA_Y; water.receiveShadow = true; water.name = 'sea'; group.add(water);
 
-  // ---------- the lagoon: the same sea under a translucent shallow-green sheet, held by the lido ----------
-  // The blueprint tints the lagoon `#69b3b0` **over the sea's own blue**, so this is a sheet at .006 above the
-  // water rather than a second body of water. Its holes are the five islands, so nothing green crosses a quay.
-  // Walkthrough 2026-09-23: where the ring crossed open water — the porto between the mainland and the lido, the
-  // gap north of the lido and the channel west of Burano — its straight edge read from above as a glass wedge
-  // standing in the sea. Those three edges are now feathered: the sheet's alpha falls to nothing over the last
-  // four units before each open edge, so the shallows fade into the Adriatic the way the owner's favoured
-  // dark-to-light water does, and the only hard edges left are the ones that lie along land.
-  const lagoonRing: Pt[] = [[6.5, -32], [6.5, -24.5], [8, -20], [9, -16], [11, -12.5], [14, -9.5], [18, -8], [23, -7.2], [28, -7.6], [32, -8.4], [35, -6], [38.5, -8.0], [44.4, -12.6], [44.4, -32]];
-  const lagoonMat = mat(ITP.lagoonGreen, { transparent: true, opacity: .42, depthWrite: false });
-  const OPEN_EDGES: [Pt, Pt][] = [[[35, -6], [38.5, -8.0]], [[38.5, -8.0], [44.4, -12.6]], [[44.4, -29.4], [44.4, -32]], [[6.5, -32], [6.5, -24.5]]];
-  lagoonMat.onBeforeCompile = (shader) => {
-    shader.vertexShader = shader.vertexShader
-      .replace('#include <common>', '#include <common>\nvarying vec2 vLagoonXZ;')
-      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvLagoonXZ = (modelMatrix * vec4(transformed, 1.0)).xz;');
-    const segs = OPEN_EDGES.map(([a, b]) => `seg(p, vec2(${a[0].toFixed(2)}, ${a[1].toFixed(2)}), vec2(${b[0].toFixed(2)}, ${b[1].toFixed(2)}))`);
-    shader.fragmentShader = shader.fragmentShader
-      .replace('#include <common>', `#include <common>
-varying vec2 vLagoonXZ;
-float seg(vec2 p, vec2 a, vec2 b) { vec2 e = b - a; float t = clamp(dot(p - a, e) / dot(e, e), 0.0, 1.0); return length(p - a - e * t); }`)
-      .replace('#include <alphamap_fragment>', `#include <alphamap_fragment>
-{ vec2 p = vLagoonXZ; float d = min(min(${segs[0]}, ${segs[1]}), min(${segs[2]}, ${segs[3]})); diffuseColor.a *= smoothstep(0.0, 4.0, d); }`);
-  };
-  const lagoon = new THREE.Mesh(new THREE.ShapeGeometry(shapeOf(lagoonRing, ISLANDS.filter(i => i.id !== 'lido').map(i => islandOutline(i.id)))), lagoonMat);
-  lagoon.rotation.x = -Math.PI / 2; lagoon.scale.y = -1; lagoon.position.y = TOP + LAGOON_Y;
-  lagoon.renderOrder = 3; lagoon.name = 'lagoon-shallows'; group.add(lagoon);
+  // ---------- the lagoon: the same sea, read from its islands and boats ----------
+  // Lead ruling, second walkthrough 2026-09-23 (items 1 and 52): the translucent shallow-green sheet is gone. Its
+  // edges read as a glass pane or a searchlight band on the sea and it tinted the San Marco quay, so the sea is one
+  // material on this table and the lagoon reads as lagoon from its five islands, the lido, the valli and the boats.
 
   // The four Venetian islands are stone quays, not sand pads: Istrian stone laid over the sand rim right out to
   // the island's own irregular edge, and a low darker kerb along the water, so from above each island reads as a
@@ -693,9 +675,12 @@ float seg(vec2 p, vec2 a, vec2 b) { vec2 e = b - a; float t = clamp(dot(p - a, e
   // hides nothing.
   // Walkthrough 24: the shared flock read at approach zoom as house-sized black Vs over the lemon grove. Italy's
   // flocks are drawn at 0.45 of the shared size, with a body and a lighter grey-brown, higher up.
-  const flock = { size: .45, tone: '#6E6760' };
+  // Second walkthrough 62 (2026-09-23): seen from above against the Tiber at the Mattatoio's card approach, the
+  // grey-brown Rome flock still drew as thin black darts. Every flock is a pale stone grey now, the Rome birds a
+  // warm one and the gulls a cool near-white, so a wing edge-on reads as a light fleck, not a dark stick.
+  const flock = { size: .45, tone: '#B8B0A4' };
   const swifts = birds(6, 7, 8, flock); swifts.position.set(-18, TOP, -8); swifts.name = 'italy-birds'; group.add(swifts); tickers.push(swifts.userData.tick!);
-  const lagoonGulls = birds(6, 9, 9, { ...flock, tone: '#8C8A86' }); lagoonGulls.position.set(26, TOP, -20); lagoonGulls.name = 'italy-birds'; group.add(lagoonGulls); tickers.push(lagoonGulls.userData.tick!);
-  const coastGulls = birds(5, 8, 9, { ...flock, tone: '#8C8A86' }); coastGulls.position.set(14, TOP, 27); coastGulls.name = 'italy-birds'; group.add(coastGulls); tickers.push(coastGulls.userData.tick!);
+  const lagoonGulls = birds(6, 9, 9, { ...flock, tone: '#D2D0CA' }); lagoonGulls.position.set(26, TOP, -20); lagoonGulls.name = 'italy-birds'; group.add(lagoonGulls); tickers.push(lagoonGulls.userData.tick!);
+  const coastGulls = birds(5, 8, 9, { ...flock, tone: '#D2D0CA' }); coastGulls.position.set(14, TOP, 27); coastGulls.name = 'italy-birds'; group.add(coastGulls); tickers.push(coastGulls.userData.tick!);
   void place; void curveOf;
 }

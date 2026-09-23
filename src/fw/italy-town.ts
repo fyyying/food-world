@@ -123,9 +123,11 @@ function gondolaHull(): P {
   add(g, block(1.2, .05, .66, '#7A5232'), .6, .40, 0);                                  // the stern deck
   add(g, block(.9, .06, .56, '#9C2B23'), -.5, .40, 0);                                  // the passenger's carpet
   for (const z of [-.26, .26]) add(g, block(.8, .22, .05, '#5A3B22'), -.5, .52, z);      // the two low seats
-  const ferro = add(g, block(.09, 1.25, .16, '#C9C4BA'), -2.5, .95, 0);
-  for (let i = 0; i < 4; i++) add(ferro, block(.30, .07, .13, '#C9C4BA'), .16, .42 - i * .24, 0);
-  add(g, block(.09, .7, .12, '#C9C4BA'), 2.42, .66, 0);
+  // Second walkthrough 56 (2026-09-23): at 1.25 high the ferro stood up out of a passing hull like a signpost.
+  // It is now a little over half that, in a duller iron grey, still with its four teeth, and the stern iron with it.
+  const ferro = add(g, block(.07, .66, .12, '#A9A49B'), -2.45, .64, 0);
+  for (let i = 0; i < 4; i++) add(ferro, block(.18, .045, .09, '#A9A49B'), .10, .22 - i * .13, 0);
+  add(g, block(.07, .40, .10, '#A9A49B'), 2.42, .52, 0);
   const forcola = add(g, new THREE.Mesh(new THREE.TorusGeometry(.17, .045, 5, 10, Math.PI * 1.3), mat('#8A6D44')), 1.0, .62, -.30);
   forcola.rotation.y = Math.PI / 2; forcola.rotation.z = .5;
   const boat = masonry(g) as P; boat.userData.deckY = .45;
@@ -266,8 +268,11 @@ export function italyTown(ctx: LayoutCtx) {
     [scaled(obelisk, .8), [[2.6, 2.6, 0], [2.4, 2.2, 0], [-11.0, -14.0, 0]], 'piazza-obelisk'],
     [piazzaFountain, [[-19.9, 4.0, 0], [-20.3, 4.2, 0], [-3.0, 6.6, 0]], 'piazza-fountain'],
     [scaled(cafeTables, .5), [[3.3, -.6, 0], [3.6, -.4, 0], [-24.2, -15.6, 0]], 'cafe-tables'],
-    [scaled(triumphalArch, .45), [[9.8, -3.4, 1.57], [10.2, -3.0, 1.57], [6.2, 1.8, 1.57]], 'triumphal-arch'],
     [treviFountainIt, [[5.3, -4.4, 0], [5.6, -4.6, 0], [-12.3, -19.0, 0]], 'trevi-fountain'],
+    // Second walkthrough 53: turned 90 degrees it stood edge-on to the camera as a slab; it faces +z now, so the
+    // opening shows from the arrival view. Facing front it is 3.4 wide rather than 1.3, so it stands 1.2 further
+    // east than before and is placed after the Trevi, whose ground it would otherwise take.
+    [scaled(triumphalArch, .45), [[11.0, -3.4, 0], [11.4, -3.0, 0], [10.8, -2.4, .1], [6.2, 1.8, 0]], 'triumphal-arch'],
     [scaled(basilica, .25), [[-1.0, 4.6, .04], [-0.6, 4.8, .04], [-1.6, 4.4, .06]], 'basilica'],
     [scaled(baroqueChurch, .55), [[8.4, 27.4, .05], [8.8, 27.6, .04], [8.0, 27.2, .05]], 'baroque-church'],
   ] as [() => P, [number, number, number][], string][]) {

@@ -2452,20 +2452,54 @@ export function riceFieldItaly(): P {
   });
 }
 
+/** The standing durum as a painted surface: the top is a field of heads, the sides are stalks under a band of heads. */
+const WHEAT_TEX: Record<string, THREE.CanvasTexture> = {};
+function wheatTexture(top: boolean): THREE.CanvasTexture {
+  const key = top ? "top" : "side"; if (WHEAT_TEX[key]) return WHEAT_TEX[key];
+  const W = 256, H = top ? 128 : 64;
+  const c = document.createElement("canvas"); c.width = W; c.height = H;
+  const ctx = c.getContext("2d")!;
+  let seed = top ? 7 : 3; const r = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  ctx.fillStyle = top ? "#c9a64a" : "#b8963e"; ctx.fillRect(0, 0, W, H);
+  if (!top) {
+    // stalks: close vertical strokes in two golds, darker at the foot
+    for (let x = 0; x < W; x += 2) { ctx.strokeStyle = r() < 0.5 ? "#d2b458" : "#a8873a"; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(x + r(), H); ctx.lineTo(x + (r() - 0.5) * 3, H * 0.28); ctx.stroke(); }
+    const foot = ctx.createLinearGradient(0, H * 0.6, 0, H); foot.addColorStop(0, "rgba(90,70,30,0)"); foot.addColorStop(1, "rgba(90,70,30,.45)");
+    ctx.fillStyle = foot; ctx.fillRect(0, 0, W, H);
+  }
+  // heads: short bearded ears, pale gold with a darker spine
+  const n = top ? 900 : 140, band = top ? H : H * 0.34;
+  for (let i = 0; i < n; i++) {
+    const x = r() * W, y = r() * band, a = (r() - 0.5) * (top ? 3.2 : 0.7);
+    ctx.save(); ctx.translate(x, y); ctx.rotate(a);
+    ctx.fillStyle = r() < 0.5 ? "#e6c96e" : "#d8b454"; ctx.beginPath(); ctx.ellipse(0, 0, 1.6, 4.2, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = "#9c7d33"; ctx.lineWidth = 0.6; ctx.beginPath(); ctx.moveTo(0, 4); ctx.lineTo(0, -6); ctx.stroke();
+    ctx.restore();
+  }
+  const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(top ? 1.3 : 1.8, 1);
+  WHEAT_TEX[key] = tex; return tex;
+}
+
 /**
  * The wheat and the latifondo: durum in great unfenced blocks on an estate held by a middleman. A sheaf is
  * bound and stood into the stook; the reapers straighten behind it and the gabelloto's tally board swings.
  */
 export function wheatLatifondo(): P {
   const g = group();
-  // the standing wheat behind, in one great block with no fence anywhere in it
-  const ears: THREE.Object3D[] = [];
-  for (let r = 0; r < 4; r++) for (let c = 0; c < 12; c++) {
-    const st = add(g, new THREE.Group(), -2.6 + c * 0.46, 0, -2.6 + r * 0.6);
-    add(st, cyl(0.012, 0.014, 0.8, "#c9a840", 4), 0, 0.4, 0);
-    add(st, cone(0.04, 0.24, "#e0c060", 5), 0, 0.9, 0);
-    ears.push(st);
-  }
+  // the standing wheat behind, in one great block with no fence anywhere in it. Second walkthrough 55
+  // (2026-09-23): forty-eight separate stalks with a cone on each read as a row of yellow spikes from the Ballarò
+  // and friggitoria room approaches, which look across this field. The crop is one low block now, its sides painted
+  // with stalks and its top with the heads, and the heads ripple in the wind by sliding the top's texture. It
+  // stands west of the waiting mule (x -2.8 to 0.3), knee-high at 0.42, which keeps it out of the friggitoria's
+  // approach altogether and leaves only its far edge low in the corner of Ballarò's.
+  const cropTop = wheatTexture(true), cropSide = wheatTexture(false);
+  const crop = add(g, new THREE.Mesh(new THREE.BoxGeometry(3.1, 0.42, 2.1), [
+    new THREE.MeshStandardMaterial({ map: cropSide, roughness: 0.95 }), new THREE.MeshStandardMaterial({ map: cropSide, roughness: 0.95 }),
+    new THREE.MeshStandardMaterial({ map: cropTop, roughness: 0.95 }), new THREE.MeshStandardMaterial({ color: "#8a7448" }),
+    new THREE.MeshStandardMaterial({ map: cropSide, roughness: 0.95 }), new THREE.MeshStandardMaterial({ map: cropSide, roughness: 0.95 }),
+  ]), -1.25, 0.21, -1.7);
+  crop.name = "it-wheat-crop"; crop.castShadow = true; crop.receiveShadow = true;
   // the stooks: sheaves stood against each other, and the cut stubble in front of them
   const stooks = Array.from({ length: 3 }, (_, i) => {
     const s = add(g, new THREE.Group(), -1.9 + i * 1.9, 0, 0.1);
@@ -2501,7 +2535,7 @@ export function wheatLatifondo(): P {
   upper(reaperB).rotation.x = 0.6;
   const sheafRest = sheaf.position.clone();
   return life(g, "granoIt", [binder, reaperA, reaperB], (t, k) => {
-    ears.forEach((e, i) => { e.rotation.z = Math.sin(t * 1.1 + e.position.x * 0.4 + i * 0.01) * 0.055; });
+    cropTop.offset.set(Math.sin(t * 1.1) * 0.012, Math.sin(t * 0.8) * 0.02);
     stooks.forEach((s, i) => { s.rotation.z = Math.sin(t * 0.7 + i) * 0.008; });
     // the band closes on the sheaf, it is lifted and stood on end
     const bind = beat(k, 0.04, 0.44), stand = hold(k, 0.42, 0.92);

@@ -283,16 +283,16 @@ the Vietnam record describes. Pairs are saved as `.data/it-motion/rm-IT<w|p>-<ro
 | Room | Wide median (range of four) | Portrait median (range of four) | Floor |
 | --- | --- | --- | --- |
 | `it_trattoria` | 7.20 (5.3 to 8.0), six pairs, 2026-09-23 | 14.05 (12.9 to 15.3), six pairs | 3% |
-| `it_market` | 4.20 (0.4 to 5.5), six pairs | 4.90 (3.0 to 7.9), six pairs | 3% |
+| `it_market` | 4.20 (0.4 to 5.5), six pairs | 4.65 (2.7 to 7.7), six pairs, round two | 3% |
 | `it_pasta` | 5.45 (3.5 to 7.8), six pairs | 6.30 (4.6 to 7.6), six pairs | 3% |
 | `it_forno` | 6.33 (5.14 to 7.21) | 16.71 (16.32 to 18.49) | 3% |
-| `it_casale` | 3.80 (0.9 to 4.4), six pairs | 4.15 (0.9 to 5.5), six pairs | 3% |
-| `it_pescaria` | 4.05 (0.5 to 4.5), six pairs | 3.70 (0.4 to 4.5), six pairs | 3% |
-| `it_bacaro` | 5.70 (0.5 to 7.2), six pairs | 4.30 (1.0 to 5.8), six pairs | 3% |
-| `it_laguna` | 6.65 (6.2 to 7.3), six pairs | 15.35 (12.9 to 18.0), six pairs | 3% |
+| `it_casale` | 3.80 (0.9 to 4.4), six pairs | 4.00 (0.8 to 5.4), six pairs, round two | 3% |
+| `it_pescaria` | 4.05 (0.5 to 4.5), six pairs | 3.75 (0.4 to 4.5), six pairs, round two | 3% |
+| `it_bacaro` | 3.50 (1.9 to 5.5), six pairs, round two | 4.30 (1.0 to 5.8), six pairs | 3% |
+| `it_laguna` | 6.65 (6.2 to 7.3), six pairs | 13.80 (12.9 to 15.0), six pairs, round two | 3% |
 | `it_veneto` | 6.79 (6.65 to 7.40) | 19.33 (16.29 to 19.62) | 3% |
 | `it_friggitoria` | 8.15 (7.1 to 10.4), six pairs | 12.55 (10.7 to 14.3), six pairs | 3% |
-| `it_ballaro` | 3.45 (0.4 to 4.2), six pairs | 5.75 (1.1 to 8.1), six pairs | 3% |
+| `it_ballaro` | 3.45 (0.4 to 4.2), six pairs | 5.20 (0.5 to 7.5), six pairs, round two | 3% |
 | `it_pasticceria` | 4.60 (2.1 to 5.8), six pairs | 3.60 (2.4 to 5.6), six pairs | 3% |
 | `it_tonnara` | 7.16 (6.42 to 8.14) | 11.89 (11.59 to 13.62) | 3% |
 
@@ -311,6 +311,17 @@ over the whole cycle. Five cells did not on the first pass:
 the pair at offset 270 falls under 2.5 (0.8 to 1.7) in both orientations: the beam's drift is a slow sine and that
 pair lands on its turning point, where the light stands nearly still for two seconds. The median clears the floor,
 as `vn_bread_pate`'s did with the same pattern.
+
+**Round two, 2026-09-23** (second walkthrough items 57 to 60; `docs/italy-world.md`, "Fixes, round two"). The
+cells marked "round two" were re-measured after these changes, on composites of painting, effect canvas and hung
+sprites (the method reads an untouched cell, `it_bacaro` portrait, at 4.35 against the 4.30 above); pairs in
+`.data/it-fix2-motion/`. `it_bacaro` wide: the door beam re-boxed to [.63, 0, .91, 1.0], angle .30, drift .09, so no
+face is inside it at any phase. `it_market` portrait: leaves to the young tree [.60, .195, .685, .262], flock to
+[.78, .13, .905, .20]. `it_ballaro` portrait: leaves to the smaller palm [.815, .195, .895, .245], flock to
+[.49, .008, .672, .066]. `it_laguna` portrait: the gull to (.115, .232), width .100. `it_pescaria` and `it_casale`
+portrait flocks start at y .118 and .072, clear of the room's name and the two round buttons. At 390 x 844 the room
+heading, every stand button, "The story", Back and the two round buttons are out of bounds for every patch and hung
+sprite; the one box left over one is `it_pasticceria`'s painted lamp halo at the left edge (6 px).
 
 ## Every cue draws, and draws where a phone can see it
 

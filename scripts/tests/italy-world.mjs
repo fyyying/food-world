@@ -407,7 +407,7 @@ try {
   // ---------- what the Builder placed: the scenery boxes ----------
   const placedGroups=new Set(world.placed.map(p=>p.group));
   const LIVE=/^(italy-walker|italy-neighbour|italy-neighbours|italy-rower|italy-mule|italy-halter|wine-cart|italy-boat-[a-z]+)$/;
-  const GROUND=/^(sea|sea-rim|lagoon-shallows|quay-stone|tiber|tiber-bank|tiber-spring|raised-terrain|terrace-stairs|explore-cue|black-sand|rice-field|maize-field|latifondo-wheat)$/;
+  const GROUND=/^(sea|sea-rim|quay-stone|tiber|tiber-bank|tiber-spring|raised-terrain|terrace-stairs|explore-cue|black-sand|rice-field|maize-field|latifondo-wheat)$/;
   const decor=[];
   for(const root of world.group.children){
     if(placedGroups.has(root)||root.isSprite)continue;
@@ -658,13 +658,13 @@ try {
   assert.ok(sprites>=smoking.length*4,`the world must collect every stack: ${sprites} puff sprites for ${smoking.length} smoking houses`);
 
   // ---------- the land the blueprint asked for, and the decor it retired ----------
-  for(const name of ['sea','sea-rim','lagoon-shallows','tiber','tiber-bank','tiber-spring','italy-road','italy-house','stand-building','italy-bridge','apennine-ridge','snow-pit','umbrella-pine','cypress','agro-olive','castelli-vine','chestnut','tiber-poplar','conca-citrus','prickly-pear','sheep-fold','lava-wall','piazza-obelisk','piazza-fountain','trevi-fountain','triumphal-arch','basilica','baroque-church','italy-walker','italy-mule','wine-cart'])
+  for(const name of ['sea','sea-rim','tiber','tiber-bank','tiber-spring','italy-road','italy-house','stand-building','italy-bridge','apennine-ridge','snow-pit','umbrella-pine','cypress','agro-olive','castelli-vine','chestnut','tiber-poplar','conca-citrus','prickly-pear','sheep-fold','lava-wall','piazza-obelisk','piazza-fountain','trevi-fountain','triumphal-arch','basilica','baroque-church','italy-walker','italy-mule','wine-cart'])
     assert.ok(world.group.getObjectByName(name),`${name}: missing from the Italian land`);
   for(const kind of ['gondola','sandolo','barge','bragozzo','ferry'])
     assert.ok(world.group.getObjectByName(`italy-boat-${kind}`),`${kind}: the blueprint's five boat lanes each carry their own hull`);
   // Retired with the old 76 x 56 table. None of them may come back, and there is no motor vehicle of any kind
   // on this table: the Vespa is of 1946 and the band is 1880 to 1914.
-  for(const gone of ['venetian-bridge','mooring-pole','vespa','scooter','car','decor-colosseum','decor-pantheon','decor-campanile','decor-etna','lagoon-bricola','fish-weir'])
+  for(const gone of ['venetian-bridge','mooring-pole','vespa','scooter','car','decor-colosseum','decor-pantheon','decor-campanile','decor-etna','lagoon-bricola','fish-weir','lagoon-shallows'])
     assert.equal(world.group.getObjectByName(gone),undefined,`${gone}: the blueprint retired this`);
   for(const file of ['src/fw/world-italy.ts','src/fw/italy-town.ts','src/fw/italy-landscape.ts','src/fw/italy-countryside.ts']){
     // Code only: the files' own comments name the retired pieces on purpose, to say that they are gone.

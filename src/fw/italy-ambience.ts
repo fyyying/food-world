@@ -32,13 +32,21 @@ export const ITALY_AMBIENCE: Record<string, AmbientPatch[]> = {
   it_market: [
     // The clean sky over the house fronts on the far side of the Campo. The market is the brightest room in Rome's
     // cluster and its only real openings are the sky and the young tree beside the statue base.
-    { kind: 'birds', wide: [.60, .02, .90, .14], phone: [.56, .115, .90, .19], period: 6.5, scale: 1.5 },
+    // Portrait re-boxed on 2026-09-23 (second walkthrough 58): at [.56, .115, .90, .19] the flock's rows crossed
+    // the Salumi stand button (x 203 to 282, y 130 to 158 at 390 x 844). The sky above it is under the story and
+    // settings buttons, so the portrait flock crosses in front of the dome's drum right of the buttons,
+    // [.78, .13, .905, .20] (x 328 to 387, y 110 to 169 on screen).
+    { kind: 'birds', wide: [.60, .02, .90, .14], phone: [.78, .13, .905, .20], period: 6.5, scale: 1.5 },
     // The small tree left of Bruno's plinth in the wide painting, and the bigger one over the left-hand stalls in
     // the portrait. Both are painted foliage, not stall greens: the crates of chicory below them stay still. The
     // portrait box was cut on 2026-09-23 to the canopy itself (x .10 to .30, from just under the story button,
     // which ends at y .169, to the stall roofs at .235): it had run down to y .31, over the headscarf of the woman
     // at the counter. The wide box stops at x .605, short of the statue's plinth.
-    { kind: 'leaves', wide: [.53, .16, .605, .27], phone: [.10, .17, .30, .235], leaf: 'olive', color: '#7d9440', count: 6, size: 1.3 },
+    // Portrait re-boxed on 2026-09-23 (second walkthrough 58): the canopy over the left-hand stalls,
+    // [.10, .17, .30, .235], lay behind the Tomatoes and Basil & herbs buttons. The portrait leaves now move in the
+    // young tree right of the stall pole, below the first row of buttons and right of the second, [.60, .195, .685,
+    // .262] (x 242 to 283, y 165 to 221 at 390 x 844), fewer and smaller to stay inside its crown.
+    { kind: 'leaves', wide: [.53, .16, .605, .27], phone: [.60, .195, .685, .262], leaf: 'olive', color: '#7d9440', count: 5, size: 1.2 },
     // A second flock over the palazzi on the left of the Campo, wide only: the wide painting cannot hang the awning
     // (its hook is under the room heading at 1280 x 720), so this is its fourth loop.
     { kind: 'birds', wide: [.40, .02, .56, .10], period: 7.5, scale: 1.4 },
@@ -68,7 +76,8 @@ export const ITALY_AMBIENCE: Record<string, AmbientPatch[]> = {
     // portrait cannot hang it (the peg sits at x .900, on the edge of the slice a 390-wide phone shows), so the
     // freed loop goes here. Boxed to the sky inside the door opening (x .60 to .795, y .065 to .115), not the
     // plaster right of the jamb it had run over.
-    { kind: 'birds', phone: [.60, .065, .795, .115], period: 6, scale: 1.6 },
+    // Top edge .072 since 2026-09-23 (was .065), below the world-story and settings buttons (to y 54 at 390 x 844).
+    { kind: 'birds', phone: [.60, .072, .795, .115], period: 6, scale: 1.6 },
   ],
   it_pescaria: [
     // The lagoon behind the slabs at first light. The Pescaria is a cold room and its whole budget is light, haze
@@ -83,14 +92,22 @@ export const ITALY_AMBIENCE: Record<string, AmbientPatch[]> = {
     // more frequent, since the haze now covers a third of the old band's area.
     { kind: 'mist', wide: [.525, .14, .585, .34], phone: [.48, .19, .655, .285], alpha: .42 },
     // The portrait flock starts at x .35 since 2026-09-23, clear of the story button (x .127 to .342).
-    { kind: 'birds', wide: [.62, .09, .88, .18], phone: [.35, .10, .62, .18], period: 6, scale: 1.6 },
+    // Top edge .118 since the second walkthrough (was .10): the box's top ran 6 px into the room's name (to y 90).
+    { kind: 'birds', wide: [.62, .09, .88, .18], phone: [.35, .118, .62, .18], period: 6, scale: 1.6 },
   ],
   it_bacaro: [
     // The oil lamp burning on the shelf behind the counter, the one lit thing in the room. Boxed to its glass and
     // its halo, clear of the drinker's cap below it in both compositions.
     { kind: 'light', wide: [.530, .225, .600, .320], phone: [.490, .235, .560, .315], color: '#f3a34b' },
     // The canal door at the right. It is what makes this an osteria on the water rather than a cellar.
-    { kind: 'sunray', wide: [.52, 0, .98, .74], phone: [.50, .02, .90, .60], angles: [.42, .36], sway: [.110, .110] },
+    // Wide re-boxed on 2026-09-23 (second walkthrough 57): over the whole right half, [.52, 0, .98, .74] at drift
+    // .11 and angle .42, the beam lay across the young drinker's face at 10 s. It now falls through the canal door,
+    // down the door leaf and onto the right-hand end of the counter, [.63, 0, .91, 1.0] at angle .30 and drift .09,
+    // which keeps its band in the gap between the young drinker's face (right edge x .679) and the old man's (left
+    // edge .871) at every phase: simulated over 400 s at 0.2 s the band's light on each of the six faces is zero,
+    // and on the live effect canvas over a whole 22.4 s drift no face pixel is lit. The box runs to the bottom of
+    // the painting because the band is narrow: stopped at y .74 it moved 2.7 percent of the frame, under the floor.
+    { kind: 'sunray', wide: [.63, 0, .91, 1.0], phone: [.50, .02, .90, .60], angles: [.30, .36], sway: [.090, .110] },
   ],
   it_laguna: [
     // The green canal outside the door, wide only. The portrait spends this loop on the gull instead, and the wide
@@ -110,12 +127,19 @@ export const ITALY_AMBIENCE: Record<string, AmbientPatch[]> = {
     { kind: 'sunray', wide: [.40, 0, .84, .60], phone: [.22, 0, .86, .56], angles: [.38, .34], sway: [.095, .110] },
     // The portrait flock crosses the sky above the cathedral's dome, x .52 to .76, y .005 to .07, since
     // 2026-09-23: at [.30, .05, .62, .14] it flew behind the room's name (y .076 to .111 at 390 x 844).
-    { kind: 'birds', wide: [.62, .04, .86, .14], phone: [.52, .005, .76, .07], period: 6, scale: 1.6 },
+    // Portrait cut to [.49, .008, .672, .066] on 2026-09-23 (second walkthrough 59): past x .683 it flew behind the
+    // world-story button (x 282 to 326, y 10 to 54). It now crosses the strip of sky between that button and Back.
+    { kind: 'birds', wide: [.62, .04, .86, .14], phone: [.49, .008, .672, .066], period: 6, scale: 1.6 },
     // The palm over the far stalls, in both compositions since 2026-09-23. Boxed to the palm's own crown: wide
     // x .70 to .80, y .03 to .19 (the girl's headscarf starts at .20); portrait x .76 to .90, y .04 to .19. The
     // portrait box had run over the cathedral dome at x .60 to .72, and the wide awning it replaces hung on a chain
     // in open sky.
-    { kind: 'leaves', wide: [.70, .03, .80, .19], phone: [.76, .04, .90, .19], leaf: 'olive', color: '#6e8c3f', count: 8, size: 1.6 },
+    // Portrait re-boxed on 2026-09-23 (second walkthrough 59): the big palm's crown, [.76, .04, .90, .19], ran into
+    // the Street food button (x 254 to 358, y 130 to 158) and under the settings button. The portrait leaves now move
+    // in the smaller palm below it, behind the far stalls, [.815, .195, .895, .245] (x 345 to 383, y 165 to 207),
+    // clear of every button, and fewer and smaller, to stay inside that crown.
+    { kind: 'leaves', wide: [.70, .03, .80, .19], leaf: 'olive', color: '#6e8c3f', count: 8, size: 1.6 },
+    { kind: 'leaves', phone: [.815, .195, .895, .245], leaf: 'olive', color: '#6e8c3f', count: 6, size: 1.3 },
   ],
   it_pasticceria: [
     // The oil lamp on the shelf. The pasticceria has **no steam anywhere** — ricotta, almond, candied fruit and ice
@@ -193,7 +217,10 @@ export const ITALY_HUNG: Record<string, { wide?: HungSprite[]; phone?: HungSprit
     // room's sprite is a gull. It glides over the canal inside the open door, in front of the Burano house fronts.
     // The wide painting has no sky a bird can cross that the room heading does not cover, so it flies in the
     // portrait alone and the wide loop goes to the haze on the canal.
-    phone: [{ name: 'it-gull', fx: .130, fy: .178, fw: .110, sway: 3.0, tone: .96 }],
+    // Moved on 2026-09-23 (second walkthrough 60): at (.130, .178) the room's two-line name pushed "The story" down to
+    // y 132 to 169 and the gull flew behind it. It now glides lower in the door, over the houses and the canal at
+    // (.115, .232), x 12 to 60 and y 196 to 239 at 390 x 844.
+    phone: [{ name: 'it-gull', fx: .115, fy: .232, fw: .100, sway: 3.0, tone: .96 }],
   },
   it_veneto: {
     // The second bare chain beside the pot's, with an empty S-hook on its end: (.584, .110) in wide and

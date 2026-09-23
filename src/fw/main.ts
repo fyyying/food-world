@@ -672,9 +672,12 @@ function enterLivingScene(p: Placed, obj: WorldObject, recipes: EnrichedRecipe[]
       controls.enabled = false;
       const { dishes, label } = sceneDishes(obj, recipes);
       // a place with stands inside (the market): each stand is a button in the scene that opens its own card
-      const stalls = OBJECTS_NOW().filter((o) => o.parent === obj.id).map((st) => {
+      // A child whose alias is the room's own object (Italy's `trattoria` and `pizzeria` alias `ragu` and `oven`)
+      // would only reopen the card "The story" already opens, so the list keeps real sibling stands only.
+      const stalls = OBJECTS_NOW().filter((o) => o.parent === obj.id).flatMap((st) => {
         const target = st.alias ? objectById(st.alias) : st;
-        return { label: `${st.emoji} ${st.name}`, onClick: () => ui.showObject(target, recipesFor(target), OBJECTS_NOW()) };
+        if (target.id === obj.id || target.id === p.obj.id) return [];
+        return [{ label: `${st.emoji} ${st.name}`, onClick: () => ui.showObject(target, recipesFor(target), OBJECTS_NOW()) }];
       });
       if (obj.id === "hotpot") {
         for (const [id, label] of [["pepper", "Broth · Sichuan pepper"], ["garlic", "Dipping sauce · garlic"], ["tofu", "Into the pot · tofu"], ["mushroom", "Into the pot · mushrooms"]]) {

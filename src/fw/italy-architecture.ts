@@ -128,7 +128,10 @@ export function italyBuilding(style: ItalyStyle, w = 3, d = 2.4, h = 2.2, opts: 
   }
   if (style === 'palermoTufa' || style === 'sicilianCoast') {
     // A striped canvas awning on iron arms over the doorway, which is how a Palermo front keeps its shade.
-    for (const x of [-w / 4 - .5, -w / 4 + .5]) add(g, block(.05, 1.0, .05, IRON), x, .5, f + .78);
+    // Second walkthrough 54 (2026-09-23): the two posts that ran from the awning's front edge to the ground read,
+    // from above, as stilts under the house. The arms are wall brackets now: each springs from the wall at 1.1 and
+    // meets the awning's outer edge, and nothing stands on the ground in front of the door.
+    for (const x of [-w / 4 - .5, -w / 4 + .5]) { const arm = add(g, block(.04, .04, 1.0, IRON), x, 1.31, f + .455); arm.rotation.x = -.43; }
     const awn = add(g, block(1.2, .05, .95, '#EFE6D6'), -w / 4, 1.58, f + .44); awn.rotation.x = .12;
     for (let i = 0; i < 5; i++) add(awn, block(.12, .03, .95, i % 2 ? ITP.venetianRed : '#EFE6D6'), -.48 + i * .24, .03, 0);
   }

@@ -1177,3 +1177,94 @@ Shots are `.data/shots/it-f2-*.jpg`; the contact sheet is `italy-fix-round2.png`
 
 **Not verified in this round.** Real-time watching in a displayed pane beyond single screenshots; reduced motion; flicker while moving or zooming; speech-bubble overlap; the 23 card-only stands' click reactions; the dev server restart the brief asked for (not done, because other agents were using it). The steam and fire of `it_laguna` may be under-counted in its motion pairs, which read the effect canvas and `<image>` layers only.
 
+
+## Owner walkthrough on the live site, 2026-09-23
+
+The owner looked at the published Italy (commit `0ea5654`) on her phone:
+
+1. Italy reads a little better than Britain, but it is still not clustered enough
+2. The Colosseum is a bit too small
+3. The historical buildings should be bigger
+4. The tiger and the fighter in the Colosseum are gone; they should be added back
+
+The cause of item 1 is the shared-ground pass above. It was briefed to prefer spreading a cluster over shrinking a stand, so it laid every cluster out in rows along roads, strung the Agro Romano along the Tiber's north bank from x -44 to x -9, and ran the Sicilian stands in two rows the length of the island. Rays cleared, but from the overview the table read as one even carpet of stands with no open ground between places. Measured on the object list as it stood (a cluster's centre is the mean of its stands' anchors): the Agro's farthest stand was 22.5 from its centre, the tonnara coast's 23.0, Venice's 14.8.
+
+### Re-cluster and landmark pass, 2026-09-23
+
+The China standard, and Spain as the owner's reference, is dense clusters clearly separated by open countryside, each with one character. The table was re-laid as **six clusters, each on its own ground under one tint, with at least eight units of open country between any two clusters' ground**. The lagoon's four quays are one cluster, the terraferma farm and rice fields the second Venetian one. A cluster's ground is the convex hull of its stands' footprints; its radius is the farthest stand anchor from the mean of its anchors.
+
+| Cluster | Centre | Radius (before → after) | Tint | Holds, back row first |
+| --- | --- | --- | --- | --- |
+| Rome: the piazza | [1.9, -6.6] | 11.3 → **12.9** | `#d9cbb0` setts, one pool 32 x 31 | Back: `panteonIt` [-9.0, -13.4], `colosseoIt` [0.8, -11.0], `gelateria` [10.0, -15.0]. Middle: `pasta` [-9.0, -1.9], `romeMarket` [0.8, -4.55] with its five stalls round the Campo, `oven` [10.0, -3.0] with its oven house [10.3, -8.4] in the caffè's shadow. Front: the Trevi [0.8, 6.1], `basil` [10.0, 2.9]. The fountain of the Piazza della Rotonda [-9.0, -6.3] before the Pantheon; the palazzo, two houses, the basilica, the obelisk, the triumphal arch and the umbrella pines in a built strip behind the monuments |
+| The Agro Romano | [-32.5, -9.7] | 22.5 → **10.1** | `#c6b489` campagna, 32 x 27 | All on the Tiber's west bank, three rows facing three lanes off one spine along the river. Back: `quintoQuarto` [-39.25, -17.2], `ragu` [-32.55, -17.2], `cheese` [-25.75, -17.2] with its byre [-21.2, -19.8]. Middle: `olive` [-42.4, -9.5], `mushrooms` [-35.6, -9.5], `pecoraIt` [-28.8, -9.5], `carciofoIt` [-22.7, -9.5]. Front: `italyBeef` [-39.2, -2.3], `italyChicken` [-32.55, -2.3], `vinoIt` [-26.05, -2.3]. The campagna casale [-35.8, -23.4] behind the back row, olives, pines and the walled fold on the slope to the sea |
+| Venice: the quays | [29.4, -20.4] | 14.8 → **11.4** | `#ded3b6` Istrian stone | Back: Burano with `lagunaIt` [21.1, -28.3] and its cottage; the San Marco quay with `campanileIt` [30.0, -27.6], the tallest thing in Venice, and two houses. The Grand Canal, four wide, under `rialtoIt` [39.4, -22.8]. Middle: the Rialto quay with `seafood` [25.8, -17.4], `bacaro` [32.95, -17.2] and a house at its west end. Front: the valli bank with `valliIt` [27.3, -9.4] |
+| The terraferma | [27.4, 3.8] | 3.3 → **3.6** | `#a9b878` maize green | `casaVeneta` [23.8, 3.8], `riceIt` [31.0, 3.8], maize, paddies and mulberries round them, on the mainland's east lobe across the lagoon from the quays |
+| Palermo: the Albergheria | [-17.0, 22.8] | 11.9 → **10.3** | `#cdbb92` tufa | Back: `pastry` [-24.3, 20.15], `sicilyMarket` [-15.2, 19.9] with its three stalls and its back lane, `friggitoria` [-7.0, 20.15]. Front: `carrettoIt` [-24.98, 27.15], the Albergheria house [-19.9, 26.2] in the one gap between two stalls' sight lines, `tomato` [-13.6, 26.4] |
+| The tonnara coast and Etna | [17.1, 24.0] | 23.0 → **13.7** | `#b6ac7e` dry gold, `#6b6258` basalt under Etna | Back: `lemon` [8.4, 20.0], `mandorleIt` [15.9, 19.7], `etnaIt` [23.5, 21.8]. Front: `granoIt` [8.4, 26.3], `capperiIt` [16.3, 27.4], `tonnaraIt` [29.9, 28.9] with its sheds [35.4, 26.6] at the cape; the tonnara's tower, two coast houses and the lava walls behind and in front of Etna. The masseria's tower [3.2, 21.4] at its west edge |
+
+Open country between them: the Tiber and its poplars and reeds between the Agro and the piazza (8.2 between the two grounds); the lagoon between the piazza and the quays (8.2); the Apennine spur, vines and olives between the piazza and the terraferma (8.1); the lagoon's south shore between the quays and the farm (8.4); the latifondo's wheat, the prickly pear, the citrus garden and a baroque church between Palermo and the tonnara coast (9.7); and the sea and the strait between the mainland and Sicily.
+
+**Why Rome and the tonnara coast are 13, not 9.** A stand *h* tall hides everything within 1.25 x (*h* - 0.8) of its back from the arrival camera, in its own column. Rome has five six-unit buildings — the Colosseum at 6.9, the Pantheon at 5.0, the pasta kitchen, the forno and the caffè at 6.0 — so each needs a column of its own or six and a half units of shadow in front of the one behind it, and those shadows cannot hold a stand. Rome is therefore three columns (Pantheon and pasta kitchen; Colosseum, market and Trevi; caffè, forno and herb beds) with the gaps holding the fountain, the oven house and the road, 24 by 25. The tonnara is 4.6 high and faces its own sea, so it cannot stand in front of any back-row stand and Etna cannot stand in front of it; it takes a fourth column east of Etna's sight line. Both are as tight as the sight-line rule allows; the others are at or near 10.
+
+#### The moves
+
+| Object | Was | Now | Why |
+| --- | --- | --- | --- |
+| `colosseoIt` | [-3.06, -4] | [0.8, -11.0] | Twice its size; the back of the piazza, where nothing stands behind it, with the market 2.25 in front |
+| `panteonIt` | [-8.55, 1.9] | [-9.0, -13.4] | Larger; the back of the west column, with the Rotonda fountain before it |
+| `gelateria` | [-15.5, -11.2] | [10.0, -15.0] | Back of the east column: at six units it must have nothing behind it |
+| `pasta` | [-8.4, -10.8] | [-9.0, -1.9] | 6.4 in front of the Pantheon's steps, clear of its shadow |
+| `romeMarket` + 5 stalls | [-16.2, -5] | [0.8, -4.55] | The Campo in the middle, with a lane on each side for its outer stalls |
+| `oven` (+ `pizzeria`) | [-22.4, -10.8] | [10.0, -3.0] | 6.4 in front of the caffè; its oven house moved into the caffè's shadow |
+| `basil` | [-24.9, -3.8] | [10.0, 2.9] | In front of the forno, low enough to hide nothing |
+| The Agro's ten | strung from [-42.9, -24.2] to [-12.5, -25.3] and [-39, 2.6] | the three rows above | One place on the west bank: three lanes off a spine along the river, low stands in front of tall ones |
+| `lagunaIt`, `campanileIt`, `rialtoIt`, `seafood`, `bacaro`, `valliIt` | a 27-wide spread of four quays | the three rows above | The campanile to the back row, where nothing stands behind its 10.6-unit tower; the quays re-cut to hold the rows with water between |
+| `casaVeneta`, `riceIt` | [0.5, -20.6], [2, -14.2] | [23.8, 3.8], [31.0, 3.8] | Their old ground was eight units from the piazza's; the east lobe is open and faces the lagoon |
+| `pastry`, `sicilyMarket` + 3 stalls, `friggitoria`, `carrettoIt`, `tomato` | spread with the latifondo and capers | the two rows above | `granoIt` and `capperiIt` left the Albergheria for the tonnara coast, where the blueprint had them |
+| `lemon`, `mandorleIt`, `etnaIt`, `granoIt`, `capperiIt`, `tonnaraIt` | from [-10.16, 26.25] to [33.2, 25.6] | the two rows above | One place: the gardens and terraces in front of the volcano, the tonnara on its own shore east of Etna's sight line |
+
+What moved with them: the mainland's lagoon shore now runs from [12.5, -23.4] to [23, -4.2] and its east lobe bulges to [36.6, 1]; the Tiber runs north to south between the Agro and the piazza, from a spring under the north coast at [-16.3, -24] to a mouth at [-16.2, 12], crossed once by the stone bridge at [-16.2, -6.6]; the Apennine rise is now a spur between the piazza and the terraferma; the quays are re-cut (the Rialto quay 17.6 to 43.6 by -20.8 to -13.85, San Marco 25.0 to 46.6 by -31.7 to -24.8, Burano 13.3 to 24.4, the valli bank 23.8 to 32.0 by -13.35 to -5.8, the lido 47.9 to 49.9); Sicily's south coast reaches half a unit further south at the tonnara. Twenty roads replace sixteen: the piazza street, its front road, the caffè spur, the herb-bed lane, the market's two side lanes, the Agro's spine and three row lanes, the via consolare, the Albergheria lane with Ballarò's back lane, one south road for both Sicilian front rows, the coast road and its link, the fondamenta, the Rialto and San Marco riva, Burano's and the valli's. Every door meets one. The boat lanes, the walker loops, the Castelli wine cart (now on a straight stretch of the via consolare), the mule (on the Agro's spine), the neighbours, the houses and the decor were re-sited to the new ground. `AREAS.rome.center` is [1, -5], `venice` [30, -20], `sicily` [-16, 22], and `main.ts` arrives in Italy at [1, 0, -5].
+
+The thirteen houses all still stand, each where it hides no clickable, and **each keeps a unit of ground from any water** (the Britain rule, applied here and now in `italy-world.mjs`; the lagoon's quays are ground). Four houses and the tonnara sheds were moved or the quays widened to meet it. The baroque church went from the Albergheria's east end to the open latifondo, where the friggitoria's room flight no longer ends inside its dome.
+
+#### Landmarks at landmark scale
+
+| Landmark | Before (footprint, height) | After | How |
+| --- | --- | --- | --- |
+| Colosseum | 4.5 x 5.3, 1.9 (a half-size ruin 4.2 across) | **10.7 x 9.9, 6.9** | Rebuilt: a whole ellipse 10 by 8.2, three storeys of arcades with engaged half-columns and entablatures and the attic with its windows, 6.7 high, the tallest thing in Rome. On the south, the side the camera sees, the outer ring steps down storey by storey to one, as the real one does, with the inner ring's arcades behind the break; through it the stepped cavea and the arena. Card glide at 32 |
+| Pantheon | 4.1 x 5.4, 3.4 | **5.9 x 7.7, 5.0** | The temple at 0.66 of the old decor (was 0.45), set back so its step stays at the road |
+| Trevi | 6.4 x 4.2, 2.8 | **7.7 x 5.1, 3.4** | At 1.2 of the Builder's build, at the front of the Campo, its facade 3.25 in front of the stalls so every ray from them clears it |
+| Campanile | 4.1 x 3.0, 7.8 | **4.7 x 3.7, 10.6** | Tower and loggetta at 1.35; card glide at 36 |
+| Rialto | 3.4 x 7.5, 4.8 | **4.5 x 10.1, 6.5** | The stone at 1.35 in a holder, the people at their own size on its steps (`RIALTO_SCALE`); the Grand Canal four wide under a 3.1 soffit. Its card comes in from the south-east (`yaw` 0.75), because from the south a bridge across an east–west canal shows only its steps |
+| Etna | 6.6 x 7.0, 9.2 | unchanged | As it is; card glide at 34 so the plume stays in frame |
+
+`italy-reactions.mjs` now checks every corner of each landmark's box inside the 34-degree card frame from the three azimuths, with its `approach` applied, and holds each at landmark scale. Its room and card frame checks honour every `approach` override.
+
+#### The Colosseum's tiger and fighter
+
+The old Italy world (before `0e09b3b`) had two gladiators circling and lunging and a tiger pacing the far side of the arena, always on. The rebuilt reaction brings them back on the click, in the current style: a tiger with its stripes, pale belly, hinged legs and tail pads out of the east gate, and a gladiator — the same resident figure as everyone else, with a crested helmet, a round red shield and a short sword — steps out of the west gate; they circle, the tiger springs, the shield comes up, and both go back through their gates. His legs step with the distance he covers. The swifts still spiral out of the upper arcades and the guide points. At rest the arena is empty. The reaction's named subject is now `it-tiger`; `italy-reactions.mjs` asserts both figures hidden at rest and out at the 1.6-second arrival, and the swifts still flying.
+
+**Owner ruling, 2026-09-23:** a landmark may keep its iconic reaction even when its figures are outside the area's period band, because it is the memory of the place the visitor expects; the card text stays in period. The Colosseum's card still describes the ruin with swifts of about 1900. The band grep in `italy-reactions.mjs` exempts the `colosseum` builder by name; a gladiator or a tiger anywhere else in `props-italy.ts` still fails. The ruling is also in `docs/building-a-world.md`, section 6.3.
+
+#### Room and card flights after the move
+
+Checked on the live page at both ends of the orbit (azimuth -0.75 and 0.75) as well as the middle: three room flights ended inside a neighbour from one end — the trattoria in the porcini wood's crowns, the pasticceria and Ballarò in the Albergheria house — and now carry `approach: { yaw: 0 }`, so they always come in from the south where their lanes are open. The market's room flight comes in high (`dist` 12, `pitch` 0.75) over the Trevi. The Builder's room-approach rule (`inRoomApproach`) skips an object that declares its own approach pitch, and `tryPlace` takes one flag so the Trevi alone is placed on the ray check rather than the wedge.
+
+#### The harness
+
+`italy-world.mjs` gained three checks, with the table above as data: every object belongs to exactly one cluster (a hit-only child to its parent's) and no anchor stands further from its cluster's centre than that cluster's radius (Rome 13.2, the Agro 10.5, Venice 11.8, the terraferma 4.0, Palermo 10.7, the tonnara coast 14.0: the measurement plus about 0.3); any two clusters' hulls keep 8 units of open ground; no object or footprint of one cluster stands inside another's hull. A fourth: no house or stand building stands in water or within 1.0 of it. A negative run with Rome's radius set to 9 fails naming the Pantheon, the caffè, the pasta kitchen and the herb beds.
+
+#### Verification
+
+| Check | Result |
+| --- | --- |
+| `npm run typecheck` | Passes |
+| `italy-world.mjs` | "PASS: six clusters (radius rome 12.9, agro 10.1, venice 11.4, terraferma 3.6, palermo 10.3, tonnara 13.7; the closest two hulls 8.1 apart), 20 continuous roads in 5 networks, one sea with 7 holes, the strait at 4.46 and no bridge, 46 objects on dry ground with 36 props measured, 13 houses, 1 built crossing, 7 boats, 23 walkers, 240 seconds of motion." Every stand ceiling still empty: no stand over water, no stand behind a stand, no footprint pair under 1.0, no door off a road |
+| `italy-reactions.mjs` | Passes, with the landmark frame and scale checks and the Colosseum's arena check |
+| Live ten-ray check, fresh load, 1280 x 720, every visible mesh a blocker | **36 of 36 at 10 of 10** |
+| Live room-flight check, 13 rooms at azimuths -0.75, 0, 0.75 | No flight ends in or behind anything but its own stand |
+| `__fw.audit(40)`, fresh load | 44 movers, no violations |
+
+The page was loaded fresh in this agent's own tab from a copy of `index.html` with `WebSocket` stubbed (so other agents' edits could not reload it), with the dev server left running. Contact sheet: `italy-recluster.png` in this pass's scratchpad (overview at 1280 x 720 and 390 x 844, the zoom limit, the six clusters at approach zoom, the five landmark cards, the Colosseum mid-reaction); shots are `.data/shots/it-rc-*.jpg`.
+
+**Not verified in this pass:** the rooms themselves (no room file changed); the phone views beyond the overview, the zoom limit and the Colosseum's card; watching the arena reaction in real time rather than stepped; reduced motion; flicker while moving or zooming; the published site (nothing was pushed).

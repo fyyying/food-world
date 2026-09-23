@@ -549,7 +549,7 @@ function enterRegion(region: MapRegion) {
       // Southeast Asia one (AREAS.bangkok.center), Westminster on the Central Europe one (AREAS.london.center),
       // the default valley everywhere else
       // Italy arrives on the Campo de' Fiori market in Rome (AREAS.rome.center)
-      const target = id === 'middle-east' ? new THREE.Vector3(-24,0,-20) : id === 'southeast-asia' ? new THREE.Vector3(-44, 0, 0) : id === 'italy' ? new THREE.Vector3(-19, 0, -6) : id === 'central-europe' ? new THREE.Vector3(-48, 0, 2) : new THREE.Vector3(-4, 0, 2);
+      const target = id === 'middle-east' ? new THREE.Vector3(-24,0,-20) : id === 'southeast-asia' ? new THREE.Vector3(-44, 0, 0) : id === 'italy' ? new THREE.Vector3(1, 0, -5) : id === 'central-europe' ? new THREE.Vector3(-48, 0, 2) : new THREE.Vector3(-4, 0, 2);
       camera.position.copy(target).add(new THREE.Vector3(-2,80,90)); controls.target.copy(target);
       worldIntro.enter(id, false);
       // Set time-based poses and warm the world's shaders while the paper still covers it. Without this,

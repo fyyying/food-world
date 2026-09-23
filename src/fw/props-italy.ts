@@ -18,7 +18,9 @@
  * **no Vespa, no motor car, no scooter, no spritz glass, no tiramisù, no carbonara, no red-check cloth and no
  * fiasco in a raffia basket.** Wine travels by hooded two-wheeled cart, the Rialto fish market stands under the
  * plain iron canopy of 1884 rather than the stone loggia of 1907, and the Colosseum is an overgrown ruin with
- * swifts in it rather than an arena with anybody in it.
+ * swifts in it. One exception, by owner ruling on 2026-09-23: the Colosseum's click brings a gladiator and a tiger
+ * into its arena, because a landmark keeps the reaction the visitor remembers it by; its card stays in period, and
+ * the band grep exempts that one builder by name.
  *
  * Two rulings from docs/italy-world.md are built in here rather than left to the review: **the casale is a cold
  * room** — whey runs and drips, nothing steams, and it carries no steam point at all — and **the osteria is the
@@ -33,6 +35,7 @@
 import * as THREE from "three";
 import { mat, add, rnd, C, person, wear, bubble, ambientChat, tickChildren, awning, type P } from "./props";
 import { IT_LINES } from "./italy-speech";
+import { masonry } from "./turkey-architecture";
 
 /** The Researcher owns the lines (docs/italy-world.md, module contracts); this file re-exports the one copy. */
 export { IT_LINES } from "./italy-speech";
@@ -2760,58 +2763,184 @@ function bird(colour = "#2f2a2a", s = 1) {
 }
 
 /**
- * The Colosseum as it stood in 1900: two-thirds of the outer ring gone, the travertine pitted, the arcades open to
- * the sky and grown over. No gladiator and no beast: this is a ruin in a working city. On the click the swifts
- * leave the upper arcades in a spiral over the front of the ring, where the arrival camera looks, and come back.
+ * The Colosseum at landmark scale (owner walkthrough on the live site, 2026-09-23: "the Colosseum is a bit too
+ * small"). A whole elliptical amphitheatre 10.4 across and 8.6 deep — twice the half-size ruin it replaced — whose
+ * outer ring stands three storeys of arcades and the attic, 6.7 high, the tallest thing in Rome. On the south, the
+ * side the camera looks from, the outer ring came down in the earthquakes and the stone-robbing as it did on the
+ * real building, stepping down storey by storey to one; through the break the visitor sees the cavea and the
+ * arena. The ellipse's centre stands 3.2 behind the anchor, so the street in front and the people on it meet its door.
+ *
+ * On the click, first the arena (owner ruling, 2026-09-23: a landmark keeps the reaction the visitor remembers the
+ * place by, even when its figures are outside the area's 1880-1914 band; the card stays in period): a tiger pads out
+ * of the east gate and a gladiator with helmet, round shield and short sword steps out of the west one; they circle,
+ * the tiger springs, the gladiator raises his shield, and both go back through their gates. The swifts leave the
+ * upper arcades in a spiral over the front of the ring as before, and the guide points them out.
  */
+const COLOSSEO = { cz: -3.2, A: 5.0, B: 4.1, tier: 1.75, attic: 1.45, arenaA: 2.55, arenaB: 1.75, podium: 0.9 };
 export function colosseum(): P {
   const g = group();
-  // the ruin is drawn at half size: the blueprint stands it small and behind its neighbourhood, 4.6 from the Pantheon
-  const ruin = add(g, new THREE.Group(), 0, 0, -0.4); ruin.scale.setScalar(0.5);
-  const R = 4.2, rows = 3;
-  for (let r = 0; r < rows; r++) {
-    const y = r * 1.3;
-    const ring = new THREE.Mesh(new THREE.CylinderGeometry(R - r * 0.05, R - r * 0.05, 1.3, 40, 1, true, r === 2 ? 2.4 : 0, r === 2 ? Math.PI * 2 - 2.4 : Math.PI * 2), mat(IT.travertine, { side: THREE.DoubleSide }));
-    ring.position.y = y + 0.65; ruin.add(ring);
-    const n = 28;
-    for (let i = 0; i < n; i++) {
-      const a = (i / n) * Math.PI * 2;
-      if (r === 2 && a < 2.4) continue;                                                         // the collapsed top on one side
-      const arch = add(ruin, box(0.5, 0.8, 0.25, "#4a4238"), Math.cos(a) * (R + 0.02), y + 0.6, Math.sin(a) * (R + 0.02)); arch.rotation.y = -a + Math.PI / 2;
-      add(ruin, box(0.16, 1.3, 0.2, "#d9ccb0"), Math.cos(a + Math.PI / n) * (R + 0.05), y + 0.65, Math.sin(a + Math.PI / n) * (R + 0.05)).rotation.y = -a - Math.PI / n + Math.PI / 2;
+  const { cz, A, B, tier, attic, arenaA, arenaB, podium } = COLOSSEO;
+  const full = 3 * tier + attic, N = 44;
+  const stone = IT.travertine, light = "#e3d6ba", shade = "#bba98a", dark = "#3e362e";
+  // how much of the outer ring still stands at angle a (a from +x toward +z, so pi/2 faces the camera): the whole
+  // height on the north and the two flanks, and on the south a break that steps down one storey at a time
+  const broken = (a: number) => clamp01((Math.sin(a) - 0.42) / 0.5);
+  const storeys = (a: number) => { const f = broken(a); return f <= 0 ? 4 : f < 0.2 ? 3 : f < 0.42 ? 2 : 1; };
+  const wallH = (a: number) => { const n = storeys(a); return n === 4 ? full : n * tier; };
+  const at = (a: number, sa = A, sb = B) => V(sa * Math.cos(a), 0, cz + sb * Math.sin(a));
+  // ---------- the outer ring, segment by segment: wall, arcades with their half-columns, cornices, the attic ----------
+  const fabric = new THREE.Group();
+  for (let i = 0; i < N; i++) {
+    const a0 = (i / N) * Math.PI * 2, a1 = ((i + 1) / N) * Math.PI * 2, am = (a0 + a1) / 2;
+    const p0 = at(a0), p1 = at(a1), mid = p0.clone().add(p1).multiplyScalar(0.5), w = p0.distanceTo(p1) + 0.03;
+    const seg = add(fabric, new THREE.Group(), mid.x, 0, mid.z);
+    seg.rotation.y = -Math.atan2(p1.z - p0.z, p1.x - p0.x);                     // local x along the ring, -z outward
+    const h = wallH(am), n = storeys(am);
+    add(seg, box(w, h, 0.42, stone), 0, h / 2, 0);
+    for (let t = 0; t < Math.min(3, n); t++) {
+      const y = t * tier;
+      add(seg, box(w * 0.5, 1.0, 0.08, dark), 0, y + 0.62, -0.2);                // the arch opening
+      add(seg, cyl(w * 0.25, w * 0.25, 0.08, dark, 10), 0, y + 1.12, -0.2).rotation.x = Math.PI / 2;
+      add(seg, box(0.13, tier - 0.12, 0.12, light), w / 2, y + tier / 2, -0.25);   // the engaged half-column
+      add(seg, box(w + 0.02, 0.11, 0.18, light), 0, y + tier - 0.02, -0.24);        // the entablature
+      add(seg, box(w * 0.5 + 0.1, 0.06, 0.1, light), 0, y + 0.1, -0.23);            // the pier plinth
     }
-    if (r < 2) add(ruin, new THREE.Mesh(new THREE.TorusGeometry(R + 0.05, 0.12, 6, 40), mat("#d9ccb0")), 0, y + 1.3, 0).rotation.x = Math.PI / 2;
+    if (n === 4) {
+      if (i % 2 === 0) add(seg, box(0.26, 0.34, 0.06, dark), 0, 3 * tier + 0.72, -0.22);   // the attic's small windows
+      add(seg, box(0.12, attic - 0.1, 0.1, light), w / 2, 3 * tier + attic / 2, -0.24);   // the flat pilasters
+      add(seg, box(w + 0.04, 0.12, 0.26, light), 0, full - 0.04, -0.12);                  // the crowning cornice
+    } else {
+      // the broken top: blocks standing proud of the last storey, ragged, with the grass and caper on them
+      for (let k = 0; k < 2; k++) add(seg, box(0.32 + (i + k) % 3 * 0.1, 0.2 + ((i * 7 + k) % 4) * 0.12, 0.4, k % 2 ? stone : shade), (k - 0.5) * w * 0.5, h + 0.1, 0);
+    }
   }
-  add(ruin, new THREE.Mesh(new THREE.CircleGeometry(R - 0.4, 32), mat("#b8a878")), 0, 0.04, 0).rotation.x = -Math.PI / 2;
-  // what grows on it: the flora the botanists catalogued, as tufts along the ledges and the broken top
-  for (let i = 0; i < 26; i++) { const a = rnd() * Math.PI * 2, y = 1.3 * (1 + Math.floor(rnd() * 2)); add(ruin, ball(0.16, i % 3 ? "#6f8a4a" : "#8fa06a", 5), Math.cos(a) * (R + 0.1), y + 0.05, Math.sin(a) * (R + 0.1)).scale.set(1.2, 0.6, 1.2); }
-  // the swifts: the subject. At rest they are inside the arcades and nothing of them shows (bunched in front of the
-  // wall they read from above as a black heap on the arena floor, walkthrough item 18); the click sends them out of
-  // the upper arcades in a spiral over the front of the ring, and they go back in.
-  const swifts = add(g, new THREE.Group(), 0.3, 1.75, 1.85); swifts.name = "it-swifts";
-  const flock = Array.from({ length: 9 }, (_, i) => { const b = add(swifts, bird(), Math.cos(i * 0.7) * 0.5, 0, Math.sin(i * 0.7) * 0.2); b.rotation.y = i; return b; });
-  // two visitors with a guide book, a friar, and a boy selling postcards, all on the paving below the arcades
-  const visitor = add(g, own(resident("townswoman", false)), -1.5, 0, 2.2) as Figure; visitor.rotation.y = Math.PI - 0.3;
-  const guide = add(g, own(resident("townsman", false)), -0.8, 0, 2.45) as Figure; guide.rotation.y = Math.PI + 0.4;
+  // ---------- the inner ring where the outer came down: two storeys of arcades behind the break ----------
+  for (let i = 0; i < N; i++) {
+    const a0 = (i / N) * Math.PI * 2, a1 = ((i + 1) / N) * Math.PI * 2, am = (a0 + a1) / 2;
+    if (storeys(am) > 1) continue;
+    const p0 = at(a0, A - 0.95, B - 0.95), p1 = at(a1, A - 0.95, B - 0.95), mid = p0.clone().add(p1).multiplyScalar(0.5), w = p0.distanceTo(p1) + 0.03;
+    const seg = add(fabric, new THREE.Group(), mid.x, 0, mid.z);
+    seg.rotation.y = -Math.atan2(p1.z - p0.z, p1.x - p0.x);
+    add(seg, box(w, tier + 0.35, 0.3, shade), 0, (tier + 0.35) / 2, 0);
+    add(seg, box(w * 0.5, 0.95, 0.06, dark), 0, 0.6, -0.16);
+    add(seg, cyl(w * 0.25, w * 0.25, 0.06, dark, 10), 0, 1.07, -0.16).rotation.x = Math.PI / 2;
+  }
+  // ---------- the podium round the arena, the two gates on the long axis, and the paving in front ----------
+  for (let i = 0; i < N; i++) {
+    const a0 = (i / N) * Math.PI * 2, a1 = ((i + 1) / N) * Math.PI * 2;
+    const p0 = at(a0, arenaA, arenaB), p1 = at(a1, arenaA, arenaB), mid = p0.clone().add(p1).multiplyScalar(0.5), w = p0.distanceTo(p1) + 0.03;
+    const seg = add(fabric, new THREE.Group(), mid.x, 0, mid.z);
+    seg.rotation.y = -Math.atan2(p1.z - p0.z, p1.x - p0.x);
+    const gate = Math.abs(Math.cos((a0 + a1) / 2)) > 0.985;
+    add(seg, box(w, podium, 0.2, gate ? dark : shade), 0, podium / 2, 0.1);
+  }
+  g.add(masonry(fabric));
+  // the cavea: the seating slope from the podium up the inside of the ring, in stepped bands, low where the ring broke
+  {
+    const R = 5, pos: number[] = [], col: number[] = [], idx: number[] = [];
+    const tone = [new THREE.Color("#cdbb98"), new THREE.Color("#b8a47f"), new THREE.Color("#8f9a62")];
+    for (let i = 0; i <= N; i++) {
+      const a = (i / N) * Math.PI * 2, top = Math.min(wallH(a) - 0.25, full - 1.2);
+      for (let j = 0; j <= R; j++) {
+        const f = j / R, y = podium + (top - podium) * Math.pow(f, 0.9);
+        const p = at(a, arenaA + (A - 0.3 - arenaA) * f, arenaB + (B - 0.3 - arenaB) * f);
+        pos.push(p.x, y, p.z);
+        const c = tone[(j + (i % 5 === 0 ? 2 : 0)) % 2].clone().lerp(tone[2], (i * 13 + j * 7) % 9 === 0 ? 0.6 : 0);
+        col.push(c.r, c.g, c.b);
+      }
+    }
+    for (let i = 0; i < N; i++) for (let j = 0; j < R; j++) { const k = i * (R + 1) + j, n = k + R + 1; idx.push(k, n, k + 1, k + 1, n, n + 1); }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); geo.setAttribute("color", new THREE.Float32BufferAttribute(col, 3));
+    geo.setIndex(idx); geo.computeVertexNormals();
+    const cavea = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, flatShading: true, roughness: 0.95, side: THREE.DoubleSide }));
+    cavea.name = "it-colosseo-cavea"; cavea.receiveShadow = true; g.add(cavea);
+  }
+  const floor = add(g, new THREE.Mesh(new THREE.CircleGeometry(1, 36), mat("#c9b27f")), 0, 0.05, cz);
+  floor.rotation.x = -Math.PI / 2; floor.scale.set(arenaA, arenaB, 1);
+  // what grows on it: the flora the botanists catalogued, tufts along the broken tops and the ledges
+  for (let i = 0; i < 30; i++) {
+    const a = rnd() * Math.PI * 2, p = at(a, A + 0.05, B + 0.05), y = wallH(a) + 0.12;
+    add(g, ball(0.18, i % 3 ? "#6f8a4a" : "#8fa06a", 5), p.x, i % 4 === 0 ? tier * (1 + (i % 2)) : y, p.z).scale.set(1.3, 0.6, 1.3);
+  }
+  // ---------- the swifts, as before: at rest inside the arcades, on the click out over the front of the ring ----------
+  const swifts = add(g, new THREE.Group(), 0.3, 5.4, cz + B - 0.4); swifts.name = "it-swifts";
+  const flock = Array.from({ length: 9 }, (_, i) => { const b = add(swifts, bird("#4a4038"), Math.cos(i * 0.7) * 0.5, 0, Math.sin(i * 0.7) * 0.2); b.rotation.y = i; return b; });
+  swifts.visible = false;
+  // ---------- the arena: the tiger and the gladiator, each waiting behind a gate on the long axis ----------
+  const gateX = arenaA - 0.35;
+  const tiger = add(g, new THREE.Group(), gateX, 0.05, cz); tiger.name = "it-tiger";
+  const orange = "#d9822b", stripe = "#2a2622";
+  add(tiger, box(1.05, 0.42, 0.42, orange), 0, 0.52, 0);
+  for (let i = 0; i < 5; i++) add(tiger, box(0.07, 0.43, 0.44, stripe), -0.38 + i * 0.19, 0.53, 0);
+  add(tiger, box(0.5, 0.1, 0.36, "#f1e6d0"), 0, 0.3, 0);                                    // the pale belly
+  const tHead = add(tiger, new THREE.Group(), 0.62, 0.66, 0);
+  add(tHead, box(0.36, 0.32, 0.36, orange), 0, 0, 0);
+  add(tHead, box(0.16, 0.14, 0.24, "#f1e6d0"), 0.2, -0.07, 0);
+  for (const z of [-0.12, 0.12]) { add(tHead, cone(0.06, 0.1, orange, 4), -0.04, 0.2, z); add(tHead, ball(0.03, "#1f1f1f", 4), 0.17, 0.05, z); }
+  const tLegs = ([[-0.36, -0.14], [-0.36, 0.14], [0.36, -0.14], [0.36, 0.14]] as [number, number][]).map(([x, z]) => {
+    const hip = add(tiger, new THREE.Group(), x, 0.36, z);
+    add(hip, box(0.13, 0.36, 0.13, orange), 0, -0.18, 0);
+    add(hip, box(0.15, 0.05, 0.16, "#1f1a16"), 0.02, -0.34, 0);
+    return hip;
+  });
+  const tail = add(tiger, new THREE.Group(), -0.52, 0.64, 0);
+  add(tail, cyl(0.03, 0.035, 0.62, orange, 5), -0.26, 0, 0).rotation.z = Math.PI / 2 + 0.5;
+  tiger.rotation.y = Math.PI;                                                                 // it faces into the arena, west
+  tiger.visible = false;
+  const gladiator = add(g, own(resident("worker")), -gateX, 0.05, cz) as Figure; gladiator.name = "it-gladiator";
+  wear(gladiator, cyl(0.15, 0.16, 0.16, "#8c9096", 10), 0, 1.14, 0);                        // the helmet
+  wear(gladiator, box(0.05, 0.1, 0.24, "#a3312a"), 0, 1.27, 0);                            // its crest
+  wear(gladiator, box(0.36, 0.14, 0.3, "#8c9096"), 0, 0.62, 0);                            // the belt and the kilt's plates
+  const shield = add(arms(gladiator).left, cyl(0.24, 0.24, 0.05, "#8e2a22", 14), 0.02, arms(gladiator).hand + 0.1, 0.12);
+  shield.rotation.x = Math.PI / 2;
+  add(arms(gladiator).right, box(0.04, 0.05, 0.42, "#c9ccd0"), 0, arms(gladiator).hand, 0.2);   // the short sword
+  gladiator.rotation.y = Math.PI / 2;                                                       // facing east, into the arena
+  gladiator.visible = false;
+  const gLegs = legsOf(gladiator);
+  let stride = 0, lastX = -gateX, lastZ = cz;
+  // two visitors with a guide book, a friar and a boy selling postcards, on the paving below the arcades
+  const visitor = add(g, own(resident("townswoman", false)), -1.8, 0, cz + B + 0.9) as Figure; visitor.rotation.y = Math.PI - 0.3;
+  const guide = add(g, own(resident("townsman", false)), -0.9, 0, cz + B + 1.2) as Figure; guide.rotation.y = Math.PI + 0.4;
   add(arms(guide).right, box(0.12, 0.02, 0.16, "#8e2a22"), 0, arms(guide).hand, 0.08);
   arms(guide).right.rotation.x = -1.0;
-  const friar = add(g, own(resident("priest", false)), 1.7, 0, 2.1) as Figure; friar.rotation.y = Math.PI + 0.6;
-  const boy = add(g, own(resident("child")), 1.1, 0, 2.55) as Figure; boy.rotation.y = Math.PI - 0.2;
-  swifts.visible = false;
-  const swiftRest = swifts.position.clone();
-  return life(g, "colosseoIt", [guide, visitor, friar, boy], (t, k) => {
-    // 1. the swifts go up off the ledge and spiral out over the front of the ring, then settle again
-    const out = hold(k, 0.14, 0.86);
+  const friar = add(g, own(resident("priest", false)), 2.1, 0, cz + B + 0.8) as Figure; friar.rotation.y = Math.PI + 0.6;
+  const boy = add(g, own(resident("child")), 1.3, 0, cz + B + 1.25) as Figure; boy.rotation.y = Math.PI - 0.2;
+  const swiftRest = swifts.position.clone(), tigerRest = tiger.position.clone();
+  return life(g, "colosseoIt", [guide, visitor, friar, boy], (t, k, dt) => {
+    // 1. the arena first: out of the two gates, a circling, the spring and the shield, and back through the gates
+    const out = hold(k, 0.12, 0.84), spring = beat(k, 0.34, 0.62);
+    const sway = Math.sin(t * 1.3), drift = Math.sin(t * 0.9) * 0.4;
+    tiger.position.set(tigerRest.x - out * (1.25 + 0.2 * sway) - spring * 0.35, tigerRest.y + spring * 0.28, tigerRest.z + out * drift);
+    tiger.rotation.set(0, Math.PI + out * 0.25 * Math.cos(t * 0.9), spring * 0.25);
+    tiger.visible = out > 0.02;
+    tHead.rotation.z = spring * 0.35; tail.rotation.y = out * Math.sin(t * 3) * 0.6;
+    tLegs.forEach((leg, i) => { leg.rotation.z = out * Math.sin(t * 7 + (i % 2 ? Math.PI : 0) + (i > 1 ? 0.6 : 0)) * 0.45 * (1 - spring) + spring * (i > 1 ? -0.7 : 0.5); });
+    const gx = -gateX + out * (1.15 + 0.2 * Math.sin(t * 1.3 + 1)), gz = cz - out * drift;
+    gladiator.position.set(gx, 0.05, gz);
+    gladiator.visible = out > 0.02;
+    // the legs step with the distance covered, and rest when he stands
+    const moved = Math.hypot(gx - lastX, gz - lastZ); lastX = gx; lastZ = gz;
+    stride += moved;
+    const swing = out > 0.02 && moved > 1e-5 ? Math.sin((stride / 0.62) * Math.PI * 2) * 0.45 : 0;
+    gLegs.left.thigh.rotation.x = swing; gLegs.right.thigh.rotation.x = -swing;
+    gLegs.left.shin.rotation.x = Math.max(0, -swing) * 0.9; gLegs.right.shin.rotation.x = Math.max(0, swing) * 0.9;
+    arms(gladiator).left.rotation.x = -out * 0.9 - spring * 0.6;                              // the shield comes up
+    arms(gladiator).right.rotation.x = -out * 0.5 + spring * 0.4;
+    upper(gladiator).rotation.x = spring * 0.15;
+    void dt;
+    // 2. the swifts spiral out over the front of the ring, then settle again
+    const flight = hold(k, 0.2, 0.86);
     swifts.position.copy(swiftRest);
-    swifts.position.y = swiftRest.y + out * 0.6; swifts.position.z = swiftRest.z + out * 0.9;
-    swifts.visible = out > 0.02;
+    swifts.position.y = swiftRest.y + flight * 1.1; swifts.position.z = swiftRest.z + flight * 1.6;
+    swifts.visible = flight > 0.02;
     flock.forEach((b, i) => {
-      const a = t * (2.2 + (i % 3) * 0.3) + i * 0.7, r = 0.5 + out * (0.6 + (i % 4) * 0.25);
-      b.position.set(Math.cos(a) * r, out * Math.sin(a * 0.7 + i) * 0.35, Math.sin(a) * r * (0.4 + out * 0.6));
-      b.rotation.y = out > 0.02 ? -a : i;
-      (b.userData.wings as THREE.Object3D[]).forEach((w, n) => { w.rotation.x = (n ? 1 : -1) * (out > 0.02 ? 0.3 + Math.sin(t * 24 + i) * 0.7 : 0.3); });
+      const a = t * (2.2 + (i % 3) * 0.3) + i * 0.7, r = 0.5 + flight * (0.6 + (i % 4) * 0.25);
+      b.position.set(Math.cos(a) * r, flight * Math.sin(a * 0.7 + i) * 0.35, Math.sin(a) * r * (0.4 + flight * 0.6));
+      b.rotation.y = flight > 0.02 ? -a : i;
+      (b.userData.wings as THREE.Object3D[]).forEach((w, n) => { w.rotation.x = (n ? 1 : -1) * (flight > 0.02 ? 0.3 + Math.sin(t * 24 + i) * 0.7 : 0.3); });
     });
-    // 2. the guide points up with the book, 3. the visitor looks up after them
+    // 3. the guide points with the book, the visitor and the boy look
     arms(guide).right.rotation.x = -1.0 - beat(k, 0.2, 0.9) * 1.1;
     upper(visitor).rotation.x = -beat(k, 0.3, 1) * 0.3;
     upper(boy).rotation.x = -beat(k, 0.4, 1) * 0.25;
@@ -2822,11 +2951,16 @@ export function colosseum(): P {
  * The Pantheon: a portico of granite columns, a bronze door, a dome with an oculus that has never been glazed.
  * On the click the shaft of sun through the oculus swings across the floor inside, which the open door shows, and
  * the pigeons come off the portico, wheel in front of the columns and go back under the cornice.
+ *
+ * Owner walkthrough on the live site, 2026-09-23: the historical buildings should be bigger. The temple is drawn at
+ * 0.66 of the old decor's size, not 0.45 — 5.9 across the portico, 5.0 to the oculus — and set back 1.2 so the step
+ * in front of the portico stays where the road meets it; the people stand on that step.
  */
 export function pantheon(): P {
   const g = group();
-  // the temple at 0.45 of the old decor's size: it stands four units from the pasta kitchen and the Colosseum
-  const temple = add(g, new THREE.Group(), 0, 0, 0); temple.scale.setScalar(0.45);
+  // the temple at 0.66 of the old decor's size, set back so the front of its step stays 2.8 in front of the anchor
+  const TS = 0.66, TZ = -1.2, step = 0.5 * TS;
+  const temple = add(g, new THREE.Group(), 0, 0, TZ); temple.scale.setScalar(TS);
   add(temple, box(9, 0.5, 8, IT.travertine), 0, 0.25, 2);
   add(temple, cyl(4.2, 4.2, 4.2, "#c9b89a", 24), 0, 2.6, -1.5);
   add(temple, cyl(4.4, 4.4, 0.3, "#b9ad98", 24), 0, 4.85, -1.5);
@@ -2848,7 +2982,7 @@ export function pantheon(): P {
   // the pigeons: the subject. At rest they roost up under the portico's cornice and nothing of them shows: sitting
   // on the front step they read from the approach as grey scraps on the paving (walkthrough, as the campanile's did
   // at item 19). The click sends them off the portico, wheeling out in front of the columns, and back in.
-  const pigeons = add(g, new THREE.Group(), 0.2, 0.26, 2.5); pigeons.name = "it-pantheon-pigeons";
+  const pigeons = add(g, new THREE.Group(), 0.2, step + 0.05, 2.45); pigeons.name = "it-pantheon-pigeons";
   pigeons.visible = false;
   // a pigeon, not the swifts' flat plates: a plump body, a darker head, a fanned tail, and wings hinged at the
   // shoulder so they beat as a V instead of spinning like loose paper
@@ -2866,12 +3000,12 @@ export function pantheon(): P {
   };
   const flock = Array.from({ length: 8 }, (_, i) => add(pigeons, pigeon(1.2), 0, 0, 0));
   // a water seller, a woman with a basket, a man reading and a carriage driver on the step
-  const seller = add(g, own(resident("vendor", false)), -1.5, 0.225, 1.9) as Figure; seller.rotation.y = 0.6;
-  add(g, ball(0.22, "#9c6a4a", 10), -1.15, 0.47, 1.85).scale.y = 1.2;
-  const woman = add(g, own(resident("townswoman", false)), 1.4, 0.225, 2.2) as Figure; woman.rotation.y = -0.4;
+  const seller = add(g, own(resident("vendor", false)), -2.1, step, 2.4) as Figure; seller.rotation.y = 0.6;
+  add(g, ball(0.22, "#9c6a4a", 10), -1.75, step + 0.24, 2.45).scale.y = 1.2;
+  const woman = add(g, own(resident("townswoman", false)), 1.5, step, 2.5) as Figure; woman.rotation.y = -0.4;
   add(woman, cyl(0.22, 0.18, 0.16, "#c9a97a", 10), 0, 1.72, 0);
-  const reader = add(g, own(resident("townsman", false)), 1.8, 0.225, 1.6) as Figure; reader.rotation.y = -0.8;
-  const driver = add(g, own(resident("carter", false)), -1.1, 0.225, 1.4) as Figure; driver.rotation.y = 0.9;
+  const reader = add(g, own(resident("townsman", false)), 2.3, step, 2.35) as Figure; reader.rotation.y = -0.8;
+  const driver = add(g, own(resident("carter", false)), -1.1, step, 2.5) as Figure; driver.rotation.y = 0.9;
   const pigeonRest = pigeons.position.clone();
   return life(g, "panteonIt", [seller, woman, reader, driver], (t, k) => {
     (oculus.material as THREE.MeshStandardMaterial).emissiveIntensity = 0.3 + Math.sin(t * 0.6) * 0.1;
@@ -2880,7 +3014,7 @@ export function pantheon(): P {
     pigeons.position.copy(pigeonRest);
     // they climb over the pediment and circle wide apart, each heading along its own circle, so from the card
     // approach they read as eight birds against the dome and the paving rather than one grey knot at the columns
-    pigeons.position.y = pigeonRest.y + up * 3.0; pigeons.position.z = pigeonRest.z + up * 0.2;
+    pigeons.position.y = pigeonRest.y + up * 4.2; pigeons.position.z = pigeonRest.z + up * 0.2;
     pigeons.visible = up > 0.02;
     flock.forEach((b, i) => {
       const a = t * (1.5 + (i % 3) * 0.2) + i * (Math.PI * 2 / 8), r = 0.4 + up * (0.9 + (i % 3) * 0.35);
@@ -3033,6 +3167,9 @@ export function gelateria(): P {
  * walking surface at `dz` from the lane, so a walker who crosses can be lifted to the steps rather than to a flat
  * deck under the arch.
  */
+/** The Rialto is built in this frame and drawn RIALTO_SCALE times larger; `rialtoSoffitY` and `rialtoDeckY` answer in
+ *  this unscaled frame, so a caller multiplies both the distance it asks at and the height it gets by the scale. */
+export const RIALTO_SCALE = 1.35;
 const RIALTO = { half: 1.85, spring: 0.9, crown: 2.3, ring: 0.3, cover: 0.25, end: 3.75, width: 3.3 };
 const rialtoR = (RIALTO.half ** 2 + (RIALTO.crown - RIALTO.spring) ** 2) / (2 * (RIALTO.crown - RIALTO.spring));
 const rialtoYc = RIALTO.crown - rialtoR;
@@ -3056,7 +3193,10 @@ export function rialtoDeckY(dz: number): number {
  * and its goods come out onto the sill; the shopkeeper steps to the door and the porter on the steps turns round.
  */
 export function rialtoBridge(): P {
-  const g = group();
+  // Owner walkthrough on the live site, 2026-09-23: drawn 1.35 times its old size so it reads as the monument, the
+  // stone in a scaled holder; the people stand on its steps at their own size.
+  const root = group(), g = add(root, group()) as P; g.scale.setScalar(RIALTO_SCALE);
+  const RS = RIALTO_SCALE;
   const { half, spring, ring, end, width: W } = RIALTO;
   const stone = "#e6dcc6", stoneShade = "#d6c9ae", lead = "#8d9a99", dark = "#3a332c";
   // the abutments on the two quays, from the ground to the springing, with the steps' lowest flights on them
@@ -3122,13 +3262,13 @@ export function rialtoBridge(): P {
   // the people, each on his own step: the shopkeeper by the shutter, a porter climbing, a woman on the north steps
   const onStep = (x: number, z: number) => V(x, rialtoDeckY(Math.round((z + end) / tread) * tread - end + tread / 2), z);
   const kp = onStep(-0.25, frontZ + 0.3);
-  const shopkeeper = add(g, own(resident("vendor", false)), kp.x, kp.y, kp.z) as Figure; shopkeeper.rotation.y = 0.4;
+  const shopkeeper = add(root, own(resident("vendor", false)), kp.x * RS, kp.y * RS, kp.z * RS) as Figure; shopkeeper.rotation.y = 0.4;
   const pp = onStep(0.2, 2.95);
-  const porter = add(g, own(resident("porter", false)), pp.x, pp.y, pp.z) as Figure; porter.rotation.y = Math.PI;
+  const porter = add(root, own(resident("porter", false)), pp.x * RS, pp.y * RS, pp.z * RS) as Figure; porter.rotation.y = Math.PI;
   add(porter, cyl(0.2, 0.17, 0.16, "#c9a97a", 10), 0, 1.3, 0);
   const wp = onStep(-0.2, -2.9);
-  const woman = add(g, own(resident("fishwife", false)), wp.x, wp.y, wp.z) as Figure; woman.rotation.y = 0;
-  return life(g, "rialtoIt", [shopkeeper, porter, woman], (_t, k) => {
+  const woman = add(root, own(resident("fishwife", false)), wp.x * RS, wp.y * RS, wp.z * RS) as Figure; woman.rotation.y = 0;
+  return life(root, "rialtoIt", [shopkeeper, porter, woman], (_t, k) => {
     // 1. the shutter swings open on its hinge and the goods come out onto the sill
     const open = hold(k, 0.18, 0.84);
     shutter.rotation.y = -open * 1.5;
@@ -3152,7 +3292,11 @@ export function campanile(): P {
   const g = group();
   const brick = "#a9573f", brickDark = "#8f4633", stone = IT.venCream, copper = "#4f8a6a";
   const S = 1.12, shaftTop = 3.95, bellFloor = shaftTop + 0.12, bellTop = 5.3, atticTop = 5.85, spireTop = 7.35;
-  const tower = add(g, new THREE.Group(), 0.1, 0, -1.2);
+  // Owner walkthrough on the live site, 2026-09-23: the monuments should read as monuments. The tower and its
+  // loggetta are drawn 1.35 times the size they were, 10.6 to the angel's head, and the card approach stands the
+  // camera further off (`approach` in italy-objects.ts) so the whole shaft stays inside the frame.
+  const TS = 1.35;
+  const tower = add(g, new THREE.Group(), 0.1, 0, -1.55); tower.scale.setScalar(TS);
   // the stone plinth and the brick shaft, with five pilaster strips on each face running up to the arcading
   add(tower, box(S + 0.24, 0.26, S + 0.24, stone), 0, 0.13, 0);
   add(tower, box(S, shaftTop - 0.26, S, brick), 0, 0.26 + (shaftTop - 0.26) / 2, 0);
@@ -3200,16 +3344,16 @@ export function campanile(): P {
   const bell = bellAt(-0.05, 0.36, 1.1); bell.name = "it-campanile-bell";
   const bells = [bellAt(-0.26, -0.28, 0.8), bellAt(0.26, -0.28, 0.8)];
   // the loggetta at the foot, facing the quay: three arches in pale marble under a white attic
-  const loggetta = add(g, new THREE.Group(), 0.1, 0, 0.05);
+  const loggetta = add(g, new THREE.Group(), 0.1, 0, 0.1); loggetta.scale.setScalar(TS);
   add(loggetta, box(2.2, 0.16, 0.9, stone), 0, 0.08, 0);
   add(loggetta, box(2.2, 1.0, 0.5, "#e2c9bd"), 0, 0.66, -0.2);
   for (let i = 0; i < 4; i++) add(loggetta, cyl(0.07, 0.07, 0.9, "#c9a0a0", 8), -0.9 + i * 0.6, 0.61, 0.12);
   for (let i = 0; i < 3; i++) add(loggetta, new THREE.Mesh(new THREE.TorusGeometry(0.24, 0.04, 4, 10, Math.PI), mat(stone)), -0.6 + i * 0.6, 1.06, 0.12);
   add(loggetta, box(2.3, 0.2, 0.62, stone), 0, 1.4, -0.08);
   // the piazzetta's people (the pigeons scattered on the quay read from above as grey scraps, and are gone)
-  const priest = add(g, own(resident("priest", false)), -1.75, 0, 0.55) as Figure; priest.rotation.y = 0.4;
-  const woman = add(g, own(resident("fishwife", false)), 1.8, 0, 0.9) as Figure; woman.rotation.y = -0.5;
-  const porter = add(g, own(resident("porter", false)), 1.75, 0, -0.9) as Figure; porter.rotation.y = -0.9;
+  const priest = add(g, own(resident("priest", false)), -2.1, 0, 0.8) as Figure; priest.rotation.y = 0.4;
+  const woman = add(g, own(resident("fishwife", false)), 2.1, 0, 1.0) as Figure; woman.rotation.y = -0.5;
+  const porter = add(g, own(resident("porter", false)), 2.0, 0, -1.3) as Figure; porter.rotation.y = -0.9;
   return life(g, "campanileIt", [priest, woman, porter], (t, k) => {
     // 1. the bells swing, the big one first, 2. the tower leans a fraction and settles
     const ring = hold(k, 0.08, 0.86);

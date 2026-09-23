@@ -230,67 +230,75 @@ export function italyCountryside(ctx: LayoutCtx) {
       sheep.userData.tick = undefined;
       tickers.push((t: number) => { sheep.rotation.y = rot + Math.sin(t * .42 + i * 2) * .09; sheep.position.y = Math.sin(t * .85 + i) * .01; });
     }
-    if (!tryPlaceAny(ctx, () => fold, [[-20.6, 7.3, .04], [-20.2, 7.4, .02], [-24.6, 8.4, .06]])) group.remove(fold);
+    if (!tryPlaceAny(ctx, () => fold, [[-36.0, 5.0, .04], [-30.0, 4.8, .02], [-41.0, 5.4, .06]])) group.remove(fold);
   }
 
   // ---------- the terraferma's fields, laid before any tree so none grows in them ----------
   // The flooded rice squares beside the rice fields' own stand, and the maize strips on the terraferma south of
   // the via consolare (the ground round the farm kitchen is all road, pad and the Tiber's spring).
   // A paddy is ground dressing (nothing in it stands knee-high), so it claims its ground by hand.
-  for (const [i, [x, z, w, d]] of ([[-2.6, -12.4, 2.4, 1.9], [-2.6, -14.7, 2.4, 1.9]] as [number, number, number, number][]).entries()) {
+  for (const [i, [x, z, w, d]] of ([[29.6, -1.2, 2.4, 1.9], [32.4, -1.0, 2.4, 1.9]] as [number, number, number, number][]).entries()) {
     const field = tryPlace(ctx, paddy(w, d, i), x, z, 0);
     if (field) { field.name = 'rice-field'; occupy(new THREE.Box3(new THREE.Vector3(x - w / 2, 0, z - d / 2), new THREE.Vector3(x + w / 2, .3, z + d / 2))); }
   }
-  for (const [x, z, w, d] of [[4.4, -9.0, 2.4, 1.6], [7.4, -9.4, 2.4, 1.6]] as [number, number, number, number][]) {
+  for (const [x, z, w, d] of [[22.0, -1.3, 2.4, 1.6], [25.2, -1.4, 2.4, 1.6]] as [number, number, number, number][]) {
     const field = tryPlace(ctx, maizeStrip(w, d), x, z, 0);
     if (field) field.name = 'maize-field';
   }
 
+  // Re-cluster pass, 2026-09-23: the country lies between the six clusters — the chestnut wood and the cypresses in
+  // the north-west behind the Agro, the olives and the fold on the Agro's southern slope to the sea, poplars and reeds
+  // along the Tiber between the Agro and the piazza, the umbrella pines in the built strip behind the monuments,
+  // vines and olives on the spur between the piazza and the terraferma, mulberries round the farm, and on Sicily the
+  // latifondo's wheat, prickly pear and agave in the open ground between Palermo and the tonnara coast.
   // ---------- the vines, and the chestnut wood in the west with the porcini on strings ----------
-  scatter(i => vineRow(2.6 + (i % 3) * .4), 'castelli-vine', 1.6, 9.4, 3.4, 8.6, 1.3, 12, 1.6);
-  scatter(i => chestnut(.8 + (i % 3) * .08, i % 4 === 1), 'chestnut', 7.2, 12.6, -9.6, -4.8, 1.8, 6, 1.6);
+  scatter(i => vineRow(2.6 + (i % 3) * .4), 'castelli-vine', 13.6, 19.6, 7.8, 9.6, 1.3, 8, 1.6);
+  scatter(i => chestnut(.8 + (i % 3) * .08, i % 4 === 1), 'chestnut', -45, -40, -26, -20.5, 1.8, 6, 1.6);
 
-  // ---------- Rome: umbrella pines along the campagna north of the street, cypresses on the ridge ----------
-  scatter(i => umbrellaPine(.78 + (i % 3) * .08), 'umbrella-pine', -27, -2, -18, -14, 3.2, 9, 1.8);
-  scatter(i => umbrellaPine(.8 + (i % 2) * .08), 'umbrella-pine', 9.6, 13.6, 4.8, 8.4, 2.0, 3, 1.8);
-  scatter(i => cypress(.92 + (i % 3) * .12), 'cypress', -44, -33, -25, -19, 1.9, 9, 1.6);
-  scatter(i => cypress(.9 + (i % 2) * .1), 'cypress', 14, 28, 5.6, 8.4, 2.6, 6, 1.6);
+  // ---------- Rome: umbrella pines in the strip behind the monuments, cypresses on the ridges ----------
+  scatter(i => umbrellaPine(.78 + (i % 3) * .08), 'umbrella-pine', -13, 12, -26.2, -19.4, 3.0, 8, 1.8);
+  scatter(i => umbrellaPine(.78 + (i % 3) * .08), 'umbrella-pine', -30, -20, 3.4, 8.8, 3.0, 4, 1.8);
+  scatter(i => umbrellaPine(.8 + (i % 2) * .08), 'umbrella-pine', 14, 19.6, 3.0, 9.0, 2.0, 3, 1.8);
+  scatter(i => cypress(.92 + (i % 3) * .12), 'cypress', -45, -38, -26.2, -21, 1.9, 8, 1.6);
+  scatter(i => cypress(.9 + (i % 2) * .1), 'cypress', 13.4, 19.6, -8, 1.6, 1.8, 5, 1.6);
 
-  // ---------- the Tiber: poplars and reed beds along the bank ----------
-  scatter(i => poplar(.9 + (i % 3) * .12), 'tiber-poplar', -36, -4, -24, 9, 2.0, 14, 2.4);
+  // ---------- the Tiber: poplars and reed beds along the banks, between the Agro and the piazza ----------
+  scatter(i => poplar(.9 + (i % 3) * .12), 'tiber-poplar', -19.6, -12.8, -25, 9.4, 1.8, 14, 2.0);
   // Reed beds hug the bank; the grid is cut round the river itself by `free`, so they stand on the mud and
   // never in the water.
   scatter(() => {
     const reeds = new THREE.Group() as P;
     for (let k = 0; k < 9; k++) { const blade = add(reeds, new THREE.Mesh(new THREE.BoxGeometry(.05, .95, .05), mat('#7E9A56')), (k % 3 - 1) * .18, .48, (Math.floor(k / 3) - 1) * .16); blade.rotation.z = (k % 2 ? .13 : -.13); }
     return reeds;
-  }, 'tiber-reeds', -35, -2, -23, 9, 1.4, 26, 2.2, false);
+  }, 'tiber-reeds', -19.4, -13, -25, 9.4, 1.3, 26, 1.8, false);
 
-  // ---------- the Agro Romano: dry grass and thistle, the olives, and the flock in its own walled fold ----------
-  scatter(i => oliveTree(.9 + (i % 3) * .1), 'agro-olive', -29, -4, 4.6, 8.6, 2.2, 9, 1.6);
-  scatter(i => oliveTree(.95 + (i % 2) * .1), 'agro-olive', 2, 30, -5, 4, 2.6, 9, 1.6);
+  // ---------- the Agro Romano: the olives on its southern slope, and the flock in its own walled fold ----------
+  scatter(i => oliveTree(.9 + (i % 3) * .1), 'agro-olive', -45, -20, 2.6, 8.8, 2.2, 10, 1.6);
+  scatter(i => oliveTree(.95 + (i % 2) * .1), 'agro-olive', 13.4, 19.6, 1.0, 9.4, 2.4, 5, 1.6);
   // The campagna thistles are gone (walkthrough 11: 36 purple-topped dots read as pebbles over every verge).
-  // ---------- the terraferma: mulberry rows, maize stubble, and the rice flooded and mirroring ----------
-  scatter(i => mulberry(.95 + (i % 2) * .1), 'mulberry', -4, 6, -14, -8, 1.8, 8, 1.6);
+  // ---------- the terraferma: mulberry rows round the farm, the maize and the flooded rice ----------
+  scatter(i => mulberry(.95 + (i % 2) * .1), 'mulberry', 19.6, 35, -3.4, -0.2, 1.8, 6, 1.6);
+  scatter(i => mulberry(.95 + (i % 2) * .1), 'mulberry', 20, 33, 8.0, 10.4, 1.8, 5, 1.4);
+  // ---------- the Conca d'Oro's citrus in its walled garden west of the lemon grove, before the prickly pear ----------
+  for (const [i, spot] of ([[-0.8, 18.2, 0], [-0.4, 20.2, 1], [-1.6, 21.6, 2]] as [number, number, number][]).entries()) {
+    const tree = tryPlace(ctx, citrus(.72 + i * .06, i === 1), spot[0], spot[1], spot[2]); if (tree) tree.name = 'conca-citrus';
+  }
   // ---------- Sicily: prickly pear, agave, the latifondo's wheat ----------
-  scatter(i => pricklyPear(.8 + (i % 3) * .1), 'prickly-pear', -21, 32, 17, 30, 1.2, 16, 1.4);
-  scatter(() => agave(.9), 'agave', -20, 10, 28, 30, 1.5, 12, 1.4);
-  for (const [x, z, w, d] of [[-3.4, 28.0, 6.0, 3.0], [6.4, 27.6, 6.6, 3.2], [-13.6, 28.6, 5.0, 2.6]] as [number, number, number, number][]) {
+  scatter(i => pricklyPear(.8 + (i % 3) * .1), 'prickly-pear', -3, 4, 16, 30, 1.2, 8, 1.2);
+  scatter(i => pricklyPear(.8 + (i % 3) * .1), 'prickly-pear', 17, 42, 16, 30, 1.2, 10, 1.4);
+  scatter(() => agave(.9), 'agave', -3, 4, 25, 30, 1.4, 6, 1.2);
+  for (const [x, z, w, d] of [[0.4, 26.2, 5.0, 3.6]] as [number, number, number, number][]) {
     const field = tryPlace(ctx, fieldBlock(w, d, '#D6C07E', '#CBB271'), x, z, 0);
     if (field) field.name = 'latifondo-wheat';
   }
   // ---------- the Conca d'Oro's citrus, and the almond and caper terraces ----------
-  scatter(i => citrus(.7 + (i % 3) * .08, i % 3 === 1), 'conca-citrus', 14.6, 16.0, 24.8, 29.4, 1.1, 6, 1.4);
-  scatter(i => citrus(.7 + (i % 3) * .08, i % 2 === 1), 'conca-citrus', 18.8, 20.2, 24.8, 29.2, 1.1, 5, 1.4);
-  scatter(i => almond(.75 + (i % 2) * .1), 'almond-terrace', 18, 23.4, 24, 28.6, 1.2, 6, 1.4);
-  scatter(i => almond(.75 + (i % 2) * .1), 'almond-terrace', 26.6, 30.4, 20.2, 28, 1.2, 6, 1.4);
-  scatter(i => almond(.7 + (i % 2) * .08), 'almond-terrace', 12, 16, 16.6, 21, 1.0, 4, 1.4);
-  scatter(i => almond(.7 + (i % 2) * .08), 'almond-terrace', 23, 31, 18, 29, 1.0, 6, 1.4);
+  scatter(i => almond(.75 + (i % 2) * .1), 'almond-terrace', 18.8, 24.0, 24.2, 28.8, 1.2, 6, 1.4);
+  scatter(i => almond(.7 + (i % 2) * .08), 'almond-terrace', 36.0, 41.5, 22.0, 28.5, 1.2, 5, 1.4);
   scatter(() => {
     const caper = new THREE.Group() as P;
     for (let k = 0; k < 5; k++) add(caper, new THREE.Mesh(new THREE.IcosahedronGeometry(.22, 0), mat(k % 2 ? '#6E8A4A' : '#5E7A42')), (k % 3 - 1) * .3, .16 + (k % 2) * .06, (Math.floor(k / 3) - .5) * .3).scale.set(1.2, .6, 1.2);
     return caper;
-  }, 'caper-terrace', 22, 30, 24.4, 28.6, 1.4, 16, 1.4, false);
+  }, 'caper-terrace', 18.6, 24.0, 24.2, 29.0, 1.4, 10, 1.4, false);
 
   void ITP;
 }

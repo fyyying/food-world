@@ -357,6 +357,16 @@ The 3D world, its stands, rooms, discovery cues and stories are identical with t
 dish rows differ, and the repertoire list (section 6.1) is world content that stays either way.
 `scripts/tests/recipe-addon.mjs` and `scripts/tests/repertoire.mjs` hold that line.
 
+### 6.3 Landmarks
+
+A landmark is the object a visitor steers by — the Colosseum, a campanile, a volcano — and the owner reads it against the buildings round it. Owner walkthrough on the live Italy site, 2026-09-23: "the Colosseum is a bit too small, and the historical buildings should be bigger". Three rules follow.
+
+- **Landmark scale.** A landmark is the tallest or the widest thing in its cluster, not a model of the stands beside it. Italy's Colosseum went from a 4.5-wide, 1.9-high half-size ruin to a whole ellipse 10.6 across and 6.9 high, taller than the six-unit kitchens round it. `<id>-reactions.mjs` holds each landmark's minimum size so a later layout pass cannot shrink one back into its neighbourhood.
+- **At the edge of its cluster, with nothing behind it.** A stand of height *h* hides everything within 1.25 x (*h* - 0.8) behind it from the arrival camera, so a seven-unit landmark stands in the back row of its cluster, or in a column of its own, and a tall neighbour never stands within that shadow behind it.
+- **Inside the card frame.** The card glide stops 28 units out at the arrival pitch and 34 degrees of lens. When a landmark's box leaves that frame, give it an `approach` override (`dist`, `pitch` or `yaw`) rather than shrinking it; `<id>-reactions.mjs` checks every corner of the landmark's box inside the frame from the three azimuths, with the override applied. A monument whose shape reads only from the side — a bridge seen end-on from the south shows only its steps — takes a `yaw`.
+
+**A landmark may keep its iconic reaction outside the area's period band.** Owner ruling, 2026-09-23, on the Colosseum: the visitor expects a gladiator and a tiger in the arena, because that is the memory of the place, even though the area's band is 1880 to 1914 and the building was a ruin with swifts in it. So the click may bring out figures that are outside the band, when they are what the landmark is remembered for. The card text stays in period: the blurb describes the place as it stood in the band, and the reaction is not written about as if it happened then. The band grep in `<id>-reactions.mjs` exempts that one landmark's builder by name and still fails anywhere else.
+
 ## 7. Rooms
 
 A room is a `paintedScene(cfg)` call. The engine draws the painting, parallax, a warm light, steam, fire, lamps, motes, leaves, petals, mist, sky lanterns and hotspots. The room supplies coordinates.

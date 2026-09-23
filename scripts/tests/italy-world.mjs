@@ -4,7 +4,9 @@
  *  on a road, a clear 2.5 corridor in front of every clickable, ten-ray visibility along the arrival
  *  direction, footprint clearance, walkers that cross no wall and no water over 240 simulated seconds, a mule
  *  that leads with its head, boats that never leave their lane, and the decor the blueprint retired staying
- *  gone — no Vespa and no car anywhere on this table.
+ *  gone — no Vespa and no car anywhere on this table. Since the re-cluster pass of 2026-09-23 it also holds the six
+ *  clusters compact and apart: each within its own radius, eight units of open country between any two hulls, and
+ *  nothing of one cluster inside another's ground.
  *
  *  A word on the object list. `graph.ts` is the Lead's file and is registered at Stage D, so at Stage C the
  *  built world still carries the old Italy objects at their old positions. The harness therefore takes the
@@ -49,6 +51,7 @@ try {
   const {ITALY_PROPS}=await import(pathToFileURL(join(temp,'props.mjs')));
   const {worldZoomLimit,worldFogRange}=await import(pathToFileURL(join(temp,'camera.mjs')));
   const notRun=[];
+  let clusterLine='';
   // `ITALY_MEASURE=1` prints the stand-owned measurements instead of asserting them, so the ceilings below can
   // be re-read after a props-italy.ts change without editing the file blind.
   const MEASURE=process.env.ITALY_MEASURE==='1';
@@ -198,7 +201,11 @@ try {
   // table: IT-R5b went with the tonnara's move east, and three lanes came: IT-R2n along the Agro's north row and
   // the wine road to the via consolare, IT-R2m in front of the olive mill and the artichoke beds, and IT-R4d
   // behind Ballarò to its street-food stall.
-  assert.equal(IT_ROADS.length,16,'the blueprint\'s ten roads, the Stage D door lanes and the shared-ground lanes');
+  // Re-cluster pass (2026-09-23): the table was re-laid as six compact clusters. Twenty routes: on the mainland the
+  // piazza street, its front road, the caffè spur, the herb-bed lane, the market's two side lanes, the Agro's spine
+  // and three row lanes, and the via consolare; on Sicily the Albergheria lane, the south road, Ballarò's back lane,
+  // the coast road and its link; in the lagoon the fondamenta, the Rialto and the riva, Burano's and the valli's.
+  assert.equal(IT_ROADS.length,20,'the re-clustered table\'s twenty routes');
   for(const road of IT_ROADS){
     const mesh=ribbons.find(o=>o.userData.road===road.id);
     assert.ok(mesh,`${road.id}: no ribbon drawn`);
@@ -600,6 +607,74 @@ try {
   }
   standCheck(crowded,'two Italian stand footprints share ground',raw.splice(0));
 
+  // ---------- six clusters, each compact, each separated from the next by open country ----------
+  // Owner walkthrough on the live site, 2026-09-23: "still not clustered enough". The China standard, and Spain as
+  // the owner's reference, is dense clusters clearly separated by open countryside, each with one character. The
+  // table below is the re-cluster pass's (docs/italy-world.md, "Re-cluster and landmark pass, 2026-09-23"). Every
+  // object belongs to exactly one cluster (a hit-only child to its parent's). A cluster's centre is the mean of its
+  // stands' anchors, and no anchor may stand further from it than the cluster's own radius. A cluster's ground is the
+  // convex hull of its stands' footprints; any two hulls keep at least 8 units of open ground between them, and no
+  // object or footprint of one cluster stands inside another's hull. Venice's four quays are one cluster.
+  //
+  // The radii are the pass's measurement plus about 0.3, not a target of 9. A stand h tall hides everything within
+  // 1.25 x (h - 0.8) behind it in its own column, so Rome's five six-unit buildings (the Colosseum, the Pantheon,
+  // the pasta kitchen, the forno and the caffè) need a column each or six and a half units of shadow between them,
+  // and the tonnara needs a column of its own beside Etna's; those two clusters cannot close below 12.
+  {
+    const CLUSTERS=[
+      {id:'rome',radius:13.2,ids:['panteonIt','colosseoIt','gelateria','pasta','romeMarket','oven','basil']},
+      {id:'agro',radius:10.5,ids:['quintoQuarto','ragu','cheese','olive','mushrooms','pecoraIt','carciofoIt','italyBeef','italyChicken','vinoIt']},
+      {id:'venice',radius:11.8,ids:['lagunaIt','campanileIt','rialtoIt','seafood','bacaro','valliIt']},
+      {id:'terraferma',radius:4.0,ids:['casaVeneta','riceIt']},
+      {id:'palermo',radius:10.7,ids:['pastry','sicilyMarket','friggitoria','carrettoIt','tomato']},
+      {id:'tonnara',radius:14.0,ids:['lemon','mandorleIt','etnaIt','granoIt','capperiIt','tonnaraIt']},
+    ];
+    const clusterOf=new Map();
+    for(const c of CLUSTERS) for(const id of c.ids){ assert.ok(!clusterOf.has(id),`${id} is in two clusters`); clusterOf.set(id,c.id); }
+    for(const o of ITALY_OBJECTS){
+      const home=clusterOf.get(o.hitOnly?o.parent:o.id);
+      assert.ok(home,`${o.id}: in no cluster`);
+      if(!o.hitOnly) assert.ok(clusterOf.has(o.id),`${o.id}: a stand outside the cluster table`);
+    }
+    const hullOf=pts=>{
+      const p=[...pts].sort((a,b)=>a[0]-b[0]||a[1]-b[1]), cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);
+      const lo=[],up=[];
+      for(const q of p){while(lo.length>=2&&cr(lo[lo.length-2],lo[lo.length-1],q)<=0)lo.pop();lo.push(q);}
+      for(const q of p.reverse()){while(up.length>=2&&cr(up[up.length-2],up[up.length-1],q)<=0)up.pop();up.push(q);}
+      return [...lo.slice(0,-1),...up.slice(0,-1)];
+    };
+    const corners=id=>{const f=feet.get(id);return [[f.min.x,f.min.z],[f.max.x,f.min.z],[f.min.x,f.max.z],[f.max.x,f.max.z]];};
+    const measured=[], compact=[], apart=[], inside=[];
+    for(const c of CLUSTERS){
+      const anchors=c.ids.map(id=>ITALY_OBJECTS.find(o=>o.id===id).pos);
+      c.centre=[anchors.reduce((s,a)=>s+a[0],0)/anchors.length,anchors.reduce((s,a)=>s+a[1],0)/anchors.length];
+      c.reach=Math.max(...anchors.map(a=>Math.hypot(a[0]-c.centre[0],a[1]-c.centre[1])));
+      for(const [i,a] of anchors.entries()){const d=Math.hypot(a[0]-c.centre[0],a[1]-c.centre[1]); if(d>c.radius) compact.push(`${c.id}: ${c.ids[i]} stands ${d.toFixed(2)} from the centre [${c.centre.map(v=>v.toFixed(1))}], outside its ${c.radius}`);}
+      c.hull=hullOf(c.ids.flatMap(corners));
+      measured.push(`${c.id} ${c.reach.toFixed(1)}`);
+    }
+    assert.deepEqual(compact,[],'a cluster has spread past its radius');
+    let closest=1e9;
+    for(let i=0;i<CLUSTERS.length;i++) for(let j=i+1;j<CLUSTERS.length;j++){
+      const A=CLUSTERS[i],B=CLUSTERS[j];
+      const overlap=A.hull.some(([x,z])=>inPolygon(x,z,B.hull))||B.hull.some(([x,z])=>inPolygon(x,z,A.hull));
+      const gap=overlap?0:Math.min(...A.hull.map(([x,z])=>edgeGap(x,z,B.hull)),...B.hull.map(([x,z])=>edgeGap(x,z,A.hull)));
+      closest=Math.min(closest,gap);
+      if(gap<8) apart.push(`${A.id} and ${B.id}: ${gap.toFixed(2)} of open ground between their hulls`);
+    }
+    assert.deepEqual(apart,[],'two clusters are not separated by 8 units of open country');
+    for(const o of ITALY_OBJECTS){
+      const home=clusterOf.get(o.hitOnly?o.parent:o.id);
+      for(const c of CLUSTERS){
+        if(c.id===home)continue;
+        if(inPolygon(o.pos[0],o.pos[1],c.hull)) inside.push(`${o.id} (${home}) stands inside ${c.id}'s ground`);
+        if(!o.hitOnly&&feet.get(o.id)&&corners(o.id).some(([x,z])=>inPolygon(x,z,c.hull))) inside.push(`${o.id} (${home}) reaches into ${c.id}'s ground`);
+      }
+    }
+    assert.deepEqual(inside,[],'an object stands inside another cluster');
+    clusterLine=`six clusters (radius ${measured.join(', ')}; the closest two hulls ${closest.toFixed(1)} apart)`;
+  }
+
   // ---------- the bridges ----------
   const bridges=world.group.children.filter(o=>o.name==='italy-bridge');
   assert.equal(bridges.length,IT_CROSSINGS.filter(c=>c.built).length,'the Builder draws only the Tiber bridge; the Rialto is a registered object');
@@ -637,9 +712,34 @@ try {
   for(const s of styles) perStyle.set(s,(perStyle.get(s)||0)+1);
   for(const [s,n] of perStyle) assert.ok(n>=1&&n<=3,`${s}: ${n} houses, outside the one-to-three-per-style rule`);
   for(const style of ['romanPalazzo','trastevere','casale','sicilianCoast','masseria']) assert.ok(styles.includes(style),`${style}: no house in that style`);
+  // Which area a house belongs to is read from where it stands: Venice's quays are north of z -5 and east of x 5,
+  // Sicily is south of z 14, and the rest of the mainland is Rome's.
   for(const [area,n] of [['rome',4],['venice',4],['sicily',5]]){
-    const inArea=IT_HOUSES.filter(h=>h.built&&(area==='rome'?h.x<-5&&h.z<10||h.id==='it-piazza-casa':area==='venice'?h.z<-5&&h.x>5:h.z>14)).length;
+    const inArea=IT_HOUSES.filter(h=>h.built&&(area==='venice'?h.z<-5&&h.x>5:area==='sicily'?h.z>14:!(h.z<-5&&h.x>5)&&h.z<=14)).length;
     assert.equal(inArea,n,`${area}: ${inArea} houses where ${n} fit`);
+  }
+  // Owner rule from Britain, 2026-09-23, applied to Italy: no house and no stand building stands in or over any water,
+  // and its footprint keeps at least 1.0 from every water edge — the sea, the Tiber and its spring. The lagoon's
+  // quays are ground, so a Venetian house keeps a unit of stone between its walls and the water. The footprint is
+  // the house's own box above ankle height, walked round its edge every quarter unit.
+  {
+    const soaked=[];
+    for(const h of world.group.children.filter(o=>o.name==='italy-house'||o.name==='stand-building')){
+      let b=null; h.updateMatrixWorld(true);
+      h.traverse(o=>{ if(!o.isMesh||!o.geometry)return; o.geometry.computeBoundingBox(); const bb=o.geometry.boundingBox.clone().applyMatrix4(o.matrixWorld); if(bb.max.y<.35)return; b=b?b.union(bb):bb; });
+      let near=1e9, wetAt=null;
+      const nx=Math.max(2,Math.ceil((b.max.x-b.min.x)/.25)), nz=Math.max(2,Math.ceil((b.max.z-b.min.z)/.25));
+      for(let i=0;i<=nx;i++) for(let j=0;j<=nz;j++){
+        if(i>0&&i<nx&&j>0&&j<nz)continue;
+        const x=b.min.x+(b.max.x-b.min.x)*i/nx, z=b.min.z+(b.max.z-b.min.z)*j/nz;
+        if(wet(x,z)) wetAt??=[x,z];
+        near=Math.min(near,waterEdge(x,z));
+      }
+      const id=h.userData.houseId;
+      if(wetAt) soaked.push(`${id}: stands in the water at ${wetAt[0].toFixed(1)}, ${wetAt[1].toFixed(1)}`);
+      else if(near<1.0) soaked.push(`${id}: its footprint comes ${near.toFixed(2)} from the water, under the 1.0 a building keeps`);
+    }
+    assert.deepEqual(soaked,[],'a house or a stand building stands in the water or within a unit of it');
   }
   // Three buildings belong to stands, and they are not extra houses.
   assert.equal(world.group.children.filter(o=>o.name==='stand-building').length,3,'the forno\'s oven house, the casale\'s byre and the tonnara\'s sheds');
@@ -784,6 +884,6 @@ try {
   assert.deepEqual(marching,[],'a figure steps on the spot');
 
   for(const line of notRun) console.log(`NOT RUN: ${line}`);
-  console.log(`PASS: ${IT_ROADS.length} continuous roads in ${new Set(IT_ROADS.map(r=>r.net)).size} networks, one sea with ${land.length} holes, the strait at ${narrow.toFixed(2)} and no bridge, ${ITALY_OBJECTS.length} objects on dry ground with ${stands.length} props measured, ${houses.length} houses, ${bridges.length} built crossing, ${boats.length} boats, ${walkers.length} walkers, 240 seconds of motion.`);
+  console.log(`PASS: ${clusterLine}, ${IT_ROADS.length} continuous roads in ${new Set(IT_ROADS.map(r=>r.net)).size} networks, one sea with ${land.length} holes, the strait at ${narrow.toFixed(2)} and no bridge, ${ITALY_OBJECTS.length} objects on dry ground with ${stands.length} props measured, ${houses.length} houses, ${bridges.length} built crossing, ${boats.length} boats, ${walkers.length} walkers, 240 seconds of motion.`);
   void ellipseOutline; void SICILY;
 }finally{await rm(temp,{recursive:true,force:true})}

@@ -32,8 +32,10 @@ export const ROAD_Y = .036, PAVING_Y = .018;
  *  - the Rialto fondamenta between the fish market, the osteria and the water
  *  - the Albergheria lane with Ballarò on its north side and the two fry shops on its south */
 export const IT_PAVING: [string, number, number, number, number, string][] = [
-  ['piazza-paving', -16, -7.4, 23, 5, '#d9cbb0'],
-  ['rialto-paving', 30.5, -21.3, 18, 2.8, '#ded3b6'],
+  // Re-cluster pass, 2026-09-23: the Campo between the piazza street, the front road and the market's two lanes;
+  // the Rialto fondamenta; the Albergheria lane.
+  ['piazza-paving', 0.4, -3.3, 11.2, 9.0, '#d9cbb0'],
+  ['rialto-paving', 30.7, -15.3, 20, 2.0, '#ded3b6'],
   ['albergheria-paving', -11.5, 23.2, 22, 3.2, '#cdbb92'],
 ];
 
@@ -264,33 +266,35 @@ export function italyTown(ctx: LayoutCtx) {
   // own decor has new ground: the obelisk and the fountain stand west of the lane's loop, the café tables by the
   // market, and the Trevi — now the Builder's own `treviFountainIt()`, at this table's scale and running — faces
   // the piazza from the open ground north of the caffè.
+  { const trevi = tryPlace(ctx, scaled(treviFountainIt, 1.2)(), 0.8, 6.1, 0, 0, true, false); if (trevi) trevi.name = 'trevi-fountain'; }
   for (const [build, spots, name] of [
-    [scaled(obelisk, .8), [[2.6, 2.6, 0], [2.4, 2.2, 0], [-11.0, -14.0, 0]], 'piazza-obelisk'],
-    [piazzaFountain, [[-19.9, 4.0, 0], [-20.3, 4.2, 0], [-3.0, 6.6, 0]], 'piazza-fountain'],
-    [scaled(cafeTables, .5), [[3.3, -.6, 0], [3.6, -.4, 0], [-24.2, -15.6, 0]], 'cafe-tables'],
-    [treviFountainIt, [[5.3, -4.4, 0], [5.6, -4.6, 0], [-12.3, -19.0, 0]], 'trevi-fountain'],
-    // Second walkthrough 53: turned 90 degrees it stood edge-on to the camera as a slab; it faces +z now, so the
-    // opening shows from the arrival view. Facing front it is 3.4 wide rather than 1.3, so it stands 1.2 further
-    // east than before and is placed after the Trevi, whose ground it would otherwise take.
-    [scaled(triumphalArch, .45), [[11.0, -3.4, 0], [11.4, -3.0, 0], [10.8, -2.4, .1], [6.2, 1.8, 0]], 'triumphal-arch'],
-    [scaled(basilica, .25), [[-1.0, 4.6, .04], [-0.6, 4.8, .04], [-1.6, 4.4, .06]], 'basilica'],
-    [scaled(baroqueChurch, .55), [[8.4, 27.4, .05], [8.8, 27.6, .04], [8.0, 27.2, .05]], 'baroque-church'],
+    // Re-cluster pass, 2026-09-23: the Trevi at 1.2 of the Builder's own build, 7.7 wide, at the front of the Campo
+    // where it faces the camera, 3.25 in front of the market so its facade clears every ray from the stalls, and the
+    // market's room approach flies over it (`approach` in italy-objects.ts); the fountain stands before the Pantheon
+    // as in the Piazza della Rotonda; the obelisk, the basilica and the triumphal arch stand in the built strip behind
+    // the monuments; the baroque church stands on the open latifondo between Palermo and the tonnara coast.
+    [piazzaFountain, [[-9.0, -6.3, 0], [-9.2, -6.1, 0], [-12.6, -19.6, 0]], 'piazza-fountain'],
+    [scaled(cafeTables, .5), [[-10.4, 6.8, 0], [-8.0, 7.0, 0], [3.0, 8.4, 0]], 'cafe-tables'],
+    [scaled(obelisk, .8), [[-9.2, -24.8, 0], [-12.6, -20.4, 0], [9.0, -24.8, 0]], 'piazza-obelisk'],
+    [scaled(triumphalArch, .45), [[9.2, -21.6, 0], [8.6, -21.9, 0], [-5.0, -22.4, 0]], 'triumphal-arch'],
+    [scaled(basilica, .25), [[-3.2, -23.4, .02], [-2.6, -23.8, .02], [-3.8, -23.0, .04]], 'basilica'],
+    [scaled(baroqueChurch, .55), [[1.2, 26.6, .05], [1.4, 26.4, .04], [1.0, 26.8, .03]], 'baroque-church'],
   ] as [() => P, [number, number, number][], string][]) {
     const thing = tryPlaceAny(ctx, build, spots); if (thing) thing.name = name;
   }
   // The Piazzetta on the San Marco quay: the two columns of St Mark and St Theodore toward the water, a well-head,
   // benches along the riva. Walkthrough 19 found a large empty square there.
   for (const [build, spots, name] of [
-    [() => piazzettaColumn(true), [[34.2, -10.3, 0], [34.6, -10.2, 0]], 'piazzetta-column'],
-    [() => piazzettaColumn(false), [[39.2, -10.3, 0], [38.8, -10.2, 0]], 'piazzetta-column'],
-    [wellHead, [[36.7, -11.4, 0], [36.4, -11.8, 0], [34.8, -12.6, 0]], 'well-head'],
-    [() => stoneBench(1.6), [[29.0, -12.4, 0], [28.6, -12.6, 0]], 'quay-bench'],
-    [() => stoneBench(1.6), [[36.7, -10.0, 0], [33.4, -12.4, Math.PI / 2]], 'quay-bench'],
+    [() => piazzettaColumn(true), [[34.0, -30.4, 0], [33.6, -30.6, 0]], 'piazzetta-column'],
+    [() => piazzettaColumn(false), [[44.6, -26.0, 0], [43.0, -26.0, 0]], 'piazzetta-column'],
+    [wellHead, [[34.2, -28.4, 0], [26.4, -30.6, 0], [41.2, -30.8, 0]], 'well-head'],
+    [() => stoneBench(1.6), [[27.4, -30.9, 0], [26.0, -27.4, Math.PI / 2]], 'quay-bench'],
+    [() => stoneBench(1.6), [[40.0, -26.0, 0], [39.8, -30.9, 0]], 'quay-bench'],
   ] as [() => P, [number, number, number][], string][]) {
     const thing = tryPlaceAny(ctx, build, spots); if (thing) thing.name = name;
   }
-  // Broken travertine columns behind the piazza street, between the palazzo and the fountain.
-  for (const [i, [x, z]] of ([[-18.6, -15.4], [-17.4, -15.8], [-16.2, -15.6], [-9.2, -13.4], [-8.2, -14.4]] as Pt[]).entries()) {
+  // Broken travertine columns in the built strip behind the monuments.
+  for (const [i, [x, z]] of ([[7.4, -24.8], [8.6, -25.2], [-7.4, -25.4], [-6.2, -25.9], [11.4, -23.8]] as Pt[]).entries()) {
     const col = new THREE.Group() as P;
     add(col, new THREE.Mesh(new THREE.CylinderGeometry(.28, .32, .9 + (i % 3) * 1.1, 10), mat(ITP.travertine)), 0, (.9 + (i % 3) * 1.1) / 2, 0);
     add(col, new THREE.Mesh(new THREE.CylinderGeometry(.36, .36, .16, 10), mat(ITP.travertine)), 0, .08, 0);
@@ -363,12 +367,12 @@ export function italyTown(ctx: LayoutCtx) {
   // from any clickable's anchor, and clear of every building and tree, so no walker passes through a neighbour
   // and no neighbour stands in a stall. People 1.2 tall hide nothing from the arrival camera.
   for (const [i, [n, spots]] of ([
-    [3, [[-12.4, -2.2], [-26.9, -1.6], [-9.6, -3.6], [-24.4, -11.4]]],
-    [2, [[-28.4, -5.2], [-30.4, -9.8], [-26, -12.6]]],
-    [2, [[-36.4, 1.2], [-32.6, 4.6], [-34.2, 9.0]]],
-    [2, [[33.6, -23.8], [21.8, -23.4], [34, -12], [24.4, -12.4]]],
-    [3, [[-1.6, 25.6], [-17.6, 19.6], [-19.2, 24.4], [-6.4, 25.8]]],
-    [2, [[20.4, 24.6], [9.6, 24.8], [22.4, 27.8], [18.4, 21.2]]],
+    [3, [[-3.4, -4.4], [4.6, 4.6], [-12.6, 4.4], [-12.6, -3.6]]],
+    [2, [[-44.2, -11.6], [-36.0, -4.0], [-22.6, -4.4]]],
+    [2, [[-44.2, -2.4], [-44.2, 3.4], [-29.0, 3.4]]],
+    [2, [[40.8, -18.4], [20.8, -18.6], [42.4, -30.6], [30.0, -30.8]]],
+    [3, [[-2.4, 26.4], [-12.3, 26.8], [-27.4, 20.4]]],
+    [2, [[2.0, 26.3], [19.8, 26.0], [33.2, 24.6]]],
   ] as [number, [number, number][]][]).entries()) {
     const spot = spots.find(([x, z]) => {
       const box = new THREE.Box3(new THREE.Vector3(x - .95, 0, z - .95), new THREE.Vector3(x + .95, 1.2, z + .95));

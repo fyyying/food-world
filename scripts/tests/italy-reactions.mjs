@@ -54,12 +54,21 @@ try{
 
   // 0c. Nothing outside the 1880-1914 band is built. The comments say what was removed, so the grep runs over the
   // code with its comments stripped.
+  // One exception, by owner ruling on 2026-09-23: a landmark may keep the reaction the visitor remembers the place
+  // by even when its figures are outside the period band, because it is the memory of the place; the card text stays
+  // in period. The Colosseum's gladiator and tiger are that exception, so the `colosseum` builder alone is left out
+  // of the gladiator-and-beast grep, and nothing else in this file may build either.
   const source=await readFile('src/fw/props-italy.ts','utf8');
+  const colosseumStart=source.indexOf('export function colosseum(): P {'), colosseumEnd=source.indexOf('\n}\n',colosseumStart);
+  assert.ok(colosseumStart>0&&colosseumEnd>colosseumStart,'the colosseum builder is where the exception expects it');
+  const strip=text=>text.replace(/\/\*[\s\S]*?\*\//g,'').split('\n').map(l=>l.replace(/(^|[^:"'`])\/\/.*$/,'$1'));
+  const outsideColosseum=strip(source.slice(0,colosseumStart)+source.slice(colosseumEnd));
   const code=source.replace(/\/\*[\s\S]*?\*\//g,'').split('\n').map(l=>l.replace(/(^|[^:"'`])\/\/.*$/,'$1'));
   for(const [what,pattern] of [['a Vespa',/vespa/i],['a motor scooter or motorbike',/scooter|motorbik|motorcycle/i],['a motor car or lorry',/automobile|motor ?car|\bcar\b|\blorry\b|\btruck\b/i],
     ['a spritz glass',/spritz|aperol/i],['tiramisù',/tiramis/i],['carbonara',/carbonara/i],['a red-check cloth or a raffia fiasco',/check(ed)? ?cloth|gingham|fiasco|raffia/i],
-    ['a gladiator or a beast in the Colosseum',/gladiator|tiger/i],['a stone loggia over the Pescaria',/loggia/i]]){
-    const hits=code.map((l,i)=>[i+1,l]).filter(([,l])=>pattern.test(l));
+    ['a gladiator or a beast outside the Colosseum\'s own reaction',/gladiator|tiger/i],['a stone loggia over the Pescaria',/loggia/i]]){
+    const lines=/gladiator/.test(String(pattern))?outsideColosseum:code;
+    const hits=lines.map((l,i)=>[i+1,l]).filter(([,l])=>pattern.test(l));
     assert.equal(hits.length,0,`props-italy.ts builds ${what}, which is out of the 1880-1914 band: line ${hits[0]?.[0]} ${hits[0]?.[1]?.trim()}`);
   }
 
@@ -106,7 +115,7 @@ try{
     carciofaia:'it-carciofo-cut',sheepFold:'it-ewe',oliveGrove:'it-olive-basket',wineCart:'it-wine-barrel',cow:'it-ox',chicken:'it-hen',
     porciniWood:'it-porcino',herbGarden:'it-basil-bunch',valliPesca:'it-eel-net',riceFieldItaly:'it-rice-sheaf',wheatLatifondo:'it-wheat-sheaf',
     tomatoField:'it-tomato-tray',citrusGrove:'harvest-fruit',almondGrove:'harvest-fruit',caperTerrace:'it-caper-tub',
-    colosseum:'it-swifts',pantheon:'it-pantheon-pigeons',mattatoio:'it-hook-quarter',gelateria:'it-ice-paddle',
+    colosseum:'it-tiger',pantheon:'it-pantheon-pigeons',mattatoio:'it-hook-quarter',gelateria:'it-ice-paddle',
     rialtoBridge:'it-rialto-shutters',campanile:'it-campanile-bell',etna:'it-etna-plume',carretto:'it-carretto-body'};
   assert.deepEqual(Object.keys(subjects).sort(),[...expected].sort(),'every stand names the subject that answers a click');
   for(const [id,name] of Object.entries(subjects)){
@@ -137,6 +146,14 @@ try{
   // 8.8 away. OrbitControls clamps the azimuth to plus or minus 0.75 radians. Five takes each, because the shared
   // rnd() seed moves crowns and figures a little.
   const rotOf=Object.fromEntries(ITALY_OBJECTS.filter(o=>o.prop&&o.prop!=='none').map(o=>[o.prop,o.rot??0]));
+  // An object's `approach` override (graph.ts) replaces the distance, pitch or bearing of the arrival it gets, exactly
+  // as main.ts's approachOffset applies it: a missing field keeps the default's own value.
+  const approachOf=Object.fromEntries(ITALY_OBJECTS.filter(o=>o.prop&&o.prop!=='none'&&o.approach).map(o=>[o.prop,o.approach]));
+  const withApproach=(base,o)=>{
+    if(!o)return base;
+    const dist=o.dist??base.length(), pitch=o.pitch??Math.asin(THREE.MathUtils.clamp(base.y/Math.max(base.length(),1e-6),-1,1)), yaw=o.yaw??Math.atan2(base.x,base.z);
+    return new THREE.Vector3(Math.sin(yaw)*Math.cos(pitch),Math.sin(pitch),Math.cos(yaw)*Math.cos(pitch)).multiplyScalar(dist);
+  };
   const roomProp=new Set(ITALY_OBJECTS.filter(o=>o.prop&&o.prop!=='none'&&o.scene).map(o=>o.prop));
   const CARD_DIR=new THREE.Vector3(2,48,60).normalize();
   for(const [id,name] of Object.entries(subjects)) for(let take=0;take<5;take++){
@@ -164,10 +181,10 @@ try{
     for(const azimuth of [-0.75,0,0.75]){
       let eye,look;
       if(room){
-        eye=new THREE.Vector3(centre.x+Math.sin(azimuth)*distance,1.2+1.4,centre.z+Math.cos(azimuth)*distance);
         look=new THREE.Vector3(centre.x,1.2,centre.z);
+        eye=look.clone().add(withApproach(new THREE.Vector3(Math.sin(azimuth)*distance,1.4,Math.cos(azimuth)*distance),approachOf[id]));
       }else{
-        const flat=Math.hypot(CARD_DIR.x,CARD_DIR.z), off=new THREE.Vector3(Math.sin(azimuth)*flat,CARD_DIR.y,Math.cos(azimuth)*flat).multiplyScalar(28);
+        const flat=Math.hypot(CARD_DIR.x,CARD_DIR.z), off=withApproach(new THREE.Vector3(Math.sin(azimuth)*flat,CARD_DIR.y,Math.cos(azimuth)*flat).multiplyScalar(28),approachOf[id]);
         const right=new THREE.Vector3(Math.cos(azimuth),0,-Math.sin(azimuth));
         look=new THREE.Vector3(centre.x,.8,centre.z).addScaledVector(right,5);
         eye=look.clone().add(off);
@@ -184,6 +201,36 @@ try{
       const frustum=new THREE.Frustum().setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(lens.projectionMatrix,lens.matrixWorldInverse));
       assert.ok(frustum.containsPoint(aim),`${id}: ${name} is outside the 34-degree ${room?'room':'card'} arrival frame at azimuth ${azimuth} (aim y ${aim.y.toFixed(2)})`);
     }
+  }
+
+  // 3b2. Landmarks at landmark scale (owner walkthrough on the live site, 2026-09-23): the Colosseum twice its old size,
+  // the Pantheon, the Rialto and the campanile larger, Etna as it was. The card glide must still frame the whole
+  // monument, not only its reacting subject: every corner of its box is inside the 34-degree frame at 16:9 from the
+  // three azimuths, at the card distance and pitch or the object's own `approach` override. Each also keeps its size,
+  // so a later pass cannot shrink one back into its neighbourhood.
+  for(const [id,minW,minH] of [['colosseum',10,6.5],['pantheon',5.5,4.8],['rialtoBridge',4.2,6],['campanile',4.2,10],['etna',6.4,9]]){
+    const stand=ITALY_PROPS[id]();stand.updateMatrixWorld(true);
+    const box=new THREE.Box3().setFromObject(stand),size=box.getSize(new THREE.Vector3()),centre=box.getCenter(new THREE.Vector3());
+    assert.ok(Math.max(size.x,size.z)>=minW&&size.y>=minH,`${id}: ${size.x.toFixed(1)} x ${size.z.toFixed(1)} x ${size.y.toFixed(1)} is under landmark scale (${minW} across, ${minH} high)`);
+    for(const azimuth of [-0.75,0,0.75]){
+      const flat=Math.hypot(CARD_DIR.x,CARD_DIR.z), off=withApproach(new THREE.Vector3(Math.sin(azimuth)*flat,CARD_DIR.y,Math.cos(azimuth)*flat).multiplyScalar(28),approachOf[id]);
+      const yaw=Math.atan2(off.x,off.z), right=new THREE.Vector3(Math.cos(yaw),0,-Math.sin(yaw));
+      const look=new THREE.Vector3(centre.x,.8,centre.z).addScaledVector(right,5), lens=new THREE.PerspectiveCamera(34,16/9,.1,400);
+      lens.position.copy(look).add(off);lens.lookAt(look);lens.updateMatrixWorld(true);
+      for(const x of [box.min.x,box.max.x])for(const y of [box.min.y,box.max.y])for(const z of [box.min.z,box.max.z]){
+        const p=new THREE.Vector3(x,y,z).project(lens);
+        assert.ok(Math.abs(p.x)<=1&&Math.abs(p.y)<=1,`${id}: its corner [${x.toFixed(1)}, ${y.toFixed(1)}, ${z.toFixed(1)}] leaves the card frame at azimuth ${azimuth}; give it an \`approach\` override`);
+      }
+    }
+  }
+  // The Colosseum's arena answers the click (owner, 2026-09-23: "the tiger and the fighter in the Colosseum are gone,
+  // they should be added back"): at rest neither is shown, at the 1.6-second arrival both are out in the arena.
+  {
+    const still=ITALY_PROPS.colosseum(),poked=ITALY_PROPS.colosseum();
+    for(const name of ['it-tiger','it-gladiator']) assert.equal(still.getObjectByName(name)?.visible,false,`colosseum: the ${name.slice(3)} waits behind its gate until the click`);
+    poked.userData.poke();for(let i=1;i<=16;i++)poked.userData.tick(i*.1,.1);
+    for(const name of ['it-tiger','it-gladiator']) assert.equal(poked.getObjectByName(name).visible,true,`colosseum: the ${name.slice(3)} is out in the arena at the arrival`);
+    assert.equal(poked.getObjectByName('it-swifts').visible,true,'colosseum: the swifts still spiral out of the arcades');
   }
 
   // 3c. The painted cart answers with light as well as movement: its panels catch the sun and let it go again.
@@ -326,5 +373,5 @@ try{
     if(rooms.includes(id))assert.ok(walkers>=1,`${id}: a main stand needs a walker, and its steps must match the distance`);
   }
 
-  console.log(`PASS: 36 Italy stands for 46 objects, food before speech, a clear sight line and a place in the 34-degree frame from the arrival camera at three azimuths and the blueprint's own rotations, ${lampCount} lamps on real beams, pours on real taps and lips, a cold casale, legs that match the distance covered, nothing out of the 1880-1914 band and an exact return to rest.`);
+  console.log(`PASS: 36 Italy stands for 46 objects, food before speech, a clear sight line and a place in the 34-degree frame from the arrival camera at three azimuths and the blueprint's own rotations, five landmarks whole in the card frame at landmark scale, the Colosseum's tiger and gladiator out on the click, ${lampCount} lamps on real beams, pours on real taps and lips, a cold casale, legs that match the distance covered, nothing out of the 1880-1914 band and an exact return to rest.`);
 }finally{await rm(temp,{recursive:true,force:true});}

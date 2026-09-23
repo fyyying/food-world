@@ -87,10 +87,13 @@ export const VN_HOUSES: [string, VietnamStyle, number, number, number, number, n
   ['vn-tube-terrace', 'tube', -9.6, -22.2, .05, 1.5, 2.0, 2.4, 2],
   // The Red River craft house: low, tiled, bamboo-screened, at the cluster's south-east edge.
   ['vn-courtyard-house', 'courtyard', 13.2, -19.4, -.15, 2.2, 1.9, 2.4, 1],
-  // A Hội An shopfront inland of the quay, shutters to the street; moved off caoLauVn's camera side.
-  ['vn-hoian-front', 'hoiAn', 18.8, 8.2, -.15, 3.0, 2.2, 2.05, 2],
-  // The delta house on its posts, on dry ground above the channel.
-  ['vn-stilt-house', 'stilt', -0.8, 9.6, -.1, 2.1, 1.7, 2.2, 1],
+  // A Hội An shopfront, shutters to the quay road where it leaves the Perfume for the sea. Moved on 2026-09-22
+  // (shared-ground pass): at [18.8, 8.2] it stood on the Huế kitchen's camera line once the stands spread out.
+  ['vn-hoian-front', 'hoiAn', 30, -14, -.15, 3.0, 2.2, 2.05, 2],
+  // A house on its posts on the Red River's south bank. Moved on 2026-09-22 (shared-ground pass): at
+  // [-0.8, 9.6] it stood in front of the stilt homes once the delta stands spread out, and a search of the
+  // delta on a half-unit grid found no ground outside every pad, road corridor and camera wedge.
+  ['vn-stilt-house', 'stilt', 22.5, -20.5, -.1, 2.1, 1.7, 2.2, 1],
 ];
 
 /** A road ribbon: one mesh per route, above the paving and marked so it wins the depth test. A route whose

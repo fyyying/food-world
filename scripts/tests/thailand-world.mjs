@@ -269,7 +269,9 @@ try {
   // whose canals are 3 apart. Moving the river east far enough for the orchard would put it under the Lanna
   // kitchen, which was measured and reverted. These are a ceiling, not a licence: a listed object may not get
   // worse and an unlisted one may not appear. Closing them is a stand resize or a re-blueprint, for the lead.
-  const OVER_WATER={suanTh:3300, sweetsTh:1179, khaoSoiTh:6, chinHawTh:6};
+  // Shared-ground pass, 2026-09-22: the sweets kitchen moved off the khlong grid to the quay's east bank and is
+  // off the list. The three left are the plain and Lanna, which that pass left on their blueprint anchors.
+  const OVER_WATER={khaoSoiTh:6, suanTh:3293, chinHawTh:6};
   const vertex=new THREE.Vector3(), meshBox=new THREE.Box3();
   const soaked=[];
   for(const s of stands){
@@ -384,13 +386,13 @@ try {
     root.traverse(o=>{ if(o.isMesh&&!o.isSprite&&o.geometry&&!(o.material&&(o.material.visible===false||o.material.opacity===0))){ownerOf.set(o,root.name);blockers.push(o);} });
   }
   const standIds=new Set(stands.map(s=>s.id));
+  // Shared-ground pass, 2026-09-22: the khlongs, the old city and Isan were re-laid and all eleven of their
+  // pairs closed; naKhaoTh moved and its pair closed too. What is left is the plain, Lanna and the peninsula,
+  // whose stands are still on their blueprint anchors: see "Shared-ground pass" in docs/thailand-world.md.
   const HIDDEN={
-    'floatingMarket<kuaitiaoRuea':3, 'wangKitchenTh<wat':6, 'wangKitchenTh<curryPaste':3, 'sweetsTh<kluaTh':6,
-    'shophouseTh<curryPaste':2, 'shophouseTh<tukTuk':2, 'naKhaoTh<naPaddyTh':1, 'isanGrillTh<plaRaTh':2,
     'khaoSoiTh<tanTh':3, 'khaoSoiTh<suanTh':5, 'talayTh<babaTh':6, 'talayTh<muslimKitchenTh':3,
-    'chilliesSea<curryPaste':7, 'chilliesSea<tukTuk':2, 'coconutSea<babaTh':3, 'coconutSea<muslimKitchenTh':6,
-    'suanTh<naPaddyTh':3, 'khamminTh<muslimKitchenTh':5, 'almsRound<wat':4, 'karsts<babaTh':6,
-    'longtail<babaTh':3, 'chinHawTh<tanTh':3, 'chinHawTh<suanTh':2,
+    'coconutSea<babaTh':3, 'coconutSea<muslimKitchenTh':6, 'suanTh<naPaddyTh':3, 'khamminTh<muslimKitchenTh':5,
+    'karsts<babaTh':6, 'longtail<babaTh':3, 'chinHawTh<tanTh':3, 'chinHawTh<suanTh':2,
   };
   const byDecor=[];
   const ray=new THREE.Raycaster(); ray.far=400;
@@ -454,21 +456,17 @@ try {
   // 2026-09-22, in units, positive for an overlap. The list is a ceiling, not a licence: a listed pair may not
   // get worse and an unlisted pair may not appear. Closing them is a re-blueprint or a stand resize, and the
   // Stage C report names every one of them to the lead.
+  // Re-measured after the shared-ground pass, 2026-09-22: 53 pairs became 32. Every negative value is a pair with
+  // clear ground under a unit, not an overlap; the overlaps left are the peninsula, the plain and Lanna.
   const CROWDED={
-    'talayTh/karsts':6.43, 'talayTh/coconutSea':5.99, 'wangKitchenTh/wat':5.28, 'wat/almsRound':5.17,
-    'talayTh/babaTh':4.95, 'curryPaste/chilliesSea':4.91, 'curryPaste/shophouseTh':4.77, 'miangTh/chinHawTh':4.64,
-    'shophouseTh/chilliesSea':4.58, 'muslimKitchenTh/khamminTh':4.35, 'coconutSea/khamminTh':4.32,
-    'babaTh/coconutSea':3.97, 'shophouseTh/tukTuk':3.92, 'khaoSoiTh/miangTh':3.85, 'naKhaoTh/naPaddyTh':3.73,
-    'naKhaoTh/tanTh':3.73, 'naKhaoTh/suanTh':3.71, 'isanGrillTh/plaRaTh':3.63, 'wangKitchenTh/almsRound':3.38,
-    'curryPaste/tukTuk':3.22, 'suanTh/chinHawTh':3.18, 'khaoSoiTh/chinHawTh':3.03, 'talayTh/khamminTh':2.9,
-    'floatingMarket/wat':2.73, 'chilliesSea/tukTuk':2.71, 'muslimKitchenTh/babaTh':2.5, 'talayTh/longtail':2.36,
-    'wangKitchenTh/curryPaste':2.27, 'babaTh/longtail':2.16, 'curryPaste/wat':2.06, 'coconutSea/karsts':1.97,
-    'talayTh/muslimKitchenTh':1.87, 'floatingMarket/kuaitiaoRuea':1.83, 'naKhaoTh/plaTh':1.32,
-    'wangKitchenTh/chilliesSea':1.26, 'suanTh/miangTh':1.18, 'muslimKitchenTh/coconutSea':1.13,
-    'chilliesSea/wat':1.05, 'karsts/longtail':0.99, 'sweetsTh/kluaTh':0.96, 'babaTh/khamminTh':0.89,
-    'wangKitchenTh/shophouseTh':0.75, 'shophouseTh/wat':0.54, 'naPaddyTh/tanTh':0.54, 'naPaddyTh/suanTh':0.53,
-    'tanTh/chinHawTh':0.5, 'naPaddyTh/plaTh':0.42, 'kuaitiaoRuea/sweetsTh':0.11, 'kluaTh/khamminTh':-0.64,
-    'floatingMarket/sweetsTh':-0.69, 'khaoSoiTh/suanTh':-0.74, 'wangKitchenTh/tukTuk':-0.8, 'suanTh/tanTh':-0.84,
+    'wangKitchenTh/chilliesSea':-0.64, 'sweetsTh/chilliesSea':-0.97, 'naKhaoTh/tanTh':0.53, 'naKhaoTh/miangTh':-0.14,
+    'isanGrillTh/plaRaTh':-0.09, 'khaoSoiTh/suanTh':-0.72, 'khaoSoiTh/miangTh':3.85, 'khaoSoiTh/chinHawTh':3.05,
+    'talayTh/muslimKitchenTh':1.87, 'talayTh/babaTh':4.95, 'talayTh/coconutSea':5.99, 'talayTh/khamminTh':2.9,
+    'talayTh/karsts':6.43, 'talayTh/longtail':2.36, 'muslimKitchenTh/babaTh':2.5, 'muslimKitchenTh/coconutSea':1.13,
+    'muslimKitchenTh/khamminTh':4.35, 'babaTh/coconutSea':3.97, 'babaTh/khamminTh':0.89, 'babaTh/longtail':2.16,
+    'coconutSea/khamminTh':4.32, 'coconutSea/karsts':1.97, 'naPaddyTh/plaTh':0.42, 'naPaddyTh/suanTh':0.53,
+    'naPaddyTh/tanTh':0.54, 'suanTh/tanTh':-0.84, 'suanTh/miangTh':1.18, 'suanTh/chinHawTh':3.18,
+    'tanTh/chinHawTh':0.5, 'kluaTh/khamminTh':-0.64, 'miangTh/chinHawTh':4.64, 'karsts/longtail':0.99,
   };
   const feet=new Map(stands.map(s=>[s.id,foot(s.group)]));
   const crowded=[];

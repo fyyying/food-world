@@ -311,6 +311,60 @@ The lead accepted the blueprint above with three amendments. The tables in this 
 
 All six checks pass on the amended numbers, first run, with no further nudges to any clickable.
 
+#### Shared-ground pass, 2026-09-22
+
+The cluster table above is the Stage B record. Twenty-eight Vietnamese anchors, two houses and ten roads moved in
+the shared-ground pass; where this table and the one above disagree, this one and `vietnam-objects.ts` are current.
+The blueprint set cluster centres five to eight units apart while the stands as built are four to ten across, so
+every cluster was spread out over the open ground between the clusters, each stand inside its own cluster's band
+(HN1 x -11.5 to 4, HN2 x 3 to 15, CT1 south of the Perfume with the gate north of it, CT2 at the Hội An coast, SG1
+on the Saigon street, MK1 in the delta) and no stand in the water. The account with the counts is under
+[Shared-ground pass, 2026-09-22: the account](#shared-ground-pass-2026-09-22-the-account) at the end.
+
+| Object | Was | Now | Why that spot |
+| --- | --- | --- | --- |
+| `hanoiKitchen` | [-6, -20.3] | **[-0.5, -8]** | 1.85 into the Red River at its back wall, and tangled with the lake and the star-anise tray on a ray each. It moved to the guild street's south end, which now runs to its door |
+| `bunChaVn` | [-0.8, -14.6] | **[-8.9, -18]** | Its grill covered Hoàn Kiếm on four rays and the carriers on one, overlapping both. It took the phở kitchen's old corner on the guild street, now dry ground |
+| `herbsSea` | [-10.6, -17.6] | **[2.8, -15.7]** | Moved to the guild street's east end where it meets the Red River road, out of the bún chả grill's footprint |
+| `starAniseVn` | [-5.4, -16.7] | **[-4.4, -16]** | A unit east, off the bún chả grill's footprint |
+| `hoanKiem` | [-2.6, -21.2] | **[-2.2, -20.1]** | 0.95 into its own lake; a unit south onto the west shore |
+| `motorbikes` | [2.4, -16.6] | **[-8, -9.7]** | The street carriers overlapped four stands by up to 3.6. They moved to the open ground at the street's south-west, where the guild street now begins |
+| `banhCuonVn` | [6, -18.5] | **[15, -15.6]** | 1.74 into the Red River and behind the green-rice courtyard. It moved east to the Red River road's end by the Huế road, on dry ground |
+| `comVongVn` | [9.2, -14.9] | **[8.2, -16.8]** | It covered the water puppets on nine rays and the bánh cuốn on two. Two units north into the bánh cuốn's old place, with the puppets moved out from behind it |
+| `lotusTeaVn` | [5.3, -11.6] | **[3.6, -18.9]** | To the lakeside path by the lotus beds, clear of the green-rice courtyard |
+| `waterPuppetsVn` | [10.4, -18.3] | **[6.5, -8.4]** | Behind the green-rice courtyard on nine rays and inside it by 3.6. It moved south to the lotus lane's end, carrying its own tank with it (the tank is part of the stand) |
+| `hueKitchenVn` | [14.8, -4.6] | **[15.7, -1.6]** | 1.03 into the Perfume and in front of the Huế gate. Three units south, on the garden slope |
+| `banhHueVn` | [19, -4] | **[8.4, 0.8]** | 1.17 into the Perfume and in front of the gate; the garden kitchens now sit side by side, the cakes to the west of the bún bò Huế kitchen, both south of the river on the Huế road |
+| `lemongrassVn` | [12, -4.4] | **[17.6, 5.8]** | Behind the Huế kitchen on one ray. It moved to the garden's south edge |
+| `hueCitadelVn` | [19, -12] | **[22.9, -11.9]** | 1.10 into the Perfume and behind both garden kitchens, three rays each. East along the north bank, still on the river by the bridge |
+| `caoLauVn` | [26.2, -2] | **[22.2, 0.9]** | 1.39 into the Perfume's mouth and behind the mì Quảng counter. Inland onto the Hội An street |
+| `miQuangVn` | [28.6, 1.8] | **[29.1, 5.3]** | Out of the cao lầu's footprint (overlap 4.4) and south along the coast road |
+| `hoiAnQuayVn` | [32, -2] | **[30.8, -2.9]** | The quay stays on the water, by design, and moved a unit to keep its door |
+| `banhMi` | [16.9, 13.5] | **[16.1, 17.6]** | The bread counter and the hủ tiếu shophouse overlapped by 4.4 and Bến Thành by 4.1. The Saigon stands now stand side by side along the street: bánh mì on its south side |
+| `huTieuVn` | [18.7, 15.4] | **[22.6, 15.8]** | East along the street |
+| `caPheVn` | [22, 10.2] | **[27.6, 11.2]** | To the coast road where it enters the street, clear of the hủ tiếu shophouse's column |
+| `benThanhVn` | [14, 17.5] | **[7.6, 16.1]** | The market's 8.3-unit hall covered the bread counter. It moved to the street's west gate where the delta road arrives |
+| `mekongKitchenVn` | [-7.5, 12.5] | **[-8.2, 4.1]** | 1.29 into channel A and in front of the rice and the chicken yard. It moved north to dry ground at the delta lane's head |
+| `banhXeoVn` | [0.3, 13.8] | **[-1.4, 13.65]** | Out of the stilt homes' footprint |
+| `stilts` | [-4.5, 13.2] | **[-1.4, 3.3]** | The stilt homes covered the rice on seven rays and the fish sauce on six. They moved north to the delta lane, in front of nothing |
+| `riceSea` | [-7, 9] | **[8, 8.6]** | Behind the stilt homes on six rays and the kitchen on four. East to the paddies on the Saigon side of the delta road |
+| `chickenSea` | [-10.8, 11.4] | **[-7.7, 12.85]** | Three units east, into the yard the kitchen left |
+| `fishSauce` | [-3.6, 9.4] | **[-8.4, 9.6]** | Behind the stilt homes on six rays and the bánh xèo hearth on two. West to the delta lane |
+| `riverFishVn` | [-11, 18.6] | **[6.6, 21.7]** | The delta's re-lay gave its channel-bank corner to the chicken yard and the fish sauce; the basket moved to the delta shore by the sea, where `VN-R8` passes |
+
+Roads, re-laid so every door is within 3.0 of its road (the harness rule) and every end meets another road, a
+bridge or a door: `VN-R1` now runs from the phở kitchen's door [-1.2, -8.6] north to the old junction, `VN-R1b`'s
+spur end to [2.8, -16.2], `VN-R2b` to [6.3, -9] at the water puppets, `VN-R3` bends west through [10.6, -1.2] for the
+garden kitchens, `VN-R4` through [23.6, -2.4] for the cao lầu, `VN-R4b` ends at the quay's door [30.4, -2.8],
+`VN-R5` and `VN-R6` through the new Saigon row, `VN-R7` starts at [-9.1, 9.8] and bends through [-4.8, 4.6] for the
+kitchen and the stilt homes, and `VN-R8` through [9, 11.7] for the rice. Every junction is still a shared point.
+
+Decorative houses: `vn-hoian-front` [18.8, 8.2] to [30, -14] and `vn-stilt-house` [-0.8, 9.6] to [22.5, -20.5],
+both on the only ground a half-unit search found clear of every pad, corridor and camera column. The countryside's
+`spots` search in `vietnam-countryside.ts` now also refuses a tree in a stand's camera column within 8.5 units
+(an areca in front of the Huế kitchen was the one decor failure the live check found), and plants four pine and
+areca on the citadel bank to keep the Huế slope dressed.
+
 ### Module contracts for Stage C
 
 Every agent owns whole files. Stubs exist so the type check passes while files are empty. Vietnam's set; Thailand's is in [thailand-world.md](thailand-world.md), and the shared files below have **one** owner across both areas, not one per area.
@@ -432,3 +486,21 @@ Both are ceilings, not licences: a listed pair may not get worse and an unlisted
 anchors are fixed in `vietnam-objects.ts` and the geometry in `props-vietnam.ts`, so closing them is an object-
 list change or a stand resize, not a registration. The Thai half of both lists is in
 [thailand-world.md](thailand-world.md) under the same heading.
+
+## Shared-ground pass, 2026-09-22: the account
+
+All twenty-eight Vietnamese anchors moved, with ten roads and two houses; the moves and the reason for each are
+under the cluster table above. The method, the table-wide counts before and after and the Thai half are written
+once, in [thailand-world.md](thailand-world.md) under the same heading.
+
+For Vietnam: live ray failures **21 stand pairs and 1 decor became 6 pairs and no decor**; stands in the water
+**9 became 1**, the Hội An quay at 1.40, which stands on the water by design; stand pairs under a unit of clear
+ground **39 (31 overlapping, worst 4.44) became 20, none overlapping**. The six pairs left, held as dated ceilings
+in `vietnam-world.mjs` with the reason for each in the Thai account: `hoiAnQuayVn < miQuangVn` 4,
+`starAniseVn < hanoiKitchen` 3, and four single rays (`riceSea < benThanhVn`, `waterPuppetsVn < banhHueVn`,
+`miQuangVn < caPheVn`, `hoanKiem < hanoiKitchen`), the last two seen only on the live page.
+
+What moved in identity: the phở kitchen and the street carriers are at the guild street's south end, which now runs
+down to them; Bến Thành stands at the Saigon street's west gate on the delta road; the river-fish basket is on the
+delta shore; the stilt house moved to the Red River bank and the Hội An shopfront to the quay road north of the
+Perfume. Every stand is inside its own cluster's ground and every door within 3.0 of its road.

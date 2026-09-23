@@ -118,10 +118,17 @@ function khlongSampan(colour = '#7FB069'): P {
  *    within six units of one another, and a search out to eight units from the blueprint coordinate found no
  *    ground at all outside their pads and corridors. Castile kept no house on the Spanish table for the same
  *    reason; `lanna` stays a buildable style in `thailand-architecture.ts` and nothing places one
+
+ *
+ *  Shared-ground pass, 2026-09-22: two houses moved again when the khlong and old-city stands spread out.
+ *  `th-khlong-house` [-33.4, 8.8] stood on the alms round's camera line and went to [-27, 18.5], the bank
+ *  south of the chilli stall; `th-shophouse-row` [-32.6, -12.8] stood on the curry kitchen's new pad and went
+ *  to [-32.5, -21.5], behind the old city on the Isan track. A half-unit search of the whole band found no
+ *  other ground outside every pad, road corridor, hill and camera wedge for a house that size.
  */
 const HOUSES: { id: string; style: ThaiStyle; x: number; z: number; rot: number; w: number; d: number; h: number; storeys?: number; y?: number }[] = [
-  { id: 'th-khlong-house', style: 'central', x: -33.4, z: 8.8, rot: -.35, w: 2.4, d: 1.9, h: 2.0 },
-  { id: 'th-shophouse-row', style: 'shophouse', x: -32.6, z: -12.8, rot: .1, w: 4.8, d: 2.0, h: 1.9, storeys: 2 },
+  { id: 'th-khlong-house', style: 'central', x: -27, z: 18.5, rot: -.35, w: 2.4, d: 1.9, h: 2.0 },
+  { id: 'th-shophouse-row', style: 'shophouse', x: -32.5, z: -21.5, rot: .1, w: 4.8, d: 2.0, h: 1.9, storeys: 2 },
   { id: 'th-isan-house', style: 'isan', x: -23.2, z: -25.7, rot: .25, w: 2.2, d: 1.8, h: 1.7, y: .6 },
   { id: 'th-kampong-house', style: 'kampong', x: -61, z: 9.8, rot: .4, w: 2.4, d: 1.9, h: 1.8 },
 ];
@@ -167,15 +174,15 @@ export function thailandTown(ctx: LayoutCtx) {
     if (chedi) chedi.name = 'wat-chedi';
   }
   for (const spots of [
-    [[-34.6, 13.8, -.4], [-33.4, 16.2, -.4], [-31.8, 11.4, -.2]],
-    [[-50.4, 13.6, 1.3], [-48.6, 11.8, 1.3], [-47.4, 16.4, 1.1]],
+    [[-34.6, 13.8, -.4], [-33.4, 16.2, -.4], [-31.8, 11.4, -.2], [-40, -21, .2]],
+    [[-50.4, 13.6, 1.3], [-48.6, 11.8, 1.3], [-47.4, 16.4, 1.1], [-58.5, 5.8, .3]],
     [[-45.4, 18.6, .6], [-43.4, 16.8, .6], [-46.8, 21.4, .4]],
   ] as [number, number, number][][]) {
     const sala = tryPlaceAny(ctx, () => salaPavilion(), spots); if (sala) sala.name = 'thai-sala';
   }
 
   // ---------- landing stages down the quay, where the boats tie up ----------
-  for (const [x, z, rot] of [[-43.2, -2.6, Math.PI / 2], [-39.6, 6.4, Math.PI / 2], [-38.8, 16.4, Math.PI / 2], [-50.6, 3.2, 0], [-40.2, 13.2, Math.PI / 2]] as [number, number, number][]) {
+  for (const [x, z, rot] of [[-43.2, -2.6, Math.PI / 2], [-39.6, 6.4, Math.PI / 2], [-38.8, 16.4, Math.PI / 2], [-50.6, 3.2, 0], [-40.2, 13.2, Math.PI / 2], [-55, 6.8, 0], [-46, 17.8, Math.PI / 2]] as [number, number, number][]) {
     const stage = tryPlace(ctx, landingStage(2.0), x, z, rot); if (stage) stage.name = 'landing-stage';
   }
 

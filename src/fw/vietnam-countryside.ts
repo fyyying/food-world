@@ -18,6 +18,7 @@ import {
   roadDistance, type Pt,
 } from './vietnam-landscape';
 import type { LayoutCtx } from './worldkit';
+import { VIETNAM_OBJECTS } from './vietnam-objects';
 
 /** An areca palm: a slim ringed trunk under a short crown of fronds, the tree of a Vietnamese garden edge. */
 function areca(s = 1): P {
@@ -96,12 +97,29 @@ export function vietnamCountryside(ctx: LayoutCtx) {
    * 2.5 + crown from every clickable anchor, clear of every road corridor, off the slopes' own footprints and
    * `apart` from anything already placed. The search is deterministic, so the world is the same every load.
    */
+  /**
+   * The owner's rule is that every clickable object is fully visible from the arrival camera, which looks from
+   * the south, two degrees east of due south, and climbs 0.8 for every unit it travels south. A tree whose
+   * crown stands in that column on a stand's camera side, within nine units, is between the visitor and the
+   * stand: the shared-ground pass of 2026-09-22 found an areca, a pine, a willow and a coconut palm doing
+   * exactly that once the stands spread out. The column is the stand's own half-width of four units either side
+   * of the camera line, widened by the crown.
+   */
+  const inCameraColumn = (x: number, z: number, crown: number): boolean => {
+    for (const o of VIETNAM_OBJECTS) {
+      const dz = z - o.pos[1];
+      if (dz < 0 || dz > 8.5) continue;
+      if (Math.abs(x - o.pos[0] - Math.max(dz, 0) / 30) < 3 + crown) return true;
+    }
+    return false;
+  };
   const taken: Pt[] = [];
   const spots = (box: [number, number, number, number], count: number, crown: number, apart = 3.2, lane = 1.5): Pt[] => {
     const found: Pt[] = [];
     for (let x = box[0]; x <= box[2] && found.length < count; x += .5)
       for (let z = box[1]; z <= box[3] && found.length < count; z += .5) {
         if (!freeGround(x, z, 2.5 + crown + .2, lane + crown * .5, crown)) continue;
+        if (inCameraColumn(x, z, crown)) continue;
         if (taken.some(([tx, tz]) => Math.hypot(tx - x, tz - z) < apart)) continue;
         found.push([x, z]); taken.push([x, z]);
       }
@@ -147,6 +165,14 @@ export function vietnamCountryside(ctx: LayoutCtx) {
   // ---------- the Huế slope: pine and areca above the garden, on the raised ground ----------
   for (const [i, [x, z]] of spots([10, -4, 20, 6], 6, 1.7).entries()) {
     const t = put(i % 2 ? areca(.92 + (i % 3) * .08) : tree('pine', 1.0 + (i % 3) * .1), x, z, x);
+    t.name = i % 2 ? 'hue-areca' : 'hue-pine';
+    if (t.userData.tick) tickers.push(t.userData.tick);
+  }
+
+  // The citadel bank north of the Perfume: pine and areca round the gate. Added on 2026-09-22 (shared-ground
+  // pass), when the garden kitchens spread over the slope south of the river and it had no free ground left.
+  for (const [i, [x, z]] of spots([20, -22, 31, -12], 4, 1.5).entries()) {
+    const t = put(i % 2 ? areca(.9 + (i % 3) * .08) : tree('pine', .95 + (i % 3) * .1), x, z, x);
     t.name = i % 2 ? 'hue-areca' : 'hue-pine';
     if (t.userData.tick) tickers.push(t.userData.tick);
   }

@@ -423,6 +423,44 @@ The lead accepted the blueprint above with three amendments. The tables in this 
 
 All six checks pass on the amended numbers, first run, with no further nudges to any clickable.
 
+#### Shared-ground pass, 2026-09-22
+
+The cluster table above is the Stage B record. Twelve Thai anchors, two houses and five roads moved in the
+shared-ground pass; where this table and the one above disagree, this one and `thailand-objects.ts` are current.
+The khlongs, the old city and Isan were re-laid; the plain, Lanna and the peninsula keep their Stage B anchors
+except the field lunch. The full account, with the counts and what is left, is under
+[Shared-ground pass, 2026-09-22: the account](#shared-ground-pass-2026-09-22-the-account) at the end of this document.
+
+| Object | Was | Now | Why that spot |
+| --- | --- | --- | --- |
+| `wat` | [-36.5, -3.4] | **[-40.3, -12.5]** | The wat's 7.8-unit chedi and roofs covered the household kitchen on six rays and the alms round on four, and its box overlapped both by five units. It moved north-west to the head of the quay, behind every other old-city stand, where nothing stands between it and the camera and it hides nothing: its own camera column is the open quay |
+| `almsRound` | [-41, -8] | **[-31.3, -2.2]** | The monks walked out of the wat's footprint. They now stand on the old-city street's paving south of the wat, in the open square, low (1.4 tall) so they hide nothing, and clear of every roof |
+| `curryPaste` | [-30, -2] | **[-30.6, -11]** | The mortar's 5.9-unit roof covered the chilli stall on nine rays and the shophouse on three, live. It moved to the north row of the old city beside the wat, on Sampheng lane's start, so its column runs over the low alms round and the open street |
+| `shophouseTh` | [-27, -5] | **[-21.7, -6.1]** | Five units east to the street's east end, out of the mortar's and the rickshaw's columns; it still fronts `TH-R3` |
+| `wangKitchenTh` | [-34.5, -7] | **[-18, 8.5]** | The household kitchen was behind the wat (6 rays) and the mortar (3) with its box inside both. No position north of the street clears the wat's height, so it moved to the south side of the old city on the re-laid Sampheng lane, with open ground in front of it to the Gulf |
+| `chilliesSea` | [-29.6, -5.4] | **[-27.3, 6.8]** | The chilli, galangal and lemongrass stall sat under the mortar's roof (overlap 4.9, nine rays live). It now stands on Sampheng lane between the alms round and the Gulf, 2.3 wide and 2.4 tall, still four doors from the mortar it supplies |
+| `tukTuk` | [-26.5, -1.5] | **[-20, 16.7]** | The rickshaw covered the shophouse and the chilli stall on a ray each, live, and overlapped both. It stands at the lane's south end on the Gulf road, where `TH-R3b` now ends at it |
+| `sweetsTh` | [-49.5, 7.6] | **[-34.2, 16.4]** | The sweets kitchen was 8.4 wide on a khlong grid whose canals are 3 apart: 1,179 vertices over water, and the salt pans in front of it covered three rays live. No dry plot on the grid holds it, so it crossed to the east bank below the quay, on dry ground beside the noodle boat's landing, and is off the over-water list |
+| `kuaitiaoRuea` | [-41.6, 10.5] | **[-40.2, 18.5]** | The noodle boat hid three rays of the floating market and overlapped it. It moored eight units down the same east bank, still on the Chao Phraya and still at the quay |
+| `isanGrillTh` | [-25, -21] | **[-17.6, -21]** | The jar yard in front of it covered two rays and the two overlapped by 3.6. The grill moved east along the Isan track to the plateau's east shoulder, the jar yard west, side by side instead of one before the other |
+| `plaRaTh` | [-21.5, -18.5] | **[-24.6, -21]** | See the grill. West of it on the plateau, clear of the Isan house's pad and of the hill at [-31, -27.2] |
+| `naKhaoTh` | [-57, -11] | **[-71.5, -15.4]** | The rice-field lunch overlapped the paddy, the orchard and the sugar palms by 3.7 each. It moved to the western paddies at the plain road's bend, which was carried out to it, and its four overlaps and its covered ray are closed |
+
+Roads, each re-laid to keep a door within 2.6 of every moved stand (the `thailand-world.mjs` rule) and every end
+on another road, a door or the shore:
+
+- `TH-R3b`, Sampheng lane, was `[-30.8,-7.6] [-31.8,-3.8] [-31.4,-0.4] [-27.8,0.8]` and is now
+  `[-30.8,-7.6] [-25.4,4.4] [-21.3,8] [-20.2,13.3]`: from the mortar's corner south past the alms round and the
+  chilli stall to the household kitchen and the rickshaw
+- `TH-R1`, the quay: five points moved by half a unit or less to keep the wat's and the noodle boat's doors
+- `TH-R3`, the old-city street, and `TH-R6`, the Isan track: points moved by under 0.7 for the wat and the grill
+- `TH-R4`, the plain road: its bend at [-62.4, -12.4] went to [-68.4, -14.4], to the field lunch's door
+- Decorative houses: `th-khlong-house` [-33.4, 8.8] to [-27, 18.5] (it stood on the alms round's camera line) and
+  `th-shophouse-row` [-32.6, -12.8] to [-32.5, -21.5] (it stood on the mortar's new pad), both at the only ground a
+  half-unit search of the band found outside every pad, corridor, hill and wedge. A landing stage was added as a
+  candidate at [-55, 6.8] and [-46, 17.8] and a sala at [-40, -21] and [-58.5, 5.8], because the moved stands took
+  the ground of every candidate the Builder had listed
+
 ### Module contracts for Stage C
 
 Every agent owns whole files. Stubs exist so the type check passes while files are empty. Thailand's set; Vietnam's is in [vietnam-world.md](vietnam-world.md) and the shared files are marked.
@@ -572,3 +610,80 @@ from `HIDDEN` in `scripts/tests/thailand-world.mjs`:
 on the khlong grid, where the anchor is fixed in `thailand-objects.ts` and the water line in this document.
 
 The Vietnamese half of both lists is in [vietnam-world.md](vietnam-world.md) under the same heading.
+
+## Shared-ground pass, 2026-09-22: the account
+
+The fix pass Stage D left open: every clickable fully visible from the arrival camera, no stand sharing ground with
+another, no stand over water, measured on the live page after a fresh load (the dev server restarted through the
+preview tool, one tab of its own, `window.__fw`) and held by the two harnesses. The method is Spain's third to fifth
+passes. The moves, road re-lays and house moves are listed under the two cluster tables, in this document for
+Thailand and in [vietnam-world.md](vietnam-world.md) for Vietnam.
+
+### How the positions were found
+
+Hand-nudging does not converge on a table of sixty stands four to twelve units across. The built world was dumped
+once, every stand's meshes as boxes relative to its anchor, and a search moved the anchors against the same three
+measures the harnesses take — the ten rays along `(2, 48, 60)`, the footprint clearance, and every vertex against
+the water — plus a door within 2.0 of a road, each stand held inside its own cluster's ground, and the Builders'
+houses, hills and karsts as fixed blockers. Every candidate layout was then built for real and measured with the
+exact ray test before anything was written; the numbers below are that exact test and the live page, never the
+search's own estimate.
+
+### Counts, before and after
+
+| Measure | Before (Stage D) | After | Where it was measured |
+| --- | --- | --- | --- |
+| Ray failures, live, all sixty clickables | **45**: 23 Thai stand-on-stand, 21 Vietnamese, 1 decor (an areca on the Huế kitchen) | **18**: 12 Thai, 6 Vietnamese, **0 decor** | Live page, fresh load, ten rays per object |
+| Stands over water | Thailand 4 (`suanTh` 3,300 vertices, `sweetsTh` 1,179, `khaoSoiTh` 6, `chinHawTh` 6); Vietnam 9 (1.85 deepest) | Thailand **3** (`suanTh` 3,293, `khaoSoiTh` 6, `chinHawTh` 6); Vietnam **1** (`hoiAnQuayVn` 1.40, the quay, by design) | `thailand-world.mjs`, `vietnam-world.mjs` |
+| Stand pairs with under 1.0 of clear ground | Thailand 53 (48 overlapping, worst 6.43); Vietnam 39 (31 overlapping, worst 4.44) | Thailand **32** (25 overlapping, worst 6.43, every overlap in the plain, Lanna or the peninsula); Vietnam **20** (**none overlapping**; the tightest pair touches at 0.00) | the two harnesses |
+| Decorative objects in front of a stand | 1 | **0** | both, and live |
+
+The khlongs, the old city and Sampheng, and Isan — every Thai cluster the pass re-laid — have **no ray failure, no
+overlap and nothing over water**. All six Vietnamese clusters have no overlap and nothing over water but the quay.
+
+### What is left, and why it is a ceiling
+
+Recorded in the harnesses as dated ceilings (a listed pair may not get worse; an unlisted one fails):
+
+**The peninsula and the Andaman, eight ray pairs.** `talayTh < babaTh` 6, `coconutSea < muslimKitchenTh` 6,
+`karsts < babaTh` 6, `khamminTh < muslimKitchenTh` 5, `talayTh < muslimKitchenTh` 3, `coconutSea < babaTh` 3,
+`longtail < babaTh` 3, and fourteen crowded pairs up to 6.43 (`talayTh/karsts`). The cluster holds seven clickables,
+four of them 8.3 to 10.5 units across, on dry ground roughly twenty units square between the Andaman, the Gulf, the
+khlong grid and the plain, with the Builder's karst decor fixed on its west shore. Twenty searches held every stand
+inside the peninsula; the best left the Andaman kitchen and the tin-town kitchen overlapping by 0.9 to 2.5 with two
+to five rays still covered, and every one that cleared the rays did it by pushing the tin-town kitchen into the
+plain, a kitchen onto the karsts, or a door more than six units from any road. **By how much:** the peninsula is
+about one stand too full, roughly eight to ten units of width short. Closing it is a resize of the tin-town and
+Andaman kitchens (`props-thailand.ts`, not this pass's file) or a re-blueprint that gives the peninsula more coast.
+
+**The plain and Lanna, four ray pairs and three stands over water.** `khaoSoiTh < suanTh` 3, `khaoSoiTh < tanTh` 3,
+`suanTh < naPaddyTh` 3, `chinHawTh < tanTh` 3, `chinHawTh < suanTh` 2; `suanTh` 3,293 vertices, `khaoSoiTh` and
+`chinHawTh` 6 each over the Chao Phraya; overlaps up to 4.64 (`miangTh/chinHawTh`). The river orchard is 9.6 wide and
+belongs on the river bank; the Lanna valley's north edge is the Builder's hill decor, which a stand may not stand
+on. The searches either left three to five rays, or put the orchard eight or more units from any road, or put a
+Lanna stand on a hill. The field lunch alone moved, west to the plain road's bend: it closed four overlaps of 1.3 to 3.7 and a ray, and
+leaves one of 0.53 with the sugar palms. Closing the rest needs the hills moved (`thailand-landscape.ts`, outside this pass's road-table remit) or the
+orchard resized.
+
+**Vietnam, six pairs on the live page.** `hoiAnQuayVn < miQuangVn` 4 (the quay lies on the water at the foot of
+the Hội An street and the counter stands at its head; the quay cannot move inland), `starAniseVn < hanoiKitchen` 3
+(the tray and the herb trays straddle the phở kitchen's 6.7-unit width, and one of the two is always in its
+column), `riceSea < benThanhVn` 1, `waterPuppetsVn < banhHueVn` 1, `miQuangVn < caPheVn` 1 and
+`hoanKiem < hanoiKitchen` 1. The last two graze by one ray on the live page and none offline; they are listed so the
+harness holds what the live page shows. Moves tried for the two single rays opened new ones next door and were
+reverted.
+
+### Verification
+
+| Check | Result |
+| --- | --- |
+| `npm run typecheck` | Passes |
+| `npm test` | 25 harnesses pass, including `thailand-world.mjs` and `vietnam-world.mjs` at the new ceilings |
+| `npm run build:pages` | Passes (the usual chunk-size warning) |
+| Live ten-ray check | Dev server restarted, fresh tab, 60 objects placed, arrival camera settled at `(2, 48, 60)` from `(-44, 0, 0)`: 18 pairs, 0 decor |
+| Owner's view | Overview at 150, the 215 limit, and all twelve clusters at approach zoom, on the contact sheet `scratchpad/seasia-shared-ground.png` of the session that did this pass. At the limit the table reads with a light haze at the far corner. From above: the old city now reads as a street with the wat at its head and the kitchens along Sampheng lane to the Gulf; the khlong grid west of the river is open water and salt pans with the market on the basin; the Vietnamese clusters read as rows along their streets with ground between the stands. The peninsula still reads as the Andaman and tin-town kitchens fused, which is the ceiling above |
+
+Not verified in this pass: the rooms and cards (nothing in them changed; every object id, room and card is as Stage
+D left it), the phone viewport, the walkthrough on the published site, and the reactions at world zoom of the moved
+stands beyond `thailand-reactions.mjs` and `vietnam-reactions.mjs`, which pass. `docs/thailand-rooms.md` and the
+Stage A object list further up are left as their own dated records.

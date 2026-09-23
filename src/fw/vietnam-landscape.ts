@@ -260,19 +260,19 @@ export const VN_ROADS: Road[] = [
   // Seven ends were moved on 2026-09-22, after the owner saw two ribbons stop short of each other at the
   // Saigon street: every end of every route now finishes on another route, on a bridge, at a stand's door or
   // at the table edge, so no end is left hanging in the grass. The moved end is named in each comment.
-  { id: 'VN-R1', width: 2.4, points: [[-10.6, -18.4], [-7.4, -18.2], [-4, -18.8], [-0.6, -17.2], [1.8, -14.2]] },        // west end on to the herb trays' door
-  { id: 'VN-R1b', width: 1.4, points: [[-0.6, -17.2], [-1.8, -19.8], [-0.6, -22.2], [2.2, -22.4], [3.4, -20], [2.8, -16.6]] },   // east end carried up to the street carriers
+  { id: 'VN-R1', width: 2.4, points: [[-1.2, -8.6], [-6.9, -13.6], [-5.8, -16.4], [-0.6, -17.2], [1.8, -14.2]] },        // west end on to the herb trays' door
+  { id: 'VN-R1b', width: 1.4, points: [[-0.6, -17.2], [-1.8, -19.8], [-0.5, -22.2], [2.2, -22.4], [3.7, -20.4], [2.8, -16.2]] },   // east end carried up to the street carriers
   { id: 'VN-R2', width: 2.0, points: [[1.8, -14.2], [5, -16.4], [8.2, -17.2], [11.4, -16], [12.8, -13]] },
-  { id: 'VN-R2b', width: 1.6, points: [[5, -16.4], [5.6, -13.4], [5.8, -11.5]] },                                        // ends at the lotus tea tray, not past it
+  { id: 'VN-R2b', width: 1.6, points: [[5, -16.4], [5.8, -13.4], [6.3, -9]] },                                        // ends at the lotus tea tray, not past it
   { id: 'VN-R2c', width: 1.4, points: [[2.2, -22.4], [2, -24.4], [2.2, -28]] },                                          // carried to the table edge: the path leaves the table
-  { id: 'VN-R3', width: 2.0, points: [[12.8, -13], [12.6, -8.8], [14.6, -6.4], [17.6, -5.6], [19.8, -6.4], [19.6, -10.4]] },
-  { id: 'VN-R4', width: 2.2, points: [[19.6, -10.4], [22.4, -8.4], [24.6, -6.2], [26.6, -4.4], [28.6, -2], [30.6, 1.6]] },
-  { id: 'VN-R4b', width: 1.6, points: [[28.6, -2], [30.2, -3.4], [31.6, -1.5]] },                                        // ends at the quay's door
-  { id: 'VN-R5', width: 2.4, points: [[17.6, 10.8], [14.2, 13.2], [16.2, 16.6], [20.4, 17.6], [22.2, 14.2], [20, 12], [17.6, 10.8]] },   // a ring: drawn closed
-  { id: 'VN-R6', width: 2.0, points: [[30.6, 1.6], [30, 5.6], [27.4, 10], [23.4, 12.6], [20, 12]] },
-  { id: 'VN-R7', width: 1.8, points: [[-10.9, 11], [-8.4, 10.4], [-5.6, 11], [-2.6, 12.2], [-0.6, 16]] },                // west end at the chicken yard's door
+  { id: 'VN-R3', width: 2.0, points: [[12.8, -13], [10.9, -7.6], [10.6, -1.2], [15.4, -2.7], [19.8, -6.4], [19.6, -10.4]] },
+  { id: 'VN-R4', width: 2.2, points: [[19.6, -10.4], [21.9, -10.4], [24.6, -6.2], [23.6, -2.4], [28.6, -2], [30.6, 1.6]] },
+  { id: 'VN-R4b', width: 1.6, points: [[28.6, -2], [29.7, -2.5], [30.4, -2.8]] },                                        // ends at the quay's door
+  { id: 'VN-R5', width: 2.4, points: [[17.6, 10.8], [14.2, 13.2], [14.7, 15.8], [17.9, 17], [20.3, 15.2], [20, 12], [17.6, 10.8]] },   // a ring: drawn closed
+  { id: 'VN-R6', width: 2.0, points: [[30.6, 1.6], [28.4, 8.9], [23.8, 9.6], [19.4, 7.8], [20, 12]] },
+  { id: 'VN-R7', width: 1.8, points: [[-9.1, 9.8], [-8.4, 10.4], [-4.8, 4.6], [-1.5, 10.6], [-0.6, 16]] },                // west end at the chicken yard's door
   { id: 'VN-R7b', width: 1.4, points: [[-8.4, 10.4], [-9.6, 14.2], [-10.6, 18.4]] },                                     // ends at the river-fish basket
-  { id: 'VN-R8', width: 1.8, points: [[-0.6, 16], [3.6, 17.6], [8, 16.8], [12.4, 15.2], [14.2, 13.2]] },
+  { id: 'VN-R8', width: 1.8, points: [[-0.6, 16], [4.8, 18.6], [6.6, 17.5], [9, 11.7], [14.2, 13.2]] },
 ];
 /** Deck centres. A road may touch the water only inside one of these. The blueprint names three; the fourth,
  *  on VN-R3 where the Huế river road turns north to the citadel, is added here because that road crosses the

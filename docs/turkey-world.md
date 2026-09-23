@@ -240,3 +240,7 @@ still passes, including its budget of fewer than 150 canvas operations per signa
 - Reduced motion was not re-run. `makeFx` returns before `ambientPainter` under `prefers-reduced-motion: reduce`, so
   the new rain stops with everything else, but that was reasoned from the code, not seen
 - The other thirteen Turkish rooms were not re-opened; nothing in them changed
+
+## Owner request, 2026-09-23: re-cluster Turkey
+
+After her first live look at Britain and Italy the owner asked that Turkey also be re-clustered to the China standard: dense clusters, clearly separated by open countryside, one character each, farm decor only in farm clusters, with the cluster-compactness and cluster-separation harness checks added to `scripts/tests/turkey-world.mjs` (see the playbook definition of done, rule added 2026-09-23, and `docs/london-world.md` "Re-cluster pass, 2026-09-23" for the method). **Order: after Thailand and Vietnam are finished and published.** Nothing else in this area changes until then.

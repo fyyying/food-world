@@ -33,8 +33,8 @@ export const ROAD_Y = .036, PAVING_Y = .018;
  *  - the Albergheria lane with Ballarò on its north side and the two fry shops on its south */
 export const IT_PAVING: [string, number, number, number, number, string][] = [
   ['piazza-paving', -16, -7.4, 23, 5, '#d9cbb0'],
-  ['rialto-paving', 27.7, -21.3, 11, 2.8, '#ded3b6'],
-  ['albergheria-paving', -8.5, 22.6, 17, 4.4, '#cdbb92'],
+  ['rialto-paving', 30.5, -21.3, 18, 2.8, '#ded3b6'],
+  ['albergheria-paving', -11.5, 23.2, 22, 3.2, '#cdbb92'],
 ];
 
 /** A road ribbon: one mesh per route, above the paving and marked so it wins the depth test. */
@@ -241,13 +241,13 @@ export function italyTown(ctx: LayoutCtx) {
   // `place()` cannot reset it.
   const scaled = (build: () => P, k: number) => () => { const holder = new THREE.Group() as P; const o = build(); o.scale.setScalar(k); holder.add(o); return holder; };
   for (const [build, spots, name] of [
-    [scaled(obelisk, .8), [[-5.2, -3.6, 0], [-4.4, -1.2, 0], [-8.4, -1.2, 0]], 'piazza-obelisk'],
-    [scaled(fountain, .5), [[-6.8, 0, .2], [-7.6, -3.6, .2], [-3.6, .4, .1]], 'piazza-fountain'],
-    [scaled(cafeTables, .5), [[-10.8, .8, 0], [-12, 0, .1], [-2.8, .4, .2]], 'cafe-tables'],
-    [scaled(triumphalArch, .45), [[1.6, -3.2, 1.57], [2, .4, 1.57], [-2.4, -4.4, 1.57]], 'triumphal-arch'],
-    [scaled(treviFountain, .4), [[-12.8, -14.4, 0], [-11.2, -14.8, 0], [-5.6, -16.4, 0]], 'trevi-fountain'],
-    [scaled(basilica, .3), [[-32.6, -19.6, .06], [-33, -20.4, .06], [-31.8, -21, .04], [-27.6, -17.2, .04]], 'basilica'],
-    [scaled(baroqueChurch, .55), [[13.4, 18.8, .05], [21.6, 27, .04], [13.2, 18.2, .05]], 'baroque-church'],
+    [scaled(obelisk, .8), [[-8.0, 5.6, 0], [-9.2, 5.4, 0], [2.8, 5.8, 0]], 'piazza-obelisk'],
+    [scaled(fountain, .5), [[-9.8, 3.2, .2], [-10.2, 3.4, .2], [-5.4, 7.6, .1]], 'piazza-fountain'],
+    [scaled(cafeTables, .5), [[-13.4, 3.0, 0], [-13.0, 3.2, .1], [-12.6, 2.9, 0]], 'cafe-tables'],
+    [scaled(triumphalArch, .45), [[6.2, 1.8, 1.57], [6.6, -.4, 1.57], [5.4, 3.6, 1.57]], 'triumphal-arch'],
+    [scaled(treviFountain, .4), [[-11.2, -16.4, 0], [-12.0, -16.6, 0], [-21.0, -14.4, 0]], 'trevi-fountain'],
+    [scaled(basilica, .25), [[-1.0, 4.6, .04], [-0.6, 4.8, .04], [-1.6, 4.4, .06]], 'basilica'],
+    [scaled(baroqueChurch, .55), [[8.4, 27.4, .05], [8.8, 27.6, .04], [8.0, 27.2, .05]], 'baroque-church'],
   ] as [() => P, [number, number, number][], string][]) {
     const thing = tryPlaceAny(ctx, build, spots); if (thing) thing.name = name;
   }

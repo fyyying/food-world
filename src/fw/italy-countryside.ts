@@ -196,18 +196,18 @@ export function italyCountryside(ctx: LayoutCtx) {
       sheep.userData.tick = undefined;
       tickers.push((t: number) => { sheep.rotation.y = rot + Math.sin(t * .42 + i * 2) * .09; sheep.position.y = Math.sin(t * .85 + i) * .01; });
     }
-    if (!tryPlaceAny(ctx, () => fold, [[-41.4, -21.2, .1], [-40.6, -22.6, .05], [-39.4, -24.0, .1], [-26.6, -22.4, .1], [-22.6, -23.6, .1]])) group.remove(fold);
+    if (!tryPlaceAny(ctx, () => fold, [[-19.4, 4.8, .06], [-19.8, 4.6, .04], [-19.0, 5.0, .08]])) group.remove(fold);
   }
 
   // ---------- the vines, and the chestnut wood in the west with the porcini on strings ----------
-  scatter(i => vineRow(2.6 + (i % 3) * .4), 'castelli-vine', -26, -12, -25, -20, 1.3, 12, 1.6);
-  scatter(i => chestnut(.8 + (i % 3) * .08, i % 4 === 1), 'chestnut', -46, -24, -26, -15, 1.8, 8, 1.6);
+  scatter(i => vineRow(2.6 + (i % 3) * .4), 'castelli-vine', 1.6, 9.4, 3.4, 8.6, 1.3, 12, 1.6);
+  scatter(i => chestnut(.8 + (i % 3) * .08, i % 4 === 1), 'chestnut', 7.2, 12.6, -9.6, -4.8, 1.8, 6, 1.6);
 
   // ---------- Rome: umbrella pines along the campagna north of the street, cypresses on the ridge ----------
-  scatter(i => umbrellaPine(.78 + (i % 3) * .08), 'umbrella-pine', -30, -12, -25, -17, 3.2, 9, 1.8);
-  scatter(i => umbrellaPine(.8 + (i % 2) * .08), 'umbrella-pine', -12, -2, 1, 8, 3.0, 4, 1.8);
+  scatter(i => umbrellaPine(.78 + (i % 3) * .08), 'umbrella-pine', -27, -2, -18, -14, 3.2, 9, 1.8);
+  scatter(i => umbrellaPine(.8 + (i % 2) * .08), 'umbrella-pine', 9.6, 13.6, 4.8, 8.4, 2.0, 3, 1.8);
   scatter(i => cypress(.92 + (i % 3) * .12), 'cypress', -44, -33, -25, -19, 1.9, 9, 1.6);
-  scatter(i => cypress(.9 + (i % 2) * .1), 'cypress', 2, 28, 5.6, 8.4, 2.6, 6, 1.6);
+  scatter(i => cypress(.9 + (i % 2) * .1), 'cypress', 14, 28, 5.6, 8.4, 2.6, 6, 1.6);
 
   // ---------- the Tiber: poplars and reed beds along the bank ----------
   scatter(i => poplar(.9 + (i % 3) * .12), 'tiber-poplar', -36, -4, -24, 9, 2.0, 14, 2.4);
@@ -243,8 +243,8 @@ export function italyCountryside(ctx: LayoutCtx) {
     if (field) field.name = 'latifondo-wheat';
   }
   // ---------- the Conca d'Oro's citrus, and the almond and caper terraces ----------
-  scatter(i => citrus(.7 + (i % 3) * .08, i % 3 === 1), 'conca-citrus', 0.4, 4.6, 17.2, 21, 1.1, 6, 1.4);
-  scatter(i => citrus(.7 + (i % 3) * .08, i % 2 === 1), 'conca-citrus', 11.6, 15.2, 16.8, 21, 1.1, 5, 1.4);
+  scatter(i => citrus(.7 + (i % 3) * .08, i % 3 === 1), 'conca-citrus', 14.6, 16.0, 24.8, 29.4, 1.1, 6, 1.4);
+  scatter(i => citrus(.7 + (i % 3) * .08, i % 2 === 1), 'conca-citrus', 18.8, 20.2, 24.8, 29.2, 1.1, 5, 1.4);
   scatter(i => almond(.75 + (i % 2) * .1), 'almond-terrace', 18, 23.4, 24, 28.6, 1.2, 6, 1.4);
   scatter(i => almond(.75 + (i % 2) * .1), 'almond-terrace', 26.6, 30.4, 20.2, 28, 1.2, 6, 1.4);
   scatter(i => almond(.7 + (i % 2) * .08), 'almond-terrace', 12, 16, 16.6, 21, 1.0, 4, 1.4);

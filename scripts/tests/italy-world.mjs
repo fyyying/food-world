@@ -194,8 +194,11 @@ try {
   assert.equal(ribbons.length,IT_ROADS.length,'one ribbon per route, never two overlapping strips');
   // The blueprint fixed ten roads; Stage D (2026-09-22) added four door lanes when every stand was turned to face
   // the camera: IT-R1b in front of the Roman market and the pasta kitchen, IT-R3b to the rice fields, and IT-R4b
-  // and IT-R4c in front of the friggitoria and the pasticceria.
-  assert.equal(IT_ROADS.length,14,'the blueprint\'s ten roads and the four Stage D door lanes');
+  // and IT-R4c in front of the friggitoria and the pasticceria. The shared-ground pass (2026-09-23) re-laid the
+  // table: IT-R5b went with the tonnara's move east, and three lanes came: IT-R2n along the Agro's north row and
+  // the wine road to the via consolare, IT-R2m in front of the olive mill and the artichoke beds, and IT-R4d
+  // behind Ballarò to its street-food stall.
+  assert.equal(IT_ROADS.length,16,'the blueprint\'s ten roads, the Stage D door lanes and the shared-ground lanes');
   for(const road of IT_ROADS){
     const mesh=ribbons.find(o=>o.userData.road===road.id);
     assert.ok(mesh,`${road.id}: no ribbon drawn`);
@@ -308,15 +311,12 @@ try {
   // The only object on the water is the Rialto, which is a bridge.
   const ON_WATER=new Set(['rialtoIt']);
   const distToRoute=(x,z,points)=>{let d=1e9;for(let i=0;i<points.length-1;i++){const [ax,az]=points[i],[bx,bz]=points[i+1];const ex=bx-ax,ez=bz-az,l2=ex*ex+ez*ez||1;const t=Math.max(0,Math.min(1,((x-ax)*ex+(z-az)*ez)/l2));d=Math.min(d,Math.hypot(x-ax-ex*t,z-az-ez*t));}return d;};
-  // Six doors the blueprint's own coordinates put off the road network, measured on 2026-09-22 and recorded
-  // here as a ceiling rather than passed quietly: four market stall children, which stand in the horseshoe
-  // *behind* their market and are reached across the market's own ground, plus the chestnut wood and the herb
-  // bed, which are a wood and a garden and have no lane of their own. A listed id may not get worse and an
-  // unlisted one may not appear. Closing them is a re-blueprint, for the lead.
-  // Stage D, 2026-09-22: the piazza lane IT-R1b closed four of the six (basil, stall-tomato, stall-cheese and
-  // stall-salumi), so the ceiling holds the two left: the chestnut wood, whose front does meet IT-R2 (see the
-  // front-door check below), and the Ballarò stall wedged behind its market against the north shore.
-  const OFF_ROAD={mushrooms:4.59, 'stall-arancini':3.45};
+  // Stage C left six anchors off the road network and Stage D's piazza lane closed four; the last two (the
+  // chestnut wood and Ballarò's street-food stall) were held as a ceiling until the shared-ground pass.
+  // Shared-ground pass, 2026-09-23: none left. The chestnut wood faces the Agro's north road and Ballarò's
+  // street-food stall has its own back lane (IT-R4d), so every anchor is within 2.6 of a road and any door that
+  // leaves one fails.
+  const OFF_ROAD={};
   const doorFails=[];
   for(const o of ITALY_OBJECTS){
     const [x,z]=o.pos;
@@ -348,10 +348,11 @@ try {
   // Stage D, 2026-09-22. Every `rot` is inside [-0.75, 0.75], so a stand's front faces the camera (+z) and the
   // road must come to that front: the door is the centre of the footprint's +z face, turned by `rot`, and it must
   // lie within 2.0 of a road's edge. Four lanes were added for it (IT-R1b, IT-R3b, IT-R4b, IT-R4c) and IT-R5's
-  // last point moved onto the caper terraces. Five fronts could not be reached without moving an object, and are
-  // listed as a ceiling for the shared-ground pass: the trattoria and the Mattatoio face a strip 1.8 wide between
-  // their fronts and the casale's byre; the latifondo and the campanile face the shore; the tonnara faces its sea.
-  const FRONT_OFF_ROAD={ragu:3.02, quintoQuarto:2.23, granoIt:5.80, campanileIt:3.05, tonnaraIt:2.02};
+  // last point moved onto the caper terraces. Five fronts it could not reach were held as a ceiling until the
+  // shared-ground pass of 2026-09-23 moved the stands and laid the lanes.
+  // Shared-ground pass, 2026-09-23: none left. The trattoria and the Mattatoio face the Agro's north road, the
+  // latifondo faces the south road, the campanile the riva, and the tonnara's landing meets the quay road.
+  const FRONT_OFF_ROAD={};
   const frontFails=[];
   for(const o of ITALY_OBJECTS){
     if(o.hitOnly||o.prop==='none'||!REAL_PROPS[o.prop])continue;
@@ -376,10 +377,9 @@ try {
   assert.deepEqual(frontFails,[],'a stand faces the camera with no road at its front door');
   if(missingProps.length) notRun.push(`${missingProps.length} of ${missingProps.length+stands.length} stand props are not in ITALY_PROPS yet, so no water, visibility or footprint measurement covers them: ${missingProps.join(', ')}`);
   assert.ok(stands.length>=15,`the area should build at least fifteen props with what exists, built ${stands.length}`);
-  // Nine stands whose built bodies reach past their shore, measured on 2026-09-22 with the Stage D rotations.
-  // Each is the blueprint position against the size the stand was built to; none is a rotation effect (every
-  // count is the Stage C count or lower). Vertex counts over the water.
-  const OVER_WATER={ragu:1723, seafood:102, lagunaIt:220, carciofoIt:1885, italyBeef:126, valliIt:2, tomato:121, campanileIt:145, etnaIt:9};
+  // Stage D (2026-09-22) held nine stands whose bodies reached past their shore as a ceiling.
+  // Shared-ground pass, 2026-09-23: all nine closed; no stand has a vertex over the water.
+  const OVER_WATER={};
   const vertex=new THREE.Vector3(), meshBox=new THREE.Box3();
   const soaked=[];
   for(const s of stands){
@@ -517,14 +517,9 @@ try {
     root.traverse(o=>{ if(o.isMesh&&!o.isSprite&&o.geometry&&!(o.material&&(o.material.visible===false||o.material.opacity===0))){ownerOf.set(o,id);rootOf.set(o,root);blockers.push(o);} });
   }
   const standIds=new Set(stands.map(s=>s.id));
-  // Eighteen pairs, measured on 2026-09-22 with the Stage D rotations, rays out of ten. `carciofoIt<italy-bridge`
-  // is the artichoke beds grown over the Tiber bridge's ramp, which is the stand's finding, not the bridge's.
-  const HIDDEN={
-    'oven<pasta':9, 'carciofoIt<ragu':8, 'vinoIt<ragu':6, 'italyChicken<cheese':6, 'vinoIt<quintoQuarto':4,
-    'sicilyMarket<friggitoria':3, 'sicilyMarket<pastry':3, 'olive<quintoQuarto':3, 'riceIt<casaVeneta':3, 'gelateria<romeMarket':3,
-    'bacaro<rialtoIt':2, 'tomato<friggitoria':2, 'lemon<tonnaraIt':2, 'quintoQuarto<ragu':2, 'carciofoIt<italy-bridge':2,
-    'seafood<rialtoIt':1, 'etnaIt<capperiIt':1, 'carrettoIt<pastry':1,
-  };
+  // Stage D (2026-09-22) held eighteen stand-behind-stand pairs as a ceiling.
+  // Shared-ground pass, 2026-09-23: all eighteen closed, offline and on the live page after a fresh load.
+  const HIDDEN={};
   const byDecor=[], covered=[];
   const ray=new THREE.Raycaster(); ray.far=400;
   const back=CAM_RAY.clone().multiplyScalar(70), into=CAM_RAY.clone().negate();
@@ -587,19 +582,9 @@ try {
     const dx=Math.max(a.min.x-b.max.x,b.min.x-a.max.x), dz=Math.max(a.min.z-b.max.z,b.min.z-a.max.z);
     return (dx<0&&dz<0)?-Math.min(-dx,-dz):Math.hypot(Math.max(dx,0),Math.max(dz,0));
   };
-  // Thirty-six pairs inside a unit of one another, measured on 2026-09-22 with the Stage D rotations: positive
-  // for an overlap, negative for a clearance under the one unit the rule asks for. Every one is the Stage C
-  // measurement unchanged; the Agro Romano's ten objects inside one road loop carry most of them.
-  const CROWDED={
-    'olive/mushrooms':3.50, 'ragu/quintoQuarto':3.03, 'cheese/italyChicken':2.68, 'pecoraIt/olive':2.61, 'olive/vinoIt':2.53,
-    'pecoraIt/mushrooms':2.53, 'cheese/italyBeef':2.37, 'romeMarket/basil':2.27, 'carciofoIt/vinoIt':1.88, 'mandorleIt/etnaIt':1.85,
-    'olive/quintoQuarto':1.43, 'seafood/rialtoIt':1.31, 'bacaro/rialtoIt':0.87, 'pasta/panteonIt':0.80, 'sicilyMarket/pastry':0.79,
-    'pasta/oven':0.74, 'friggitoria/sicilyMarket':0.69, 'vinoIt/mushrooms':0.63, 'romeMarket/pasta':0.61, 'vinoIt/quintoQuarto':0.60,
-    'romeMarket/gelateria':0.56, 'sicilyMarket/carrettoIt':0.42, 'rialtoIt/campanileIt':0.40, 'seafood/bacaro':0.39, 'oven/panteonIt':0.32,
-    'ragu/vinoIt':0.29, 'romeMarket/oven':0.01, 'capperiIt/etnaIt':0.00, 'colosseoIt/panteonIt':-0.21, 'sicilyMarket/tomato':-0.19,
-    'pecoraIt/vinoIt':-0.40, 'carciofoIt/quintoQuarto':-0.39, 'italyChicken/quintoQuarto':-0.40, 'casaVeneta/riceIt':-0.51,
-    'ragu/carciofoIt':-0.70, 'ragu/olive':-0.95,
-  };
+  // Stage D (2026-09-22) held thirty-six pairs inside a unit of one another as a ceiling.
+  // Shared-ground pass, 2026-09-23: all thirty-six closed; every pair of stands has a unit of clear ground.
+  const CROWDED={};
   const feet=new Map(stands.map(s=>[s.id,foot(s.group)]));
   const crowded=[];
   for(let i=0;i<stands.length;i++)for(let j=i+1;j<stands.length;j++){
@@ -639,20 +624,20 @@ try {
   }
 
   // ---------- the decorative houses, and the styles they are ----------
-  // The blueprint fixes thirteen. Six stand, each moved by the least that clears every pad, every 2.5 gap and
-  // the arrival camera; seven carry `built: false` and the reason, because the blueprint's own stands leave no
-  // ground for them (see IT_HOUSES in italy-landscape.ts). A house that comes back must pass the checks above.
+  // The blueprint fixes thirteen. Stage C built six and left seven with `built: false`; the shared-ground pass of
+  // 2026-09-23 spread the clusters, grew the Venetian quays and Sicily, and all thirteen stand, each clear of
+  // every pad, every 2.5 gap and the arrival camera. A house that is taken down again must say why.
   const houses=world.group.children.filter(o=>o.name==='italy-house');
   assert.equal(IT_HOUSES.length,13,'the blueprint\'s thirteen are all kept in the table, built or not');
   assert.equal(houses.length,IT_HOUSES.filter(h=>h.built).length,'one house per built entry');
-  assert.equal(houses.length,6,`six of the thirteen fit outside every pad, found ${houses.length}`);
+  assert.equal(houses.length,13,`all thirteen stand since the shared-ground pass, found ${houses.length}`);
   for(const h of IT_HOUSES.filter(h=>!h.built)) assert.ok(h.why&&h.why.length>10,`${h.id}: an unbuilt house must say why`);
   const styles=houses.map(o=>o.userData.houseStyle);
   const perStyle=new Map();
   for(const s of styles) perStyle.set(s,(perStyle.get(s)||0)+1);
   for(const [s,n] of perStyle) assert.ok(n>=1&&n<=3,`${s}: ${n} houses, outside the one-to-three-per-style rule`);
   for(const style of ['romanPalazzo','trastevere','casale','sicilianCoast','masseria']) assert.ok(styles.includes(style),`${style}: no house in that style`);
-  for(const [area,n] of [['rome',3],['venice',0],['sicily',3]]){
+  for(const [area,n] of [['rome',4],['venice',4],['sicily',5]]){
     const inArea=IT_HOUSES.filter(h=>h.built&&(area==='rome'?h.x<-5&&h.z<10||h.id==='it-piazza-casa':area==='venice'?h.z<-5&&h.x>5:h.z>14)).length;
     assert.equal(inArea,n,`${area}: ${inArea} houses where ${n} fit`);
   }

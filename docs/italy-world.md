@@ -608,3 +608,125 @@ sicily: rooms=4 card-only-with-prop=7 hit/child=3
 - **Footprints sharing ground (thirty-six; overlap, or clearance under 1):** `olive/mushrooms` 3.50, `ragu/quintoQuarto` 3.03, `cheese/italyChicken` 2.68, `pecoraIt/olive` 2.61, `olive/vinoIt` 2.53, `pecoraIt/mushrooms` 2.53, `cheese/italyBeef` 2.37, `romeMarket/basil` 2.27, `carciofoIt/vinoIt` 1.88, `mandorleIt/etnaIt` 1.85, `olive/quintoQuarto` 1.43, `seafood/rialtoIt` 1.31, `bacaro/rialtoIt` 0.87, `pasta/panteonIt` 0.80, `sicilyMarket/pastry` 0.79, `pasta/oven` 0.74, `friggitoria/sicilyMarket` 0.69, `vinoIt/mushrooms` 0.63, `romeMarket/pasta` 0.61, `vinoIt/quintoQuarto` 0.60, `romeMarket/gelateria` 0.56, `sicilyMarket/carrettoIt` 0.42, `rialtoIt/campanileIt` 0.40, `seafood/bacaro` 0.39, `oven/panteonIt` 0.32, `ragu/vinoIt` 0.29, `romeMarket/oven` 0.01, `capperiIt/etnaIt` 0.00; with clear ground under 1: `colosseoIt/panteonIt` 0.21, `sicilyMarket/tomato` 0.19, `pecoraIt/vinoIt` 0.40, `carciofoIt/quintoQuarto` 0.39, `italyChicken/quintoQuarto` 0.40, `casaVeneta/riceIt` 0.51, `ragu/carciofoIt` 0.70, `ragu/olive` 0.95. The Agro Romano's ten objects inside one road loop carry most of them.
 - **Six off-road doors:** `ragu` 3.02 and `quintoQuarto` 2.23, whose fronts face a strip 1.8 wide between them and the casale's byre, with the Tiber east and the hen yard west, so no connected lane fits without moving an object; `granoIt` 5.80 and `campanileIt` 3.05, whose fronts face the shore; `tonnaraIt` 2.02, whose front is its pier on the sea; `stall-arancini` 3.45 (anchor), wedged behind the Ballarò market against Sicily's north shore. Close by: `stall-lemon` and `stall-tomato2` at 2.10 from IT-R4 (anchor), and `mushrooms`, whose front meets IT-R2 at 1.65 while its anchor is 4.59 away.
 - **The lead's item: Venice's lagoon islands stand bare.** None of their four houses is built (`it-rialto-casa`, `it-rialto-magazzino`, `it-sanmarco-casa`, `it-burano-casa` are all `built: false` inside the stands' pads). They must come back by spreading the stands across the quays, and the island edges must read as quays (a stone fondamenta edge and mooring) rather than sand.
+
+## Shared-ground pass, 2026-09-23
+
+The Stage D list above, closed. The method was Spain's third, fourth and fifth passes: measure on the live page after a fresh load, move object anchors (a stand moves whole, with its stall children and its own building), then move, resize or re-site the decor round them, and re-run `italy-world.mjs` after every batch.
+
+### What the live page measured
+
+| Check (live page, fresh load, 1280 x 720) | Before (Stage D) | After |
+| --- | --- | --- |
+| Clickables 10 of 10 clear from the arrival camera | 21 of 36 | **36 of 36** |
+| Stand-behind-stand rays | 18 findings over 15 stands | **0** |
+| Stands with a vertex over water | 10 (live; 9 offline) | **0** |
+| Footprint pairs under 1.0 of clear ground | 36 | **0** (closest pair 1.06) |
+| Doors off the road (anchor over 2.6, front over 2.0) | 7 (5 fronts, 2 anchors) | **0** |
+| Decorative houses standing | 6 of 13 | **13 of 13** |
+
+`italy-world.mjs` holds all five ceilings (`OFF_ROAD`, `FRONT_OFF_ROAD`, `OVER_WATER`, `HIDDEN`, `CROWDED`) empty: any finding now fails. Its house count is thirteen (Rome four, Venice four, Sicily five) and its road count sixteen.
+
+The one thing the live probe must skip is a bird: the lagoon gulls crossed one ray to the lagoon kitchen for a single frame on the first run. The three flocks are now named `italy-birds`, and the probe ignores them as it ignores walkers, because a passing wing hides nothing.
+
+### Why the clusters had to be re-laid, not nudged
+
+The rule underneath every move: a ray from a stand's front climbs 0.8 per unit towards the camera, so a stand of height *h* in front of another hides it unless the gap from the back stand's front to the front stand's back is at least 1.25 x (*h* - 0.8). A road between two rows is about two units, enough for a front row of stands up to 2.5 tall. So every cluster is now laid in rows along roads, with the tall stands (the trattoria, the pasta kitchen, the forno, the caffè at 6; the campanile at 7.2; the tonnara at 4.6) either at the back of their cluster or with nothing behind them in their own columns. The Agro Romano's ten objects could not fit on the west bank inside one loop at any spacing, so the cluster grew north onto the empty ground between the Tiber and the north coast, which is still west of the river and still the Agro.
+
+### Rome: the piazza
+
+| Object | Was | Now | Why |
+| --- | --- | --- | --- |
+| `gelateria` | [-24, -9.25] | [-23.4, -10.6] | North row of the street, with the forno and the pasta kitchen: the three six-unit buildings all stand behind the street, none in front of another |
+| `oven` (+ `pizzeria`) | [-14.6, -9.25] | [-16, -10.8] | North row. The oven house keeps its offset, now [-18, -12.15] |
+| `pasta` | [-14, -5.55] | [-8.9, -10.8] | From the south side (where it hid the forno on 9 of 10 rays) to the north row's east end |
+| `romeMarket` (+ five stalls) | [-20.5, -5.55] | [-16.2, -5] | South side, far enough from the north row that its 2.6 canopy clears the forno's rays; the stalls move by the same offset and stay within 2.6 of the street |
+| `basil` | [-25.8, -0.8] | [-24.9, -3.8] | South side west end, door on IT-R1b; out of the market's footprint |
+| `panteonIt` | [-10, -9.7] | [-8.55, -2.6] | South side, in front of the pasta kitchen's column but 3.3 clear of its rays; off the pasta kitchen's and the forno's footprints |
+| `colosseoIt` | [-5.5, -10.6] | [-3.06, -4] | South side east end; the via consolare runs behind it |
+
+Houses: `it-piazza-palazzo` to [-5.3, -16.2], behind the street between the Tiber and the pasta kitchen; `it-piazza-casa` to [4.2, -3.8], east of the Colosseum; **`it-trastevere-casa` built** at [-13.6, 7.9] and **`it-campagna-casale` built** at [-25.4, 5.2], on the city's southern edge, each far enough south (5.9 and 4.8) that its roof clears every ray behind it. The obelisk, fountain and café tables stand between them in front of the Pantheon, the basilica south of the Colosseum, the triumphal arch and the Castelli vines on the slope east of the city, the Trevi fountain behind the street, and the sheepfold beside the casale.
+
+Roads: IT-R1b re-laid along the south side's fronts from the via consolare to the herb bed; IT-R3 re-laid so the rice fields and the farm kitchen each have their own front; IT-R3b re-laid in front of the farm kitchen.
+
+### Testaccio and the Agro Romano
+
+The lower Tiber moved east by up to 3.8 (from [-30, -9.5] down, its mouth now [-29.2, 12]), which gives the west bank the width of two stands a row; the bridge is now at [-30.6, -5.9], square on the river.
+
+| Object | Was | Now | Row, and why |
+| --- | --- | --- | --- |
+| `mushrooms` | [-43.5, -9.2] | [-42, -24] | North row, the chestnut wood in the north-west |
+| `pecoraIt` | [-44.2, -6] | [-35, -24.2] | North row |
+| `ragu` (+ `trattoria`) | [-35, -2.5] | [-27.85, -24.1] | North row: six tall, so it stands at the back with nothing behind it. It had hidden the artichoke beds on 8 rays and the wine cart on 6 |
+| `quintoQuarto` | [-37.6, -2.4] | [-20.2, -24] | North row east end, on the river's north bank, next door to the trattoria: Testaccio |
+| `olive` | [-41.5, -6.6] | [-42.9, -15.7] | Second row |
+| `carciofoIt` | [-33.6, -8.2] | [-34.9, -15.9] | Second row, by the river; no longer over the Tiber or the bridge ramp |
+| `italyBeef` | [-36.6, 5.9] | [-42.8, -8.2] | Third row, north of IT-R2 |
+| `italyChicken` | [-43.4, 1] | [-35.6, -8.3] | Third row |
+| `cheese` | [-40.6, 5.8] | [-39, 2.6] | Inside IT-R2's southern loop, 3.45 behind the third row's fronts; the byre stands east of it at [-33.3, 1.6] |
+| `vinoIt` | [-38.5, -6.2] | [-12.5, -25.3] | On the wine road along the Tiber's north bank, under where the Castelli vines were |
+
+Roads: **IT-R2n** (new, 1.8) runs in front of the north row and on along the north bank to the via consolare, so the mainland is one loop; **IT-R2m** (new, 1.6) in front of the second row, joining IT-R2n along the river. IT-R2's bridge end and loop were re-laid to the new bridge and to the casale's door.
+
+### Venice
+
+The four stands sit on quays with clear rays and **all four Venetian houses are built**. The quays were re-shaped (rectangles and inset rule both in `italy-landscape.ts`) and paved with Istrian stone right out to their edge, above the sand rim, with a 0.14-high darker kerb along the water: from above they read as fondamenta, not sand pads. No mooring posts were added, because no boat is tied up.
+
+| Island | Was | Now |
+| --- | --- | --- |
+| Rialto quay | x 21 to 35, z -26.5 to -19.5 | x 20.1 to 41.3, z -31 to -19.6 |
+| San Marco quay | x 23 to 35, z -16.5 to -10 | x 22.4 to 41.3, z -16.8 to -9.4 |
+| Burano | x 10.5 to 19, z -28.6 to -23 | x 7.4 to 18.8, z -31.5 to -23.8 |
+| Valli bank | x 12.6 to 20.5, z -17.5 to -11.2 | x 12 to 19.6, z -21.4 to -12.2 |
+| Lido | x 38 to 41 | x 44.6 to 46.8 (the porto stays open between it and San Marco) |
+
+| Object | Was | Now | Why |
+| --- | --- | --- | --- |
+| `seafood` | [24.5, -22.55] | [23.9, -26.2] | West of the bridge and set back behind the fondamenta, so the campanile's 7.2 tower in front of it clears its rays |
+| `bacaro` | [30, -22.65] | [37.85, -23.9] | East of the bridge |
+| `rialtoIt` | [27, -18] | [32.35, -18.1] | Between the two, with nothing in front of it on the San Marco side |
+| `campanileIt` | [29, -12.3] | [24.8, -12.7] | San Marco quay's west end, its front on the riva (IT-R7); no longer over the water |
+| `lagunaIt` | [13.8, -25.65] | [11.2, -27.83] | Burano, off the water |
+| `valliIt` | [15.8, -14.55] | [15.2, -16.4] | The valli bank, off the water |
+
+Houses: `it-rialto-casa` [31.1, -27.6] behind the bridge, `it-rialto-magazzino` [37.85, -28.75] behind the osteria, `it-sanmarco-casa` [38.1, -14.7] on San Marco in front of the osteria's column (5.9 clear of its rays), `it-burano-casa` [16.74, -28.2] beside the lagoon kitchen. Boat lanes L1 to L4 and the lagoon's shallow sheet follow the new quays.
+
+The terraferma: `casaVeneta` [5.15, -16] to [0.5, -20.6] (the via consolare had run through it) and `riceIt` [1.5, -20.5] to [2, -14.2]: the low rice fields now stand in front of the farm kitchen instead of behind it.
+
+### Sicily
+
+The island grew west to x -30.8, east to x 42.6 and a little north between x -22 and -2; the strait is 4.38 at its narrowest, inside the 4.0 to 5.2 the harness holds. The north row holds the deep and tall stands facing the Albergheria lane and the coast road; the south row holds the low ones facing a south road; the tonnara stands alone at the east end with nothing behind it.
+
+| Object | Was | Now | Why |
+| --- | --- | --- | --- |
+| `pastry` | [-4, 24.85] | [-24.3, 20.15] | North row. The fry shop and the pasticceria had stood in front of Ballarò and hidden it |
+| `sicilyMarket` (+ three stalls) | [-8, 21.15] | [-14.1, 19.9] | North row; the street-food stall has its own back lane, **IT-R4d** |
+| `friggitoria` | [-12.5, 24.85] | [-5.6, 20.15] | North row |
+| `lemon` | [8.2, 19.6] | [10.02, 20.02] | North row |
+| `mandorleIt` | [18.5, 19.8] | [17.4, 19.95] | North row, off Etna's footprint |
+| `etnaIt` | [23, 19.2] | [24.85, 22.1] | East, where the island is deep enough; off the water. Its flank terrace, basalt tint, snow pit and lava walls follow it |
+| `tonnaraIt` | [13.85, 27] | [33.2, 25.6] | The east end, with nothing behind it; its landing meets the quay road on IT-R5. The sheds stand at the cape, [39.2, 25.7], turned end-on |
+| `carrettoIt` | [-1.5, 20] | [-24.98, 27.15] | South row |
+| `tomato` | [-15.5, 19] | [-16.9, 26.4] | South row, off the water |
+| `granoIt` | [4.2, 25.6] | [-10.16, 26.25] | South row, its front on the south road |
+| `capperiIt` | [26.5, 26.5] | [0.55, 27.4] | South row, off Etna's footprint |
+
+Houses: **`it-albergheria-casa` [0.04, 19.9] and `it-albergheria-torre` [4.34, 19.9] built**, in the north row between the friggitoria and the lemon grove; `it-coast-casa` [12.4, 26.6], `it-etna-casa` [18.2, 26.6] and `it-latifondo-masseria` [4.4, 26.8] in the south row, each low enough to clear the rays behind it. Roads: IT-R4 and IT-R5 re-laid, IT-R4b and IT-R4c re-laid as the spur and the south road, IT-R5b removed.
+
+### The owner's view
+
+Looked at on the live page at the overview, each cluster at approach zoom, the lagoon close up and the 215 zoom limit (contact sheet `italy-shared-ground.png` in the pass's scratchpad). What read wrong and was changed: a snow pit had landed south of Etna, in the open, where it read as a round hut, and was moved onto the flank behind the volcano; the masseria and the coast house were overlapping and were separated. What reads and was left: the sheepfold beside the campagna casale on the city's southern edge (the Agro begins at the walls), the lagoon's shallow sheet drawing a straight edge across the porto, and the tonnara's sheds read as a boathouse at the cape.
+
+### Verification
+
+| Check | Result |
+| --- | --- |
+| `npm run typecheck` | Passes |
+| `npm test` | 25 harnesses pass, `italy-world.mjs` and `italy-reactions.mjs` with every ceiling empty |
+| `npm run build:pages` | Builds |
+| `node scripts/audit/objects.mjs` | Unchanged: rome 5 rooms, 12 card-only, 7 hit/child; venice 4, 4, 0; sicily 4, 7, 3 |
+| Live probe, dev server restarted, own tab | 36 of 36 clear, 0 over water, 0 pairs under 1.0, 13 houses |
+| `__fw.audit(60)` | Nothing new walks into water or a wall except as noted below |
+
+Left, and why: the movement audit counts the walker crossing the Rialto as in the water at the bridge's crown, because its deck heuristic does not recognise the arched deck; the walker is at deck height. The wine cart's box touches the Tiber bridge's east ramp for a few samples where the piazza street meets the bridge, as it did before the pass. The osteria's own figures touch its own counter, inside `props-italy.ts`.
+
+Not verified in this pass: the rooms (nothing in it touched a room), phone-width views of the world, and the published site.

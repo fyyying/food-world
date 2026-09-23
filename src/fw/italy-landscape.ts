@@ -56,15 +56,16 @@ export const MAINLAND: Pt[] = [
 ];
 /** Sicily's coast, clockwise from the west cape, with the north-east cape at [29, 18.6] facing the toe. */
 export const SICILY: Pt[] = [
-  [-21, 20], [-18, 17.6], [-14, 16.4], [-10, 16], [-6, 16.4], [-2, 15.8], [2, 16.2], [6, 15.6],
-  [10, 16], [14, 15.4], [18, 15.8], [22, 16.2], [26, 17.2], [29, 18.6], [31, 21], [32, 24],
-  [31, 27], [29, 29.4], [25, 30.2], [20, 30.6], [15, 30.2], [10, 30.6], [5, 30.2], [0, 30.6],
-  [-5, 30.2], [-10, 30.4], [-14, 29.8], [-18, 28.6], [-20, 26], [-21.4, 23],
+  [-30.4, 20.6], [-28.6, 17.6], [-25.4, 16.2], [-22, 15.0], [-18, 14.4], [-14, 14.6], [-10, 14.6], [-6, 14.8],
+  [-2, 15.0], [2, 15.4], [6, 15.2], [10, 15.4], [14, 15.0], [18, 15.4], [22, 16.1], [26, 17.0], [29, 18.6],
+  [32.4, 19.4], [36, 20.4], [40.4, 21.4], [42.4, 23.6], [42.6, 27.4], [40.8, 30.0], [36, 31.0], [31, 31.3],
+  [27, 31.0], [22, 30.9], [17, 30.8], [12, 30.9], [7, 30.8], [2, 30.9], [-3, 30.8], [-8, 30.9], [-13, 30.8],
+  [-18, 30.6], [-22.6, 30.5], [-27.4, 30.4], [-30.4, 28.6], [-30.8, 24.2],
 ];
 
 /** The five lagoon islands. The blueprint holds them as rectangles, because a paper check can measure a
  *  rectangle; a quay in the water is not one. Each rectangle is walked at about 1.6-unit intervals and every
- *  sample is stepped **inward** by 0.10 to 0.75, with a deeper notch every fifth, so the island keeps the
+ *  sample is stepped **inward** by 0.08 to 0.40, with a deeper notch every fifth, so the island keeps the
  *  blueprint's footprint as its outer bound and reads as a fondamenta with steps, corners and a cut or two.
  *  Inward only: a quay that grew outward would take its own boat lane's water. */
 export function quayOutline(x0: number, x1: number, z0: number, z1: number, seed: number): Pt[] {
@@ -79,7 +80,7 @@ export function quayOutline(x0: number, x1: number, z0: number, z1: number, seed
       // The fondamenta the island's own lane runs along (its south edge, facing the camera and the canal) is
       // kept within 0.3 so the lane stays on stone; the other three step in by up to 0.75, with a deeper cut
       // every fifth sample, which is what reads as a quay of steps, landings and slips rather than a box.
-      const road = nz < 0, inset = road ? .10 + k * .16 : .12 + k * .33 + (i % 5 === 3 ? .30 : 0);
+      const road = nz < 0, inset = road ? .08 + k * .08 : .10 + k * .14 + (i % 5 === 3 ? .16 : 0);
       pts.push([x + nx * inset + (i ? 0 : px * .18), z + nz * inset + (i ? 0 : pz * .18)]);
     }
   };
@@ -89,14 +90,16 @@ export function quayOutline(x0: number, x1: number, z0: number, z1: number, seed
 /** Island id, its blueprint rectangle and what stands on it. The lido barrier carries nothing: it is the bar
  *  of land the lagoon is shallow behind, with the open porto south of it. */
 export const ISLANDS: { id: string; rect: [number, number, number, number]; seed: number }[] = [
-  { id: 'rialto-quay', rect: [21, 35, -26.5, -19.5], seed: 1 },
-  { id: 'san-marco-quay', rect: [23, 35, -16.5, -10], seed: 2 },
-  { id: 'burano', rect: [10.5, 19, -28.6, -23], seed: 3 },
-  // The valli bank is x 12.6 to 20.5 and z -17.5 to -11.2 rather than the blueprint's 11 to 20.5 and -17.5 to
-  // -10.5: the blueprint rectangle's south-west corner lay up to 0.9 inside the mainland's lagoon shore, so the
-  // two holes overlapped and the sea could not be cut round both. A 0.4 channel now separates bank and shore.
-  { id: 'valli-bank', rect: [12.6, 20.5, -17.5, -11.2], seed: 4 },
-  { id: 'lido', rect: [38, 41, -29, -13], seed: 5 },
+  { id: 'rialto-quay', rect: [20.1, 41.3, -31.0, -19.6], seed: 1 },
+  { id: 'san-marco-quay', rect: [22.4, 41.3, -16.8, -9.4], seed: 2 },
+  { id: 'burano', rect: [7.4, 18.8, -31.5, -23.8], seed: 3 },
+  // Shared-ground pass, 2026-09-23: the quays grew to hold their stands and houses with clear sight lines. The
+  // Rialto quay runs the length of the Grand Canal with the stands set back behind the fondamenta, the San Marco
+  // quay carries the campanile at its west end, Burano and the valli bank moved west and north so the lagoon lane
+  // runs between them, and the lido stepped east to leave the porto open. The valli bank keeps 0.7 of water
+  // between itself and the mainland's lagoon shore, so the two holes never overlap.
+  { id: 'valli-bank', rect: [12.0, 19.6, -21.4, -12.2], seed: 4 },
+  { id: 'lido', rect: [44.6, 46.8, -29, -13], seed: 5 },
 ];
 export const islandOutline = (id: string): Pt[] => {
   const i = ISLANDS.find(x => x.id === id)!;
@@ -115,19 +118,19 @@ export const islandOutline = (id: string): Pt[] => {
  *    the shore line rather than inside the sea it joins and a strip of ground showed at the join once the
  *    shore's own wobble was drawn. It is carried on to [-33.2, 12], about 1.4 inside the water. */
 export const TIBER_POINTS: Pt[] = [
-  [-5.2, -21.6], [-8, -21], [-14, -19.5], [-20, -18], [-25, -16], [-28, -13], [-30, -9.5],
-  [-31, -6], [-31.5, -2], [-32, 2], [-32.5, 6], [-33, 10.6], [-33.2, 12],
+  [-5.2, -21.6], [-8, -21], [-14, -19.5], [-20, -18], [-25, -16], [-28, -13], [-29.6, -9.5],
+  [-30, -6], [-29.8, -2], [-29.6, 2], [-29.4, 6], [-29.2, 10.6], [-29.2, 12],
 ];
 export const TIBER_WIDTH = 2.4, TIBER_RIM = 4.0;
 export const TIBER_CURVE = new THREE.CatmullRomCurve3(TIBER_POINTS.map(([x, z]) => new THREE.Vector3(x, 0, z)));
-export const TIBER_MOUTH: Pt = [-33.2, 12];
+export const TIBER_MOUTH: Pt = [-29.2, 12];
 /** The spring the Tiber rises in, under the Apennine hills east of Rome. */
 export const SPRING = { id: 'tiber-spring', x: -5.2, z: -21.6, rx: 1.7, rz: 1.7 };
 
 /** Heights. Tints end near .012, town paving .018, the road ribbons .036 upward, the sea rim .030, the river
  *  bank .034, the sea .060, the lagoon sheet .066, the river .090, the spring .094. Each step is at least
  *  .004, the distance at which two flat surfaces stop fighting for the depth test. */
-export const RIM_Y = .030, BANK_Y = .034, SEA_Y = .060, LAGOON_Y = .066, RIVER_Y = .090, SPRING_Y = .094;
+export const RIM_Y = .030, QUAY_Y = .032, BANK_Y = .034, SEA_Y = .060, LAGOON_Y = .066, RIVER_Y = .090, SPRING_Y = .094;
 /** How far a bridge deck, and a walker on it, stands above the lane so the water passes underneath. */
 export const BRIDGE_SPAN = 5.0, BRIDGE_DECK_Y = .9;
 
@@ -244,7 +247,7 @@ export const APENNINES = { x: 17, z: 1.4, rx: 13.5, rz: 6.4, h: 1.05, crown: .55
 /** Etna's own flank, behind the Sicilian coast road and east of the almond terraces. It is deliberately low:
  *  `etnaIt` stands at its foot at [23, 19.2] with `elevation: 0` in the object list, so a tall crown there
  *  would bury the volcano instead of raising it. */
-export const ETNA_FLANK = { x: 25, z: 20.6, rx: 3.6, rz: 1.9, h: .62, crown: .5 };
+export const ETNA_FLANK = { x: 26.4, z: 19.9, rx: 2.6, rz: 1.5, h: .62, crown: .5 };
 function reliefHeight(x: number, z: number, t: { x: number; z: number; rx: number; rz: number; h: number; crown: number }): number {
   const r = Math.hypot((x - t.x) / t.rx, (z - t.z) / t.rz);
   return r <= t.crown ? t.h : r >= 1 ? 0 : t.h * (1 - r) / (1 - t.crown);
@@ -266,65 +269,40 @@ function apennineRidge(r: number, h: number, bare = false): P {
 }
 
 /**
- * The thirteen decorative houses the blueprint fixes, with what became of each. Style, position, rotation,
- * width, depth, height, storeys; `built: false` carries the reason it is not standing.
- *
- * The blueprint's paper check measured a house as a 1.5-radius point kept 2.5 from each clickable's anchor.
- * What this table's harness measures — the rule `thailand-world.mjs` set and `italy-world.mjs` copies — is the
- * box a house actually occupies against each clickable's 6 x 5 pad, the 2.5 of clear ground round its anchor,
- * and the arrival camera's view of it. Every house was searched for the nearest spot on its own landmass,
- * within seven units, that passes all of those, at its drawn size and again at 0.72 of it. Six stand:
- *
- * - `it-piazza-palazzo` 2.4 north, to [-19.2, -14.1], off `gelateria`'s pad; still behind the street
- * - `it-piazza-casa` 4.8 east, to [-6.8, -0.6], off `pasta`'s pad, at the Pantheon end of the street, and one
- *   storey rather than two: at two it covered the Pantheon on three of ten rays and the Colosseum on two
- * - `it-campagna-casale` 3.4 north, to [-40.4, -14.4], off the pads of the flock, the mill, the wine cart and
- *   the chestnut wood, which all four reached
- * - `it-coast-casa` 1.0 to [18.3, 25], and `it-etna-casa` 2.3 east to [28.2, 21.4], both at 0.72 size, off
- *   `tonnaraIt`'s and `etnaIt`'s pads; the latifondo's tower stays where it was put, also at 0.72
- *
- * and seven do not, which is the Thai Lanna house's and Spain's Castile's finding on this table: the
- * blueprint's own stands leave no ground outside their pads anywhere near these seven points.
- *
- * - Venice: all four. The Rialto quay is 14 by 7 and `seafood`'s and `bacaro`'s pads cover it from x 21.5 to
- *   33 and z -25.05 to -20.05, leaving 0.95 behind them; Burano is 8.5 by 5.6 and `lagunaIt`'s pad covers all
- *   but 1.5 of its east end; the San Marco quay is held between `campanileIt`'s pad and `rialtoIt`'s. Venice's
- *   built fabric is its stands: the Pescaria, the osteria, the lagoon kitchen, the campanile and the Rialto
- * - Palermo: both. The Albergheria's two houses stood inside `friggitoria`'s pad, and every spot within seven
- *   units on the lane's south side is inside `friggitoria`'s, `pastry`'s or `tomato`'s
- * - `it-trastevere-casa`: inside the pads of `basil`, `stall-tomato` and `stall-oil`, with the Tiber and the
- *   Testaccio loop on its other sides
- *
- * `terraferma` and `buranoCottage`, `venetianQuay` and `palermoTufa` stay buildable styles in
- * `italy-architecture.ts`; nothing places one on this table until the lead re-blueprints those clusters.
+ * The thirteen decorative houses the blueprint fixes. Style, position, rotation, width, depth, height, storeys;
+ * `built: false` would carry the reason a house is not standing, and since the shared-ground pass of 2026-09-23
+ * none does. Stage C built six and left seven down because the blueprint's stands covered their ground; the pass
+ * spread the clusters, grew the Venetian quays and Sicily, and put every house where it hides no clickable from
+ * the arrival camera: behind a stand, beside one, or far enough in front that the ray clears its roof. Each is
+ * outside every 6 x 5 pad, 2.5 from every anchor, off every road centreline and on dry ground
+ * (docs/italy-world.md, "Shared-ground pass, 2026-09-23", has the table of moves).
  */
 export const IT_HOUSES: { id: string; style: ItalyStyle; x: number; z: number; rot: number; w: number; d: number; h: number; storeys?: number; built: boolean; why?: string }[] = [
-  { id: 'it-piazza-palazzo', style: 'romanPalazzo', x: -19.2, z: -14.1, rot: .06, w: 3.4, d: 2.6, h: 2.0, storeys: 3, built: true },
-  { id: 'it-piazza-casa', style: 'trastevere', x: -6.8, z: -.6, rot: -.12, w: 2.8, d: 2.2, h: 2.1, storeys: 1, built: true },
-  { id: 'it-trastevere-casa', style: 'trastevere', x: -27.5, z: -3, rot: .18, w: 3.0, d: 2.3, h: 2.1, storeys: 2, built: false, why: 'inside the pads of basil, stall-tomato and stall-oil; no spot within 7' },
-  { id: 'it-campagna-casale', style: 'casale', x: -40.4, z: -14.4, rot: -.2, w: 3.6, d: 2.6, h: 2.3, storeys: 1, built: true },
-  { id: 'it-rialto-casa', style: 'venetianQuay', x: 22.8, z: -24.8, rot: .08, w: 2.6, d: 2.0, h: 2.1, storeys: 2, built: false, why: 'inside seafood\'s pad; 0.95 of quay behind the stands' },
-  { id: 'it-rialto-magazzino', style: 'venetianQuay', x: 32.2, z: -24.6, rot: -.1, w: 3.2, d: 2.2, h: 2.2, storeys: 2, built: false, why: 'inside bacaro\'s pad; 0.95 of quay behind the stands' },
-  { id: 'it-sanmarco-casa', style: 'venetianQuay', x: 25.5, z: -13, rot: .22, w: 2.6, d: 2.0, h: 2.1, storeys: 2, built: false, why: 'between campanileIt\'s and rialtoIt\'s pads; no spot within 7' },
-  { id: 'it-burano-casa', style: 'buranoCottage', x: 17.2, z: -26.95, rot: .12, w: 2.4, d: 1.9, h: 2.0, storeys: 1, built: false, why: 'lagunaIt\'s pad covers Burano but 1.5 of its east end' },
-  { id: 'it-albergheria-casa', style: 'palermoTufa', x: -9.5, z: 26.2, rot: -.08, w: 2.8, d: 2.2, h: 2.1, storeys: 2, built: false, why: 'inside friggitoria\'s pad; no spot within 7' },
-  { id: 'it-albergheria-torre', style: 'palermoTufa', x: -16.2, z: 25.8, rot: .14, w: 2.2, d: 2.2, h: 2.0, storeys: 3, built: false, why: 'inside friggitoria\'s pad; no spot within 7' },
-  { id: 'it-coast-casa', style: 'sicilianCoast', x: 18.3, z: 25, rot: .1, w: 2.0, d: 1.6, h: 2.0, storeys: 1, built: true },
-  { id: 'it-etna-casa', style: 'sicilianCoast', x: 28.2, z: 21.4, rot: -.24, w: 1.9, d: 1.45, h: 2.0, storeys: 1, built: true },
+  { id: 'it-piazza-palazzo', style: 'romanPalazzo', x: -5.3, z: -16.2, rot: .06, w: 3.4, d: 2.6, h: 2.0, storeys: 3, built: true },
+  { id: 'it-piazza-casa', style: 'trastevere', x: 4.2, z: -3.8, rot: -.12, w: 2.8, d: 2.2, h: 2.1, storeys: 1, built: true },
+  { id: 'it-trastevere-casa', style: 'trastevere', x: -13.6, z: 7.9, rot: .06, w: 3.0, d: 2.3, h: 2.1, storeys: 2, built: true },
+  { id: 'it-campagna-casale', style: 'casale', x: -25.4, z: 5.2, rot: -.2, w: 3.6, d: 2.6, h: 2.3, storeys: 1, built: true },
+  { id: 'it-rialto-casa', style: 'venetianQuay', x: 31.1, z: -27.6, rot: .04, w: 2.6, d: 2.0, h: 2.1, storeys: 2, built: true },
+  { id: 'it-rialto-magazzino', style: 'venetianQuay', x: 37.85, z: -28.75, rot: -.04, w: 3.2, d: 2.2, h: 2.2, storeys: 2, built: true },
+  { id: 'it-sanmarco-casa', style: 'venetianQuay', x: 38.1, z: -14.7, rot: .06, w: 2.6, d: 2.0, h: 2.1, storeys: 2, built: true },
+  { id: 'it-burano-casa', style: 'buranoCottage', x: 16.74, z: -28.2, rot: .06, w: 2.4, d: 1.9, h: 2.0, storeys: 1, built: true },
+  { id: 'it-albergheria-casa', style: 'palermoTufa', x: 0.04, z: 19.9, rot: -.04, w: 2.8, d: 2.2, h: 2.1, storeys: 2, built: true },
+  { id: 'it-albergheria-torre', style: 'palermoTufa', x: 4.34, z: 19.9, rot: .04, w: 2.2, d: 2.2, h: 2.0, storeys: 3, built: true },
+  { id: 'it-coast-casa', style: 'sicilianCoast', x: 12.4, z: 26.6, rot: .1, w: 2.0, d: 1.6, h: 2.0, storeys: 1, built: true },
+  { id: 'it-etna-casa', style: 'sicilianCoast', x: 18.2, z: 26.6, rot: -.08, w: 1.9, d: 1.45, h: 2.0, storeys: 1, built: true },
   // Built by latifondoMasseria(), reduced to the masseria's tower and moved from [1.2, 25.4] to [0.1, 26.6]:
   // the blueprint point sat 3.0 from `granoIt`, inside its pad, and the ground between `pastry`'s pad and
   // `granoIt`'s is 2.2 wide, so the tower stands centred in it and 1.2 further from the lane.
-  { id: 'it-latifondo-masseria', style: 'casale', x: .1, z: 26.6, rot: 0, w: 1.4, d: 1.4, h: 0, built: true },
+  { id: 'it-latifondo-masseria', style: 'casale', x: 4.4, z: 26.8, rot: 0, w: 1.4, d: 1.4, h: 0, built: true },
 ];
 /** The three buildings that belong to a stand. They are not extra houses, but they are blockers under exactly
- *  the same rule, and each is built low on purpose so it never stands between the visitor and a stand. The
- *  byre is at [-39, 2.4], 0.54 from the blueprint's [-39.5, 2.6] and square to the table: turned, or a unit
- *  wider, it reached into the 6 x 5 pads of both `italyChicken` and `italyBeef`. The tonnara's sheds are 0.6
- *  east of the blueprint's [15.6, 28.6], off `granoIt`'s pad. */
+ *  the same rule. Each moved with its stand in the shared-ground pass: the oven house keeps its offset from the
+ *  forno, the byre stands east of the casale inside the Agro's south loop, and the tonnara's sheds stand at the
+ *  cape east of the tonnara, turned end-on to the camera. */
 export const IT_STAND_BUILDINGS: { id: string; owner: string; x: number; z: number; rot: number }[] = [
-  { id: 'forno-oven-house', owner: 'oven', x: -16.6, z: -10.6, rot: .1 },
-  { id: 'casale-byre', owner: 'cheese', x: -39, z: 2.4, rot: 0 },
-  { id: 'tonnara-sheds', owner: 'tonnaraIt', x: 16.2, z: 28.6, rot: .05 },
+  { id: 'forno-oven-house', owner: 'oven', x: -18.0, z: -12.15, rot: .1 },
+  { id: 'casale-byre', owner: 'cheese', x: -33.3, z: 1.6, rot: 0 },
+  { id: 'tonnara-sheds', owner: 'tonnaraIt', x: 39.2, z: 25.7, rot: 1.62 },
 ];
 
 /** Everything solid the Builder has put down on this table, so nothing planted later stands inside it. It is
@@ -479,21 +457,21 @@ export type Road = { id: string; width: number; points: Pt[]; net: string };
  */
 export const IT_ROADS: Road[] = [
   { id: 'IT-R1', width: 2.4, net: 'mainland', points: [[-27.5, -7.4], [-24, -7.4], [-20.5, -7.4], [-16, -7.4], [-12, -7.4], [-8, -7.4], [-4, -7.4]] },
-  { id: 'IT-R2', width: 2.0, net: 'mainland', points: [[-27.5, -7.4], [-29.2, -6.8], [-31, -6], [-32.6, -5.2], [-34, -4.6], [-36, -4.2], [-38, -4.1], [-41, -4], [-44, -3.4], [-45.2, -0.8], [-44.8, 2.2], [-43.6, 5], [-41.5, 7.6], [-38.5, 8.2], [-35.6, 7.6]] },
-  { id: 'IT-R3', width: 2.2, net: 'mainland', points: [[-4, -7.4], [0, -8.4], [3, -10.2], [5.6, -12], [7, -13.5], [7, -17], [6.2, -20], [4.6, -22.4], [2.4, -23.8]] },
-  { id: 'IT-R4', width: 2.0, net: 'sicily', points: [[-17, 21.4], [-17, 23], [-12, 23], [-8, 23], [-4, 23], [0, 22.6]] },
-  { id: 'IT-R5', width: 1.8, net: 'sicily', points: [[0, 22.6], [4, 22.2], [8, 21.8], [12, 22.2], [16, 22.6], [20, 22.4], [24, 22.8], [26.2, 26.6]] },
-  { id: 'IT-R5b', width: 1.6, net: 'sicily', points: [[12, 22.2], [12, 25], [12, 28]] },
-  { id: 'IT-R6', width: 1.8, net: 'rialto', points: [[22.4, -20.9], [26, -21], [30, -21.1], [33, -21.2]] },
-  { id: 'IT-R7', width: 1.8, net: 'rialto', points: [[27, -21], [27, -19.6], [27, -16.6], [27.6, -14.8], [29.5, -13.9], [32, -13.6]] },
-  { id: 'IT-R8', width: 1.6, net: 'burano', points: [[11.8, -24.6], [14, -24.4], [17, -24.6]] },
-  { id: 'IT-R9', width: 1.4, net: 'valli', points: [[13.4, -12.9], [16, -13], [19, -12.9]] },
-  // Stage D, 2026-09-22: the doors. Every stand faces the camera (+z), so a stand whose street runs behind it
-  // gets a lane in front instead of being turned to the street. Four lanes, all within one landmass's network.
-  { id: 'IT-R1b', width: 1.6, net: 'mainland', points: [[-8, -7.4], [-9.6, -4.4], [-11.2, -2.2], [-15.2, -2.2], [-15.6, 0.4], [-22, 0.4], [-23, 2.4], [-25.6, 2.4]] },
-  { id: 'IT-R3b', width: 1.2, net: 'mainland', points: [[3, -10.2], [0.8, -13], [0.8, -17.6]] },
-  { id: 'IT-R4b', width: 1.4, net: 'sicily', points: [[-8, 23], [-8.1, 27.8]] },
-  { id: 'IT-R4c', width: 1.4, net: 'sicily', points: [[-13.6, 27.8], [-8.1, 27.8], [-3, 27.8]] },
+  { id: 'IT-R2', width: 2.0, net: 'mainland', points: [[-27.5, -7.4], [-28.7, -6.6], [-30.6, -5.9], [-32.6, -5.3], [-36.2, -4.8], [-39.0, -4.7], [-41.5, -4.7], [-44, -4.6], [-45.3, -1.2], [-45, 2.2], [-44.4, 5.0], [-42.2, 6.1], [-38.5, 6.1], [-34.8, 6.4], [-33.4, 8.4]] },
+  { id: 'IT-R3', width: 2.2, net: 'mainland', points: [[-4, -7.4], [0, -8.8], [2.6, -11.6], [5.6, -12.2], [7, -13.5], [7, -17], [6.2, -20], [4.8, -22.4], [3.4, -23.8]] },
+  { id: 'IT-R4', width: 2.0, net: 'sicily', points: [[-25.8, 23.2], [-24, 23.2], [-20.1, 23.2], [-16, 23.2], [-12, 23.2], [-8, 23.2], [-4, 23.2], [0, 23.2]] },
+  { id: 'IT-R5', width: 1.8, net: 'sicily', points: [[0, 23.2], [4, 23.2], [8, 23.2], [12, 23.2], [16, 23.2], [20.2, 23.4], [22.6, 25.4], [26.2, 25.6], [28.0, 28.2], [31, 28.8], [34, 28.8], [36.8, 28.8]] },
+  { id: 'IT-R6', width: 1.8, net: 'rialto', points: [[20.9, -23.0], [24, -23.0], [28, -22.9], [32.35, -22.6], [35, -21.4], [38, -21.0], [40.5, -21.0]] },
+  { id: 'IT-R7', width: 1.8, net: 'rialto', points: [[32.35, -22.6], [32.35, -19.6], [32.35, -14.0], [31.4, -11.6], [29.4, -10.7], [26, -10.6], [23.2, -10.6]] },
+  { id: 'IT-R8', width: 1.6, net: 'burano', points: [[8.2, -24.9], [13, -24.9], [18.0, -24.9]] },
+  { id: 'IT-R9', width: 1.4, net: 'valli', points: [[12.8, -13.2], [16, -13.2], [18.9, -13.2]] },
+  { id: 'IT-R1b', width: 1.6, net: 'mainland', points: [[0, -8.8], [1.2, -6.2], [1.4, -2.2], [-0.6, 1.0], [-5, 1.0], [-8.5, 0.7], [-12, 1.0], [-16, 1.0], [-21, 1.0], [-23.4, 0.4], [-24.9, -0.5]] },
+  { id: 'IT-R2n', width: 1.8, net: 'mainland', points: [[-43.6, -20.6], [-39, -20.6], [-35, -20.8], [-31, -20.9], [-27.8, -21.0], [-24, -21.4], [-20.5, -21.6], [-17, -22.2], [-13, -22.9], [-9.5, -23.5], [-6.2, -25.4], [-2, -25.6], [1, -25.3], [3.4, -23.8]] },
+  { id: 'IT-R2m', width: 1.6, net: 'mainland', points: [[-43.8, -12.5], [-40, -12.5], [-35, -12.6], [-31.6, -12.7], [-30.6, -15.0], [-29.8, -18.0], [-29.0, -20.8]] },
+  { id: 'IT-R3b', width: 1.4, net: 'mainland', points: [[6.2, -17.3], [3.0, -17.5], [0.2, -17.5]] },
+  { id: 'IT-R4b', width: 1.4, net: 'sicily', points: [[-5.0, 23.2], [-5.0, 29.4]] },
+  { id: 'IT-R4c', width: 1.4, net: 'sicily', points: [[-25.6, 29.4], [-20, 29.5], [-14, 29.5], [-8, 29.5], [-5, 29.4], [-1, 29.4], [3, 29.4]] },
+  { id: 'IT-R4d', width: 1.2, net: 'sicily', points: [[-20.1, 23.2], [-20.1, 19.0], [-19.6, 15.9], [-14.1, 15.8], [-10.5, 15.8]] },
 ];
 export const road = (id: string) => IT_ROADS.find(r => r.id === id)!;
 
@@ -502,8 +480,8 @@ export const road = (id: string) => IT_ROADS.find(r => r.id === id)!;
  *  Builder draws no deck there and only carries the road and the walkers over it. */
 export type Crossing = { id: string; at: Pt; span: number; road: string; built: boolean };
 export const IT_CROSSINGS: Crossing[] = [
-  { id: 'ponteIt', at: [-31, -6], span: BRIDGE_SPAN, road: 'IT-R2', built: true },
-  { id: 'rialtoIt', at: [27, -18], span: BRIDGE_SPAN, road: 'IT-R7', built: false },
+  { id: 'ponteIt', at: [-30.6, -5.9], span: BRIDGE_SPAN, road: 'IT-R2', built: true },
+  { id: 'rialtoIt', at: [32.35, -18.1], span: BRIDGE_SPAN, road: 'IT-R7', built: false },
 ];
 /** Deck centres, in the shape `spain-town.ts` uses. A road may touch the water only inside one of these. */
 export const IT_BRIDGES: Pt[] = IT_CROSSINGS.map(c => c.at);
@@ -512,13 +490,13 @@ export const IT_BRIDGES: Pt[] = IT_CROSSINGS.map(c => c.at);
  *  the doc names only one bridge between them and it is built. */
 export type BoatLane = { id: string; points: Pt[]; boats: number; kind: 'gondola' | 'sandolo' | 'barge' | 'bragozzo' | 'ferry'; speed: number };
 export const IT_BOAT_LANES: BoatLane[] = [
-  { id: 'L1', points: [[19, -18.2], [24, -18], [27, -18], [31, -17.6], [36, -17.2]], boats: 3, kind: 'gondola', speed: .010 },
-  { id: 'L2', points: [[8.8, -21.6], [12, -21.2], [16, -21], [19.5, -19.8], [19.8, -20.6]], boats: 3, kind: 'sandolo', speed: .009 },
-  { id: 'L3', points: [[21.7, -19.2], [21.8, -16], [21.6, -13.5]], boats: 1, kind: 'barge', speed: .008 },
+  { id: 'L1', points: [[19.6, -18.2], [24, -18.2], [28, -18.1], [32.35, -18.1], [36, -18.1], [40.8, -18.2]], boats: 3, kind: 'gondola', speed: .010 },
+  { id: 'L2', points: [[7.6, -22.5], [11, -22.6], [15, -22.6], [19.7, -22.4]], boats: 3, kind: 'sandolo', speed: .009 },
+  { id: 'L3', points: [[21.0, -19.0], [21.0, -16], [20.9, -13.0]], boats: 1, kind: 'barge', speed: .008 },
   // L4 bends a little further from the lido's south-west corner than the blueprint's [37.5, -15]: at that
   // point a 4.2-long bragozzo swinging through the turn put its stem on the lido's quay.
-  { id: 'L4', points: [[36, -17.2], [36.6, -14.6], [37.6, -12.2], [39.5, -11.2], [42, -9.5], [45, -8]], boats: 2, kind: 'bragozzo', speed: .007 },
-  { id: 'L5', points: [[31.5, 11.5], [31.8, 14], [31.4, 16.5], [30.6, 18.6]], boats: 1, kind: 'ferry', speed: .006 },
+  { id: 'L4', points: [[40.8, -18.2], [42.9, -15.6], [43.0, -12.2], [45.4, -9.6], [48.4, -7.8]], boats: 2, kind: 'bragozzo', speed: .007 },
+  { id: 'L5', points: [[31.5, 11.5], [31.8, 14], [31.4, 16.4], [30.8, 18.0]], boats: 1, kind: 'ferry', speed: .006 },
 ];
 
 /** Straight walking segments cut from the road table, so a walker never rounds a corner into a wall.
@@ -552,13 +530,13 @@ export function italyLandscape(ctx: LayoutCtx) {
   tint(-17, -6.5, 10, 5, '#d9cbb0');            // Rome: travertine and basalt setts on the piazza
   tint(-38, -1, 11, 10, '#c6b489');             // Testaccio and the Agro: dry campagna
   tint(-33, 2, 3.4, 9, '#b9ad98', .05);         // the river quay along the Tiber below Rome
-  tint(27, -19, 7, 5, '#ded3b6');               // Venice: Istrian stone over brick, the quays themselves
+  tint(31, -20, 10, 6, '#ded3b6');               // Venice: Istrian stone over brick, the quays themselves
   tint(4, -18, 8, 7, '#a9b878');                // the terraferma, maize green
-  tint(14.5, -25.6, 5, 3.4, '#c8bd93');         // Burano, sand and salt marsh
-  tint(15.5, -14, 5.2, 3.6, '#c8bd93', .05);    // and the valli bank
-  tint(-8, 22, 9, 5, '#cdbb92');                // Palermo: tufa under awnings
-  tint(16, 23, 12, 7, '#b6ac7e');               // the tonnara coast, dry gold
-  tint(25.4, 20.4, 5.6, 3.4, '#6b6258', -.05);  // running to basalt under Etna
+  tint(13, -27.6, 5.6, 3.6, '#c8bd93');         // Burano, sand and salt marsh
+  tint(15.8, -16.8, 3.8, 4.6, '#c8bd93', .05);    // and the valli bank
+  tint(-12, 22, 15, 6, '#cdbb92');                // Palermo: tufa under awnings
+  tint(15, 26, 13, 5, '#b6ac7e');               // the tonnara coast, dry gold
+  tint(26, 21.6, 5.4, 4.2, '#6b6258', -.05);  // running to basalt under Etna
   tint(17, 1.4, 13, 6.4, '#b3ab8e', .04);       // the Apennine ground in the mainland's south-east
 
   // ---------- the one sea: the table with the eight landmasses as holes, and its rim ----------
@@ -581,17 +559,22 @@ export function italyLandscape(ctx: LayoutCtx) {
   // water rather than a second body of water. Its holes are the five islands, so nothing green crosses a quay.
   // Its east edge is the lido's own lagoon side, so the shallow water stops at the barrier instead of drawing a
   // straight line across the open Adriatic.
-  const lagoonRing: Pt[] = [[6.5, -32], [6.5, -24.5], [8, -20], [9, -16], [11, -12.5], [14, -9.5], [18, -8], [23, -7.2], [28, -7.6], [32, -8.4], [35, -6], [37.9, -7.4], [37.9, -32]];
+  const lagoonRing: Pt[] = [[6.5, -32], [6.5, -24.5], [8, -20], [9, -16], [11, -12.5], [14, -9.5], [18, -8], [23, -7.2], [28, -7.6], [32, -8.4], [35, -6], [38.5, -8.0], [44.4, -12.6], [44.4, -32]];
   const lagoon = new THREE.Mesh(new THREE.ShapeGeometry(shapeOf(lagoonRing, ISLANDS.filter(i => i.id !== 'lido').map(i => islandOutline(i.id)))),
     mat(ITP.lagoonGreen, { transparent: true, opacity: .42, depthWrite: false }));
   lagoon.rotation.x = -Math.PI / 2; lagoon.scale.y = -1; lagoon.position.y = TOP + LAGOON_Y;
   lagoon.renderOrder = 3; lagoon.name = 'lagoon-shallows'; group.add(lagoon);
 
-  // The two Venetian quays are paved in Istrian stone to their own irregular edge, inside the sand rim; Burano,
-  // the valli bank and the lido stay marsh and sand.
-  for (const id of ['rialto-quay', 'san-marco-quay']) {
-    const stone = new THREE.Mesh(new THREE.ShapeGeometry(shapeOf(offsetOutline(islandOutline(id), -.35))), mat('#d8cfb8'));
-    stone.rotation.x = -Math.PI / 2; stone.scale.y = -1; stone.position.y = TOP + .012; stone.receiveShadow = true; stone.name = 'quay-stone'; group.add(stone);
+  // The four Venetian islands are stone quays, not sand pads: Istrian stone laid over the sand rim right out to
+  // the island's own irregular edge, and a low darker kerb along the water, so from above each island reads as a
+  // fondamenta with a stone lip rather than a bank with a beach. The lido stays sand: it is the barrier, not a
+  // quay. The kerb stands .14 high, under anything that blocks a walker or a ray.
+  for (const id of ['rialto-quay', 'san-marco-quay', 'burano', 'valli-bank']) {
+    const edge = islandOutline(id);
+    const stone = new THREE.Mesh(new THREE.ShapeGeometry(shapeOf(edge)), mat('#d8cfb8'));
+    stone.rotation.x = -Math.PI / 2; stone.scale.y = -1; stone.position.y = TOP + QUAY_Y; stone.receiveShadow = true; stone.name = 'quay-stone'; group.add(stone);
+    const kerb = new THREE.Mesh(new THREE.ExtrudeGeometry(shapeOf(edge, [offsetOutline(edge, -.26)]), { depth: .14, bevelEnabled: false }), mat('#b3a78c'));
+    kerb.rotation.x = -Math.PI / 2; kerb.scale.y = -1; kerb.position.y = TOP + QUAY_Y; kerb.receiveShadow = true; kerb.castShadow = true; kerb.name = 'quay-kerb'; group.add(kerb);
   }
 
   // ---------- the Tiber: a sand bank under a water ribbon, with the estuary blend at its mouth ----------
@@ -615,10 +598,10 @@ export function italyLandscape(ctx: LayoutCtx) {
     if (hill) hill.name = 'apennine-ridge';
   }
   // The snow pits cut into the flank under Etna first, then the basalt walls round them, and black sand.
-  for (const spots of [[[21.8, 26.4, .1], [22.2, 27.4, .1], [21.2, 25.6, .1]], [[23.4, 17.6, .3], [21.6, 28.6, -.2], [19.8, 20.6, .2]]] as [number, number, number][][]) {
+  for (const spots of [[[29.4, 20.7, .1], [29.6, 20.9, .2], [21.0, 17.9, .2]]] as [number, number, number][][]) {
     const pit = tryPlaceAny(ctx, () => snowPit(), spots, 0); if (pit) { pit.name = 'snow-pit'; pit.position.y = etnaHeight(pit.position.x, pit.position.z); }
   }
-  for (const [x, z, rot, len] of [[20.4, 29.0, .1, 3.0], [29.8, 22.4, 1.3, 2.4], [28.8, 23.2, 1.2, 3.2], [22.6, 22.0, .1, 4.4], [26.4, 22.4, -.15, 3.6], [21.2, 18.6, .2, 3.0], [24.8, 29.2, -.05, 2.6]] as [number, number, number, number][]) {
+  for (const [x, z, rot, len] of [[20.4, 29.2, .1, 3.0], [24.4, 29.4, -.05, 2.6], [28.6, 20.6, 1.2, 2.4], [20.4, 18.4, .2, 2.6], [25.2, 18.4, .1, 2.6]] as [number, number, number, number][]) {
     const wall = tryPlace(ctx, lavaWall(len), x, z, rot, etnaHeight(x, z)); if (wall) wall.name = 'lava-wall';
   }
   for (let i = 0; i < 14; i++) {
@@ -628,8 +611,10 @@ export function italyLandscape(ctx: LayoutCtx) {
   }
 
   // ---------- the air over the water ----------
-  const swifts = birds(6, 7, 7); swifts.position.set(-18, TOP, -8); group.add(swifts); tickers.push(swifts.userData.tick!);
-  const lagoonGulls = birds(6, 9, 9); lagoonGulls.position.set(22, TOP, -20); group.add(lagoonGulls); tickers.push(lagoonGulls.userData.tick!);
-  const coastGulls = birds(5, 8, 8); coastGulls.position.set(14, TOP, 27); group.add(coastGulls); tickers.push(coastGulls.userData.tick!);
+  // Named so a sight-line probe can tell a passing wing from a building: a bird crosses a ray for a frame and
+  // hides nothing.
+  const swifts = birds(6, 7, 7); swifts.position.set(-18, TOP, -8); swifts.name = 'italy-birds'; group.add(swifts); tickers.push(swifts.userData.tick!);
+  const lagoonGulls = birds(6, 9, 9); lagoonGulls.position.set(26, TOP, -20); lagoonGulls.name = 'italy-birds'; group.add(lagoonGulls); tickers.push(lagoonGulls.userData.tick!);
+  const coastGulls = birds(5, 8, 8); coastGulls.position.set(14, TOP, 27); coastGulls.name = 'italy-birds'; group.add(coastGulls); tickers.push(coastGulls.userData.tick!);
   void place; void curveOf;
 }

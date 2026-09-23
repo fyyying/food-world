@@ -2347,16 +2347,21 @@ export function herbGarden(): P {
 export function valliPesca(): P {
   const g = group();
   add(g, box(5, 0.24, 0.5, "#b5a882"), 0, 0.12, 0.2);                                     // the bank's edge the stand stands on
-  // the reed weirs of the enclosure on the mud flat in front of the bank, low, and the bricole at its corners
-  for (let r = 0; r < 2; r++) for (let i = 0; i < 8; i++) { if (i > 1 && i < 5) continue; add(g, cyl(0.035, 0.045, 0.6, "#8a7448", 5), -2.3 + i * 0.62, 0.26, 1.1 + r * 1.0).rotation.z = (rnd() - 0.5) * 0.12; }
-  for (const x of [-1.9, 1.9]) for (let r = 0; r < 2; r++) add(g, box(1.3, 0.05, 0.05, "#8a7448"), x, 0.5, 1.1 + r * 1.0);
-  for (const x of [-2.4, 2.2]) { for (let i = 0; i < 3; i++) add(g, cyl(0.06, 0.07, 1.4, "#7a6a55", 6), x + i * 0.16, 0.7, 2.4).rotation.z = (i - 1) * 0.1; }
+  // the reed weirs of the enclosure (grisiole): woven screens of cane, knee-high, closed panels bound along the top,
+  // with the gap in the middle where the tank stands. Loose stakes, rails and bricole poles on the bank read as
+  // scattered sticks from above (walkthrough item 16), so each weir is one woven panel and nothing stands alone.
+  for (const x of [-1.95, 1.95]) for (let r = 0; r < 2; r++) {
+    const screen = add(g, new THREE.Group(), x, 0, 1.1 + r * 1.0);
+    add(screen, box(1.3, 0.5, 0.07, "#a8956a"), 0, 0.25, 0);
+    for (let i = 0; i < 9; i++) add(screen, box(0.035, 0.46, 0.085, i % 2 ? "#96845c" : "#b3a174"), -0.6 + i * 0.15, 0.24, 0);
+    add(screen, box(1.34, 0.06, 0.11, "#7a6a4a"), 0, 0.5, 0);
+  }
   // the casone: the fisherman's reed hut on the bank, behind
   const casone = add(g, new THREE.Group(), 1.6, 0, -1.4);
   add(casone, box(1.8, 1.0, 1.5, "#b9a878"), 0, 0.5, 0);
   add(casone, cone(1.55, 1.5, "#a89466", 4), 0, 1.6, 0).rotation.y = Math.PI / 4;
   add(casone, box(0.5, 0.8, 0.06, "#6e4a2c"), 0, 0.4, 0.78);
-  for (let i = 0; i < 4; i++) add(casone, cyl(0.02, 0.02, 1.4, "#8a7448", 4), -0.7 + i * 0.45, 2.1, 0).rotation.x = Math.PI / 2;
+  add(casone, cyl(0.1, 0.14, 0.22, "#8a7448", 6), 0, 2.36, 0);                               // the reed crown bound at the ridge
   // the holding tank the catch is kept alive in, and the fyke net lifted out of it: the subject
   add(g, box(1.6, 0.34, 1.3, "#6e4a2c"), -0.8, 0.17, 1.7);
   add(g, box(1.46, 0.02, 1.16, "#7fa8a0"), -0.8, 0.33, 1.7);
@@ -2371,7 +2376,11 @@ export function valliPesca(): P {
   // the tubs and the crates on the bank, behind
   for (let i = 0; i < 3; i++) { add(g, cyl(0.28, 0.24, 0.26, IT.wood, 12), 0.2 + i * 0.6, 0.13, 0.35); add(g, cyl(0.25, 0.25, 0.05, "#7fa8a0", 12), 0.2 + i * 0.6, 0.26, 0.35); }
   for (let i = 0; i < 4; i++) add(g, box(0.5, 0.26, 0.4, "#a37a4f"), -1.6 - (i % 2) * 0.55, 0.13 + Math.floor(i / 2) * 0.27, -1.0);
-  for (let i = 0; i < 5; i++) add(g, cyl(0.03, 0.035, 0.55, "#8a7448", 5), -1.0 + i * 0.1, 0.28, -1.4).rotation.z = (i - 2) * 0.06;
+  // a fyke net drying over a low trestle beside the crates, instead of the loose stakes that stood there
+  add(g, box(0.9, 0.06, 0.34, IT.wood), -0.75, 0.42, -1.4);
+  for (const dx of [-0.38, 0.38]) add(g, box(0.07, 0.4, 0.3, "#6e4a2c"), -0.75 + dx, 0.2, -1.4);
+  add(g, ball(0.32, "#9c8f6a", 10), -0.75, 0.5, -1.4).scale.set(1.35, 0.3, 0.75);
+  for (const dx of [-0.3, 0.05, 0.35]) add(g, ball(0.05, "#c9a46a", 6), -0.75 + dx, 0.58, -1.3);
   const fisher = add(g, own(resident("fisher")), -0.8, 0.02, 0.0) as Figure; fisher.rotation.y = 0;
   arms(fisher).right.rotation.x = -1.3; arms(fisher).left.rotation.x = -1.2;
   const mate = add(g, own(resident("fisher", false)), 0.9, 0.02, -0.5) as Figure; mate.rotation.y = -0.6;
@@ -2475,12 +2484,13 @@ export function wheatLatifondo(): P {
   // the water jar, the tally board and the mule waiting with the panniers
   add(g, ball(0.28, "#9c6a4a", 10), 1.8, 0.28, 1.9).scale.y = 1.2;
   add(g, cyl(0.09, 0.12, 0.2, "#9c6a4a", 8), 1.8, 0.62, 1.9);
-  for (const x of [2.0, 2.9]) add(g, cyl(0.06, 0.07, 1.9, "#6e4a2c", 6), x, 0.95, 0.9);
-  const tallyBeam = add(g, box(1.1, 0.12, 0.14, "#6e4a2c"), 2.45, 1.92, 0.9); tallyBeam.name = "front-beam";
-  lamps(g, 1.92, 0.9, [2.7], 0.75);
-  const tally = add(g, new THREE.Group(), 2.2, 1.78, 0.9); tally.userData.foodReaction = "sway";
-  add(tally, cyl(0.006, 0.006, 0.2, "#8a7f60", 4), 0, -0.1, 0);
-  add(tally, box(0.3, 0.42, 0.03, "#5a4636"), 0, -0.34, 0);
+  // the reapers' midday bread in a covered basket and the tally stick laid on the sacks: the post-and-beam frame
+  // that stood here with a lantern and a board hung from it read as a gallows (walkthrough item 22)
+  basket(g, 2.45, 0, 1.75, 0.26);
+  add(g, ball(0.2, "#b07a44", 10), 2.45, 0.3, 1.75).scale.y = 0.55;
+  add(g, box(0.5, 0.02, 0.42, "#e2dccb"), 2.45, 0.36, 1.82).rotation.z = 0.12;
+  for (let i = 0; i < 3; i++) { const sack = add(g, cyl(0.24, 0.28, 0.62, "#c9b48a", 10), 2.25 + i * 0.5, 0.31, 0.75); sack.scale.z = 0.8; add(g, cyl(0.08, 0.2, 0.12, "#b9a47a", 8), 2.25 + i * 0.5, 0.67, 0.75); }
+  const tally = add(g, box(0.5, 0.05, 0.07, "#6e4a2c"), 2.5, 0.7, 0.95); tally.rotation.y = 0.3;
   const m = mule(g, 1.0, 0, -1.3, "#7a6a55").mule; m.rotation.y = 0.2;
   for (const dz of [-0.4, 0.4]) add(m, cyl(0.22, 0.18, 0.3, "#c9a97a", 10), 0, 1.2, dz);
   const binder = add(g, own(resident("farmer")), -2.2, 0, 2.3) as Figure; binder.rotation.y = 1.5;
@@ -2493,7 +2503,6 @@ export function wheatLatifondo(): P {
   return life(g, "granoIt", [binder, reaperA, reaperB], (t, k) => {
     ears.forEach((e, i) => { e.rotation.z = Math.sin(t * 1.1 + e.position.x * 0.4 + i * 0.01) * 0.055; });
     stooks.forEach((s, i) => { s.rotation.z = Math.sin(t * 0.7 + i) * 0.008; });
-    tally.rotation.z = Math.sin(t * 1.3) * 0.06;
     // the band closes on the sheaf, it is lifted and stood on end
     const bind = beat(k, 0.04, 0.44), stand = hold(k, 0.42, 0.92);
     band.scale.setScalar(1 - bind * 0.25);
@@ -2627,15 +2636,22 @@ export function almondGrove(): P {
   for (let i = 0; i < 8; i++) add(g, ball(0.045, "#e2cfa4", 5), 1.85 + (i % 4) * 0.3, 0.89, 1.78 + Math.floor(i / 4) * 0.24).scale.set(1, 1.35, 0.7);
   add(g, cyl(0.28, 0.26, 0.3, IT.stone, 14), 2.6, 0.15, 0.6);
   add(g, cyl(0.24, 0.24, 0.05, "#f1ece0", 14), 2.6, 0.3, 0.6);
-  const cane = add(g, cyl(0.022, 0.028, 2.6, "#c9a840", 6), -0.8, 1.3, 0.35); cane.rotation.x = -0.4;
   const pickerA = add(g, own(resident("farmer")), -1.0, 0, 0.5) as Figure; pickerA.rotation.y = 3.0;
   arms(pickerA).right.rotation.x = -1.7;
+  // the beating cane is in the picker's hand, reaching up into the crown on his left: stood on its own it read as a
+  // yellow pole among the trees (walkthrough item 23). In the arm's own space forward is -y, up is +z and his left
+  // (the tree at x -2.0) is +x; aimed straight ahead it still drew as an upright line from the south, so it leans
+  // across the crown, grey-brown like the bark rather than straw yellow.
+  const cane = add(arms(pickerA).right, new THREE.Group(), 0, arms(pickerA).hand, 0);
+  const caneDir = V(0.62, -0.5, 0.6).normalize();
+  const caneStick = add(cane, cyl(0.022, 0.03, 2.1, "#8a7458", 6), caneDir.x * 0.75, caneDir.y * 0.75, caneDir.z * 0.75);
+  caneStick.quaternion.setFromUnitVectors(V(0, 1, 0), caneDir);
   const pickerB = add(g, own(resident("townswoman", false)), 1.0, 0, 0.5) as Figure; pickerB.rotation.y = 2.8;
   const sheller = add(g, own(resident("townswoman")), 2.3, 0, 1.25) as Figure; sheller.rotation.y = 0;
   const crop = harvest(g, trees, baskets, 0.12);
   return life(g, "mandorleIt", [pickerA, pickerB, sheller], (t, k, dt) => {
     crop.tick(t, k, dt);
-    cane.rotation.z = Math.sin(t * 0.8) * 0.05 + beat(k, 0, 0.6) * 0.5;
+    cane.rotation.x = Math.sin(t * 0.8) * 0.04 + beat(k, 0, 0.6) * 0.35;
     arms(pickerA).right.rotation.x = -1.7 + beat(k, 0.05, 0.7) * 0.5;
     upper(pickerB).rotation.y = beat(k, 0.45, 1) * 0.4;
   }, () => crop.poke());
@@ -2771,7 +2787,7 @@ export function colosseum(): P {
 /**
  * The Pantheon: a portico of granite columns, a bronze door, a dome with an oculus that has never been glazed.
  * On the click the shaft of sun through the oculus swings across the floor inside, which the open door shows, and
- * the pigeons lift off the portico steps in front of the columns and settle again.
+ * the pigeons come off the portico, wheel in front of the columns and go back under the cornice.
  */
 export function pantheon(): P {
   const g = group();
@@ -2795,9 +2811,26 @@ export function pantheon(): P {
   const sun = add(temple, cyl(0.55, 0.55, 0.02, "#f7e6b0", 16), 0, 0.52, 1.2);
   sun.material = mat("#f7e6b0", { emissive: "#f2c46a", emissiveIntensity: 0.8 });
   // the fountain and the obelisk of the little square, off to one side of the steps
-  // the pigeons on the front step: the subject
+  // the pigeons: the subject. At rest they roost up under the portico's cornice and nothing of them shows: sitting
+  // on the front step they read from the approach as grey scraps on the paving (walkthrough, as the campanile's did
+  // at item 19). The click sends them off the portico, wheeling out in front of the columns, and back in.
   const pigeons = add(g, new THREE.Group(), 0.2, 0.26, 2.5); pigeons.name = "it-pantheon-pigeons";
-  const flock = Array.from({ length: 8 }, (_, i) => { const b = add(pigeons, bird("#8a8d96", 1.0), -0.6 + (i % 4) * 0.4, 0.02, -0.1 + Math.floor(i / 4) * 0.2); b.rotation.y = i * 0.8; return b; });
+  pigeons.visible = false;
+  // a pigeon, not the swifts' flat plates: a plump body, a darker head, a fanned tail, and wings hinged at the
+  // shoulder so they beat as a V instead of spinning like loose paper
+  const pigeon = (sz: number) => {
+    const b = new THREE.Group();
+    add(b, ball(0.075 * sz, "#8a8d96", 8), 0, 0, 0).scale.set(1.7, 0.85, 0.95);
+    add(b, ball(0.047 * sz, "#5f6470", 6), 0.13 * sz, 0.045 * sz, 0);
+    add(b, box(0.1 * sz, 0.014, 0.09 * sz, "#6f7380"), -0.15 * sz, 0.005, 0);
+    b.userData.wings = [-1, 1].map((side) => {
+      const hinge = add(b, new THREE.Group(), 0, 0.03 * sz, side * 0.05 * sz);
+      add(hinge, box(0.13 * sz, 0.014, 0.2 * sz, "#a7abb4"), 0, 0, side * 0.1 * sz);
+      return hinge;
+    });
+    return b;
+  };
+  const flock = Array.from({ length: 8 }, (_, i) => add(pigeons, pigeon(1.2), 0, 0, 0));
   // a water seller, a woman with a basket, a man reading and a carriage driver on the step
   const seller = add(g, own(resident("vendor", false)), -1.5, 0.225, 1.9) as Figure; seller.rotation.y = 0.6;
   add(g, ball(0.22, "#9c6a4a", 10), -1.15, 0.47, 1.85).scale.y = 1.2;
@@ -2811,11 +2844,16 @@ export function pantheon(): P {
     // 1. the pigeons lift off the step, wheel out in front of the columns and come down again
     const up = hold(k, 0.12, 0.84);
     pigeons.position.copy(pigeonRest);
-    pigeons.position.y = pigeonRest.y + up * 1.3; pigeons.position.z = pigeonRest.z + up * 0.6;
+    // they climb over the pediment and circle wide apart, each heading along its own circle, so from the card
+    // approach they read as eight birds against the dome and the paving rather than one grey knot at the columns
+    pigeons.position.y = pigeonRest.y + up * 3.0; pigeons.position.z = pigeonRest.z + up * 0.2;
+    pigeons.visible = up > 0.02;
     flock.forEach((b, i) => {
-      b.position.y = 0.02 + up * Math.sin(t * 3 + i) * 0.22;
-      b.rotation.y = i * 0.8 + up * t * 2;
-      (b.userData.wings as THREE.Object3D[]).forEach((w, n) => { w.rotation.x = (n ? 1 : -1) * (up > 0.02 ? 0.3 + Math.sin(t * 20 + i) * 0.8 : 0.3); });
+      const a = t * (1.5 + (i % 3) * 0.2) + i * (Math.PI * 2 / 8), r = 0.4 + up * (0.9 + (i % 3) * 0.35);
+      b.position.set(Math.cos(a) * r, up * Math.sin(t * 2.2 + i) * 0.18, Math.sin(a) * r * 0.75);
+      b.rotation.set(0, -a - Math.PI / 2, 0);
+      b.rotation.z = up * 0.25;
+      (b.userData.wings as THREE.Object3D[]).forEach((w, n) => { w.rotation.x = (n ? -1 : 1) * (0.2 + Math.sin(t * 15 + i * 1.3) * 0.55); });
     });
     // 2. the disc of sun swings across the floor inside the open door, 3. the reader looks up from his paper
     sun.position.x = Math.sin(t * 0.3) * 0.4 + beat(k, 0.1, 0.9) * 0.6;
@@ -2868,6 +2906,12 @@ export function mattatoio(): P {
   arms(vaccinaro).right.rotation.x = -0.6; arms(vaccinaro).left.rotation.x = -0.6;
   const butcher = add(g, own(resident("vaccinaro", false)), 2.1, 0, 0.5) as Figure; butcher.rotation.y = -0.5;
   const clerk = add(g, own(resident("townsman", false)), -2.2, 0, 0.45) as Figure; clerk.rotation.y = 0.6;
+  // The clickable footprint is the hall, not the hook line hung in front of it. The card glide aims at the centre
+  // of this box, and the hall cannot move: its back is on the sea rim (world z -26.8) and its front on IT-R2n. Taken
+  // over the whole stand the centre sat 1.0 further south, and the glide's lower quarter filled with the backs of
+  // the caffè, the forno and the pasta row across the Tiber (walkthrough item 25). Rays from the overview through
+  // the quarters and the people still run on into this box, so the hook line stays clickable.
+  g.userData.hitBox = new THREE.Box3(new THREE.Vector3(-3.0, 0, -3.0), new THREE.Vector3(3.0, 3.5, -0.4));
   const quarterRest = quarter.position.clone();
   return life(g, "quintoQuarto", [vaccinaro, butcher, clerk], (t, k) => {
     hanging.forEach((h, i) => { h.rotation.z = Math.sin(t * 1.1 + i) * 0.04; });

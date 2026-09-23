@@ -154,7 +154,8 @@ try{
       let shown=true;for(let a=o;a;a=a.parent){if(!a.visible)shown=false;if(a.material&&(a.material.visible===false||a.material.opacity===0))shown=false;}
       if(shown)meshes.push(o);
     });
-    const whole=new THREE.Box3().setFromObject(stand), size=whole.getSize(new THREE.Vector3()), centre=whole.getCenter(new THREE.Vector3());
+    // the anchor is the centre of the prop's declared click footprint when it has one, as worldkit.ts places it
+    const whole=stand.userData.hitBox?stand.userData.hitBox.clone().applyMatrix4(stand.matrixWorld):new THREE.Box3().setFromObject(stand), size=whole.getSize(new THREE.Vector3()), centre=whole.getCenter(new THREE.Vector3());
     const distance=Math.max(8.8,Math.min(18,Math.max(Math.max(2.2,size.x+.4),Math.max(2.2,size.z+.4))*1.05));
     const target=new THREE.Box3().setFromObject(subject).expandByScalar(.05), aim=target.getCenter(new THREE.Vector3());
     const room=roomProp.has(id);

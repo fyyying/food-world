@@ -2,7 +2,7 @@
 export type RepertoireEntry = { name: string; zh?: string; line: string; recipe?: string };
 
 export const LONDON_REPERTOIRE: Record<string, RepertoireEntry[]> = {
-  // UK01 The public house, Westminster. One roast a week, and everything else the counter sold beside it.
+  // UK01 The public house, Borough High Street. One roast a week, and everything else the counter sold beside it.
   roastPub: [
     { name: "Roast beef and Yorkshire pudding", zh: "The Sunday joint", line: "A sirloin roasted on the bone, carved across the grain, with batter baked flat in the dripping beneath it." },
     { name: "Steak and kidney pudding", zh: "Suet crust", line: "Beef and kidney sealed inside a suet crust and steamed for hours until the gravy turns dark and sticky." },

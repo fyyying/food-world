@@ -190,7 +190,7 @@ export const UK_LINES: Record<string, string[]> = {
 
   // --- the six landmarks: short bystander lines ---
   bigBen: [
-    "Dials are lit - they're sitting late again.",
+    "Light's up over the dials - they're sitting late again.",
     "Half past, and nothing decided.",
     "You can set the whole street by that bell.",
     "They'll all be out wanting supper at midnight.",

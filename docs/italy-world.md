@@ -762,7 +762,7 @@ World
 | W4 | Ten stands, five ingredient stops with diamond cues, three non-food clickables per area | Pass | 13 rooms, 15 stops, 8 landmarks; every one of the 36 has its cue ring; per area rome 4, venice 3 (`rialtoIt`, `campanileIt`, `valliIt`), sicily 3 or more |
 | W5 | Three walker loops, residents in traditional clothing, steps matched | **Fail** | Five loops, 24 walkers, gait checks pass. But every clothing profile in `italy-people.ts` is `verified: false` and the harness asserts it: the traditional clothing is still unsourced |
 | W6 | Small details in every cluster | Pass | Hung swaying groups in the stand builders (salumi rail, market bunches, nets, the slaughterhouse quarters), sheep fold, pig and ox pen, hen yard, stacks and crocks seen at approach zoom |
-| W7 | House cap, nothing solid on a road, 2.5 corridors, no house on the camera line | Pass | 13 houses (4, 4, 5), one to three per style; `italy-world.mjs` passes every road, corridor and wedge check |
+| W7 | House cap, nothing solid on a road, 2.5 corridors, no house on the camera line | Pass | 13 houses (4, 4, 5), one to three per style; `italy-world.mjs` passes every road, corridor and wedge check. *Lead ruling, 2026-09-23:* the line now reads at most five per area id, each where it hides no stand; 4, 4 and 5 across `rome`, `venice` and `sicily`, none on a stand's rays, passes under it as written |
 | W8 | Every clickable fully visible from the arrival camera, live | Pass | 36 of 36 clear of every static blocker on the live page; the one short ray is the moving cart |
 | W9 | Every decor type reads as what it is from the overview | **Fail** | Walkthrough 1, 2, 4 to 8, 10 to 12, 20 to 22 |
 | W10 | The table reads at the zoom-out limit, fog derived | Pass | 215, fog 198 / 439, sheet top left |
@@ -805,7 +805,7 @@ Cards and stories
 
 | # | Line | Verdict | Evidence |
 | --- | --- | --- | --- |
-| C1 | Tagline and three-to-five-paragraph blurb, dated eras, local names | Pass | Every object has a tagline and a local name. Room blurbs run 2,782 to 3,192 characters in six paragraphs, one over the line's five; Spain's shipped rooms run seven, so the band is being read in characters |
+| C1 | Tagline and three-to-five-paragraph blurb, dated eras, local names | Pass | Every object has a tagline and a local name. Room blurbs run 2,782 to 3,192 characters in six paragraphs, one over the line's five; Spain's shipped rooms run seven, so the band is being read in characters. *Lead ruling, 2026-09-23:* the line now counts the blurb proper, three to five paragraphs, with the story depth appended below it; Italy's rooms are three paragraphs of blurb and three of story depth, so they pass as written |
 | C2 | Every kitchen room and place-or-dish shows its repertoire | Pass | Opened live: 13 rooms' cards, `gelateria` and `stall-arancini` ("How it is served") |
 | C3 | Card-only blurbs in their band | Pass | All 23 card-only objects 905 to 984 characters in three paragraphs, and the ten children 864 to 999; none visibly shorter than its neighbours |
 | C4 | Room objects have story depth, sources and two `NEXT` | Pass | `ITALY_STORY_DEPTH`, `ITALY_SOURCES`, two `ITALY_NEXT` each |

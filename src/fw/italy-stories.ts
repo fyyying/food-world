@@ -14,7 +14,8 @@
  *
  *  Owner ruling, 2026-09-22: the pasticceria's text does not name martorana, because the fruit beside the
  *  pastry tube in `it_card_pasticceria` is a real fig and not one of the painted marzipan fruits the image
- *  brief asked for. Nothing in `pastry`'s blurb, story depth or discoveries names it. */
+ *  brief asked for. Nothing in `pastry`'s blurb, story depth, discoveries or repertoire names it (the
+ *  repertoire's marzipan-fruit line came off on 2026-09-23, the second reviewer's item 49). */
 
 /** Three paragraphs of dated history for every object that opens a painted room. Appended to its blurb
  *  in italy-objects.ts, so the card reads as one piece and lands inside the 2,500–3,200 character band. */

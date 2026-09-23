@@ -4,7 +4,8 @@
  *  scenes, names and purposes are the object list in the same document. Forty-six objects: thirteen that
  *  open a painted room, fifteen card-only ingredient and flavour stops, six landmarks and two other
  *  card-only objects with a card and a 3D reaction, and the ten hit-only children of the two markets and
- *  of `ragu` and `oven`, which keep the parents, aliases and kinds `graph.ts` has for them today.
+ *  of `ragu` and `oven`, which keep the parents and kinds `graph.ts` had for them; `stall-tomato` alone
+ *  lost its alias on 2026-09-23, so the Roman stall opens its own card and not Sicily's tomato beds.
  *
  *  Every `rot` lies within [-0.75, 0.75]: a stand's front faces the camera side (+z), and the road comes
  *  to the door rather than the stand turning to the road (docs/building-a-world.md, the stand section).
@@ -18,10 +19,10 @@
  *
  *  Blurbs follow the band in docs/italy-world.md, "Shared contract: the card blurb band": room objects
  *  three to five paragraphs of about 2,500 to 3,200 characters including their story depth, card-only
- *  objects three paragraphs of about 750 to 1,000. **All eighteen retained blurbs are rewritten and none
- *  of the nine formerly empty ones is left empty** — the seven stall children and the two alias children
- *  carry a card in band, so that the card is right if the lead ever drops an alias and makes the child an
- *  ordinary sibling, which is Thailand's precedent of 2026-09-21.
+ *  objects three paragraphs of about 750 to 1,000. All eighteen retained blurbs are rewritten. Of the ten
+ *  hit-only children, the two that open a card of their own (`stall-tomato`, `stall-arancini`) carry one in
+ *  band; the eight that keep an alias carry no blurb, because the alias's card is what opens (lead decision
+ *  on the second reviewer's item 51, 2026-09-23).
  *
  *  The period band is about 1880 to 1914. Carbonara (first printed 1952), tiramisù (on a menu in 1972),
  *  insalata caprese (the nineteen-twenties), the Aperol spritz (Aperol 1919, the word attested 1972), the
@@ -92,8 +93,11 @@ export const ITALY_NEXT: Record<string, string[]> = {
 };
 
 /** object id -> file stem in public/scenes/italy-food/, as written by scripts/scenes/import-italy.py.
- *  Thirteen cards, one per room; the stems are the rooms' short names, not the object ids. */
+ *  Thirteen cards, one per room; the stems are the rooms' short names, not the object ids. A market child
+ *  that opens its own card and has no rendered badge of its own falls back to its market's picture;
+ *  `stall-arancini` keeps its rendered badge of three rice balls, which is its own food. */
 export const ITALY_CARD_ART: Record<string, string> = {
+  "stall-tomato": "market",
   ragu: "trattoria",
   romeMarket: "market",
   pasta: "pasta",
@@ -208,7 +212,7 @@ const rooms: Room[] = [
     id: "friggitoria", kind: "place", area: "sicily", name: "The friggitoria", zh: "Friggitoria", emoji: "🍟",
     pos: [-5.6, 20.15], rot: 0, prop: "friggitoria", scene: "it_friggitoria", placeName: "Friggitoria",
     tagline: "One pan of lard, and everything Palermo eats standing up.",
-    blurb: "A hole in a wall in the Albergheria with a pan of lard over coals, a copper of boiled spleen beside it, a marble slab, a stack of sesame rolls and no chairs anywhere. Everything this shop sells is fried, wrapped in paper and eaten in the street, and the whole trade is built on the fact that there is nowhere to sit.\n\nThe chickpea paste is cooked thick, spread thin on the marble to set, cut into squares with a knife and only then slid into the lard, which lifts and closes over them: panelle, packed hot into a split roll with a squeeze of lemon. Beside them, potato croquettes and, out of the copper, spleen and lung simmered soft and then browned in the same fat and packed into a sesame-topped vastedda — with caciocavallo or ricotta on it that roll is maritatu, married, and without cheese schettu, single. The man who sells it is the meusaro.\n\nNobody eating here is well fed and nobody is sitting down. The customers are porters, carters, market boys and the men off the Ballarò stalls a lane away. The other trade working this pavement is the acquaiolo, the water seller, with a board painted like a cart, a terracotta quartara on his shoulder and a dozen glasses on a tray, who for one grano pours a glass of water with a thread of aniseed in it.",
+    blurb: "A hole in a wall in the Albergheria with a pan of lard over coals, a copper of boiled spleen beside it, a marble slab, a stack of sesame rolls and no chairs anywhere. Nearly everything this shop sells comes out of that pan, wrapped in paper and eaten in the street, and the whole trade is built on the fact that there is nowhere to sit.\n\nThe chickpea paste is cooked thick, spread thin on the marble to set, cut into squares with a knife and only then slid into the lard, which lifts and closes over them: panelle, packed hot into a split roll with a squeeze of lemon. Beside them, potato croquettes and, out of the copper, spleen and lung simmered soft and then browned in the same fat and packed into a sesame-topped vastedda — with caciocavallo or ricotta on it that roll is maritatu, married, and without cheese schettu, single. The man who sells it is the meusaro.\n\nNobody eating here is well fed and nobody is sitting down. The customers are porters, carters, market boys and the men off the Ballarò stalls a lane away. The other trade working this pavement is the acquaiolo, the water seller, with a board painted like a cart, a terracotta quartara on his shoulder and a dozen glasses on a tray, who for one grano pours a glass of water with a thread of aniseed in it.",
     partners: ["chickpea flour", "lard", "spleen", "sesame roll", "lemon"],
     match: (r) => italian(r) && has(r.core, /chickpea|potato|lemon/),
   },
@@ -447,15 +451,19 @@ ITALY_OBJECTS.push(
   },
 );
 
-// --- the markets' stall children and the two alias children: hit-only, exactly as graph.ts has them ---
-// All ten carry an `alias` or, in `stall-arancini`'s case, no alias at all, and seven of them had an empty
-// blurb before this pass. Every one now carries a card written to the card-only band, so the card is right
-// if the lead ever drops an alias and makes the child an ordinary sibling; Thailand's Stage B ruling of
-// 2026-09-21 is the precedent. The stalls face their market rather than the road.
+// --- the markets' stall children and the two alias children: hit-only ---
+// Lead decision on the second reviewer's item 51, 2026-09-23: a child with its own written card opens it,
+// and a child whose card would only repeat its alias keeps the alias and carries no blurb. Two open their
+// own card: `stall-tomato`, the Roman stall of passata and fresh crates, which until then opened Sicily's
+// tomato beds, and `stall-arancini`, the fry barrow, which never had an alias. The other eight keep their
+// alias — the cheese stall the casale, the salumi pole the pig and the ox, the herb stall the herb bed, the
+// oil jars the olive mill, `trattoria` the trattoria, `pizzeria` the forno, the Sicilian lemons the lemon
+// grove and the Sicilian tomatoes the tomato beds — because each card they had written said again what the
+// alias's card says. The stalls face their market rather than the road.
 ITALY_OBJECTS.push(
   {
     id: "stall-tomato", world: "italy", kind: "ingredient", area: "rome", name: "Tomatoes", zh: "Pomodori", emoji: "🍅",
-    pos: [-18.7, -1.45], rot: 0, prop: "none", hitOnly: true, parent: "romeMarket", alias: "tomato",
+    pos: [-18.7, -1.45], rot: 0, prop: "none", hitOnly: true, parent: "romeMarket",
     tagline: "The newest thing on the stall, and the one Rome uses least.",
     blurb: "A crate of plum tomatoes at the back of the horseshoe, and in winter a row of dark bottles of passata put up in August instead. On a Roman stall in these decades the tomato is the newest ingredient present and the one the city's own cooking leans on least.\n\nWhere it has arrived, it arrived as an industry rather than as a garden crop. Francesco Cirio opened a canning factory in Turin in 1856 — peas first, not tomatoes — and his first tomato cannery at Naples in 1875, and by his death in 1900 there were more than a hundred preserving companies in Italy.\n\nSo the stall sells it two ways. Fresh through the hot months, by the crate, for a sauce cooked in twenty minutes with garlic and oil; and preserved for the rest of the year, as bottled passata or as a dark paste sold by the spoon off a board. The beds it comes from are a morning's cart ride outside the walls, on the same river flats as the artichokes.",
     match: () => false,
@@ -464,56 +472,56 @@ ITALY_OBJECTS.push(
     id: "stall-cheese", world: "italy", kind: "ingredient", area: "rome", name: "Cheese", zh: "Formaggio", emoji: "🧀",
     pos: [-16.2, -0.65], rot: 0, prop: "none", hitOnly: true, parent: "romeMarket", alias: "cheese",
     tagline: "Ricotta in the morning, pecorino for the rest of the year.",
-    blurb: "A board with a cut wheel of pecorino on it, a knife with a worn blade, and beside them shallow rush baskets of ricotta still weeping whey onto the trestle. The two products come off the same animal and the same morning's work, and they keep for entirely different lengths of time, which is why they are sold side by side and priced nothing like each other.\n\nRicotta is the perishable one and the cheap one. It is made by putting the whey left from cheese-making back on the fire until it flowers into soft curd, so it is a by-product rather than a cheese.\n\nThe wheel beside it is the keeper: ewe's milk cheese, dry-salted by hand over months until it will hold for a year without cold. By the end of the 1800s most “Roman” pecorino was already being made in Sardinia, the technique carried there while the name stayed here. The farm that supplies this stall is an hour out on the Agro Romano, and its cart comes in before the market opens.",
+    blurb: "",
     match: () => false,
   },
   {
     id: "stall-salumi", world: "italy", kind: "ingredient", area: "rome", name: "Salumi", zh: "Salumi", emoji: "🥓",
     pos: [-13.7, -1.45], rot: 0, prop: "none", hitOnly: true, parent: "romeMarket", alias: "italyBeef",
     tagline: "Cured pig cheek, lard, and the cheapest meat in the city.",
-    blurb: "A pole across two uprights with cured meat hanging from it: whole jowls rubbed with salt and pepper, a side of back fat, strings of dried pork, and a tub of lard under the trestle. This is the meat stall of a city where fresh meat is occasional — through the nineteenth century Italian consumption averaged roughly a kilo a head a month.\n\nThe jowl is the Roman one. Guanciale is the pig's cheek, salted, peppered and hung until it slices almost translucent, and rendered slowly it is the fat that starts alla gricia and amatriciana.\n\nWhat is not on this pole is the offal, and that is a matter of geography. The fifth quarter comes off the hook line at the Testaccio slaughterhouse, about a mile downriver, and it is sold and cooked within a few streets of it because it spoils fast. This stall sells what keeps; the trattoria out at Testaccio cooks what does not.",
+    blurb: "",
     match: () => false,
   },
   {
     id: "stall-herbs", world: "italy", kind: "flavour", area: "rome", name: "Basil & herbs", zh: "Erbe", emoji: "🌿",
     pos: [-12.5, -4.05], rot: 0, prop: "none", hitOnly: true, parent: "romeMarket", alias: "basil",
     tagline: "Wild mint by the bunch, and chicory cut this morning.",
-    blurb: "Bunches tied with rush and laid out on a damp cloth: wild mint, flat parsley, rosemary cut from a bush rather than grown in a pot, and behind them the crates of bitter greens that are the real business — chicory, borage, wild greens picked outside the walls, and puntarelle in their season.\n\nThe smallest bunch is the most Roman. Mentuccia, a wild mint with a leaf the size of a fingernail, is what goes inside an artichoke braised alla romana. The puntarelle beside it are the hollow shoots of a chicory, and the seller trims them at the stall: split lengthways with a knife, dropped into cold water, and left to curl while the buyer waits.\n\nNone of these has an in-band printed recipe behind it. Puntarelle, trippa alla romana and carciofi alla romana are documented in twentieth-century Roman cookbooks and no nineteenth-century printed source could be found for any of them. What is documented is the market itself, in this piazza since 1869, and the beds along the river that supply it.",
+    blurb: "",
     match: () => false,
   },
   {
     id: "stall-oil", world: "italy", kind: "ingredient", area: "rome", name: "Olive oil", zh: "Olio", emoji: "🫒",
     pos: [-20.4, -4.35], rot: 0, prop: "none", hitOnly: true, parent: "romeMarket", alias: "olive",
     tagline: "Sold out of the jar, by the measure, into your own bottle.",
-    blurb: "A row of glazed terracotta jars under the trestle, a funnel, a copper measure on a chain and a rag: oil is sold here the way wine is, poured out of the jar into whatever the customer has brought. There is no label, no cork and no brand, and the answer to a question about it is the name of a hill.\n\nThat hill is usually the Sabina, north-east of the city, where the olives are milled under an upright stone wheel turning in a stone trough and pressed on stacked mats. The denomination that now names that oil came only in 1996, and is cited as the first Italian olive-oil DOP; the groves themselves are named by Strabo, Cato and Horace, which is a literary record and not an agricultural one.\n\nIn this city the good oil is mostly used raw — over bread, over boiled greens, over beans, over fish — and the frying is done in lard, which costs less. A household buys a little at a time, because oil in an open jar goes stale, and the jar under this trestle is refilled from the farm's cart.",
+    blurb: "",
     match: () => false,
   },
   {
     id: "trattoria", world: "italy", kind: "landmark", area: "rome", name: "Pasta dishes", zh: "Primi", emoji: "🍝",
     pos: [-27.85, -24.1], rot: 0, prop: "none", hitOnly: true, parent: "ragu", alias: "ragu",
     tagline: "The first course, and the one the room is judged on.",
-    blurb: "The corner of the dining room where the pasta goes out: a stack of thick white plates, a bowl of grated pecorino, a pepper mill. Clicking here opens the trattoria's own card, because this is the trattoria seen from its busiest corner rather than a separate shop.\n\nWhat goes out of that corner is short and it repeats. Cacio e pepe, pecorino and black pepper worked into the water the pasta cooked in until it turns creamy without any cream in it; alla gricia, the same dish with rendered pig cheek in it; amatriciana, the gricia with tomato, from a town that was in Abruzzo until 1927.\n\nOne famous Roman plate is missing and stays missing. Carbonara is unrecorded before a Chicago restaurant guide of 1952 and an Italian magazine recipe of 1954 that called for garlic and Gruyère, and it is absent from the Roman cookbook of 1930 and the standard Italian one of 1950. It is named on this card with its dates and cooked in no room in this world.",
+    blurb: "",
     match: () => false,
   },
   {
     id: "pizzeria", world: "italy", kind: "landmark", area: "rome", name: "Pizza", zh: "Pizza", emoji: "🍕",
     pos: [-16, -10.8], rot: 0, prop: "none", hitOnly: true, parent: "oven", alias: "oven",
     tagline: "Sold by the length off the counter, cut with shears.",
-    blurb: "The marble counter inside the forno's door: a long white sheet cooling on it, a pair of shears, a stack of grey paper. Clicking here opens the forno's card, because in Rome in this band the pizza counter is a bakery counter and not a restaurant of its own.\n\nWhat is on the marble is pizza bianca: dough stretched flat, dimpled with the fingertips, oiled, salted and baked fast on the oven floor, then sold by the length, cut with shears and eaten walking. Pizza rossa is the same sheet with tomato on it and no cheese, and both began as the baker's way of reading the oven's heat before the bread went in.\n\nThe round pizza a visitor is looking for is Neapolitan and is not made here. Its origin story does not survive inspection either: the 1889 letter that is the only evidence a Margherita was made for the queen was compared with the royal household's own signatures, seals and stationery and matches none of them, and the historian who did the comparison reads it as a document of the 1930s.",
+    blurb: "",
     match: () => false,
   },
   {
     id: "stall-lemon", world: "italy", kind: "ingredient", area: "sicily", name: "Lemons & citrus", zh: "Limoni", emoji: "🍋",
     pos: [-17.7, 18.65], rot: 0, prop: "none", hitOnly: true, parent: "sicilyMarket", alias: "lemon",
     tagline: "The cheapest thing in the lane, and the island's richest export.",
-    blurb: "A pyramid of lemons with the leaves still on them, a box of oranges beside it. In the lane a lemon costs almost nothing and goes onto everything: over fried chickpea squares, over grilled fish, and into the bowl the artichokes wait in so they do not blacken.\n\nA few miles away the same fruit is the most valuable crop in Europe by the hectare. In the 1850s roughly eighty square kilometres of Sicily were under lemons producing about 750,000 cases a year; thirty years later those figures had more than tripled, and by the 1880s Italian citrus exports ran at about 2.5 million cases a year. The trade began with scurvy: between 1795 and 1814 the British Admiralty issued 1.6 million gallons of lemon juice to its fleet.\n\nThe money changed the ground it grew on. A study of 2017, across 143 Sicilian municipalities in a parliamentary inquiry of 1881 to 1886, finds that citrus production raised the probability of a strong mafia presence by roughly twenty percentage points.",
+    blurb: "",
     match: () => false,
   },
   {
     id: "stall-tomato2", world: "italy", kind: "ingredient", area: "sicily", name: "Tomatoes", zh: "Pomodori", emoji: "🍅",
     pos: [-10.5, 18.65], rot: 0, prop: "none", hitOnly: true, parent: "sicilyMarket", alias: "tomato",
     tagline: "Fresh for a few weeks, and dark paste on a board for the rest.",
-    blurb: "Crates of plum tomatoes in the hot months and, beside them all year, a board of estratto: tomato cooked down, sieved, salted and spread thin in the sun for days, turned with a wooden blade until it darkens into a paste stiff enough to cut and sell by the spoon.\n\nThat board is the island's answer to having no cannery and no cold. A spoonful of estratto carries a pot of sauce in January; the same instinct salts capers in a crock, dries figs on a cane rack and presses fish roe under a weight. The sun does the preserving, and the work is in the turning.\n\nThe industry that eventually replaced the board is dateable and northern. Francesco Cirio opened a canning factory in Turin in 1856 — peas first — and his first tomato cannery at Naples in 1875, and by 1900 there were more than a hundred preserving companies in Italy. In the lane the tomato is still young: the fruit reached Italy in the sixteenth century and was grown as an ornamental for most of two hundred years before anyone cooked it.",
+    blurb: "",
     match: () => false,
   },
   {

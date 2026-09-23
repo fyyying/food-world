@@ -97,7 +97,7 @@ export const ITALY_REPERTOIRE: Record<string, RepertoireEntry[]> = {
     { name: "Polenta", zh: "Polenta", line: "Maize stirred for an hour in a copper paiolo over the fire and turned out onto a board: the daily bread." },
     { name: "Rice and peas", zh: "Risi e bisi", line: "Rice and the first peas cooked loose enough to eat with a spoon; by tradition the doge's dish on Saint Mark's day." },
     { name: "Bean and pasta soup", zh: "Pasta e fasoi", line: "Borlotti beans cooked down thick with a pork bone and a handful of broken pasta thrown in at the end." },
-    { name: "Liver with onions", zh: "Figà a la venessiana", line: "Calf's liver cut very fine into onions melted slowly in oil; Leonardi printed almost this recipe in 1807." },
+    { name: "Liver with onions", zh: "Figà a la venessiana", line: "Calf's liver cut small and cooked fast into onions melted slowly in oil; Leonardi printed almost this recipe in 1807." },
     { name: "Stockfish, Vicenza style", zh: "Bacalà alla vicentina", line: "Stockfish stewed for hours in milk, onion and oil until it falls apart, and eaten with white polenta." },
     { name: "Forced red chicory", zh: "Radicio de Treviso", line: "Long red chicory blanched in spring water through the winter, then split and grilled over the embers." },
     { name: "Pressed salami", zh: "Sopressa", line: "A soft fat salami pressed flat and cured through the winter, cut thick onto the polenta board." },
@@ -130,7 +130,6 @@ export const ITALY_REPERTOIRE: Record<string, RepertoireEntry[]> = {
     { name: "Cannoli", zh: "Cannoli", line: "Fried tubes of dough filled with sweetened sheep's ricotta to order, because a filled shell goes soft by evening." },
     { name: "Cassata", zh: "Cassata siciliana", line: "Ricotta and sponge under green marzipan and candied fruit, a Carnival and Easter cake out of the convent kitchens." },
     { name: "Granita", zh: "Granita", line: "Ice flavoured with lemon, coffee, almond or mulberry, made from snow carried down off Etna the winter before." },
-    { name: "Marzipan fruit", zh: "Frutta martorana", line: "Almond paste modelled and painted as fruit for the second of November, named after a convent in Palermo." },
     { name: "Watermelon pudding", zh: "Gelu di muluni", line: "Watermelon juice set with starch, scented with jasmine and scattered with chocolate and pistachio, a July sweet." },
     { name: "Almond milk", zh: "Latti di mènnula", line: "Avola Pizzuta almonds pounded with water and sugar and strained through a cloth, drunk cold all summer." },
     { name: "Almond blancmange", zh: "Biancomangiare", line: "Almond milk thickened with starch and turned out of a mould, the oldest sweet in the whole shop." },
@@ -160,7 +159,7 @@ export const ITALY_REPERTOIRE: Record<string, RepertoireEntry[]> = {
   // IT15 The fry stall inside Ballarò, a child of the market. One barrow, three things, all of them fried.
   "stall-arancini": [
     { name: "Fried rice balls", zh: "Arancine", line: "Rice coloured with saffron, filled with meat sauce and peas, closed into a ball and fried; sold hot off the barrow." },
-    { name: "Chickpea and potato fritters", zh: "Panelle e cazzilli", line: "Chickpea squares and potato fingers fried together and folded into a soft roll with salt and a squeeze of lemon." },
-    { name: "Palermo's flat bread", zh: "Sfincione", line: "Thick oiled dough under onion, anchovy and breadcrumb, cut from the tray and carried away wrapped in paper." },
+    { name: "Chickpea squares in a roll", zh: "Pani e panelle", line: "Chickpea flour paste cut in thin squares, fried in the barrow's lard and folded into a soft roll with lemon." },
+    { name: "Potato croquettes", zh: "Cazzilli", line: "Mashed potato worked with parsley, rolled into fingers and fried in the same lard, tucked into the roll beside the panelle." },
   ],
 };

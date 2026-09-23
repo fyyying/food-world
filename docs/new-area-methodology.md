@@ -81,9 +81,9 @@ Balance busy places with landscape. Concentrate bustle around markets, workshops
 - Connect doors and gathering places to usable roads, paths, stairs, and bridges
 - Give food venues the dishes and ingredients that belong there
 
-Decoration serves the explorable places; it does not crowd them. Cap the decorative houses at twelve to sixteen for an area, one to three per architectural style, and spend the rest of the density on stands, ingredient sources, animals and small details. Spain shipped with twenty-four, which hemmed the stands in, closed three lanes and put a three-storey house on the arrival camera's line to two stands. Four rules, and each is a harness check in `scripts/tests/<id>-world.mjs`:
+Decoration serves the explorable places; it does not crowd them. Cap the decorative houses at five per area, each placed where it hides no stand, and spend the rest of the density on stands, ingredient sources, animals and small details. Spain shipped with twenty-four, which hemmed the stands in, closed three lanes and put a three-storey house on the arrival camera's line to two stands. (This section used to say twelve to sixteen houses, one to three per style; rule changed 2026-09-17 at Spain's third pass; recorded 2026-09-23.) Four rules, and each is a harness check in `scripts/tests/<id>-world.mjs`:
 
-- Twelve to sixteen decorative houses per area, one to three per style, bounded at both ends so nobody quietly refills a cluster
+- At most five decorative houses per area, each placed where it hides no stand (rule changed 2026-09-17 at Spain's third pass; recorded 2026-09-23)
 - Nothing solid stands on a road centreline. Sample every centreline against every solid decor footprint. Only a bridge deck and a walked-through arcade are exempt
 - Every stand keeps a clear corridor from the nearest point of the road network, with 2.5 units clear in front of the stand itself
 - No house stands on the arrival camera's line to a stand. Check it from each azimuth the stand can be approached from

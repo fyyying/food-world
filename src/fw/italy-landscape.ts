@@ -279,8 +279,8 @@ function apennineRidge(r: number, h: number, bare = false): P {
  */
 export const IT_HOUSES: { id: string; style: ItalyStyle; x: number; z: number; rot: number; w: number; d: number; h: number; storeys?: number; built: boolean; why?: string }[] = [
   { id: 'it-piazza-palazzo', style: 'romanPalazzo', x: -5.3, z: -16.2, rot: .06, w: 3.4, d: 2.6, h: 2.0, storeys: 3, built: true },
-  { id: 'it-piazza-casa', style: 'trastevere', x: 4.2, z: -3.8, rot: -.12, w: 2.8, d: 2.2, h: 2.1, storeys: 1, built: true },
-  { id: 'it-trastevere-casa', style: 'trastevere', x: -13.6, z: 7.9, rot: .06, w: 3.0, d: 2.3, h: 2.1, storeys: 2, built: true },
+  { id: 'it-piazza-casa', style: 'trastevere', x: -11.2, z: -16.2, rot: -.12, w: 2.8, d: 2.2, h: 2.1, storeys: 1, built: true },
+  { id: 'it-trastevere-casa', style: 'trastevere', x: -15.2, z: 8.0, rot: .06, w: 3.0, d: 2.3, h: 2.1, storeys: 2, built: true },
   { id: 'it-campagna-casale', style: 'casale', x: -25.4, z: 5.2, rot: -.2, w: 3.6, d: 2.6, h: 2.3, storeys: 1, built: true },
   { id: 'it-rialto-casa', style: 'venetianQuay', x: 31.1, z: -27.6, rot: .04, w: 2.6, d: 2.0, h: 2.1, storeys: 2, built: true },
   { id: 'it-rialto-magazzino', style: 'venetianQuay', x: 37.85, z: -28.75, rot: -.04, w: 3.2, d: 2.2, h: 2.2, storeys: 2, built: true },
@@ -300,7 +300,7 @@ export const IT_HOUSES: { id: string; style: ItalyStyle; x: number; z: number; r
  *  forno, the byre stands east of the casale inside the Agro's south loop, and the tonnara's sheds stand at the
  *  cape east of the tonnara, turned end-on to the camera. */
 export const IT_STAND_BUILDINGS: { id: string; owner: string; x: number; z: number; rot: number }[] = [
-  { id: 'forno-oven-house', owner: 'oven', x: -18.0, z: -12.15, rot: .1 },
+  { id: 'forno-oven-house', owner: 'oven', x: -24.4, z: -12.15, rot: .1 },
   { id: 'casale-byre', owner: 'cheese', x: -33.3, z: 1.6, rot: 0 },
   { id: 'tonnara-sheds', owner: 'tonnaraIt', x: 39.2, z: 25.7, rot: 1.62 },
 ];
@@ -389,6 +389,29 @@ export function inCameraWedge(box: THREE.Box3): boolean {
   }
   return false;
 }
+/** The room approach: when a room object is clicked, `main.ts` flies the camera down to 1.4 above the counter
+ *  and 8.8 to 10 units out along the visitor's compass direction, which is the arrival direction unless the
+ *  visitor has turned. Walkthrough 25 to 29 found that flight ending inside the Pantheon, under the market's
+ *  pergola and behind a cypress. Anything taller than knee height inside the ground the approach looks across —
+ *  a trapezoid from the stand's front, 3.2 either side, to 1.2 either side of a point 11.5 out — is not planted. */
+const ROOM_APPROACH = ITALY_OBJECTS.filter(o => (o as { scene?: string }).scene).map(o => {
+  const [x, z] = o.pos, out = 11.5;
+  return { x, z, cx: x + TO_CAMERA[0] * out, cz: z + TO_CAMERA[1] * out };
+});
+export function inRoomApproach(box: THREE.Box3): boolean {
+  if (box.max.y < .9) return false;
+  for (const a of ROOM_APPROACH) {
+    // Work in the approach's own frame: `along` from the anchor toward the camera, `across` sideways.
+    const ux = TO_CAMERA[0], uz = TO_CAMERA[1];
+    const corners: Pt[] = [[box.min.x, box.min.z], [box.min.x, box.max.z], [box.max.x, box.min.z], [box.max.x, box.max.z]];
+    const al = corners.map(([x, z]) => (x - a.x) * ux + (z - a.z) * uz), ac = corners.map(([x, z]) => (x - a.x) * uz - (z - a.z) * ux);
+    const lo = Math.min(...al), hi = Math.max(...al);
+    if (hi < 1.5 || lo > 11.5) continue;
+    const at = Math.max(1.5, Math.min(11.5, lo)), half = 3.2 - (at - 1.5) / 10 * 2.0;
+    if (Math.min(...ac) < half && Math.max(...ac) > -half) return true;
+  }
+  return false;
+}
 /** True when any corner or the centre of the box stands in the sea, the lagoon, the Tiber or its spring:
  *  nothing the Builder plants stands in water. The outlines are computed once per build. */
 let wetCache: { land: { id: string; poly: Pt[] }[]; fresh: Pt[][] } | null = null;
@@ -396,6 +419,17 @@ function inWater(box: THREE.Box3): boolean {
   wetCache ??= { land: landOutlines(), fresh: freshOutlines() };
   const xs = [box.min.x, (box.min.x + box.max.x) / 2, box.max.x], zs = [box.min.z, (box.min.z + box.max.z) / 2, box.max.z];
   return xs.some(x => zs.some(z => isWet(x, z, wetCache!.land, wetCache!.fresh)));
+}
+/** Which of the placement rules a box breaks, by name; empty when it may stand. */
+export function placeRefusals(box: THREE.Box3, claim = true): string[] {
+  const out: string[] = [];
+  if (!clearOfObjects(box)) out.push('object pad or approach');
+  if (onRoad(box)) out.push('road');
+  if (inCameraWedge(box)) out.push('camera wedge');
+  if (inRoomApproach(box)) out.push('room approach');
+  if (inWater(box)) out.push('water');
+  if (claim && overlapsOccupied(box)) out.push('occupied');
+  return out;
 }
 /** Place a piece of scenery and take it away again if it blocks a clickable, a lane or the water. Everything
  *  the Builder plants goes through this, so a tree that would stand in an approach simply is not there. */
@@ -412,7 +446,7 @@ export function tryPlace<T extends THREE.Object3D>(ctx: LayoutCtx, o: T, x: numb
     if (b.max.y < .35) return;
     box = box ? (box as THREE.Box3).union(b) : b;
   });
-  if (box && (!clearOfObjects(box) || onRoad(box) || inCameraWedge(box) || inWater(box) || (claim && overlapsOccupied(box)))) { ctx.group.remove(o); return null; }
+  if (box && placeRefusals(box, claim).length) { ctx.group.remove(o); return null; }
   if (box && claim) occupy(box);
   return o;
 }
@@ -465,7 +499,9 @@ export const IT_ROADS: Road[] = [
   { id: 'IT-R7', width: 1.8, net: 'rialto', points: [[32.35, -22.6], [32.35, -19.6], [32.35, -14.0], [31.4, -11.6], [29.4, -10.7], [26, -10.6], [23.2, -10.6]] },
   { id: 'IT-R8', width: 1.6, net: 'burano', points: [[8.2, -24.9], [13, -24.9], [18.0, -24.9]] },
   { id: 'IT-R9', width: 1.4, net: 'valli', points: [[12.8, -13.2], [16, -13.2], [18.9, -13.2]] },
-  { id: 'IT-R1b', width: 1.6, net: 'mainland', points: [[0, -8.8], [1.2, -6.2], [1.4, -2.2], [-0.6, 1.0], [-5, 1.0], [-8.5, 0.7], [-12, 1.0], [-16, 1.0], [-21, 1.0], [-23.4, 0.4], [-24.9, -0.5]] },
+  // Owner walkthrough fixes, 2026-09-23: IT-R1b is 2.0 wide and swings south round the Pantheon, which moved off
+  // the pasta kitchen's room approach to [-8.55, 1.9]; its portico faces this lane.
+  { id: 'IT-R1b', width: 2.0, net: 'mainland', points: [[0, -8.8], [1.2, -6.2], [1.4, -2.2], [-0.6, 1.0], [-4.0, 1.0], [-5.3, 1.9], [-5.4, 4.0], [-5.6, 6.3], [-8.6, 6.6], [-11.8, 6.3], [-12.2, 3.2], [-13.0, 1.0], [-16, 1.0], [-21, 1.0], [-23.4, 0.4], [-24.9, -0.5]] },
   { id: 'IT-R2n', width: 1.8, net: 'mainland', points: [[-43.6, -20.6], [-39, -20.6], [-35, -20.8], [-31, -20.9], [-27.8, -21.0], [-24, -21.4], [-20.5, -21.6], [-17, -22.2], [-13, -22.9], [-9.5, -23.5], [-6.2, -25.4], [-2, -25.6], [1, -25.3], [3.4, -23.8]] },
   { id: 'IT-R2m', width: 1.6, net: 'mainland', points: [[-43.8, -12.5], [-40, -12.5], [-35, -12.6], [-31.6, -12.7], [-30.6, -15.0], [-29.8, -18.0], [-29.0, -20.8]] },
   { id: 'IT-R3b', width: 1.4, net: 'mainland', points: [[6.2, -17.3], [3.0, -17.5], [0.2, -17.5]] },
@@ -488,39 +524,62 @@ export const IT_BRIDGES: Pt[] = IT_CROSSINGS.map(c => c.at);
 
 /** The five boat lanes. The islands are linked to each other and to the mainland by water, not by a causeway:
  *  the doc names only one bridge between them and it is built. */
-export type BoatLane = { id: string; points: Pt[]; boats: number; kind: 'gondola' | 'sandolo' | 'barge' | 'bragozzo' | 'ferry'; speed: number };
+export type BoatLane = { id: string; points: Pt[]; boats: number; kind: 'gondola' | 'sandolo' | 'barge' | 'bragozzo' | 'ferry'; speed: number; pass?: number };
+/** Owner walkthrough fixes, 2026-09-23. The audit had sandoli running through each other, gondolas through the
+ *  Rialto's own gondola and through the barge, because every multi-boat lane was one line with boats turning
+ *  round on it at their own times. Now:
+ *  - a lane carries one boat, or two boats half a cycle apart, which only ever meet at the lane's midpoint; there
+ *    each keeps to its right by `pass` (the half-separation), eased in and out, so they pass side by side;
+ *  - the gondolas (L1) run the Grand Canal under the Rialto (the Stand maker's arch of fd95d9a carries no boat of
+ *    its own and clears 2.13 to 2.30 over the lane) and on up the channel between the Rialto quay and the lido; the
+ *    lane starts 3 units east of the barge's water, and its midpoint, where the two gondolas pass, lies east of
+ *    the bridge;
+ *  - the bragozzi (L4) sail out of the porto into the open Adriatic, clear of the gondolas' channel. */
 export const IT_BOAT_LANES: BoatLane[] = [
-  { id: 'L1', points: [[19.6, -18.2], [24, -18.2], [28, -18.1], [32.35, -18.1], [36, -18.1], [40.8, -18.2]], boats: 3, kind: 'gondola', speed: .010 },
-  { id: 'L2', points: [[7.6, -22.5], [11, -22.6], [15, -22.6], [19.7, -22.4]], boats: 3, kind: 'sandolo', speed: .009 },
+  { id: 'L1', points: [[22.6, -18.2], [26, -18.2], [29, -18.1], [32.35, -18.1], [36, -18.1], [40.2, -18.3], [42.6, -20.4], [43.0, -24.0], [43.0, -27.2]], boats: 2, kind: 'gondola', speed: .008, pass: .7 },
+  { id: 'L2', points: [[7.6, -22.5], [11, -22.6], [15, -22.6], [19.7, -22.4]], boats: 2, kind: 'sandolo', speed: .009, pass: .55 },
   { id: 'L3', points: [[21.0, -19.0], [21.0, -16], [20.9, -13.0]], boats: 1, kind: 'barge', speed: .008 },
-  // L4 bends a little further from the lido's south-west corner than the blueprint's [37.5, -15]: at that
-  // point a 4.2-long bragozzo swinging through the turn put its stem on the lido's quay.
-  { id: 'L4', points: [[40.8, -18.2], [42.9, -15.6], [43.0, -12.2], [45.4, -9.6], [48.4, -7.8]], boats: 2, kind: 'bragozzo', speed: .007 },
+  { id: 'L4', points: [[43.6, -11.4], [46.2, -8.2], [47.2, -4.0], [45.6, 0.2], [41.6, 1.6]], boats: 2, kind: 'bragozzo', speed: .007, pass: 1.0 },
   { id: 'L5', points: [[31.5, 11.5], [31.8, 14], [31.4, 16.4], [30.8, 18.0]], boats: 1, kind: 'ferry', speed: .006 },
 ];
 
 /** Straight walking segments cut from the road table, so a walker never rounds a corner into a wall.
  *  `seed` picks the clothing profile on the lane out of `italy-people.ts`. */
-export type Lane = { id: string; from: Pt; to: Pt; range: [number, number]; walkers: number; seed: number };
+export type Lane = { id: string; from: Pt; to: Pt; range: [number, number]; walkers: number; seed: number; team?: 'cart' | 'mule'; sep?: number };
 function segments(r: Road, first: number, last: number, walkers: number[], seeds: number[]): Lane[] {
   return r.points.slice(first + 1, last + 1).map((to, i) => ({
-    id: `${r.id}-${first + i}`, from: r.points[first + i], to, range: [.07, .93] as [number, number],
+    id: `${r.id}-${first + i}`, from: r.points[first + i], to, range: [.08, .92] as [number, number],
     walkers: walkers[i], seed: seeds[i],
   }));
 }
+/** Where on its lane's width a walker keeps, to the right of the lane's own direction (south, on the east-running
+ *  streets). Two walkers on one segment take two strips 0.65 apart, so they pass instead of walking through each
+ *  other (walkthrough 30), and both keep to the south half of the street, clear of the low sight lines of the
+ *  stands on its north side; the Rialto fondamenta's walkers keep south of the Pescaria's front the same way. */
+export const laneOffset = (lane: Lane, i: number) => lane.walkers > 1 ? (i % 2 ? -.05 : .6) : lane.id.startsWith('IT-R6-') ? .35 : 0;
 /** The blueprint's five peopled loops: the piazza, the Agro road, the Rialto circuit over the bridge, the
  *  Albergheria lane and the coast road. Twenty-four residents in all. */
 export const IT_LANES: Lane[] = [
-  ...segments(road('IT-R1'), 1, 5, [2, 1, 2, 1], [0, 7, 14, 2]),              // the piazza, six
-  ...segments(road('IT-R2'), 4, 12, [1, 0, 0, 1, 0, 0, 1, 1], [3, 0, 0, 12, 0, 0, 5, 20]).filter(l => l.walkers > 0),
+  ...segments(road('IT-R1'), 1, 5, [1, 1, 2, 1], [0, 7, 14, 2]).map(l => ({ ...l, range: [.12, .88] as [number, number] })),   // the piazza, five; ends kept apart at the joints
+  // The Castelli carter, his mule and his cart walk a closed loop on the via consolare (IT-R3) south of the
+  // terraferma: out on one side of the road, a U-turn, back on the other. Walkthrough 3 had them folding through
+  // the carter at every turn on the piazza street, parking at the bridge ramp and crossing the caffè's sight
+  // line; this stretch runs north-south with no clickable north of it, so no arrival ray crosses it.
+  { id: 'IT-R3-cart', from: [7.0, -14.0], to: [7.0, -18.4], range: [0, 1], walkers: 1, seed: 11, team: 'cart', sep: 2.0 },
+  { id: 'IT-R2-mule', from: [-38.9, -4.45], to: [-42.4, -4.4], range: [0, 1], walkers: 1, seed: 3, team: 'mule', sep: 1.0 },
+  ...segments(road('IT-R2'), 4, 12, [0, 0, 0, 1, 0, 0, 1, 1], [3, 0, 0, 12, 0, 0, 5, 20]).filter(l => l.walkers > 0),
   ...segments(road('IT-R6'), 0, 3, [1, 1, 1], [4, 9, 17]),                    // the Rialto, five with two porters
-  ...segments(road('IT-R7'), 1, 3, [1, 1], [23, 6]),
+  // The two on IT-R7 walk the quay south of the bridge: the Rialto's own deck is the Stand maker's arch, and a
+  // walker lifted to the Builder's flat deck height walked through its steps and read to the audit as wading.
+  // Short: kept off their shared corner, and the first held south of the Rialto's steps so he never stands in
+  // the bridge's arrival sight line.
+  ...segments(road('IT-R7'), 2, 4, [1, 1], [23, 6]).map((l, i) => ({ ...l, range: (i ? [.16, .84] : [.45, .85]) as [number, number] })),
   ...segments(road('IT-R4'), 1, 5, [1, 2, 1, 1], [7, 11, 1, 15]),             // the Albergheria, five
   ...segments(road('IT-R5'), 0, 5, [1, 0, 1, 1, 1], [8, 0, 21, 13, 6]).filter(l => l.walkers > 0),
 ];
 /** The lane the Castelli wine carts run on, the lane the Agro mule is led along, and the lane the shepherd
  *  walks behind his flock. */
-export const CART_LANE = 'IT-R1-1', MULE_LANE = 'IT-R2-4', SHEPHERD_LANE = 'IT-R2-10';
+export const CART_LANE = 'IT-R3-cart', MULE_LANE = 'IT-R2-mule', SHEPHERD_LANE = 'IT-R2-10';
 
 export function italyLandscape(ctx: LayoutCtx) {
   const { group, tickers, place, tint, TOP } = ctx;
@@ -557,11 +616,27 @@ export function italyLandscape(ctx: LayoutCtx) {
   // ---------- the lagoon: the same sea under a translucent shallow-green sheet, held by the lido ----------
   // The blueprint tints the lagoon `#69b3b0` **over the sea's own blue**, so this is a sheet at .006 above the
   // water rather than a second body of water. Its holes are the five islands, so nothing green crosses a quay.
-  // Its east edge is the lido's own lagoon side, so the shallow water stops at the barrier instead of drawing a
-  // straight line across the open Adriatic.
+  // Walkthrough 2026-09-23: where the ring crossed open water — the porto between the mainland and the lido, the
+  // gap north of the lido and the channel west of Burano — its straight edge read from above as a glass wedge
+  // standing in the sea. Those three edges are now feathered: the sheet's alpha falls to nothing over the last
+  // four units before each open edge, so the shallows fade into the Adriatic the way the owner's favoured
+  // dark-to-light water does, and the only hard edges left are the ones that lie along land.
   const lagoonRing: Pt[] = [[6.5, -32], [6.5, -24.5], [8, -20], [9, -16], [11, -12.5], [14, -9.5], [18, -8], [23, -7.2], [28, -7.6], [32, -8.4], [35, -6], [38.5, -8.0], [44.4, -12.6], [44.4, -32]];
-  const lagoon = new THREE.Mesh(new THREE.ShapeGeometry(shapeOf(lagoonRing, ISLANDS.filter(i => i.id !== 'lido').map(i => islandOutline(i.id)))),
-    mat(ITP.lagoonGreen, { transparent: true, opacity: .42, depthWrite: false }));
+  const lagoonMat = mat(ITP.lagoonGreen, { transparent: true, opacity: .42, depthWrite: false });
+  const OPEN_EDGES: [Pt, Pt][] = [[[35, -6], [38.5, -8.0]], [[38.5, -8.0], [44.4, -12.6]], [[44.4, -29.4], [44.4, -32]], [[6.5, -32], [6.5, -24.5]]];
+  lagoonMat.onBeforeCompile = (shader) => {
+    shader.vertexShader = shader.vertexShader
+      .replace('#include <common>', '#include <common>\nvarying vec2 vLagoonXZ;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvLagoonXZ = (modelMatrix * vec4(transformed, 1.0)).xz;');
+    const segs = OPEN_EDGES.map(([a, b]) => `seg(p, vec2(${a[0].toFixed(2)}, ${a[1].toFixed(2)}), vec2(${b[0].toFixed(2)}, ${b[1].toFixed(2)}))`);
+    shader.fragmentShader = shader.fragmentShader
+      .replace('#include <common>', `#include <common>
+varying vec2 vLagoonXZ;
+float seg(vec2 p, vec2 a, vec2 b) { vec2 e = b - a; float t = clamp(dot(p - a, e) / dot(e, e), 0.0, 1.0); return length(p - a - e * t); }`)
+      .replace('#include <alphamap_fragment>', `#include <alphamap_fragment>
+{ vec2 p = vLagoonXZ; float d = min(min(${segs[0]}, ${segs[1]}), min(${segs[2]}, ${segs[3]})); diffuseColor.a *= smoothstep(0.0, 4.0, d); }`);
+  };
+  const lagoon = new THREE.Mesh(new THREE.ShapeGeometry(shapeOf(lagoonRing, ISLANDS.filter(i => i.id !== 'lido').map(i => islandOutline(i.id)))), lagoonMat);
   lagoon.rotation.x = -Math.PI / 2; lagoon.scale.y = -1; lagoon.position.y = TOP + LAGOON_Y;
   lagoon.renderOrder = 3; lagoon.name = 'lagoon-shallows'; group.add(lagoon);
 
@@ -592,7 +667,8 @@ export function italyLandscape(ctx: LayoutCtx) {
   terrace(ctx, APENNINES.x, APENNINES.z, APENNINES.rx, APENNINES.rz, APENNINES.h, '#b3ab8e', APENNINES.crown);
   terrace(ctx, ETNA_FLANK.x, ETNA_FLANK.z, ETNA_FLANK.rx, ETNA_FLANK.rz, ETNA_FLANK.h, '#6b6258', ETNA_FLANK.crown);
   // The ridge line itself stands on the raised ground, in the empty south-east between Rome and the strait.
-  for (const [x, z, r, h, bare] of [[9, -1.4, 3.2, 4.2, false], [14, 2.2, 3.8, 5.4, false], [19, -1.8, 3.4, 4.8, true],
+  for (const [x, z, r, h, bare] of [[12.6, 1.8, 3.2, 4.2, false],   // moved east of the Trevi's front, 2026-09-23
+     [14, 2.2, 3.8, 5.4, false], [19, -1.8, 3.4, 4.8, true],
     [23.5, 2.6, 3.0, 4.0, false], [27, -2.2, 2.6, 3.4, true], [16, 5.6, 2.4, 3.0, false]] as [number, number, number, number, boolean][]) {
     const hill = tryPlace(ctx, apennineRidge(r, h, bare), x, z, x * .2, apennineHeight(x, z), false);   // hills may run into one another
     if (hill) hill.name = 'apennine-ridge';
@@ -601,7 +677,9 @@ export function italyLandscape(ctx: LayoutCtx) {
   for (const spots of [[[29.4, 20.7, .1], [29.6, 20.9, .2], [21.0, 17.9, .2]]] as [number, number, number][][]) {
     const pit = tryPlaceAny(ctx, () => snowPit(), spots, 0); if (pit) { pit.name = 'snow-pit'; pit.position.y = etnaHeight(pit.position.x, pit.position.z); }
   }
-  for (const [x, z, rot, len] of [[20.4, 29.2, .1, 3.0], [24.4, 29.4, -.05, 2.6], [28.6, 20.6, 1.2, 2.4], [20.4, 18.4, .2, 2.6], [25.2, 18.4, .1, 2.6]] as [number, number, number, number][]) {
+  // The two field walls south of the cone. The three spots on the north flank are dropped: the Stand maker's Etna
+  // of 2026-09-23 stands on that ground now.
+  for (const [x, z, rot, len] of [[20.4, 29.2, .1, 3.0], [24.4, 29.4, -.05, 2.6]] as [number, number, number, number][]) {
     const wall = tryPlace(ctx, lavaWall(len), x, z, rot, etnaHeight(x, z)); if (wall) wall.name = 'lava-wall';
   }
   for (let i = 0; i < 14; i++) {
@@ -613,8 +691,11 @@ export function italyLandscape(ctx: LayoutCtx) {
   // ---------- the air over the water ----------
   // Named so a sight-line probe can tell a passing wing from a building: a bird crosses a ray for a frame and
   // hides nothing.
-  const swifts = birds(6, 7, 7); swifts.position.set(-18, TOP, -8); swifts.name = 'italy-birds'; group.add(swifts); tickers.push(swifts.userData.tick!);
-  const lagoonGulls = birds(6, 9, 9); lagoonGulls.position.set(26, TOP, -20); lagoonGulls.name = 'italy-birds'; group.add(lagoonGulls); tickers.push(lagoonGulls.userData.tick!);
-  const coastGulls = birds(5, 8, 8); coastGulls.position.set(14, TOP, 27); coastGulls.name = 'italy-birds'; group.add(coastGulls); tickers.push(coastGulls.userData.tick!);
+  // Walkthrough 24: the shared flock read at approach zoom as house-sized black Vs over the lemon grove. Italy's
+  // flocks are drawn at 0.45 of the shared size, with a body and a lighter grey-brown, higher up.
+  const flock = { size: .45, tone: '#6E6760' };
+  const swifts = birds(6, 7, 8, flock); swifts.position.set(-18, TOP, -8); swifts.name = 'italy-birds'; group.add(swifts); tickers.push(swifts.userData.tick!);
+  const lagoonGulls = birds(6, 9, 9, { ...flock, tone: '#8C8A86' }); lagoonGulls.position.set(26, TOP, -20); lagoonGulls.name = 'italy-birds'; group.add(lagoonGulls); tickers.push(lagoonGulls.userData.tick!);
+  const coastGulls = birds(5, 8, 9, { ...flock, tone: '#8C8A86' }); coastGulls.position.set(14, TOP, 27); coastGulls.name = 'italy-birds'; group.add(coastGulls); tickers.push(coastGulls.userData.tick!);
   void place; void curveOf;
 }

@@ -401,16 +401,23 @@ export function dragon(opts: { radius: number; height: number; speed?: number; s
 }
 
 /** A loose flock of birds circling; each bird is two flapping wings. */
-export function birds(n = 6, radius = 10, height = 14): P {
+/** A flock circling overhead. `opts` is for a world that wants a smaller, lighter flock than the shared one:
+ *  `size` scales the wings (1, the default, is the shared look every other world keeps), `tone` recolours them,
+ *  and a sized flock also gets a small body so each bird reads as a bird rather than a flat V up close. Without
+ *  `opts` the geometry, colour and wing beat are exactly what they always were. */
+export function birds(n = 6, radius = 10, height = 14, opts?: { size?: number; tone?: string }): P {
   const g = group();
-  const wingGeo = new THREE.PlaneGeometry(0.55, 0.16);
-  const wm = new THREE.MeshStandardMaterial({ color: "#3a3a44", side: THREE.DoubleSide, roughness: 1 });
+  const size = opts?.size ?? 1;
+  const wingGeo = new THREE.PlaneGeometry(0.55 * size, 0.16 * size);
+  const wm = new THREE.MeshStandardMaterial({ color: opts?.tone ?? "#3a3a44", side: THREE.DoubleSide, roughness: 1 });
+  const bodyGeo = opts ? new THREE.SphereGeometry(0.07 * size, 6, 4) : null;
   const flock: { b: THREE.Group; l: THREE.Group; r: THREE.Group; off: number; ph: number }[] = [];
   for (let i = 0; i < n; i++) {
     const b = new THREE.Group();
     const l = new THREE.Group(), r = new THREE.Group();
     const lw = new THREE.Mesh(wingGeo, wm), rw = new THREE.Mesh(wingGeo, wm);
-    lw.position.x = -0.28; rw.position.x = 0.28; l.add(lw); r.add(rw); b.add(l, r);
+    lw.position.x = -0.28 * size; rw.position.x = 0.28 * size; l.add(lw); r.add(rw); b.add(l, r);
+    if (bodyGeo) { const body = new THREE.Mesh(bodyGeo, wm); body.scale.set(0.8, 0.7, 2.2); b.add(body); }
     g.add(b); flock.push({ b, l, r, off: i * 0.45, ph: rnd() * 6 });
   }
   g.userData.tick = (t) => {

@@ -227,26 +227,51 @@ export function ironCanopy(w = 6.4, d = 4.0): P {
   return g as P;
 }
 
-/** A stone road bridge with a single segmental arch, a parapet and abutments on both banks. `span` is the
- *  clear water it crosses; the deck stands at BRIDGE_DECK_Y so a walker steps up onto it. */
-export function stoneBridge(span = 5.0, deckWidth = 2.4, deckY = .9): P {
-  const g = new THREE.Group(), len = span + 1.8;
-  for (const x of [-len / 2 + .45, len / 2 - .45]) add(g, block(1.2, deckY - .16, deckWidth + .3, ITP.travertine), x, (deckY - .16) / 2, 0);
-  // The arch ring: voussoirs turned about the springing line so the soffit is a real curve.
-  const r = span / 2 + .2;
-  for (let i = 0; i <= 14; i++) {
-    const a = Math.PI * (.08 + .84 * i / 14);
-    const v = add(g, block(.42, .30, deckWidth + (i % 2 ? .20 : .24), ITP.travertine), Math.cos(a) * r, Math.max(.05, Math.sin(a) * r * .62), 0);
-    v.rotation.z = a - Math.PI / 2;
+/** The Tiber road bridge: one segmental arch of warm peperino over the river, its abutments on the two banks,
+ *  low parapets, and the road laid across the top at `deckY`, with an earth ramp at each end that the lane walks
+ *  up. Walkthrough 2026-09-23 read the old one as "a long white staircase wider than the river": travertine
+ *  voussoirs, a sett stripe every 0.42 that read as treads, and 8.6 units of stone over 2.4 of water. This one is
+ *  `span` long in stone — the arch clears 3.0, a little over the river's 2.4, and the abutments take the rest —
+ *  and the ramps are graded road, not stone.
+ *
+ *  Three materials are kept apart on purpose: the stone body, the deck (a thin slab the movement audit reads as a
+ *  deck, so a walker on it is not "in the water") and the ramps. */
+export function stoneBridge(span = 5.0, deckWidth = 2.2, deckY = .9): P {
+  const g = new THREE.Group(), half = span / 2, clear = 1.5, rise = .72, par = .16, W = deckWidth + par * 2;
+  const STONE = '#BCA57E', RING = '#9F8A66', COPING = '#CDBB98';
+  // The body: an elevation with the arch cut out of its foot, extruded across the full width.
+  const elevation = (inset: number) => {
+    const sh = new THREE.Shape();
+    sh.moveTo(-half + inset, 0); sh.lineTo(-clear, 0);
+    const r = (clear * clear + rise * rise) / (2 * rise), cy = rise - r, a0 = Math.atan2(-cy, -clear), a1 = Math.atan2(-cy, clear);
+    for (let i = 1; i <= 16; i++) { const a = a0 + (a1 - a0) * i / 16; sh.lineTo(Math.cos(a) * r, cy + Math.sin(a) * r); }
+    sh.lineTo(half - inset, 0); sh.lineTo(half - inset, deckY - .06); sh.lineTo(-half + inset, deckY - .06); sh.closePath();
+    return sh;
+  };
+  const body = add(g, new THREE.Mesh(new THREE.ExtrudeGeometry(elevation(0), { depth: W, bevelEnabled: false }), mat(STONE)), 0, 0, -W / 2);
+  body.castShadow = true;
+  // The voussoir ring on both faces, standing a finger proud of the spandrel so the arch reads from above.
+  for (const side of [-1, 1]) {
+    const ring = new THREE.Shape(), r = (clear * clear + rise * rise) / (2 * rise), cy = rise - r, a0 = Math.atan2(-cy, -clear), a1 = Math.atan2(-cy, clear), R = r + .22;
+    for (let i = 0; i <= 16; i++) { const a = a0 + (a1 - a0) * i / 16; const x = Math.cos(a) * r, y = cy + Math.sin(a) * r; if (i) ring.lineTo(x, y); else ring.moveTo(x, y); }
+    for (let i = 16; i >= 0; i--) { const a = a0 + (a1 - a0) * i / 16; ring.lineTo(Math.cos(a) * R, Math.max(0, cy + Math.sin(a) * R)); }
+    ring.closePath();
+    add(g, new THREE.Mesh(new THREE.ExtrudeGeometry(ring, { depth: .05, bevelEnabled: false }), mat(RING)), 0, 0, side > 0 ? W / 2 : -W / 2 - .05);
   }
-  add(g, block(len, .16, deckWidth, ITP.sanpietrino), 0, deckY - .08, 0);
-  for (let i = 0; i < Math.round(len / .42); i++) add(g, block(.34, .05, deckWidth - .12, '#6E6A63'), -len / 2 + .21 + i * .42, deckY + .01, 0);   // the setts
-  for (const z of [-deckWidth / 2 - .09, deckWidth / 2 + .09]) {
-    add(g, block(len - .04, .52, .16, ITP.travertine), 0, deckY + .20, z);
-    add(g, block(len - .08, .09, .24, ITP.travertine), 0, deckY + .50, z);
+  // The deck: the road itself carried over, between the parapets.
+  add(g, block(span - .04, .06, deckWidth, '#cdbb94'), 0, deckY - .03, 0);
+  // Low parapets with a coping, knee-high, so the walkers on the deck show above them.
+  for (const side of [-1, 1]) {
+    add(g, block(span - .06, .28, par - .02, STONE), 0, deckY + .14, side * (deckWidth / 2 + par / 2));
+    add(g, block(span + .04, .06, par + .06, COPING), 0, deckY + .31, side * (deckWidth / 2 + par / 2));
   }
-  // The ramps that carry the lane up onto the deck, meeting the deck end instead of tucking under it.
-  for (const x of [-len / 2, len / 2]) add(g, block(.9, .14, deckWidth - .06, ITP.sanpietrino), x + (x > 0 ? .45 : -.45), deckY - .10, 0).rotation.z = x > 0 ? -.18 : .18;
+  // The graded ramps: road-coloured earth wedges from the deck end down to the lane, 1.2 long, as the walkers'
+  // own lift expects.
+  for (const side of [-1, 1]) {
+    const w = new THREE.Shape();
+    w.moveTo(0, 0); w.lineTo(side * 1.2, 0); w.lineTo(0, deckY - .02); w.closePath();
+    add(g, new THREE.Mesh(new THREE.ExtrudeGeometry(w, { depth: deckWidth - .1, bevelEnabled: false }), mat('#c9b690')), side * half, 0, -(deckWidth - .1) / 2);
+  }
   return masonry(g) as P;
 }
 
@@ -300,23 +325,192 @@ export function snowPit(): P {
   return masonry(g) as P;
 }
 
-/** A dry-stone lava wall, the thing that divides every field on Etna's flank. Length along local x. */
+/** A dry-stone lava wall, the thing that divides every field on Etna's flank. Length along local x. Walkthrough
+ *  2026-09-23 read the old one — a row of identical black boxes in two alternating tones — as black bars lying in
+ *  the grass. This is a knee-high wall of rough stones: two courses of irregular, turned, differently sized
+ *  blocks in three weathered lava greys, a ragged top course and a flat capstone here and there. */
 export function lavaWall(len = 4): P {
-  const g = new THREE.Group();
-  for (let i = 0; i < Math.round(len / .42); i++) {
-    const h = .46 + (i % 3) * .07;
-    add(g, block(.42, h, .34, i % 2 ? ITP.etnaBasalt : '#4E4A52'), -len / 2 + .21 + i * .42, h / 2, (i % 3 - 1) * .04);
+  const g = new THREE.Group(), tones = ['#4F4A4C', '#615B58', '#57524F', '#6E6862'];
+  const n = Math.max(4, Math.round(len / .3));
+  for (let c = 0; c < 2; c++) for (let i = 0; i < n; i++) {
+    const k = Math.abs(Math.sin((i + 1) * 12.9898 + c * 78.233) * 43758.5453) % 1;
+    const w = .26 + k * .16, h = (c ? .16 : .2) + k * .06, d = (c ? .26 : .34) - k * .04;
+    const x = -len / 2 + (i + .5 + (c ? .5 : 0)) * len / n;
+    if (x > len / 2 - .1) continue;
+    if (c && k > .8) continue;                                    // a gap in the top course
+    const stone = add(g, new THREE.Mesh(new THREE.DodecahedronGeometry(.5, 0), mat(tones[(i + c * 2) % 4])), x, c ? .26 + h / 2 : h / 2, (k - .5) * .06);
+    stone.scale.set(w, h, d); stone.rotation.set(k * .6, k * 2.1, (k - .5) * .3);
+  }
+  for (let i = 0; i < Math.floor(len / 1.1); i++) {
+    const cap = add(g, block(.44, .06, .30, '#6E6862'), -len / 2 + .6 + i * 1.1, .44, 0); cap.rotation.y = (i % 2 - .5) * .3;
   }
   return masonry(g) as P;
 }
 
-/** A stone sheepfold on the Agro: a low oval wall of tufa blocks with a gap for the flock. */
-export function sheepfoldWall(rx = 2.6, rz = 1.9): P {
-  const g = new THREE.Group();
-  for (let i = 0; i < 26; i++) {
-    const a = i / 26 * Math.PI * 2;
-    if (a > 1.1 && a < 1.75) continue;   // the gate the flock goes through
-    add(g, block(.5, .62, .3, i % 2 ? ITP.travertine : '#CFC3A8'), Math.cos(a) * rx, .31, Math.sin(a) * rz).rotation.y = -a;
+/** A stone sheepfold on the Agro: a rectangular pen of dry-stone walls, knee-high, with a hurdle gate of split
+ *  chestnut in the middle of the front wall and a strip of straw along the back wall. Walkthrough 2026-09-23 read
+ *  the old oval of standing blocks as a stone circle from above; a fold is a walled rectangle with a gate. `w` is
+ *  the length along local x, `d` the depth; the gate faces +z. */
+export function sheepfoldWall(w = 3.6, d = 2.6): P {
+  const g = new THREE.Group(), tones = ['#CFC3A8', '#BDB195', '#D9CDB2'];
+  const wall = (x0: number, z0: number, x1: number, z1: number, seed: number) => {
+    const len = Math.hypot(x1 - x0, z1 - z0), n = Math.max(3, Math.round(len / .34)), a = Math.atan2(-(z1 - z0), x1 - x0);
+    for (let c = 0; c < 2; c++) for (let i = 0; i < n; i++) {
+      const k = Math.abs(Math.sin((i + 1) * 12.9898 + seed * 7.1 + c * 78.233) * 43758.5453) % 1;
+      const t = (i + .5 + (c ? .4 : 0)) / n; if (t > 1) continue;
+      const s = add(g, block(.30 + k * .1, c ? .2 : .24, .26, tones[(i + c) % 3]), x0 + (x1 - x0) * t, c ? .34 : .12, z0 + (z1 - z0) * t);
+      s.rotation.y = a + (k - .5) * .25;
+    }
+  };
+  const X = w / 2, Z = d / 2, gate = .55;
+  wall(-X, -Z, X, -Z, 1); wall(X, -Z, X, Z, 2); wall(-X, -Z, -X, Z, 3);
+  wall(-X, Z, -gate, Z, 4); wall(gate, Z, X, Z, 5);
+  // The hurdle gate: two posts and three split rails, closed.
+  for (const x of [-gate, gate]) add(g, block(.08, .62, .08, TIMBER), x, .31, Z);
+  for (let i = 0; i < 3; i++) add(g, block(gate * 2 - .08, .05, .04, '#8A6D44'), 0, .16 + i * .16, Z);
+  add(g, block(w - .4, .03, .5, '#D9C58A'), 0, .015, -Z + .35);            // the straw bedding along the back wall
+  return masonry(g) as P;
+}
+
+/** The piazza fountain: a round travertine basin with a raised tazza on a baluster, a jet that breathes, four
+ *  sheets falling from the tazza's lip into the basin, droplets thrown off the jet, and rings that widen on the
+ *  basin where the water lands — the way Spain's three fountains run. Walkthrough 2026-09-23: the old one was
+ *  placed through a scaled holder and its tick was never called, so it never moved. This one is built at its own
+ *  size and publishes its own tick, which `place()` registers. */
+export function piazzaFountain(): P {
+  const g = new THREE.Group(), stone = ITP.travertine, WATER = '#BFE3EA';
+  add(g, new THREE.Mesh(new THREE.CylinderGeometry(1.25, 1.35, .40, 18), mat(stone)), 0, .20, 0);
+  add(g, new THREE.Mesh(new THREE.CylinderGeometry(1.36, 1.36, .08, 18), mat('#D5C7AA')), 0, .44, 0);
+  add(g, new THREE.Mesh(new THREE.CylinderGeometry(.16, .24, .95, 10), mat(stone)), 0, .82, 0);
+  add(g, new THREE.Mesh(new THREE.CylinderGeometry(.55, .22, .20, 14), mat(stone)), 0, 1.36, 0);
+  add(g, new THREE.Mesh(new THREE.CylinderGeometry(.09, .12, .22, 8), mat(stone)), 0, 1.55, 0);
+  const out = masonry(g) as P;
+  const water = (o = .55) => mat(WATER, { transparent: true, opacity: o, depthWrite: false });
+  const pool = add(out, new THREE.Mesh(new THREE.CylinderGeometry(1.16, 1.16, .06, 18), mat('#6FB6C4', { roughness: .25 })), 0, .38, 0);
+  add(out, new THREE.Mesh(new THREE.CylinderGeometry(.48, .48, .03, 14), mat('#6FB6C4', { roughness: .25 })), 0, 1.47, 0);
+  const jet = add(out, new THREE.Mesh(new THREE.CylinderGeometry(.03, .05, .5, 6), water(.6)), 0, 1.9, 0);
+  const sheets = [0, 1, 2, 3].map(i => {
+    const a = i * Math.PI / 2 + Math.PI / 4;
+    return add(out, new THREE.Mesh(new THREE.CylinderGeometry(.05, .09, 1.02, 6, 1, true), water(.5)), Math.cos(a) * .56, .93, Math.sin(a) * .56);
+  });
+  const ripples = [0, 1, 2, 3].map(i => {
+    const a = i * Math.PI / 2 + Math.PI / 4;
+    const r = add(out, new THREE.Mesh(new THREE.RingGeometry(.10, .16, 16), water(.5)), Math.cos(a) * .58, .42, Math.sin(a) * .58);
+    r.rotation.x = -Math.PI / 2; return r;
+  });
+  const drops = Array.from({ length: 6 }, () => add(out, new THREE.Mesh(new THREE.SphereGeometry(.04, 5, 4), water(.75)), 0, 2, 0));
+  out.userData.tick = (t: number) => {
+    const p = .85 + Math.sin(t * 2.3) * .15;
+    jet.scale.set(1, p, 1); jet.position.y = 1.66 + .25 * p;
+    sheets.forEach((s, i) => { const k = .88 + Math.sin(t * 3.1 + i * 1.7) * .12; s.scale.set(k, 1, k); });
+    pool.scale.set(1 + Math.sin(t * 1.7) * .006, 1, 1 + Math.cos(t * 1.9) * .006);
+    ripples.forEach((r, i) => { const u = (t * .8 + i * .25) % 1; r.scale.setScalar(.6 + u * 2.4); (r.material as THREE.MeshStandardMaterial).opacity = .5 * (1 - u); });
+    drops.forEach((d, i) => {
+      const u = (t * .85 + i / 6) % 1, a = i * 1.047 + t * .15, reach = .08 + u * .5;
+      d.position.set(Math.cos(a) * reach, 2.15 + u * .3 - u * u * .78, Math.sin(a) * reach);
+      (d.material as THREE.MeshStandardMaterial).opacity = .75 * (1 - u * u);
+    });
+  };
+  return out;
+}
+
+/** The Trevi: a palazzo front with a central triumphal arch, Oceanus in the niche, a rock reef (the scogliera)
+ *  spilling across the whole width, water falling over the rocks in three cascades, and a wide basin in front
+ *  that ripples where they land. Walkthrough 2026-09-23 read the old one, at 0.4 of the Stand maker's
+ *  ten-wide build, as "a white wall and a pool at the end of an alley", and it never moved. This one is built
+ *  at this table's scale (5.4 wide, 2.7 tall at the attic, 4.0 deep with the basin), faces +z and runs. */
+export function treviFountainIt(): P {
+  const g = new THREE.Group(), stone = '#E6DAC0', dark = '#CDBFA2', W = 5.4;
+  // The palazzo front, with pilasters, a cornice, the attic and a row of windows either side of the arch.
+  add(g, block(W, 2.1, .7, stone), 0, 1.05, -1.6);
+  add(g, block(W + .2, .16, .82, dark), 0, 2.18, -1.6);
+  add(g, block(2.0, .5, .6, stone), 0, 2.5, -1.55);                       // the attic over the arch
+  add(g, block(2.2, .1, .7, dark), 0, 2.78, -1.55);
+  for (const x of [-2.5, -1.85, -.7, .7, 1.85, 2.5]) add(g, block(.16, 2.0, .12, dark), x, 1.0, -1.2);
+  for (const x of [-2.2, -1.5, 1.5, 2.2]) for (const y of [1.0, 1.65]) add(g, block(.3, .38, .04, '#6F6452'), x, y, -1.235);
+  // The arch and the niche, with Oceanus and his shell chariot.
+  add(g, block(1.1, 1.5, .1, '#A99A7E'), 0, .95, -1.22);
+  add(g, new THREE.Mesh(new THREE.CylinderGeometry(.55, .55, .1, 12, 1, false, 0, Math.PI), mat('#A99A7E')), 0, 1.7, -1.22).rotation.x = Math.PI / 2;
+  add(g, new THREE.Mesh(new THREE.CylinderGeometry(.14, .2, .7, 8), mat('#F2EADA')), 0, 1.15, -1.0);
+  add(g, new THREE.Mesh(new THREE.SphereGeometry(.13, 8, 6), mat('#F2EADA')), 0, 1.6, -1.0);
+  add(g, new THREE.Mesh(new THREE.SphereGeometry(.34, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2), mat('#F2EADA')), 0, .62, -.85).scale.set(1.2, .5, .8);
+  for (const x of [-1.2, 1.2]) {                                                            // Abundance and Health in their niches
+    add(g, new THREE.Mesh(new THREE.CylinderGeometry(.1, .14, .55, 8), mat('#F2EADA')), x, 1.25, -1.15);
+    add(g, new THREE.Mesh(new THREE.SphereGeometry(.09, 7, 5), mat('#F2EADA')), x, 1.6, -1.15);
   }
+  // The scogliera: rough travertine rocks piled across the whole front, lower toward the ends.
+  for (let i = 0; i < 17; i++) {
+    const k = Math.abs(Math.sin((i + 3) * 12.9898) * 43758.5453) % 1, x = -2.4 + i * .3;
+    const h = .45 + (1 - Math.abs(x) / 2.6) * .45 + k * .15;
+    const rock = add(g, new THREE.Mesh(new THREE.DodecahedronGeometry(.3 + k * .12, 0), mat(i % 3 ? '#D8CCB0' : '#C4B696')), x, h * .5, -.95 + k * .35);
+    rock.scale.set(1.1, h * 1.6, 1); rock.rotation.set(k, k * 3, 0);
+  }
+  // The basin: a low curved rim, the steps down to it at the front, and the water.
+  add(g, block(W + .6, .12, 3.0, '#D9CDB2'), 0, .06, .1);
+  add(g, block(W + .6, .32, .18, stone), 0, .16, 1.55);
+  for (const x of [-(W + .6) / 2, (W + .6) / 2]) add(g, block(.18, .32, 2.6, stone), x, .16, .3);
+  add(g, block(W + 1.0, .06, .5, '#D9CDB2'), 0, .03, 1.95);
+  const out = masonry(g) as P;
+  const water = (o = .55) => mat('#BFE3EA', { transparent: true, opacity: o, depthWrite: false });
+  const pool = add(out, new THREE.Mesh(new THREE.BoxGeometry(W + .2, .04, 2.3), mat('#6FB6C4', { roughness: .22 })), 0, .24, .35);
+  // Three cascades over the rocks, each a column of thin sheets whose lengths breathe out of phase.
+  const falls = [-1.3, 0, 1.3].map((x, i) => Array.from({ length: 3 }, (_, k) => {
+    const s = add(out, new THREE.Mesh(new THREE.PlaneGeometry(.36 - k * .04, .55), water(.62 - k * .1)), x + (k - 1) * .12, .72 - k * .18, -.55 + k * .28);
+    s.rotation.x = -.5 - k * .25; s.userData.base = s.position.y; s.userData.i = i * 3 + k; return s;
+  })).flat();
+  const ripples = [-1.3, 0, 1.3].flatMap(x => [0, 1].map(k => {
+    const r = add(out, new THREE.Mesh(new THREE.RingGeometry(.12, .2, 18), water(.5)), x, .27, .15 + k * .05);
+    r.rotation.x = -Math.PI / 2; r.userData.k = k; return r;
+  }));
+  const drops = Array.from({ length: 8 }, () => add(out, new THREE.Mesh(new THREE.SphereGeometry(.04, 5, 4), water(.7)), 0, .5, 0));
+  out.userData.tick = (t: number) => {
+    falls.forEach(s => { const i = s.userData.i as number; s.scale.y = .85 + Math.sin(t * 4.1 + i * .9) * .15; s.position.y = (s.userData.base as number) + Math.sin(t * 5.3 + i) * .015; });
+    pool.scale.set(1, 1, 1 + Math.sin(t * 1.3) * .004);
+    ripples.forEach((r, i) => { const u = (t * .7 + (r.userData.k as number) * .5 + i * .13) % 1; r.scale.setScalar(.7 + u * 3.2); (r.material as THREE.MeshStandardMaterial).opacity = .5 * (1 - u); });
+    drops.forEach((d, i) => {
+      const u = (t * .9 + i / 8) % 1, x = [-1.3, 0, 1.3][i % 3] + (i % 2 ? .2 : -.2) * u;
+      d.position.set(x, .75 - u * u * .5, -.35 + u * .55);
+      (d.material as THREE.MeshStandardMaterial).opacity = .7 * (1 - u);
+    });
+  };
+  return out;
+}
+
+/** One of the two granite columns of the Piazzetta, with its capital and the figure on top. */
+export function piazzettaColumn(lion = true): P {
+  const g = new THREE.Group();
+  add(g, block(.8, .3, .8, ITP.istrianStone), 0, .15, 0);
+  add(g, block(.6, .25, .6, '#D9D2C0'), 0, .42, 0);
+  add(g, new THREE.Mesh(new THREE.CylinderGeometry(.17, .21, 2.1, 12), mat('#9A9A9E')), 0, 1.6, 0);
+  add(g, block(.46, .2, .46, ITP.istrianStone), 0, 2.75, 0);
+  if (lion) {                                                                       // the winged lion of St Mark
+    add(g, block(.46, .2, .2, '#6E6A55'), 0, 2.95, 0);
+    add(g, block(.15, .18, .18, '#6E6A55'), .22, 3.12, 0);
+    for (const z of [-.12, .12]) add(g, block(.28, .04, .15, '#6E6A55'), -.05, 3.13, z).rotation.x = z > 0 ? -.5 : .5;
+  } else {                                                                          // St Theodore on his crocodile
+    add(g, block(.42, .09, .17, '#7A8A6A'), 0, 2.9, 0);
+    add(g, new THREE.Mesh(new THREE.CylinderGeometry(.07, .09, .36, 8), mat('#EDE6D6')), 0, 3.12, 0);
+    add(g, new THREE.Mesh(new THREE.SphereGeometry(.065, 7, 5), mat('#EDE6D6')), 0, 3.35, 0);
+  }
+  return masonry(g) as P;
+}
+
+/** A Venetian well-head (vera da pozzo) on its stepped base, with the iron frame and the bucket. */
+export function wellHead(): P {
+  const g = new THREE.Group();
+  add(g, new THREE.Mesh(new THREE.CylinderGeometry(.7, .75, .1, 12), mat('#D9D2C0')), 0, .05, 0);
+  add(g, new THREE.Mesh(new THREE.CylinderGeometry(.46, .5, .62, 12), mat(ITP.istrianStone)), 0, .41, 0);
+  add(g, new THREE.Mesh(new THREE.CylinderGeometry(.5, .5, .06, 12), mat('#CFC6B1')), 0, .75, 0);
+  for (const x of [-.36, .36]) add(g, block(.04, .7, .04, IRON), x, 1.1, 0);
+  add(g, block(.76, .04, .04, IRON), 0, 1.45, 0);
+  add(g, new THREE.Mesh(new THREE.CylinderGeometry(.09, .07, .16, 8), mat('#7A5232')), .1, .88, 0);
+  return masonry(g) as P;
+}
+
+/** A plain Istrian-stone bench on two blocks, for the quay. */
+export function stoneBench(len = 1.6): P {
+  const g = new THREE.Group();
+  add(g, block(len, .08, .38, ITP.istrianStone), 0, .42, 0);
+  for (const x of [-len / 2 + .2, len / 2 - .2]) add(g, block(.18, .38, .32, '#D9D2C0'), x, .19, 0);
   return masonry(g) as P;
 }

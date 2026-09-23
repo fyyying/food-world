@@ -252,8 +252,12 @@ export type WalkState = { from: [number, number]; to: [number, number]; u: numbe
 
 /** Constant pace along a straight segment, a real stop, then a gradual turn. `lift(u)` raises the walker over
  *  a bridge deck. Steps are matched to distance by the observer in `italianResident`, never to the clock. */
-export function italyWalk(p: P, from: [number, number], to: [number, number], range: [number, number], seed: number, lift?: (u: number) => number) {
-  const [lo, hi] = range, dx = to[0] - from[0], dz = to[1] - from[1], angle = Math.atan2(dx, dz);
+export function italyWalk(p: P, from: [number, number], to: [number, number], range: [number, number], seed: number, lift?: (u: number) => number, offset = 0) {
+  const [lo, hi] = range, dx0 = to[0] - from[0], dz0 = to[1] - from[1], angle = Math.atan2(dx0, dz0), l0 = Math.hypot(dx0, dz0) || 1;
+  // A walker keeps to its own strip of the lane, `offset` to the right of the centreline as the lane runs.
+  const ox = -dz0 / l0 * offset, oz = dx0 / l0 * offset;
+  from = [from[0] + ox, from[1] + oz]; to = [to[0] + ox, to[1] + oz];
+  const dx = dx0, dz = dz0;
   const duration = Math.hypot(dx, dz) * (hi - lo) / p.userData.pace, pause = 1.7 + seed % 4 * .55, half = duration + pause, period = half * 2;
   const state: WalkState = { from, to, u: lo, forward: true, turn: 0, facing: angle };
   p.userData.walkState = state;
@@ -295,7 +299,7 @@ export function wineCart(): P {
     add(w, new THREE.Mesh(new THREE.CylinderGeometry(.09, .09, .1, 8), mat('#3A3129')), 0, 0, 0).rotation.x = Math.PI / 2;
     wheels.push(w as THREE.Mesh);
   }
-  for (const z of [-.34, .34]) { const shaft = add(g, cyl(.036, .036, 1.7, '#7A5232', 5), 1.05, .86, z); shaft.rotation.z = Math.PI / 2; shaft.rotation.y = z > 0 ? -.05 : .05; }
+  for (const z of [-.34, .34]) { const shaft = add(g, cyl(.036, .036, 1.5, '#7A5232', 5), .95, .86, z); shaft.rotation.z = Math.PI / 2; shaft.rotation.y = z > 0 ? -.05 : .05; }
   add(g, box(.5, .09, .9, '#5A3B22'), -.95, 1.02, 0);                                   // the carter's seat at the tail
   const lamp = add(g, box(.14, .2, .14, '#2F3238'), .55, 1.16, .62);
   add(lamp, ball(.055, '#F2C14E', 6), 0, 0, .06);
@@ -380,37 +384,62 @@ export function agroSheep(): P {
   return g;
 }
 
-/** The cart trails behind its mule, and the mule behind its carter, along the direction of travel. The head
- *  follows the ground the animal actually covers, not the lane's direction: taking it from the lane is what
- *  made Spain's mill mule circle its stone tail first, because while the handler turns at the end of a lane
- *  the animal walks round to the other side and the lane's direction is the opposite of the way it is going. */
-export function followCart(mule: P, cart: P | null, leader: P, group: THREE.Object3D, gap = 1.5) {
+/** A carter and his animal on a closed loop, the owner walkthrough's fix for the wine cart and the Agro mule
+ *  (2026-09-23). On a straight lane that the leader walked out and back, the animal and the cart swung through him
+ *  at every turn, and the cart stood on the bridge ramp and in the market's corner. Here the path is a stadium:
+ *  out along one side of the road `sep` from the other, a half circle, back along the other side, a half circle.
+ *  Carter, animal and cart each stand at a fixed distance behind one another *along the path*, so none of them
+ *  ever passes through another, and the team stops for a while at the end of each straight before it turns.
+ *  The leader stays an ordinary walker: his steps come from the distance he covers. */
+export function italyTeam(leader: P, mule: P, cart: P | null, group: THREE.Object3D, from: [number, number], to: [number, number], sep: number, seed: number) {
+  const r = sep / 2, dx = to[0] - from[0], dz = to[1] - from[1], len = Math.hypot(dx, dz), ux = dx / len, uz = dz / len;
+  const nx = -uz, nz = ux;                               // the right-hand side going from `from` to `to`
+  const arc = Math.PI * r, L = 2 * len + 2 * arc;
+  const at = (s: number): { x: number; z: number; tx: number; tz: number } => {
+    s = ((s % L) + L) % L;
+    if (s < len) return { x: from[0] + ux * s + nx * r, z: from[1] + uz * s + nz * r, tx: ux, tz: uz };
+    s -= len;
+    if (s < arc) { const a = s / r; return { x: to[0] + (nx * Math.cos(a) + ux * Math.sin(a)) * r, z: to[1] + (nz * Math.cos(a) + uz * Math.sin(a)) * r, tx: -nx * Math.sin(a) + ux * Math.cos(a), tz: -nz * Math.sin(a) + uz * Math.cos(a) }; }
+    s -= arc;
+    if (s < len) return { x: to[0] - ux * s - nx * r, z: to[1] - uz * s - nz * r, tx: -ux, tz: -uz };
+    s -= len;
+    const a = s / r; return { x: from[0] + (-nx * Math.cos(a) - ux * Math.sin(a)) * r, z: from[1] + (-nz * Math.cos(a) - uz * Math.sin(a)) * r, tx: nx * Math.sin(a) - ux * Math.cos(a), tz: nz * Math.sin(a) - uz * Math.cos(a) };
+  };
+  const v = (leader.userData.pace as number) * .9, pause = 3.2 + seed % 3 * .6;
+  // One cycle: out along the first straight, stop, turn and back along the second, stop, turn.
+  const legs = [len / v, pause, (arc + len) / v, pause, arc / v], T = legs.reduce((a, b) => a + b, 0);
+  const sAt = (t: number) => {
+    let q = (t % T + T) % T;
+    if (q < legs[0]) return v * q; q -= legs[0];
+    if (q < legs[1]) return len; q -= legs[1];
+    if (q < legs[2]) return len + v * q; q -= legs[2];
+    if (q < legs[3]) return 2 * len + arc; q -= legs[3];
+    return 2 * len + arc + v * q;
+  };
   const rope = new THREE.Mesh(new THREE.CylinderGeometry(.013, .013, 1, 5), mat('#8A7A5A')); rope.name = 'italy-halter'; group.add(rope);
   const hand = new THREE.Vector3(), halter = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0);
-  let facing: number | null = null;
-  const was = new THREE.Vector3();
+  const muleGap = 1.35, cartGap = muleGap + 2.6;
+  // The team keeps its own clock, advanced by each frame's step, so a jump in the world's time (a hidden tab
+  // waking, a test that skips ahead) moves it one step along its loop rather than teleporting it.
+  let clock = seed * 7.3;
   return (t: number, dt: number) => {
-    const s = leader.userData.walkState as WalkState | undefined; if (!s) return;
-    const dx = s.to[0] - s.from[0], dz = s.to[1] - s.from[1], len = Math.hypot(dx, dz) || 1;
-    const side = (s.forward ? 1 : -1) * (1 - 2 * s.turn * s.turn * (3 - 2 * s.turn));
-    const u = s.u - gap * side / len;
-    was.copy(mule.position);
-    mule.position.set(s.from[0] + dx * u, .034, s.from[1] + dz * u);
-    const mx = mule.position.x - was.x, mz = mule.position.z - was.z;
-    if (Math.hypot(mx, mz) > 1e-5) {
-      const want = Math.atan2(-mz, mx);   // the head is local +x, so it points the way the animal is going
-      if (facing === null) facing = want;
-      else { let d = want - facing; d = Math.atan2(Math.sin(d), Math.cos(d)); facing = Math.abs(d) > .5 ? want : facing + d * Math.min(1, dt * 6); }
-    }
-    mule.rotation.y = facing ?? Math.atan2(-dz, dx);
+    clock += Math.min(Math.max(dt, 0), .25);
+    const s = sAt(clock), a = at(s), m = at(s - muleGap);
+    leader.position.set(a.x, .034, a.z); leader.rotation.y = Math.atan2(a.tx, a.tz);
+    leader.userData.tick?.(t, dt);
+    mule.position.set(m.x, .034, m.z); mule.rotation.y = Math.atan2(-m.tz, m.tx);   // the head is local +x
     mule.userData.tick?.(t, dt);
     if (cart) {
-      const cu = s.u - (gap + 2.1) * side / len;
-      cart.position.set(s.from[0] + dx * cu, .036, s.from[1] + dz * cu);
-      cart.rotation.y = (facing ?? Math.atan2(-dz, dx)) + Math.PI / 2;
+      // The cart trails its mule like a trailer: it stands on the path where it is `cartGap - muleGap` from the
+      // mule in a straight line (not along the path, which would pull it into the mule on the half circles), and
+      // its shafts — local +x — point at the mule.
+      const want = cartGap - muleGap;
+      let sc = s - cartGap, c = at(sc);
+      for (let k = 0; k < 40 && Math.hypot(c.x - m.x, c.z - m.z) < want; k++) { sc -= .05; c = at(sc); }
+      cart.position.set(c.x, .036, c.z); cart.rotation.y = Math.atan2(-(m.z - c.z), m.x - c.x);
       cart.userData.tick?.(t, dt);
     }
-    hand.set(0, .55, 0); leader.localToWorld(hand); group.worldToLocal(hand);
+    hand.set(.12, .66, .1); leader.localToWorld(hand); group.worldToLocal(hand);   // held low at his side
     halter.set(.78, .86, 0); mule.localToWorld(halter); group.worldToLocal(halter);
     rope.position.copy(hand).add(halter).multiplyScalar(.5);
     rope.scale.y = Math.max(.01, hand.distanceTo(halter));
@@ -418,22 +447,37 @@ export function followCart(mule: P, cart: P | null, leader: P, group: THREE.Obje
   };
 }
 
-/** A standing rower for a gondola, a sandolo or a bragozzo: he stands on the stern deck facing forward, both
- *  hands on the oar, and his legs do not step, because he does not walk. He is seated on nothing and supported
- *  by the deck, so the world's own support rules are satisfied by placing him at the deck height. */
-export function lagoonRower(seed = 0, oarLength = 3.1): P {
+/** A rower for a gondola or a sandolo, **seated** on a thwart at the stern and facing the bow, with his oar
+ *  on the right-hand side, where the forcola is. Walkthrough 17 (2026-09-23) found the rowers standing bolt
+ *  upright in moving boats, with the oar raised like a pole. He now sits (`userData.seated`, carried by the hull),
+ *  and the oar strokes: it sweeps fore and aft about the forcola, dips on the drive and lifts on the recovery,
+ *  while he leans into it and his arms follow.
+ *
+ *  The caller seats him at `seatTop - userData.seatDrop` and adds `userData.oar` to the hull at the forcola. */
+export function lagoonRower(seed = 0, oarLength = 2.2): P {
   const p = italianResident(seed % 2 ? 4 : 44, true);
   const rig = p.userData as unknown as Rig, s = rig.figureScale;
-  const oar = new THREE.Group();
-  add(oar, cyl(.032 * s, .045 * s, oarLength * s, '#B7A986', 6), 0, 0, 0).rotation.z = Math.PI / 2;
-  add(oar, box(.52 * s, .015 * s, .16 * s, '#A08A5E'), oarLength * s / 2 - .2 * s, 0, 0);
-  add(rig.arms.right, oar, 0, rig.arms.hand, 0);
-  oar.rotation.z = .42; oar.rotation.y = -.5;
-  rig.arms.right.rotation.x = -1.15; rig.arms.left.rotation.x = -.95;
+  (p.userData as { sit?: () => void }).sit?.();
+  const pelvis = p.children.find(c => c instanceof THREE.Mesh) as THREE.Mesh;
+  pelvis.geometry.computeBoundingBox();
+  p.userData.seatDrop = (pelvis.position.y + pelvis.geometry.boundingBox!.min.y) * p.scale.y;
+  // The oar: its shaft runs along local +x from the grip (inboard, forward) to the blade (aft, outboard).
+  const oar = new THREE.Group(), pitch = new THREE.Group(); oar.add(pitch); oar.rotation.order = 'YZX';
+  const shaft = add(pitch, cyl(.028, .036, oarLength, '#B7A986', 6), oarLength / 2 - .45, 0, 0); shaft.rotation.z = Math.PI / 2;
+  add(pitch, box(.42, .02, .13, '#A08A5E'), oarLength - .62, 0, 0);
+  oar.name = 'italy-oar';
+  p.userData.oar = oar;
   p.userData.seated = true;                 // carried by the hull: it travels, so it must not be read as sliding
-  p.userData.tick = undefined;
-  let lean = 0;
-  p.userData.tick = (t: number) => { lean = Math.sin(t * 1.05 + seed) * .12; rig.upper.rotation.x = .10 + lean * .5; oar.rotation.z = .42 + lean; };
+  const phase0 = seed * 1.7;
+  p.userData.tick = (t: number) => {
+    const ph = t * 1.15 + phase0, sweep = Math.sin(ph), drive = Math.cos(ph) > 0;
+    oar.rotation.y = .1 + sweep * .1;                    // aft and a little outboard, swinging fore and aft
+    pitch.rotation.z = drive ? -.44 : -.34;               // the blade down in the water on the drive, up on the recovery
+    pitch.rotation.z += Math.cos(ph) * .03;
+    rig.upper.rotation.x = .10 + sweep * .16;
+    rig.arms.right.rotation.x = -1.2 - sweep * .3; rig.arms.left.rotation.x = -1.1 - sweep * .3;
+  };
+  void s;
   return p;
 }
 

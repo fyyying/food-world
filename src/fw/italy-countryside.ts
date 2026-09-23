@@ -14,7 +14,7 @@ import * as THREE from 'three';
 import { add, mat, type P } from './props';
 import { ITP, sheepfoldWall } from './italy-architecture';
 import { agroSheep } from './italy-people';
-import { distToRoads, isWet, landOutlines, freshOutlines, objectDistance, groundHeight, tryPlace, tryPlaceAny } from './italy-landscape';
+import { distToRoads, isWet, landOutlines, freshOutlines, objectDistance, groundHeight, tryPlace, tryPlaceAny, occupy } from './italy-landscape';
 import type { LayoutCtx } from './worldkit';
 
 /** An umbrella pine: a bare russet trunk carried high, then one broad flat crown and nothing under it. */
@@ -153,7 +153,41 @@ function fieldBlock(w: number, d: number, colour: string, furrow: string, floode
   const g = new THREE.Group();
   const mesh = add(g, new THREE.Mesh(new THREE.PlaneGeometry(w, d), mat(colour, flooded ? { roughness: .22, metalness: .06 } : {})), 0, .014, 0);
   mesh.rotation.x = -Math.PI / 2; mesh.receiveShadow = true;
-  for (let i = 0; i < Math.max(3, Math.round(w / .7)); i++) add(g, new THREE.Mesh(new THREE.BoxGeometry(.08, .10, d), mat(furrow)), -w / 2 + (i + .5) * w / Math.max(3, Math.round(w / .7)), .05, 0);
+  // Low, soft drill lines in the crop's own tone: the old dark 0.10-high bars read as planks (walkthrough 21).
+  for (let i = 0; i < Math.max(3, Math.round(w / .45)); i++) add(g, new THREE.Mesh(new THREE.BoxGeometry(.05, .03, d - .1), mat(furrow)), -w / 2 + (i + .5) * w / Math.max(3, Math.round(w / .45)), .024, 0);
+  return g as P;
+}
+
+/** A flooded rice paddy of the Vercellese and the Veronese: a square of standing water held by low earth bunds,
+ *  with rows of young rice standing in it. Walkthrough 20 (2026-09-23) saw no water on the rice fields; this is
+ *  the bunded, water-filled square the other areas' paddies are, the water a pale sky-green that shines. */
+function paddy(w: number, d: number, seed = 0): P {
+  const g = new THREE.Group();
+  const water = add(g, new THREE.Mesh(new THREE.PlaneGeometry(w - .2, d - .2), mat('#8FC2BE', { roughness: .15, metalness: .1 })), 0, .045, 0);
+  water.rotation.x = -Math.PI / 2; water.receiveShadow = true; water.name = 'paddy-water';
+  for (const z of [-d / 2, d / 2]) add(g, new THREE.Mesh(new THREE.BoxGeometry(w + .16, .12, .16), mat('#8E7A55')), 0, .06, z);
+  for (const x of [-w / 2, w / 2]) add(g, new THREE.Mesh(new THREE.BoxGeometry(.16, .12, d), mat('#8E7A55')), x, .06, 0);
+  const rows = Math.max(3, Math.round(d / .45)), cols = Math.max(4, Math.round(w / .32));
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+    if ((r * 7 + c * 3 + seed) % 11 === 0) continue;
+    const tuft = add(g, new THREE.Mesh(new THREE.ConeGeometry(.045, .26, 4), mat((r + c) % 3 ? '#7FA84F' : '#6E9A45')), -w / 2 + .3 + c * (w - .6) / (cols - 1), .17, -d / 2 + .3 + r * (d - .6) / (rows - 1));
+    tuft.rotation.y = r + c;
+  }
+  return g as P;
+}
+/** A strip of maize in late summer: rows of tall stalks with their leaves, a tassel on top and a cob on the side.
+ *  Walkthrough 21 (2026-09-23) read the old brown furrow mat as wooden decking; maize is stalks. */
+function maizeStrip(w: number, d: number): P {
+  const g = new THREE.Group();
+  const soil = add(g, new THREE.Mesh(new THREE.PlaneGeometry(w, d), mat('#9C8A62')), 0, .014, 0); soil.rotation.x = -Math.PI / 2;
+  const rows = Math.max(2, Math.round(d / .55)), per = Math.max(3, Math.round(w / .42));
+  for (let r = 0; r < rows; r++) for (let c = 0; c < per; c++) {
+    const x = -w / 2 + .2 + c * (w - .4) / (per - 1), z = -d / 2 + .25 + r * (d - .5) / Math.max(1, rows - 1), h = .95 + ((r * 5 + c * 3) % 4) * .06;
+    add(g, new THREE.Mesh(new THREE.CylinderGeometry(.022, .03, h, 5), mat('#8FA24E')), x, h / 2, z);
+    for (let k = 0; k < 3; k++) { const leaf = add(g, new THREE.Mesh(new THREE.BoxGeometry(.34, .012, .06), mat(k % 2 ? '#7E9A48' : '#6F8C40')), x, .3 + k * .22, z); leaf.rotation.set(0, c + k * 2.1, (k % 2 ? .45 : -.45)); }
+    add(g, new THREE.Mesh(new THREE.ConeGeometry(.05, .16, 4), mat('#D8C27A')), x, h + .06, z);
+    if ((r + c) % 2) add(g, new THREE.Mesh(new THREE.CylinderGeometry(.035, .045, .16, 6), mat('#D9B85A')), x + .05, .5, z).rotation.z = .5;
+  }
   return g as P;
 }
 
@@ -185,18 +219,31 @@ export function italyCountryside(ctx: LayoutCtx) {
   // Sicily the coastal strips behind the lane and the terraces under Etna.
 
   // ---------- the structured pieces first, so the scattered trees grow round them ----------
-  // The fold: a low oval of tufa blocks with the flock standing in it. A penned animal does not travel, so
-  // its legs stay still; it breathes and swings its head instead.
+  // The fold: a rectangular pen of dry-stone walls with a hurdle gate, the flock standing in it. A penned animal
+  // does not travel, so its legs stay still; it breathes and swings its head instead.
   {
     const fold = new THREE.Group(); fold.name = 'sheep-fold';
-    fold.add(sheepfoldWall(2.8, 2.0));
-    for (const [i, [x, z, rot]] of ([[-1.2, -.5, .5], [.4, .7, 2.1], [1.2, -.6, 3.4], [-.4, .9, 1.2], [.8, -1.1, 5.0]] as [number, number, number][]).entries()) {
+    fold.add(sheepfoldWall(3.6, 2.6));
+    for (const [i, [x, z, rot]] of ([[-1.1, -.5, .5], [.3, .5, 2.1], [1.1, -.6, 3.4], [-.6, .6, 1.2], [.7, -.1, 5.0]] as [number, number, number][]).entries()) {
       const sheep = add(fold, agroSheep(), x, 0, z);
       sheep.rotation.y = rot; sheep.scale.setScalar(.9 + (i % 3) * .05); sheep.name = 'penned-sheep';
       sheep.userData.tick = undefined;
       tickers.push((t: number) => { sheep.rotation.y = rot + Math.sin(t * .42 + i * 2) * .09; sheep.position.y = Math.sin(t * .85 + i) * .01; });
     }
-    if (!tryPlaceAny(ctx, () => fold, [[-19.4, 4.8, .06], [-19.8, 4.6, .04], [-19.0, 5.0, .08]])) group.remove(fold);
+    if (!tryPlaceAny(ctx, () => fold, [[-20.6, 7.3, .04], [-20.2, 7.4, .02], [-24.6, 8.4, .06]])) group.remove(fold);
+  }
+
+  // ---------- the terraferma's fields, laid before any tree so none grows in them ----------
+  // The flooded rice squares beside the rice fields' own stand, and the maize strips on the terraferma south of
+  // the via consolare (the ground round the farm kitchen is all road, pad and the Tiber's spring).
+  // A paddy is ground dressing (nothing in it stands knee-high), so it claims its ground by hand.
+  for (const [i, [x, z, w, d]] of ([[-2.6, -12.4, 2.4, 1.9], [-2.6, -14.7, 2.4, 1.9]] as [number, number, number, number][]).entries()) {
+    const field = tryPlace(ctx, paddy(w, d, i), x, z, 0);
+    if (field) { field.name = 'rice-field'; occupy(new THREE.Box3(new THREE.Vector3(x - w / 2, 0, z - d / 2), new THREE.Vector3(x + w / 2, .3, z + d / 2))); }
+  }
+  for (const [x, z, w, d] of [[4.4, -9.0, 2.4, 1.6], [7.4, -9.4, 2.4, 1.6]] as [number, number, number, number][]) {
+    const field = tryPlace(ctx, maizeStrip(w, d), x, z, 0);
+    if (field) field.name = 'maize-field';
   }
 
   // ---------- the vines, and the chestnut wood in the west with the porcini on strings ----------
@@ -222,24 +269,14 @@ export function italyCountryside(ctx: LayoutCtx) {
   // ---------- the Agro Romano: dry grass and thistle, the olives, and the flock in its own walled fold ----------
   scatter(i => oliveTree(.9 + (i % 3) * .1), 'agro-olive', -29, -4, 4.6, 8.6, 2.2, 9, 1.6);
   scatter(i => oliveTree(.95 + (i % 2) * .1), 'agro-olive', 2, 30, -5, 4, 2.6, 9, 1.6);
-  scatter(() => {
-    const thistle = new THREE.Group() as P;
-    add(thistle, new THREE.Mesh(new THREE.SphereGeometry(.30, 7, 5), mat('#A89A72')), 0, .16, 0).scale.y = .6;
-    add(thistle, new THREE.Mesh(new THREE.SphereGeometry(.10, 6, 5), mat('#8A7FA8')), .06, .42, 0);
-    return thistle;
-  }, 'campagna-thistle', -46, -10, -26, 8, 1.6, 36, 1.2, false);
+  // The campagna thistles are gone (walkthrough 11: 36 purple-topped dots read as pebbles over every verge).
   // ---------- the terraferma: mulberry rows, maize stubble, and the rice flooded and mirroring ----------
   scatter(i => mulberry(.95 + (i % 2) * .1), 'mulberry', -4, 6, -14, -8, 1.8, 8, 1.6);
-  for (const [x, z, w, d, flooded] of [[-3.4, -18.6, 6.0, 4.0, false], [-4.2, -13.4, 5.4, 3.6, false], [-1.6, -23.4, 5.0, 3.2, true], [-6.6, -22.2, 4.4, 3.0, true]] as [number, number, number, number, boolean][]) {
-    const field = tryPlace(ctx, fieldBlock(w, d, flooded ? '#9EC9B4' : '#C9BD84', flooded ? '#A8956F' : '#A89A6A', flooded), x, z, 0);
-    if (field) field.name = flooded ? 'rice-field' : 'maize-field';
-  }
-
   // ---------- Sicily: prickly pear, agave, the latifondo's wheat ----------
   scatter(i => pricklyPear(.8 + (i % 3) * .1), 'prickly-pear', -21, 32, 17, 30, 1.2, 16, 1.4);
   scatter(() => agave(.9), 'agave', -20, 10, 28, 30, 1.5, 12, 1.4);
   for (const [x, z, w, d] of [[-3.4, 28.0, 6.0, 3.0], [6.4, 27.6, 6.6, 3.2], [-13.6, 28.6, 5.0, 2.6]] as [number, number, number, number][]) {
-    const field = tryPlace(ctx, fieldBlock(w, d, '#D6C07E', '#B6A268'), x, z, 0);
+    const field = tryPlace(ctx, fieldBlock(w, d, '#D6C07E', '#CBB271'), x, z, 0);
     if (field) field.name = 'latifondo-wheat';
   }
   // ---------- the Conca d'Oro's citrus, and the almond and caper terraces ----------

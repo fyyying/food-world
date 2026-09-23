@@ -11,12 +11,12 @@
 import * as THREE from 'three';
 import { add, mat, type P } from './props';
 import { block, masonry } from './turkey-architecture';
-import { obelisk, fountain, triumphalArch, basilica, treviFountain, baroqueChurch, cafeTables } from './props-italy';
-import { ITP, italyBuilding, fornoOvenHouse, casaleByre, tonnaraShed, stoneBridge, latifondoMasseria } from './italy-architecture';
-import { italianResident, italyWalk, italyMule, wineCart, followCart, lagoonRower } from './italy-people';
+import { obelisk, triumphalArch, basilica, baroqueChurch, cafeTables } from './props-italy';
+import { ITP, italyBuilding, fornoOvenHouse, casaleByre, tonnaraShed, stoneBridge, latifondoMasseria, piazzaFountain, treviFountainIt, piazzettaColumn, wellHead, stoneBench } from './italy-architecture';
+import { italianResident, italyWalk, italyMule, wineCart, italyTeam, lagoonRower } from './italy-people';
 import {
   IT_ROADS, IT_CROSSINGS, IT_BRIDGES, IT_LANES, IT_BOAT_LANES, BRIDGE_SPAN, BRIDGE_DECK_Y,
-  CART_LANE, MULE_LANE, IT_HOUSES, IT_STAND_BUILDINGS, tryPlace, tryPlaceAny, occupy, overlapsOccupied, distToRoads, objectDistance, isWet, type Lane, type Pt, type Road,
+  laneOffset, inRoomApproach, IT_HOUSES, IT_STAND_BUILDINGS, tryPlace, tryPlaceAny, occupy, overlapsOccupied, distToRoads, objectDistance, isWet, type Lane, type Pt, type Road,
 } from './italy-landscape';
 import { ITALY_OBJECTS } from './italy-objects';
 import type { LayoutCtx } from './worldkit';
@@ -126,7 +126,7 @@ function gondolaHull(): P {
   const ferro = add(g, block(.09, 1.25, .16, '#C9C4BA'), -2.5, .95, 0);
   for (let i = 0; i < 4; i++) add(ferro, block(.30, .07, .13, '#C9C4BA'), .16, .42 - i * .24, 0);
   add(g, block(.09, .7, .12, '#C9C4BA'), 2.42, .66, 0);
-  const forcola = add(g, new THREE.Mesh(new THREE.TorusGeometry(.17, .045, 5, 10, Math.PI * 1.3), mat('#8A6D44')), 1.0, .62, .30);
+  const forcola = add(g, new THREE.Mesh(new THREE.TorusGeometry(.17, .045, 5, 10, Math.PI * 1.3), mat('#8A6D44')), 1.0, .62, -.30);
   forcola.rotation.y = Math.PI / 2; forcola.rotation.z = .5;
   const boat = masonry(g) as P; boat.userData.deckY = .45;
   return boat;
@@ -138,7 +138,7 @@ function sandoloHull(colour = '#4E6E52'): P {
   add(g, block(3.1, .10, .92, '#C9B27A'), 0, .29, 0);
   for (const [i, x] of [-1.7, 1.7].entries()) { const tip = add(g, new THREE.Mesh(new THREE.ConeGeometry(.34, .7, 6), mat(colour)), x, .18, 0); tip.rotation.z = i ? -Math.PI / 2 : Math.PI / 2; }
   for (let k = 0; k < 4; k++) add(g, block(.44, .26, .40, '#B7A986'), -1.0 + k * .5, .40, (k % 2 - .5) * .22);
-  const forcola = add(g, new THREE.Mesh(new THREE.TorusGeometry(.15, .04, 5, 10, Math.PI * 1.3), mat('#8A6D44')), .8, .52, .36);
+  const forcola = add(g, new THREE.Mesh(new THREE.TorusGeometry(.15, .04, 5, 10, Math.PI * 1.3), mat('#8A6D44')), .8, .52, -.36);
   forcola.rotation.y = Math.PI / 2; forcola.rotation.z = .5;
   const boat = masonry(g) as P; boat.userData.deckY = .36;
   return boat;
@@ -171,19 +171,32 @@ function bragozzoHull(sail = '#C9682F'): P {
   boat.userData.tick = (t: number) => { canvas.rotation.x = Math.sin(t * .6) * .05; mast.rotation.x = Math.sin(t * .6) * .012; };
   return boat;
 }
-/** The strait ferry: a single-masted sailing boat, mole to mole, because there is no bridge and there was none. */
+/** The strait ferry: a feluca-type open boat with one short mast and a small lateen, mole to mole, because there
+ *  is no bridge and there was none. Walkthrough 7 (2026-09-23) read the old square sail, 2.8 by 3.0 of flat white,
+ *  as a billboard standing on the water; a lateen is a triangle hung from a long slanted yard, and this one is
+ *  half that area and a weathered cream. */
 function ferryHull(): P {
   const g = new THREE.Group();
   add(g, block(5.0, .56, 1.7, '#E4D7BC'), 0, .28, 0);
   add(g, block(5.0, .18, 1.7, '#2E6E8E'), 0, .62, 0);
   add(g, block(4.6, .10, 1.5, '#B7A986'), 0, .74, 0);
   for (const [i, x] of [-2.5, 2.5].entries()) { const tip = add(g, new THREE.Mesh(new THREE.ConeGeometry(.75, 1.1, 6), mat('#E4D7BC')), x, .32, 0); tip.rotation.z = i ? -Math.PI / 2 : Math.PI / 2; }
-  const mast = add(g, new THREE.Mesh(new THREE.CylinderGeometry(.08, .10, 4.2, 7), mat('#8A6D44')), 0, 2.8, 0);
-  const canvas = add(g, block(.06, 2.8, 3.0, '#EFE6D6'), .1, 2.6, .1);
   for (let k = 0; k < 5; k++) add(g, block(.42, .36, .40, '#A08A5E'), -1.6 + k * .8, .96, -.4);
   const boat = masonry(g) as P;
+  // The mast, raked forward, and the rig: a long yard slung across it, the sail a triangle under the yard.
+  const rig = add(boat, new THREE.Group(), -.6, .78, 0);
+  rig.rotation.y = .6;                                                      // the yard sheeted out off the centreline, as on a reach
+  add(rig, new THREE.Mesh(new THREE.CylinderGeometry(.06, .08, 2.3, 7), mat('#8A6D44')), 0, 1.15, 0).rotation.z = .08;
+  const yard = add(rig, new THREE.Group(), -.1, 2.1, .05);
+  yard.rotation.z = -.62;                                                   // low at the bow (-x), high at the stern
+  add(yard, new THREE.Mesh(new THREE.CylinderGeometry(.03, .04, 3.4, 6), mat('#7A5A3A')), 0, 0, 0).rotation.z = Math.PI / 2;
+  const tri = new THREE.BufferGeometry();
+  // In the yard's frame: the head at +1.6 along the yard, the tack at -1.6, the clew hanging down near the mast.
+  tri.setAttribute('position', new THREE.Float32BufferAttribute([-1.6, -.03, 0, 1.6, -.03, 0, .55, -1.35, 0], 3));
+  tri.computeVertexNormals();
+  const sail = add(yard, new THREE.Mesh(tri, mat('#E3D5B4', { side: THREE.DoubleSide })), 0, 0, .06);
   boat.userData.deckY = .80;
-  boat.userData.tick = (t: number) => { canvas.rotation.x = Math.sin(t * .5) * .06; mast.rotation.x = Math.sin(t * .5) * .015; };
+  boat.userData.tick = (t: number) => { rig.rotation.y = .6 + Math.sin(t * .5) * .06; sail.rotation.y = Math.sin(t * .7) * .05; yard.rotation.x = Math.sin(t * .5) * .03; };
   return boat;
 }
 
@@ -239,15 +252,35 @@ export function italyTown(ctx: LayoutCtx) {
   // The old table placed these at 0.7 to 0.85 of their builders' size, which is 28 units across for the
   // basilica; on this table each is a small landmark at the edge of its quarter, scaled inside a holder so
   // `place()` cannot reset it.
-  const scaled = (build: () => P, k: number) => () => { const holder = new THREE.Group() as P; const o = build(); o.scale.setScalar(k); holder.add(o); return holder; };
+  const scaled = (build: () => P, k: number) => () => {
+    const holder = new THREE.Group() as P; const o = build(); o.scale.setScalar(k); holder.add(o);
+    // A holder carries its child's tick, or `place()` never registers it (walkthrough 14: the fountains never ran).
+    if (o.userData.tick) holder.userData.tick = o.userData.tick;
+    return holder;
+  };
+  // Owner walkthrough fixes, 2026-09-23: the Pantheon moved to [-8.55, 1.9] with IT-R1b round it, so the piazza's
+  // own decor has new ground: the obelisk and the fountain stand west of the lane's loop, the café tables by the
+  // market, and the Trevi — now the Builder's own `treviFountainIt()`, at this table's scale and running — faces
+  // the piazza from the open ground north of the caffè.
   for (const [build, spots, name] of [
-    [scaled(obelisk, .8), [[-8.0, 5.6, 0], [-9.2, 5.4, 0], [2.8, 5.8, 0]], 'piazza-obelisk'],
-    [scaled(fountain, .5), [[-9.8, 3.2, .2], [-10.2, 3.4, .2], [-5.4, 7.6, .1]], 'piazza-fountain'],
-    [scaled(cafeTables, .5), [[-13.4, 3.0, 0], [-13.0, 3.2, .1], [-12.6, 2.9, 0]], 'cafe-tables'],
-    [scaled(triumphalArch, .45), [[6.2, 1.8, 1.57], [6.6, -.4, 1.57], [5.4, 3.6, 1.57]], 'triumphal-arch'],
-    [scaled(treviFountain, .4), [[-11.2, -16.4, 0], [-12.0, -16.6, 0], [-21.0, -14.4, 0]], 'trevi-fountain'],
+    [scaled(obelisk, .8), [[2.6, 2.6, 0], [2.4, 2.2, 0], [-11.0, -14.0, 0]], 'piazza-obelisk'],
+    [piazzaFountain, [[-19.9, 4.0, 0], [-20.3, 4.2, 0], [-3.0, 6.6, 0]], 'piazza-fountain'],
+    [scaled(cafeTables, .5), [[3.3, -.6, 0], [3.6, -.4, 0], [-24.2, -15.6, 0]], 'cafe-tables'],
+    [scaled(triumphalArch, .45), [[9.8, -3.4, 1.57], [10.2, -3.0, 1.57], [6.2, 1.8, 1.57]], 'triumphal-arch'],
+    [treviFountainIt, [[5.3, -4.4, 0], [5.6, -4.6, 0], [-12.3, -19.0, 0]], 'trevi-fountain'],
     [scaled(basilica, .25), [[-1.0, 4.6, .04], [-0.6, 4.8, .04], [-1.6, 4.4, .06]], 'basilica'],
     [scaled(baroqueChurch, .55), [[8.4, 27.4, .05], [8.8, 27.6, .04], [8.0, 27.2, .05]], 'baroque-church'],
+  ] as [() => P, [number, number, number][], string][]) {
+    const thing = tryPlaceAny(ctx, build, spots); if (thing) thing.name = name;
+  }
+  // The Piazzetta on the San Marco quay: the two columns of St Mark and St Theodore toward the water, a well-head,
+  // benches along the riva. Walkthrough 19 found a large empty square there.
+  for (const [build, spots, name] of [
+    [() => piazzettaColumn(true), [[34.2, -10.3, 0], [34.6, -10.2, 0]], 'piazzetta-column'],
+    [() => piazzettaColumn(false), [[39.2, -10.3, 0], [38.8, -10.2, 0]], 'piazzetta-column'],
+    [wellHead, [[36.7, -11.4, 0], [36.4, -11.8, 0], [34.8, -12.6, 0]], 'well-head'],
+    [() => stoneBench(1.6), [[29.0, -12.4, 0], [28.6, -12.6, 0]], 'quay-bench'],
+    [() => stoneBench(1.6), [[36.7, -10.0, 0], [33.4, -12.4, Math.PI / 2]], 'quay-bench'],
   ] as [() => P, [number, number, number][], string][]) {
     const thing = tryPlaceAny(ctx, build, spots); if (thing) thing.name = name;
   }
@@ -267,23 +300,31 @@ export function italyTown(ctx: LayoutCtx) {
       const hull = lane.kind === 'gondola' ? gondolaHull() : lane.kind === 'sandolo' ? sandoloHull(['#4E6E52', '#2E6E8E', '#8E3B2C'][i % 3])
         : lane.kind === 'barge' ? bargeHull() : lane.kind === 'bragozzo' ? bragozzoHull(['#C9682F', '#B4572F'][i % 2]) : ferryHull();
       hull.name = `italy-boat-${lane.kind}`; hull.userData.lane = lane.id; group.add(hull);
-      // Every hull that is rowed carries its rower on its own deck, so the figure travels with the boat and
-      // never walks: he is `seated` in the movement sense, exactly as a diner on a stool is.
-      if (lane.kind !== 'bragozzo' && lane.kind !== 'ferry') {
-        const rower = lagoonRower(i + lane.id.charCodeAt(1), lane.kind === 'gondola' ? 3.4 : 3.0);
+      // Every rowed hull carries its rower seated on a thwart at the stern, facing the bow (local -x), with the oar
+      // at the forcola on the right-hand side. He travels with the boat and never walks.
+      if (lane.kind === 'gondola' || lane.kind === 'sandolo') {
+        const gondola = lane.kind === 'gondola', deck = hull.userData.deckY as number, x = gondola ? 1.1 : .9;
+        add(hull, block(.34, .14, gondola ? .56 : .66, '#6B4A2E'), x + .05, deck + .07, 0);
+        const rower = lagoonRower(i + lane.id.charCodeAt(1), gondola ? 2.2 : 1.9);
         rower.name = 'italy-rower';
-        add(hull, rower, lane.kind === 'gondola' ? 1.4 : 1.0, hull.userData.deckY as number, .04);
+        add(hull, rower, x, deck + .14 - (rower.userData.seatDrop as number), 0);
         rower.rotation.y = -Math.PI / 2;
+        add(hull, rower.userData.oar as THREE.Object3D, x - .1, gondola ? .62 : .52, gondola ? -.30 : -.36);
       }
-      // The hull stops short of both ends so it never leaves the lane, and turns round instead of teleporting.
+      // The hull stops short of both ends so it never leaves the lane, and turns round at each end. Two boats on
+      // one lane run half a cycle apart, so they meet only at the lane's midpoint, where each keeps to its right.
       const margin = Math.min(.45, 2.6 / Math.max(1, length));
-      const lo = margin, hi = 1 - margin, off = i / lane.boats;
+      const lo = margin, hi = 1 - margin, off = i / lane.boats, pass = lane.pass ?? 0;
       tickers.push((t, dt) => {
         const raw = (t * lane.speed * 2 + off * 2) % 2, s = raw < 1 ? raw : 2 - raw;
         const u = lo + (hi - lo) * s;
-        const p = curve.getPointAt(u), n = curve.getPointAt(Math.min(1, u + .004));
-        hull.position.set(p.x, TOP + .05 + Math.sin(t * .8 + off * 5) * .014, p.z);
-        hull.rotation.y = Math.atan2(n.x - p.x, n.z - p.z) - Math.PI / 2 + (raw < 1 ? 0 : Math.PI);
+        const p = curve.getPointAt(u), n = curve.getPointAt(Math.min(1, u + .004)), q = curve.getPointAt(Math.max(0, u - .004));
+        const tx = n.x - q.x, tz = n.z - q.z, tl = Math.hypot(tx, tz) || 1;
+        const bump = pass ? THREE.MathUtils.smoothstep(.5 - Math.abs(s - .5), 0, .12) : 0;   // full wherever the two hulls can overlap
+        const side = (raw < 1 ? 1 : -1) * pass * bump;          // the right-hand side of the direction of travel
+        hull.position.set(p.x - tz / tl * side, TOP + .05 + Math.sin(t * .8 + off * 5) * .014, p.z + tx / tl * side);
+        // The bow (ferro, stem) is local -x, so the hull turns to put -x along the direction of travel.
+        hull.rotation.y = Math.atan2(tx, tz) + Math.PI / 2 + (raw < 1 ? 0 : Math.PI);
         hull.rotation.z = Math.sin(t * .9 + off * 4) * .018;
         hull.userData.tick?.(t, dt);
         hull.traverse(o => { if (o !== hull && (o as P).userData.tick) (o as P).userData.tick!(t, dt); });
@@ -292,28 +333,24 @@ export function italyTown(ctx: LayoutCtx) {
   }
 
   // ---------- the five peopled loops ----------
-  const led: { mule: P; cart: P | null; leader: P; gap: number }[] = [];
   for (const lane of IT_LANES) {
     const lift = italyBridgeLift(lane);
     for (let i = 0; i < lane.walkers; i++) {
       const seed = lane.seed + i * 3;
       const p = italianResident(seed);
       p.name = 'italy-walker'; p.userData.lane = lane.id; group.add(p);
-      tickers.push(italyWalk(p, lane.from, lane.to, lane.range, seed + i * 5, lift));
-      if (lane.id === CART_LANE && i === 0) {
-        // The Castelli carrettiere: a mule in the shafts of a hooded two-wheeled wine cart, walking at the
-        // mule's shoulder. There is no Vespa anywhere on this table; it is of 1946.
-        const mule = italyMule(false); mule.name = 'italy-mule'; group.add(mule);
-        const cart = wineCart(); cart.name = 'wine-cart'; group.add(cart);
-        led.push({ mule, cart, leader: p, gap: 1.6 });
+      if (lane.team) {
+        // The Castelli carrettiere with a mule in the shafts of a hooded wine cart, and the Agro mule under its
+        // panniers: each team walks its own closed loop (see `italyTeam`). There is no Vespa on this table.
+        const mule = italyMule(lane.team === 'mule'); mule.name = 'italy-mule'; group.add(mule);
+        let cart: P | null = null;
+        if (lane.team === 'cart') { cart = wineCart(); cart.name = 'wine-cart'; group.add(cart); }
+        tickers.push(italyTeam(p, mule, cart, group, lane.from, lane.to, lane.sep ?? 1, seed));
+        continue;
       }
-      if (lane.id === MULE_LANE && i === 0) {
-        const mule = italyMule(true); mule.name = 'italy-mule'; group.add(mule);
-        led.push({ mule, cart: null, leader: p, gap: 1.5 });
-      }
+      tickers.push(italyWalk(p, lane.from, lane.to, lane.range, seed + i * 5, lift, laneOffset(lane, i)));
     }
   }
-  for (const { mule, cart, leader, gap } of led) tickers.push(followCart(mule, cart, leader, group, gap));
 
   // ---------- neighbours who stand and talk: the piazza, Testaccio, the fondamenta, the lane and the coast ----------
   // A standing figure does not translate, so it does not step. A knot of people stands at the first of its
@@ -321,7 +358,7 @@ export function italyTown(ctx: LayoutCtx) {
   // from any clickable's anchor, and clear of every building and tree, so no walker passes through a neighbour
   // and no neighbour stands in a stall. People 1.2 tall hide nothing from the arrival camera.
   for (const [i, [n, spots]] of ([
-    [3, [[-12.4, -2.2], [-9.6, -3.6], [-24.4, -11.4], [-10.8, -11.8]]],
+    [3, [[-12.4, -2.2], [-26.9, -1.6], [-9.6, -3.6], [-24.4, -11.4]]],
     [2, [[-28.4, -5.2], [-30.4, -9.8], [-26, -12.6]]],
     [2, [[-36.4, 1.2], [-32.6, 4.6], [-34.2, 9.0]]],
     [2, [[33.6, -23.8], [21.8, -23.4], [34, -12], [24.4, -12.4]]],
@@ -332,7 +369,7 @@ export function italyTown(ctx: LayoutCtx) {
       const box = new THREE.Box3(new THREE.Vector3(x - .95, 0, z - .95), new THREE.Vector3(x + .95, 1.2, z + .95));
       return !isWet(x - .95, z - .95) && !isWet(x + .95, z + .95) && !isWet(x - .95, z + .95) && !isWet(x + .95, z - .95)
         && distToRoads(x, z) > 2.2
-        && objectDistance(x, z) > 2.4 && !overlapsOccupied(box);
+        && objectDistance(x, z) > 2.4 && !overlapsOccupied(box) && !inRoomApproach(box);
     });
     if (!spot) continue;
     const knot = new THREE.Group() as P; knot.name = 'italy-neighbours';

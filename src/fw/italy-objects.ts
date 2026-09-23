@@ -154,7 +154,7 @@ const rooms: Room[] = [
   },
   {
     id: "pasta", kind: "place", area: "rome", name: "The pasta kitchen", zh: "Il tirasfoglia", emoji: "🍝",
-    pos: [-8.9, -10.8], rot: 0, prop: "pastaWorkshop", scene: "it_pasta", placeName: "Pastificio",
+    pos: [-8.4, -10.8], rot: 0, prop: "pastaWorkshop", scene: "it_pasta", placeName: "Pastificio",
     tagline: "One board, one long pin, and a sheet you can read light through.",
     blurb: "A ground-floor workroom off the piazza: a floured board the size of a door, a rolling pin a metre long, a wire-strung frame leaning against the wall and a shaft of daylight full of flour. Two trades stand in this one room and they use different wheat. The board is soft wheat and egg, worked, rested and rolled out until light shows through the sheet; the sacks against the wall are durum semolina, which is the dried trade's raw material and not this kitchen's.\n\nThe sheet is folded over on itself in a loose roll, cut across with a long knife, and the ribbons lifted on the back of the hand and shaken loose into nests. Through the nineteenth century a Roman said maccheroni and meant exactly that, a ribbon off a sheet; the word only narrowed to the tube later. The strung frame does the other Roman shape: a sheet laid over the wires and pressed through with the pin, so the strings come out square-cut rather than round.\n\nThe dried maccheroni in the sack came up by rail from Naples, off a coast whose towns were laid out around the drying of it. Whether much of it reached a Roman shop in these decades is not established and is not claimed here. The difference the room cares about is simpler: the sack will keep for a year, and the ribbons on the board are cooked the day they are cut.",
     partners: ["soft wheat", "egg", "semolina", "pecorino", "black pepper"],
@@ -162,7 +162,7 @@ const rooms: Room[] = [
   },
   {
     id: "oven", kind: "technique", area: "rome", name: "The forno", zh: "Forno a legna", emoji: "🔥",
-    pos: [-16, -10.8], rot: 0, prop: "pizzeria", scene: "it_forno", placeName: "Forno",
+    pos: [-22.4, -10.8], rot: 0, prop: "pizzeria", scene: "it_forno", placeName: "Forno",
     tagline: "Bread once a week, and a long white sheet to test the heat.",
     blurb: "A domed brick oven in a vaulted room off the street, its mouth open and glowing, a wooden peel three metres long, a marble counter and a rack of cooling loaves. This is the quarter's oven rather than one household's: it bakes the neighbourhood's bread, it bakes for the trattoria kitchens that have no oven of their own, and on the right night it takes a whole pig.\n\nThe long white sheet coming out on the peel is pizza bianca — dough stretched flat, dimpled with the fingers, oiled and salted and baked fast on the oven's floor. It began as the baker's way of reading the heat before the bread went in, and it is sold by the length, cut with shears, folded once and eaten in the hand. Pizza rossa is the same sheet with tomato on it. Neither has cheese and neither is round.\n\nThe round pizza with tomato, mozzarella and basil is Naples', and Naples is not on this table. Its most famous story does not hold either: the 1889 letter that is the only evidence a Margherita was made for the queen has been compared with the royal household's own signatures, seals and stationery and matches none of them. Once a year the oven cools slowly overnight around a porchetta — a boned pig, salted, filled with rosemary and pepper and roasted on falling heat until morning.",
     partners: ["soft wheat flour", "olive oil", "salt", "tomato", "rosemary"],
@@ -402,7 +402,7 @@ ITALY_OBJECTS.push(
   },
   {
     id: "panteonIt", world: "italy", kind: "landmark", area: "rome", name: "The Pantheon", zh: "Il Pantheon", emoji: "🏛️",
-    pos: [-8.55, -2.6], rot: 0, elevation: 0, prop: "pantheon",
+    pos: [-8.55, 1.9], rot: 0, elevation: 0, prop: "pantheon",
     tagline: "A temple with a hole in its roof, four streets from the market.",
     blurb: "A portico of grey granite columns, a bronze door, and behind it a dome with a round opening at the top that has never been glazed. The building has stood since antiquity and has been in continuous use, which is why it is intact where the amphitheatre is not; in this band it sits at the centre of a dense quarter of ochre houses, with a fountain and an obelisk in the small square in front of it.\n\nWhat it does all day is move light. The sun comes through the oculus as a hard disc and swings across the coffered ceiling, the wall and then the floor, and when it rains the rain comes in too and runs away through the drains cut in the pavement. Pigeons lift off the portico when the door is opened.\n\nIt belongs on a food map because of where it stands. The market on Campo de' Fiori is a few minutes' walk away, the pasta board and the forno are in the streets between, and this is the square people cross carrying a flat pizza folded in paper.",
     match: () => false,
@@ -416,7 +416,7 @@ ITALY_OBJECTS.push(
   },
   {
     id: "gelateria", world: "italy", kind: "dish", area: "rome", name: "The caffè", zh: "Il caffè", emoji: "☕",
-    pos: [-23.4, -10.6], rot: 0, elevation: 0, prop: "gelateria", placeName: "Caffè",
+    pos: [-15.5, -11.2], rot: 0, elevation: 0, prop: "gelateria", placeName: "Caffè",
     tagline: "The one place in this world where the machine can be dated.",
     blurb: "A marble counter, a brass rail, a zinc-lined pail packed with ice and salt with a canister turning in it, and a tall machine at the end of the counter breathing steam. Men drink standing up, hat on, and leave.\n\nThe ices are made the old way and the ice itself is carted in. The canister is turned in the salted ice and the paddle scrapes the frozen skin off the inside wall until the whole mass is smooth.\n\nThe machine is the one object in this world with a patent number. Angelo Moriondo was granted a patent on 16 May 1884 for steam machinery to make coffee “in an economic and instantaneous” way, shown at the Turin expo of that year, but his were bulk devices found mostly around Turin and no example survives. Luigi Bezzera applied for the patent that added the portafilter and heat radiators on 19 December 1901, and Desiderio Pavoni bought it and founded La Pavoni in 1905. Single-cup bar espresso belongs to the last decade of this band and not before it.",
     match: () => false,
@@ -505,7 +505,7 @@ ITALY_OBJECTS.push(
   },
   {
     id: "pizzeria", world: "italy", kind: "landmark", area: "rome", name: "Pizza", zh: "Pizza", emoji: "🍕",
-    pos: [-16, -10.8], rot: 0, prop: "none", hitOnly: true, parent: "oven", alias: "oven",
+    pos: [-22.4, -10.8], rot: 0, prop: "none", hitOnly: true, parent: "oven", alias: "oven",
     tagline: "Sold by the length off the counter, cut with shears.",
     blurb: "",
     match: () => false,

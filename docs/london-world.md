@@ -660,19 +660,19 @@ World
 | # | Line | Verdict | Evidence |
 | --- | --- | --- | --- |
 | W1 | Four or more clusters, continuous roads, every door on a road | Pass | Six clusters; 23 routes in one piece; `london-world.mjs` asserts every road end and every front door within 2.0 (`DOOR_BEHIND` empty) |
-| W2 | Water continuous, square at the edge, correct colour; nothing stands in water | **Fail** | One sea polygon, square at the table edge, correct colours. But four thin white poles stand up out of the strait east of Tower Bridge (walkthrough 9), and `__fw.audit(30)` records a pie-shop figure over the water at [-35.6, -2] (21). The Forth Bridge's own firth plate is over water by design |
+| W2 | Water continuous, square at the edge, correct colour; nothing stands in water | **Fail** | One sea polygon, square at the table edge, correct colours. But four thin white poles stand up out of the strait east of Tower Bridge (walkthrough 9), and `__fw.audit(30)` records a pie-shop figure over the water at [-35.6, -2] (21). The Forth Bridge's own firth plate is over water by design *Second walkthrough, 2026-09-23: still fail.* Tower Bridge's four free rods are gone (item 9) and `__fw.audit(60)` puts no figure over water, but the oyster smacks' stand has a boy, the opening tub and table, a basket and two mooring posts standing on the strait itself (second walkthrough, new 52); the light-water wedge under Tower Bridge is new 53 |
 | W3 | Every river runs source to mouth | Pass | `london-world.mjs`: the island river rises at the western tarn and overlaps the strait at its mouth |
 | W4 | Ten stands, five ingredient stops with diamond cues, three non-food clickables per area | Pass | 13 rooms, 10 stops, 6 landmarks, each with its cue; `objects.mjs` 13 / 16 |
 | W5 | Three walker loops, residents in traditional clothing, steps matched | Pass | Four lanes, 20 residents, the pit pony; the eight clothing profiles of research section 1.3; `london-world.mjs` gait checks and "distinct silhouettes" pass |
 | W6 | Small details in every cluster | Pass | Flock and pen, barrels, rope coils, hop strings, the smokehouse's hung pairs, peat stacks, barley, the cider pound, the cockle donkey, seen at approach 30 |
 | W7 | House cap 12 to 16, 1 to 3 per style; nothing solid on a road; 2.5 corridors; no house on the camera line | Pass (lead ruling, 2026-09-23) | Five houses, one per style, by the blueprint's own choice; the line asked for 12 to 16. Roads, corridors and the camera line pass (`london-world.mjs`; live rays). *Ruled 2026-09-23:* the line now reads at most five per area id, each where it hides no stand (the standing rule since Spain's third pass); five houses, none first on any stand's rays, passes |
 | W8 | Every clickable fully visible from the arrival camera, live | Pass | 29 of 29 clear of every static blocker on the live page after a fresh load. The moving traffic in front of the palace is walkthrough 22 |
-| W9 | Every decor type reads as what it is from the overview | **Fail** | Walkthrough 1 to 13 |
+| W9 | Every decor type reads as what it is from the overview | **Fail** | Walkthrough 1 to 13 *Second walkthrough, 2026-09-23: still fail.* Items 1 to 5 and 7 to 13 read as what they are; the hay ricks by the flock (open 1), the oat field (new 55) and the walled pen behind the palace (new 56) do not |
 | W10 | The table reads at the zoom-out limit, fog derived | Pass | 215, fog 203 / 450, sheet top left |
 | W11 | Translating figures step; carried figures seated; animals face their travel | Pass | Gait and gait-direction checks in `london-world.mjs`. Live, both hansoms travel along their own +x (forward dot 0.94 to 1.00 over eight samples); the omnibus turns through its end loop with body and path agreeing. The pony's speed is walkthrough 20 |
 | W12 | Every water feature ticks; smoke tinted, anchored, visible at the overview | Pass | Sea, river and tarn shaders tick; four of five houses publish tinted smoke (the dock warehouse has no kitchen fire), and wisps show at the 110 overview |
 | W13 | Every motion watched ten seconds and plausible | Not verified | The pane was hidden; the world was stepped and sampled, not watched in real time. What sampling found is in the walkthrough |
-| W14 | No flicker, nothing floating, no unsupported seat, no wall crossing | **Fail** | `__fw.audit(30)`: vehicles through vehicles, walkers through walkers and through Westminster Bridge's parapets, the pony through the tea room, a stall figure inside its own crate (17 to 21). The Forth train's carriages stand past the end of the deck (3). Flicker not looked for |
+| W14 | No flicker, nothing floating, no unsupported seat, no wall crossing | **Fail** | `__fw.audit(30)`: vehicles through vehicles, walkers through walkers and through Westminster Bridge's parapets, the pony through the tea room, a stall figure inside its own crate (17 to 21). The Forth train's carriages stand past the end of the deck (3). Flicker not looked for *Second walkthrough, 2026-09-23: pass on crossings.* `__fw.audit(60)` after a fresh load: 72 movers, 54 of them British; the only violations are 3 hits from one cockle-stall steam puff inside its own copper. The pony walks at a steady 0.2 per half second facing its travel. Flicker still not looked for |
 
 Stands
 
@@ -680,7 +680,7 @@ Stands
 | --- | --- | --- | --- |
 | S1 | Each main stand meets the hotpot table | Not verified | Not counted stand by stand (people, lanterns under a beam, steam at the hot source) |
 | S2 | Fronts face +z, door within 2.0 of a road | Pass | Every `rot` is 0 (oyster smacks -0.1); `london-world.mjs` asserts the band and every front door |
-| S3 | Food first, worker, bystander, speech; readable after the 1.6 s approach | **Fail** | The harness order passes. On the live room approach at 1.6 s the market's camera ends inside the hop cookhouse roof and the bakehouse's inside the cockle stall's roof, so neither reaction can be seen; the pub, the hop cookhouse, the smokehouse and the cockle stall are half covered (walkthrough 23 to 30) |
+| S3 | Food first, worker, bystander, speech; readable after the 1.6 s approach | **Fail** | The harness order passes. On the live room approach at 1.6 s the market's camera ends inside the hop cookhouse roof and the bakehouse's inside the cockle stall's roof, so neither reaction can be seen; the pub, the hop cookhouse, the smokehouse and the cockle stall are half covered (walkthrough 23 to 30) *Second walkthrough, 2026-09-23: pass.* All thirteen room approaches at 1280 x 720 end on a clear counter with the stand's people and food in view, including the four `approach` overrides, which end on the same pose from the arrival bearing and from a view swung to the -0.75 limit |
 | S4 | Repeated clicks bounded, return to rest | Pass | `london-reactions.mjs` |
 | S5 | Ambient speech in the local language plus English; bubbles never overlap | Pass | `london-reactions.mjs` checks the two-language lines per stand. Bubble overlap was not measured live |
 | S6 | `london-reactions.mjs` covers every stand and passes | Pass | 29 ids, passes |
@@ -691,17 +691,17 @@ Rooms
 | --- | --- | --- | --- |
 | R1 | Two paintings each, art direction | Pass | Stage B acceptance; 26 files at 1672 x 941 and 941 x 1672 |
 | R2 | Alive on entry, three or four loops, hot food steams, `room-loops.mjs` | Pass | `room-loops.mjs` passes, every room at four in both orientations |
-| R3 | Every hot vessel has its own steam source; cold stays dry | **Fail** | `uk_pub`, both: the roast potatoes, the Yorkshire puddings in their tin, the cabbage and the carrots on the carving counter are dry beside a steaming joint, and the config calls them cold (walkthrough 33) |
+| R3 | Every hot vessel has its own steam source; cold stays dry | **Fail** | `uk_pub`, both: the roast potatoes, the Yorkshire puddings in their tin, the cabbage and the carrots on the carving counter are dry beside a steaming joint, and the config calls them cold (walkthrough 33) *Second walkthrough, 2026-09-23: pass.* `uk_pub` has four sources in both orientations, the potatoes and puddings and the cabbage and carrots among them; each column changes on the effect canvas over 600 frames |
 | R4 | Steam needs a hot vessel and a hot process in the text; drip otherwise | Pass | `uk_dairy` has no steam, fire or boil and drips in both orientations |
 | R5 | Traced liquid paths lip to surface, checked live | Pass | Lit pixels sit on the configured paths in both orientations; endpoints taken from `docs/london-rooms.md`, not re-measured on the pixels. How little two of them draw is walkthrough 38 and 39 |
 | R6 | Hanging motion is a sprite over a clean painting | Pass | No breeze crop in the area |
 | R7 | Every delivered sprite used or explained | Pass | Six of six used |
 | R8 | Every path and box on a gridded crop and an overlay contact sheet | Pass (2026-09-23) | `docs/london-rooms.md` now names the sheet under "Overlay sheet": `.data/shots/london-rooms-overlay.png`, both orientations of all thirteen rooms with the phone heading and every measured box and hook drawn over the painting |
 | R9 | Every phone box and sprite inside the band, lit live | Pass | Table above: every portrait cue lit, every visible portrait sprite inside the viewport |
-| R10 | Motion capture re-run after the last cue change; the baseline carries the numbers | **Fail** | `docs/quality-baseline.md` carries no Britain motion numbers (no `uk_` entry); the rooms doc's "Left for the lead" item 1 is still open |
-| R11 | 3 percent in two seconds, or 2.5 with a crisp cue | **Fail** | `uk_market` wide re-measured at a 2.8 percent median with no crisp cue (sunray, lamps, haze) |
+| R10 | Motion capture re-run after the last cue change; the baseline carries the numbers | **Fail** | `docs/quality-baseline.md` carries no Britain motion numbers (no `uk_` entry); the rooms doc's "Left for the lead" item 1 is still open *Second walkthrough, 2026-09-23: pass.* `docs/quality-baseline.md` carries the Britain row (commit 948207f) from the motion measured after the last cue change (a96f58b) |
+| R11 | 3 percent in two seconds, or 2.5 with a crisp cue | **Fail** | `uk_market` wide re-measured at a 2.8 percent median with no crisp cue (sunray, lamps, haze) *Second walkthrough, 2026-09-23: pass, on the floor.* The market wide re-measured at 5.26; but `uk_tearoom` wide measured 2.96 and 3.02, `uk_breakfast` wide 2.98 and 3.06 and `uk_hopkitchen` wide 3.00 on two runs of the same six-pair method, against the baseline's 3.10 and 3.20 (new 58) |
 | R12 | Two or three touches naming something visible, with facts and sources | Pass | Three per room from `LONDON_DISCOVERIES` |
-| R13 | Every effect stays on its source; nothing invented | **Fail** | Steam plumes and sunrays lie across faces in seven rooms (walkthrough 32, 34, 35, 37 to 42) |
+| R13 | Every effect stays on its source; nothing invented | **Fail** | Steam plumes and sunrays lie across faces in seven rooms (walkthrough 32, 34, 35, 37 to 42) *Second walkthrough, 2026-09-23: pass.* No plume, beam, haze or hung sprite was seen across a face or the heading in the thirteen rooms at 1280 x 720 or 390 x 844, read on live composites at frames 300 and 600 |
 | R14 | Reduced motion keeps the room understandable | Not verified | Not tested here or in the rooms record |
 
 Cards and stories
@@ -958,3 +958,106 @@ for the shared idle-figure sway every stand gets besides what is listed here).
 
 Card-only stands with no room: the ten ingredient stops and the six landmarks above account for all 16; every row's
 click reaction is what the object's card approach plays, not a room flight.
+
+## Second walkthrough, 2026-09-23
+
+Stage E2 point 10: the owner's walkthrough repeated after the four fix passes above (cards, stands, world, residuals) and the room fixes in `docs/london-rooms.md`, by a reviewer who built and fixed none of Britain. Nothing in code, scenes, ambience or objects was changed; this section and the dated notes on the Stage E table are the only edits.
+
+**How it was run.** The dev server `food-tour-web` was not restarted (the owner's tab was in front on it); the page was loaded fresh in the reviewer's own background tab from an image URL with the app's markup injected and `WebSocket` stubbed, so no HMR reload could replace the world, and with the Recipes add-on off (`food-tour:recipes` unset; no card or room showed a recipe row). HEAD was `948207f` at the start and `6fe5ed2` at the end, which touched two docs only. The tab was hidden throughout, so the world was advanced with `__fw.step` at 1/60 s (and `tick` on the diorama without rendering for the ray and mover samples) and read through `__fw.shot`; the card timer was run at once because a hidden tab throttles it. Every room was reached through the real route (click, 1.6 s approach, room) at 1280 x 720; each room was then opened a second time from `LONDON_SCENES` in both orientations, 1280 x 720 and 390 x 844 at device pixel ratio 2, ticked 600 frames (10 s), with its own effect canvas read inside every configured box and composites of painting, effect canvas and hung sprites taken at frames 300 and 600 with the room's heading and buttons outlined. Shots are `.data/shots/ld-r2-*.jpg`; the contact sheet is `london-review-2.png` in the reviewer's scratchpad.
+
+| Check | Result |
+| --- | --- |
+| `npm run typecheck`, `london-world.mjs`, `london-reactions.mjs` | Pass ("25 continuous roads, 29 British objects with 29 props clear of the water, 5 houses, 1 crossing, 20 walkers, 240 seconds of motion"; "29 Britain stands, food before speech ... an exact return to rest"). The full `npm test` and `build:pages` were not run |
+| Zoom limit | 215 reached (camera [-16.4, 134.8, 167.8]), fog 203 / 450; the table reads at the limit with only a light haze at the far corner (sheet, first cell) |
+| `__fw.audit(60)`, fresh load | 72 movers, 54 of them west of x -30; **3 violations, all one cockle-stall steam puff inside its own copper**, as the residuals pass recorded |
+| Live ten-ray check, 1280 x 720, every mesh west of x -30 a blocker (walkers, the pony, the three street vehicles and birds included), 66 moments 2 to 5 s apart | **29 of 29 at 10 of 10 at 55 moments.** At 10 moments `hopKitchenUk` lost 1 or 2 rays to the hop garden's own moving bines (`hopsUk`); at 3 a bird crossed one ray of `towerBridge` or `pastyUk`. No house, tree, wall, lamp, vehicle or neighbouring stand was first on any ray, and `bigBen` and `teaRoomUk` were clear at every moment |
+| Room approaches at 1280 x 720, real route | All 13 end on the counter (`ld-r2-ap-*.jpg`). The four overrides end at the same pose from the arrival bearing and from a view swung to the -0.75 limit (`ld-r2-sw-*.jpg`): `boroughUk` 11 out, `hopKitchenUk` 7.5, `pastyUk` 10 from the south-east, `smokehouseUk` 6.5; the flight is a straight line from the swung camera to that pose. `oystersUk`'s card camera ends at [-40.4, 23.6, 28.9] from both bearings. Every room's actions hold three touches, "Back to the village" and "The story" |
+| Rooms at 1280 x 720, 10 s, pixels on the room's own effect canvas that changed alpha by more than 16 from the first sample, inside each configured box (canvas pixels at ratio 2) | Every signature, patch and steam column in all thirteen draws and moves. Smallest signatures: `uk_breakfast` tap 428, `uk_distillery` safe 783, `uk_lascar` spice 1,350, `uk_hopkitchen` ladle 1,593, `uk_pub` grate 12,650. Every wide fire ellipse is shown (opacity .66 to .67) |
+| Rooms at 390 x 844, same method | Every cue draws in all thirteen: `uk_breakfast` tap 567, `uk_dairy` drip 874, `uk_distillery` safe 1,591, `uk_pub` globes 1,948, `uk_market` lamp 3,391, `uk_hopkitchen` ladle 3,630; the largest are the beams (tea room 96,919, market 137,402). Portrait fire ellipses lie inside the phone: `uk_cockles` x 4 to 34, `uk_distillery` 3 to 23, `uk_pasty` 369 to 388. The three visible portrait sprites (the breakfast, cockle and smokehouse gulls) sit right of "The story" or above the name, touching no text |
+| Motion, six pairs 2 s apart at frames 60 to 1180, the rooms doc's composite | `uk_market` wide 5.26; `uk_distillery` portrait 3.13; `uk_tearoom` portrait 4.01; `uk_cockles` wide 3.43; and on the floor, `uk_tearoom` wide 2.96 then 3.02, `uk_breakfast` wide 2.98 then 3.06, `uk_hopkitchen` wide 3.00 (new 58) |
+| Cards, opened live at 1280 x 720 | All 16 card-only cards through their click and 28-unit glide: a tagline and three paragraphs, 1,205 to 1,305 characters as rendered, none visibly shorter than its neighbours, no "Related recipes" row. The 13 room stands were opened through their approach; their cards' text was read in `london-objects.ts`, not opened through "The story" in this pass |
+| The continent | Budapest, the Alps and Georgia match the first pass's `ld-e-o-*.jpg` at approach 45; the Alps' highest peak is lower (6.7) and the strip from the strait to the Danube is now fields, hedges, woods and a farmstead (`ld-r2-o-*.jpg`) |
+
+### The first pass's 51 items
+
+Closed, one line each, with what was seen:
+
+- 1 `bigBen`: the clock tower stands at the palace's east end, far taller than the stalls, with dials, open belfry and spire; no teeth on the ridge (approach 30, card 28)
+- 2 the stands: thirteen different buildings, each its own brick, stone, iron or canvas; the pub, tea room and dairy are told apart without lettering at approach 30
+- 3 `forthBridge`: three red cantilevers on granite piers over the firth; the train's last coach starts on the deck and it stops over the span (close 16, card 28)
+- 4 the firth: a curved inlet with a rounded head under the bridge, no slab; reads as a sea loch
+- 5 `rhubarbUk`: the shed stands open with pale stalks and candles inside; only green rosettes grow outside
+- 7 `oatsUk`: the wheel stands on a burn from a mill pond, which runs past the gable to the sea (but see new 55)
+- 8 bracken and gorse: low rounded clumps; no stars or palms
+- 9 Tower Bridge: blue chains and hangers from the towers to the side spans; no free rod stands over the strait
+- 10 the Bristol Channel head: opaque wet sand to a defined waterline; reads as a beach
+- 11 the Kentish cottage: stands clear at [-60.7, 17.8] with the hop row east of it; nothing across the door
+- 12 `herringUk`: a Fifie with a painted strake drawn up on the hard beside the quay, her lugsail up
+- 13 wheels: every omnibus, hansom and barrow wheel reads as a rimmed disc at close 14
+- 14 the continent: fields, hedgerows, woods and a farmstead fill the old lawn; Britain no longer looks crowded beside it
+- 16 `bigBen` click: the bell hangs in the open belfry and the Ayrton light is lit 1 s into the reaction; 12 more parts of the stand move than at idle
+- 17 the omnibus and cabs: they left Whitehall; the audit names no vehicle
+- 18 Westminster Bridge: nobody walks on it; the audit names no parapet
+- 19 Whitehall walkers: the audit names no walker against a walker or the tea room's figures
+- 20 `britain-pony`: walks its yard ring at 0.16 to 0.24 per half second with two halts, facing its travel (dot .93 to 1.00)
+- 21 the cockle stall figure, the bakehouse crate and the pie-shop figure: none in the audit
+- 22 `bigBen` rays: 10 of 10 at all 66 moments; `teaRoomUk` likewise
+- 23 `roastPub` room approach: the counter and the "FREE HOUSE" front in full view; no hop poles or bush
+- 24 `boroughUk` room approach: looks down into the market under its glass roof; a hop row's top wire along the bottom edge
+- 25 `pastyUk` room approach: the bakehouse's open front, the baker and the queue, from the south-east
+- 26 `hopKitchenUk` room approach: the whole cookhouse, pot, fire and pickers
+- 27 `smokehouseUk` room approach: the bothy, the pit and the fish; no dark mass. A passer-by's cap sits at the bottom edge
+- 28 `cocklesUk` room approach: the stall in view; the one tree is at the right edge, not in the middle
+- 29 `teaRoomUk` room approach: no omnibus
+- 30 `chippyUk` room approach: no gas lamp; the tea room's cream back wall fills the left fifth and a roof corner the right, both clear of the counter
+- 31 `uk_pub` 390: the gas globes over the bar are the signature and move (1,948 changed pixels, 3,308 lit)
+- 32 `uk_pub`: the joint's plume is small and rises from the bone end; the carver's face is clear in both orientations
+- 33 `uk_pub`: the potatoes and puddings and the cabbage and carrots steam in both orientations
+- 34 `uk_tearoom`: only the filled cup and the jug steam; the woman in the hat is clear in both
+- 35 `uk_market` 390: the sunray falls on the goods below the cheesemonger's hands
+- 36 `uk_market` wide: 5.26 percent median (5.50, 5.54, 1.59, 5.02, 6.04, 2.50)
+- 37 `uk_piemash`: no plume over the pieman or the eating diner in either orientation
+- 38 `uk_breakfast`: the tap's pour is a tea-coloured moving thread from nozzle to mug (428 changed pixels wide, 567 at 390); the stallholder's face is clear
+- 39 `uk_distillery`: the glint runs down into the glass bowl (783 wide, 1,591 at 390); the portrait beam lies on the malt
+- 40 `uk_dairy`: the beam falls on the press and the flags; the girl with the pail is clear
+- 41 `uk_pasty`: no plume over the old baker at 390; no gulls in the wide heading
+- 42 `uk_smokehouse` wide: the gutting woman is clear
+- 43 portrait sprites: none hangs behind a room's name; the three gulls left fly clear of the text
+- 44 `uk_distillery`, `uk_cockles` 390: both fire ellipses inside the phone (x 3 to 23 and 4 to 34)
+- 47 `redBus`: the horse omnibus and a red motor omnibus side by side with a hansom, as the card says
+- 48 `pastryCe`: the card puts the board between the tea room and the pillar box, where it stands
+- 49 `rhubarbUk`: the card's dark shed and open-field crowns match the stand
+- 50 `oatsUk`: the card's mill on the burn matches the stand
+- 51 room blurbs: closed by the lead's C1 ruling (four paragraphs proper plus three of story depth)
+
+Still open (numbered in this list, with the first pass's item number):
+
+1. `sheepUk` pen at [-45.2, -13.95], item 6, close 14 and approach 30: the cones are gone, but the two round hay ricks that replaced them are banded tan cylinders with pointed thatched caps, and from above they read as beehives (skeps) or corn bins, not ricks (sheet)
+2. `oystersUk` card, item 15, card approach 28 at 1280 x 720: the moved foothill is out of frame, but the Alps' lowered peak at [-28, 22] still fills the lower right, and about a fifth of the frame's width of it shows left of the card panel beside the smacks. Same from the arrival bearing and from a swung view (sheet)
+3. Item 45, nine rooms: the empty painted fittings are still in the frame (the chippy's iron hook, the dairy's peg, the pie shop's brass hook among them); only the market's wide S-hook now carries a sprite. The room fix left them by contract; open until the lead rules, as Italy's same item was ruled (sheet)
+4. Item 46, every room: still read from stepped frames, effect-canvas envelopes and composites, not watched in real time in a displayed pane. No pour was seen to crawl and no glint to sit above a lip at frames 300 and 600 and in the 3x crops, but this pass cannot close it
+
+### New in this pass
+
+52. `oystersUk`, card approach 28 and at rest: a boy at [-32.6, 15.0], the opening tub with its shell and the tray table at [-33.1, 14.7] to [-33.0, 14.0], a basket at [-34.3, 14.9] and two mooring posts at [-32.2, 13.7] and [-35.4, 10.8] all stand on the strait; a downward ray from each meets `britain-sea`. The boy stands on the water beside the second smack's bow and the basket floats. `london-world.mjs` still reads "29 props clear of the water", so it does not test these parts (sheet)
+53. The strait under Tower Bridge's west span, close 16, card approach 28 for `oystersUk` and `towerBridge`: a pale cyan patch of lighter water lies on the dark strait with a hard straight diagonal edge from the quay to the pier; it reads as a sheet of glass lying on the water, as Italy's lagoon sheet did (sheet)
+54. The gulls over Britain, approach 30 (`ld-r2-c-dale`), the `forthBridge` card 28 and the overview: black and flat, they draw as bent black planks or chevrons in the sky and as thin black arcs over the paper beyond the table edge; Italy's flocks were made pale grey for the same reading (sheet)
+55. `oatsUk` field, close 14 and approach 30: the oat crop is rows of single thin yellow sticks on pale ground with nothing between them; it reads as a bed of pins or stakes, not a field of oats (sheet)
+56. The walled pen on the north side of the palace, `bigBen` card 28 and approach 30: the pen's coped wall reads as battlements, and the sheep and the shepherd inside it show just above the palace roof, as if they stood on it (sheet)
+57. The `uk-hop-bine` sprite, `uk_pub` wide and `uk_hopkitchen` wide: a round green loop hanging from its nail or wire, it reads as a Christmas wreath rather than a cut bine (sheet)
+58. Motion floors, 1280 x 720: `uk_tearoom` wide 2.96 and 3.02, `uk_breakfast` wide 2.98 and 3.06, `uk_hopkitchen` wide 3.00, two runs of the rooms doc's six-pair method; the baseline has 3.10, 3.10 and 3.20. The cells pass or fail by run-to-run noise; whether their pours count as a crisp cue (the 2.5 floor) is the lead's call (sheet, the tea room at frame 600)
+59. `hopKitchenUk`, live ten-ray check: the hop garden's moving bines cross 1 or 2 of its 10 rays at 10 of 66 moments; birds crossed one ray of `towerBridge` and of `pastyUk` at 3 (sheet)
+60. The omnibus terminus beside `redBus`, close 14 and the Thames and Weald views at approach 30: the looping motor omnibus and hansom pass tight against the parked horse omnibus, its team and the stand's hansom, so from above the six horses and four vehicles read as one pile-up. `__fw.audit(60)` finds no contact (sheet)
+
+### Stage E lines
+
+Marked in the table above with a dated note: **W14, S3, R3, R10, R11 and R13 now pass.** W2 still fails on new 52 (and 53 is a colour reading), W9 on open 1 and new 55 and 56. R11 passes on the baseline's figures with no margin (new 58). The Stage E lines not named here keep their verdicts.
+
+### Not verified in this pass
+
+- Real-time watching of any room or of the world (open 4).
+- The approaches at 390 x 844, including the four overrides and the smacks' card on a phone; room approaches were shot at 1280 x 720 only.
+- The thirteen room cards through "The story" (read in `london-objects.ts`; the card-only sixteen were opened live).
+- The card-only stands' reactions beyond the 1-s frame at the end of each glide and a count of moving parts for `bigBen`, `forthBridge` and `towerBridge`.
+- Reduced motion, flicker while moving or zooming, speech-bubble overlap, the full `npm test` and `npm run build:pages`, the published site.
+- The face check is by eye on composites at 1280 x 720 and 390 x 844 (the portraits on contact-size thumbnails), not a face detector.

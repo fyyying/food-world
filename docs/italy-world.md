@@ -793,9 +793,9 @@ Rooms
 | R5 | Traced liquid paths lip to surface, checked live | Pass | Lit pixels confine to the configured boxes in both orientations (for example `it_trattoria` 11,256 wide, 4,494 portrait); endpoints taken from the rooms record, not re-measured on the pixels |
 | R6 | Hanging motion is a sprite over a clean painting | Pass | No breeze crop; six delivered sprites |
 | R7 | Every delivered sprite used or explained | Pass | All six used |
-| R8 | Every path and box measured on a gridded crop and checked on an overlay contact sheet | **Fail** | The rooms record describes the gridded crops but names no overlay contact sheet |
+| R8 | Every path and box measured on a gridded crop and checked on an overlay contact sheet | Pass (2026-09-23) | `docs/italy-rooms.md` now names the sheet under "Overlay sheet": `.data/shots/italy-rooms-overlay.png`, both orientations of all thirteen rooms with the phone heading and every measured box and hook drawn over the painting |
 | R9 | Every phone box and sprite inside the band, lit live | Pass | Table above: every portrait cue lit, every visible sprite inside the band |
-| R10 | Motion capture re-run after the last cue change; the baseline carries the numbers | **Fail** | `docs/quality-baseline.md` carries no Italy motion numbers |
+| R10 | Motion capture re-run after the last cue change; the baseline carries the numbers | Pass (2026-09-23) | `docs/quality-baseline.md` "Visible idle motion" row and its 2026-09-23 "Changes" entry now carry all thirteen rooms' wide and portrait medians; none is under its floor, the two lowest are `it_ballaro` wide (3.45) and `it_pasticceria` portrait (3.60) |
 | R11 | 3 percent in two seconds, or 2.5 with a crisp cue | **Fail** | `it_casale` wide re-measured at a 2.45 percent median |
 | R12 | Two or three touches naming something visible, with facts and sources | Pass | Three per room, 39, from `ITALY_DISCOVERIES` |
 | R13 | Every effect stays on its source; nothing invented | **Fail** | The Pescaria's haze band lies across two faces in both orientations; Ballarò's portrait leaves drift over the cathedral dome; the casale's portrait leaves over the door; the trattoria's portrait salami hangs across the oste's face (walkthrough 32 to 34, 37, 38) |
@@ -818,8 +818,8 @@ Verification record
 | # | Line | Verdict | Evidence |
 | --- | --- | --- | --- |
 | V1 | typecheck, test, `build:pages` | **Fail** | Typecheck passes; `npm test` is 23 of 25 on this working tree (Thailand and Vietnam); `build:pages` was not run in this review |
-| V2 | Screenshots of the world, each stand and each room at both sizes | **Fail** | `.data/shots/it-d-*` has every room at both sizes and ten road views; no stand has its own shot at either size, and there was no phone-width world shot until this review's `it-e-phone-*` |
-| V3 | Animation inventory table | **Fail** | `docs/italy-world.md` promises one in its first paragraph and does not carry it |
+| V2 | Screenshots of the world, each stand and each room at both sizes | Pass (2026-09-23) | All 36 stands now have their own arrival-camera shot at both sizes, `.data/shots/italy-stands-wide.png` (1920x1080, 1280x720 aspect) and `italy-stands-phone.png` (1170x2532, 390x844 aspect), rendered through `italy-prop-audit.html` on the dev server; see this file's "Verification record" below |
+| V3 | Animation inventory table | Pass (2026-09-23) | This file's "Animation inventory" below carries one row per stand (36) with its always-on loop, its click reaction and, for the thirteen that open one, its room's signature |
 | V4 | Pages run and live URL | **Fail** | Italy is not published; this is Stage F |
 
 **Count: 26 pass, 16 fail, 3 not verified, of 45 lines.** Failed: W2, W5, W9, W11, W12, W14, S3, R3, R8, R10, R11, R13, V1, V2, V3, V4. Not verified: W13, S1, R14.
@@ -950,3 +950,75 @@ Builder's items, `italy-landscape.ts`, `italy-town.ts`, `italy-countryside.ts`, 
 - The Rialto (coordinator's note after `fd95d9a`): gondolas pass under it: 1,500 samples of the two gondolas between x 29.4 and 35.3, highest point 1.68 against a soffit of 2.13 to 2.30 over the lane. The barge (L3) runs x 21 at the canal's west mouth and does not pass under it. IT-R7's walkers were taken off the bridge rather than lifted with `rialtoDeckY`: `italy-world.mjs` holds every walker at or below `BRIDGE_DECK_Y` + 0.01, and the crown is 2.85.
 - Harness and build: `npm run typecheck` clean; `italy-world.mjs` passes ("16 continuous roads in 5 networks ... 8 boats, 24 walkers, 240 seconds of motion"); `npm test` 23 of 25, the two failures `thailand-world.mjs` and `vietnam-world.mjs` in other agents' uncommitted files; `npm run build:pages` succeeds.
 - Not verified: phone width; real-time watching in a displayed pane (the world was stepped and read from stills); the other worlds' flocks by eye (the default path is unchanged in code); reduced motion; the dev server was not restarted by this agent (it had been restarted 47 minutes earlier by another; every check ran on a fresh boot in this agent's own tab).
+
+## Stage E close-out, 2026-09-23
+
+Mechanical bookkeeping closing the Stage E review's four remaining fails that are paperwork rather than defects
+(R8, R10, V2, V3): an overlay sheet named where the rooms record already describes it, the motion baseline carried
+into `docs/quality-baseline.md`, per-stand screenshots at both sizes, and the animation inventory table this file's
+first paragraph had promised and never delivered. Nothing in `src/fw`, `scenes-italy.ts` or `italy-ambience.ts`
+changed in this pass.
+
+### Verification record
+
+- **R8, the overlay sheet.** `docs/italy-rooms.md` now names it under its own "Overlay sheet" heading:
+  `.data/shots/italy-rooms-overlay.png`, both orientations of all thirteen rooms with the phone heading and every
+  measured box and hook outlined over the painting.
+- **V2, per-stand screenshots at both sizes.** `scripts/tests/italy-prop-audit.html` was opened on the dev server
+  (`food-tour-web`, in this agent's own tab) at `?view=arrival&cell=320x180&cols=6` and `?view=arrival&cell=195x422&cols=6`
+  — cell aspects of exactly 1280x720 and 390x844 — which renders all 36 stands alone at the 1.6 s room-flight or
+  card-glide arrival camera `main.ts` really gives them and posts the finished canvas to the local receiver on 5399.
+  Two contact sheets came back, six stands to a row: `italy-stands-wide.png` (1920 x 1080, exactly 1280x720 scaled
+  6x) and `italy-stands-phone.png` (1170 x 2532, exactly 390x844 scaled 6x), both copied into `.data/shots/`. They
+  join the room screenshots already in `.data/shots` and listed in `docs/italy-rooms.md`.
+- **V1 and V4** stay open: `npm run build:pages` and the live URL are Stage F, not touched here.
+
+### Animation inventory
+
+One row per stand: its always-on loop (running every frame, unrelated to the click), its click reaction (the
+`life()`/`onPoke` sequence the click plays through, first beat first), and, for the thirteen that open a room, that
+room's dominant painted cue from `docs/italy-rooms.md`. Read off `src/fw/props-italy.ts`'s doc comments, its
+`// the ... always-on ...` code comments and each `life(g, id, people, (t, k) => {...})` body (grep `ownReaction`
+for the shared idle-figure sway every stand gets besides what is listed here).
+
+| Stand | Always-on loop | Click reaction | Room signature |
+| --- | --- | --- | --- |
+| `trattoria` | The coal range's firebox flickers; the salumi on the rail sway | The copper of oxtail lifts off the range onto the marble, the ladle turns it over; the oste's arm follows and a diner at the next table looks up | `it_trattoria`: the wine poured from the foglietta, traced lip to surface |
+| `italyMarket` | The hanging scale under the shade beam swings | The knife strips the artichoke to the pale heart and the leaves fall into the basket; the stallholder turns | `it_market`: winter sun across the Campo |
+| `pastaWorkshop` | The dried maccheroni on the canes behind sways | The folded sheet is cut into ribbons, lifted and shaken loose over the board | `it_pasta`: the window's shaft, falling down to the right |
+| `pizzeria` | The oven mouth's glow flickers | The peel with the long white pizza is drawn out onto the marble; the baker's arm follows and the child at the counter reaches | `it_forno`: the oven mouth's light |
+| `dairy` | The whey keeps dripping off the draining table's lip into the pail, three slow drops | The curd is cut, the whey runs and the presser leans into the press | `it_casale`: whey dripping into the pail |
+| `fishMarket` | Gulls glide over the slabs, well above the sight line and never in front of the fish | A basket of sardines is tipped out along the wet marble, slides and settles; the fishwife spreads them and a buyer leans in | `it_pescaria`: first light down the canopy |
+| `bacaro` | The pitcher on the counter sways; the Venetian lamps swing | The tap opens, wine falls into the glass and the ombra is tilted and served along the marble; the host's hand follows and the man at the door turns round | `it_bacaro`: the ombra drawn from the cask |
+| `buranoKitchen` | Nets and floats hung from the beam sway at the ends of the bay | A soft crab goes from the cage into the beaten egg and falls back off it; the woman's hands follow and the man at the door shifts the oar | `it_laguna`: egg falling back off the crab |
+| `venetoFarm` | The open hearth flickers, the chain and copper sway, the hanging maize cobs sway | The stick turns fast in the paiolo and the polenta mass folds over on itself; the woman leans in, the child lifts the wire, the man at the door looks in | `it_veneto`: the hearth's glow |
+| `friggitoria` | The tufa wall's awning fringe and the string of chillies sway at the ends | A slab of chickpea paste is cut into squares and slid into the lard, which lifts and closes; the fryer's arm follows and a boy at the kerb holds out a roll | `it_friggitoria`: hard sun down the lane |
+| `sicilyMarket` | The hanging scale and the string of dried tomatoes sway at the ends of the shade beam | A swordfish steak is laid on the block and the cleaver comes down; the fishmonger straightens and a woman with a basket steps in | `it_ballaro`: the morning water over the slab |
+| `pasticceria` | The string of paper feast-day flags under the beam sways | Ricotta is piped into a fried shell and the ends dipped in pistachio; the pastrycook turns the tray and the girl at the counter leans in | `it_pasticceria`: the doorway's daylight |
+| `tonnara` | The hooks on the rail under the eaves sway, over the bench, never over the coppers | A tuna loin is lowered into the boiling copper on the hooked pole and the surface heaves; a woman at the tinning bench looks up | `it_tonnara`: the oil into the tin |
+| `carciofaia` | The artichoke plants sway | A head is cut off its stalk, lifts clear and drops into the basket at the cutter's feet | — (card only) |
+| `sheepFold` | The sheep's heads bob, the dog's tail wags | The ewe at the gate lifts her head, steps forward and settles; the flock shifts behind her | — (card only) |
+| `oliveGrove` | The stone wheel turns in its trough all day; the olive trees' crowns sway | The boy's basket of olives tips into the trough, the wheel quickens and the miller leans on the beam | — (card only) |
+| `wineCart` | The roadside foglietta sways; the stacked barrels rock gently on the bed | A barrel rolls down the plank off the tail and settles at the carter's feet | — (card only) |
+| `cow` | The ox's tail swishes; the pigs' heads sway | The ox lifts his head off the trough and shifts his weight; the pigs shove in at the tub | — (card only) |
+| `chicken` | The hens bob their heads and hop lightly at the grain; the cockerel's head bobs | The named hen flaps up onto the hut roof and settles back; the rest flap in at the scattered grain | — (card only) |
+| `porciniWood` | The strings of drying porcini sway; the chestnut crowns rustle | A mushroom is lifted out of the leaf litter and carried up to the drying string | — (card only) |
+| `herbGarden` | The herb clumps sway | A bunch of basil is pinched off and lifted into the bowl | — (card only) |
+| `valliPesca` | The eels turn over gently inside the net | The fyke net lifts out of the shallow water towards the bank and the eels turn over harder inside it | — (card only) |
+| `riceFieldItaly` | The flooded rice seedlings ripple | The heron lifts off; a bundle of seedlings is lifted out of the water and settles on the bank | — (card only) |
+| `wheatLatifondo` | The standing wheat ears and the stooks sway | The band closes on the sheaf, which is bound, lifted and stood into the stook; the reapers straighten behind it | — (card only) |
+| `tomatoField` | The tomato plants sway | The crate tips, the fruit rolls out across the drying board and the spatula turns it | — (card only) |
+| `citrusGrove` | The lemon and orange trees' crowns sway (the shared `harvest()` idle) | The trees shake, the fruit falls into the pickers' baskets, then is gathered up | — (card only) |
+| `almondGrove` | The almond trees' crowns sway; the picker's beating cane sways gently in hand | The cane knocks the husks down onto the cloths and the pickers gather them into the baskets | — (card only) |
+| `caperTerrace` | The caper bushes on the terraces sway | The picker's hand goes through the bush, the buds drop into the salt tub and the scoop turns them over | — (card only) |
+| `colosseum` | None beyond the residents' own idle sway; the swifts rest hidden inside the arcades | The swifts spiral out of the upper arcades over the front of the ring and go back in; the guide points up, the visitor and the boy look up | — (card only) |
+| `pantheon` | The oculus's glow flickers; the disc of sun drifts slowly across the floor inside the open door; the pigeons rest hidden under the portico's cornice | The pigeons lift off, wheel out in front of the columns and settle back; the sun swings further and the reader looks up | — (card only) |
+| `mattatoio` | The quarters hanging on the rail sway | The marked quarter runs down the rail on its trolley and swings to a stop; the vaccinaro takes the weight on his shoulder, the butcher turns to watch | — (card only) |
+| `gelateria` | The sorbettiera's canister turns steadily in its tub of ice and salt | The paddle comes up out of the canister with the ice on it and turns faster; the turner's arm follows | — (card only) |
+| `rialtoBridge` | None of its own (the gondola lane's own boats pass under the arch, on the Builder's tick) | The shopkeeper's shutter at the top of the south steps swings open and the goods come out onto the sill; the shopkeeper steps to the door, the porter on the steps turns round | — (card only) |
+| `campanile` | None beyond the residents' own idle sway | The big bell swings first, the two smaller bells follow, the whole tower leans a fraction and settles; the priest and the woman on the quay look up | — (card only) |
+| `etna` | None (nobody stands on the cone; the plume is otherwise still) | The plume swells, darkens and leans away east, the crater glows, and the cutters at the foot straighten to look up | — (card only) |
+| `carretto` | The mule's head sways gently | The mule leans into the shafts, the cart rolls a length forward and back and the painted panels catch the light; the carter's arm follows the bridle, the boy by the wall looks round | — (card only) |
+
+Card-only stands with no room: the fifteen ingredient stops and the eight landmarks above account for all 23; every
+row's click reaction is what the object's card approach plays, not a room flight.

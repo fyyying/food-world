@@ -380,6 +380,16 @@ room was stepped and read from composites and filmstrips, not watched live. The 
 orientations were re-measured. Reduced motion, the world route (`__fw.open`), the touch reactions and `npm run build:pages` were
 not run.
 
+### Overlay sheet
+
+Every path, box and anchor this file and the walkthrough-fixes table above describe was checked against the
+delivered paintings on one overlay contact sheet, `.data/shots/italy-rooms-overlay.png` (the fix agent's
+`italy-fix-rooms.png`, copied over from its scratchpad): both orientations of all thirteen rooms, with the measured
+phone-width UI zones (Back button, room name, story button) and every configured signature box, patch box, anchor
+and hook drawn over the painting's own pixels. This is the crop-and-overlay step "How it was measured" above
+describes, and the sheet is what the boxes in "Fixes from the walkthrough, 2026-09-23" were checked against for
+faces, jambs and the heading.
+
 ## Status
 
 Built: thirteen rooms in `src/fw/scenes-italy.ts` with three touches each, thirty-nine in total, carrying the

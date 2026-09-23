@@ -2297,7 +2297,10 @@ export function bakeryCe(): P {
 export function oysterSmack(): P {
   const g = group();
   const boats = [0, 1].map((i) => {
-    const b = add(g, new THREE.Group(), i ? -2.60 : .10, 0, i ? -1.85 : .25); b.rotation.y = i ? .42 : -.12; b.name = "oyster-smack";
+    // Both smacks lie alongside the quay's river face, the second upstream of the first (re-cluster pass, 2026-09-23):
+    // the owner asked for the smacks moored at a quay on the river bank, not in a basin, so neither lies across the quay
+    // into a cut of its own any more.
+    const b = add(g, new THREE.Group(), i ? .20 : .10, 0, i ? -1.48 : .25); b.rotation.y = i ? -.06 : -.12; b.name = "oyster-smack";
     add(b, box(3.0, .46, 1.15, "#5A4632"), 0, -.02, 0);
     for (const end of [-1, 1]) { const tip = add(b, box(.62, .42, .74, "#5A4632"), end * 1.66, .06, 0); tip.rotation.z = end * .26; }
     add(b, box(2.9, .05, 1.02, "#8A6A48"), 0, .22, 0);
@@ -2384,7 +2387,8 @@ export function hopGarden(): P {
   // vane at x -52.3. The oast stands 0.85 further east now, its roof at y 3.2 ending at x -51.6 and the vane's
   // sweep at -51.7, and the stowage moved to its west side, where it is 1.6 high and every ray passes over it at
   // 2.2 or more. The bines, which sway 0.02 rad about their feet, were never first on a ray.
-  const oast = add(g, new THREE.Group(), 3.40, 0, -2.45); oast.name = "hop-oast";
+  // Re-cluster pass (2026-09-23): 0.5 further west, so the oast keeps a unit of dry ground from the strait's shore.
+  const oast = add(g, new THREE.Group(), 2.90, 0, -2.45); oast.name = "hop-oast";
   add(oast, cyl(1.05, 1.15, 2.4, LD.kentPeg, 16), 0, 1.20, 0);
   for (let i = 0; i < 3; i++) add(oast, new THREE.Mesh(new THREE.TorusGeometry(1.12 - i * .03, .035, 5, 18), mat("#8E4A2E")), 0, .5 + i * .8, 0).rotation.x = Math.PI / 2;
   add(oast, cone(1.10, 1.50, "#8E4A2E", 16), 0, 3.12, 0);
@@ -2681,7 +2685,9 @@ export function forcingShed(): P {
  *  trough, and the cheese of pomace building under the press. The click shakes the trees and the apples fall. */
 export function ciderOrchard(): P {
   const g = group();
-  add(g, box(7.4, .05, 5.4, "#7E9455"), 0, .025, .30);
+  // Narrowed 0.7 on its east side in the re-cluster pass (2026-09-23): the pound, its horse and the press sit 0.7 and 0.4
+  // further west, so the lane from the West Country street to the south road passes between the orchard and the coffee stall.
+  add(g, box(6.8, .05, 5.4, "#7E9455"), -.30, .025, .30);
   const trees = Array.from({ length: 4 }, (_, i) => {
     const tr = add(g, new THREE.Group(), -2.85 + i * 1.45, 0, -1.55 + (i % 2) * .85);
     const h = 1.75 + (i % 3) * .25;
@@ -2693,7 +2699,7 @@ export function ciderOrchard(): P {
     return tr;
   });
   // the pound: a circular stone trough, the runner stone, the shaft and the horse that walks the round
-  const pound = add(g, new THREE.Group(), 1.70, 0, 1.55);
+  const pound = add(g, new THREE.Group(), 1.00, 0, 1.55);
   add(pound, new THREE.Mesh(new THREE.TorusGeometry(1.05, .17, 6, 20), mat(LD.moorGranite)), 0, .20, 0).rotation.x = Math.PI / 2;
   add(pound, cyl(1.05, 1.05, .10, "#8A8880", 20), 0, .10, 0);
   for (let i = 0; i < 9; i++) add(pound, ball(.075, "#B4901E", 6), Math.cos(i * .7) * .88, .20, Math.sin(i * .7) * .88).scale.y = .7;
@@ -2702,32 +2708,32 @@ export function ciderOrchard(): P {
   add(arm, cyl(.055, .055, 2.0, LD.oak, 8), .95, .18, 0).rotation.z = Math.PI / 2;
   const stone = add(arm, cyl(.46, .46, .22, LD.moorGranite, 18), .92, -.08, 0); stone.rotation.x = Math.PI / 2; stone.name = "cider-stone";
   // the press behind it: the cheese of pomace in straw, and the juice running into the tub
-  const press = add(g, new THREE.Group(), -1.05, 0, 2.00);
+  const press = add(g, new THREE.Group(), -1.45, 0, 2.00);
   for (const dx of [-.50, .50]) add(press, box(.16, 1.65, .18, LD.oak), dx, .82, 0);
   add(press, box(1.25, .16, .26, LD.oak), 0, 1.62, 0);
   add(press, box(1.25, .12, .90, LD.oak), 0, .34, 0);
   const cheese = add(press, new THREE.Group(), 0, .44, 0); cheese.name = "cider-cheese";
   for (let i = 0; i < 4; i++) { add(cheese, box(.78, .09, .70, "#9C7A38"), 0, i * .12, 0); add(cheese, box(.84, .03, .76, LD.straw), 0, i * .12 + .06, 0); }
   add(press, cyl(.05, .05, .56, LD.iron, 10), 0, 1.24, 0);
-  const tub = add(g, cyl(.30, .26, .36, LD.deal, 14), -1.05, .18, 2.75);
-  add(g, cyl(.27, .27, .03, "#B4842A", 14), -1.05, .34, 2.75);
+  const tub = add(g, cyl(.30, .26, .36, LD.deal, 14), -1.45, .18, 2.75);
+  add(g, cyl(.27, .27, .03, "#B4842A", 14), -1.45, .34, 2.75);
   // the horse, the baskets and a barrel cart
-  const horse = horseBody(g, 3.40, 1.55, "#6E5236", -1.57);
+  const horse = horseBody(g, 2.70, 1.55, "#6E5236", -1.57);
   add(horse.root, box(.5, .14, .62, LD.oakSmoke), .1, 1.30, 0);
   add(horse.root, box(.06, .05, 1.9, LD.oak), -.55, 1.05, 0);
-  const baskets = [V(-2.2, .28, 1.25), V(-.4, .28, .05), V(1.0, .28, -.55)];
+  const baskets = [V(-2.7, .28, 1.35), V(-.6, .28, -.20), V(1.6, .28, -.75)];
   for (const b of baskets) { const bk = add(g, cyl(.30, .24, .30, LD.straw, 12), b.x, .15, b.z); for (let i = 0; i < 5; i++) add(bk, ball(.08, i % 2 ? "#C9A82A" : "#A8442A", 6), Math.cos(i * 1.26) * .14, .13, Math.sin(i * 1.26) * .14); }
   // three people: the pressman, the horse's lad, a woman with a basket
-  const pressman = add(g, own(resident("farmer", false)), -1.05, 0, 2.80) as Figure; pressman.rotation.y = Math.PI;
+  const pressman = add(g, own(resident("farmer", false)), -1.45, 0, 2.80) as Figure; pressman.rotation.y = Math.PI;
   arms(pressman).right.rotation.x = -1.4; arms(pressman).left.rotation.x = -1.35;
-  const lad = add(g, own(resident("child")), 2.85, 0, 2.70) as Figure; lad.rotation.y = -2.0;
+  const lad = add(g, own(resident("child")), 2.60, 0, 3.35) as Figure; lad.rotation.y = -2.0;
   const woman = add(g, own(resident("shawl", false)), -2.90, 0, .55) as Figure; woman.rotation.y = -1.2;
   arms(woman).right.rotation.x = -1.2; upper(woman).rotation.x = .30;
   const shake = harvest(g, trees, baskets, .18);
   return life(g, "orchardUk", [pressman, lad, woman], (t, k, dt) => {
     // the horse walks the round whatever happens, and the stone turns with him
     arm.rotation.y = t * .22;
-    horse.root.position.x = 1.70 + Math.cos(t * .22) * 1.70;
+    horse.root.position.x = 1.00 + Math.cos(t * .22) * 1.70;
     horse.root.position.z = 1.55 + Math.sin(t * .22) * 1.70;
     horse.root.rotation.y = -t * .22 + Math.PI;
     animalGait(horse.legs, t * 2.4, 1);
@@ -3191,8 +3197,11 @@ export function towerBridge(len = 9): P {
     void deck;
     return { leaf, sd };
   });
-  // a steam coaster waiting below, and two people on the north approach
-  const coaster = add(g, new THREE.Group(), 0, 0, 3.90); coaster.name = "bridge-coaster";
+  // a steam coaster waiting downstream of the span, bow upstream, and two people on the west approach. The coaster lies
+  // along the river and passes under the lifted bascules (re-cluster pass, 2026-09-23): the owner asked for Tower Bridge
+  // to cross the river itself with the coaster passing under it, so it no longer lies across the bridge's front.
+  const COASTER_REST = 3.0;
+  const coaster = add(g, new THREE.Group(), 0, 0, COASTER_REST); coaster.name = "bridge-coaster"; coaster.rotation.y = Math.PI / 2;
   add(coaster, box(3.6, .60, 1.05, "#3A3630"), 0, .18, 0);
   for (const end of [-1, 1]) { const tip = add(coaster, box(.70, .55, .70, "#3A3630"), end * 2.0, .22, 0); tip.rotation.z = end * .30; }
   add(coaster, box(3.4, .10, .95, "#6E5A42"), 0, .50, 0);
@@ -3203,7 +3212,7 @@ export function towerBridge(len = 9): P {
   const watchers = [0, 1].map((i) => { const p = add(g, own(resident(i ? "shawl" : "coster", false)), -len * .56 + i * .7, 1.08, .80) as Figure; p.rotation.y = 1.4 - i * .3; return p; });
   return life(g, "towerBridge", [watchers[0], watchers[1]], (t, k) => {
     coaster.position.y = Math.sin(t * .7) * .035;
-    coaster.rotation.z = Math.sin(t * .6) * .012;
+    coaster.rotation.x = Math.sin(t * .6) * .012;
     // 1. the bridge first: the two leaves swing up and hold open while the coaster comes through
     const raise = hold(k, .26, .74);
     // Each leaf's free end swings up, not down, and it stops at about 32 degrees rather than standing upright:
@@ -3211,7 +3220,7 @@ export function towerBridge(len = 9): P {
     // the tower is then in front of it. Thirty-odd degrees keeps the lifted deck out over the span, where the
     // visitor sees the whole of it and the coaster passing underneath.
     leaves.forEach(({ leaf, sd }) => { leaf.rotation.z = -sd * raise * .55; });
-    coaster.position.x = -2.2 + raise * 3.4;
+    coaster.position.z = COASTER_REST - raise * 4.0;   // upstream through the span while the leaves are up, and back
     funnel.rotation.z = Math.sin(t * .9) * .01;
     // 2. one watcher steps back from the gate, 3. the other points at the coaster
     upper(watchers[0]).rotation.y = 1.4 - 1.4 + beat(k, .4, 1) * .5;
@@ -3347,8 +3356,12 @@ export function forthBridge(): P {
   const g = group();
   const red = "#9A3326", dark = "#7A2820", granite = "#8E8C84";
   const s = new THREE.Group();
-  add(s, box(4.2, .40, 3.0, granite), -3.60, .20, .20);                                                      // the shore it stands on
-  const a = 1.4, deck = 3.1, centres = [-3.9, .1, 4.7];   // the second span's ends stand on land either side of the narrows
+  // The west abutment: the stone platform the shore pier and the west cantilever stand on, ending at the firth's west
+  // bank (rel x -3.1). It was 4.2 wide and ran out over the water when the firth was cut to the bridge's width
+  // (re-cluster pass, 2026-09-23): the bridge now spans the firth from bank to bank, its outer cantilevers on the
+  // two shores and the middle one in the water.
+  add(s, box(2.6, .40, 3.0, granite), -4.40, .20, .20);
+  const a = 1.4, deck = 3.1, centres = [-3.9, .1, 4.7];   // the outer cantilevers stand on the two banks, the middle one in the firth
   for (const c of centres) {
     // the piers, the towers and their lateral bracing
     for (const sx of [-1, 1]) for (const sz of [-1, 1]) {

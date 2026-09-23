@@ -121,7 +121,7 @@ export const AREAS: Record<Area, AreaInfo> = {
   kyoto: { world: "japan", name: "Kyoto", zh: "京都", blurb: "the Golden Pavilion, the torii path, machiya, sakura on the Kamo river", center: [-24, 12] },
   fuji: { world: "japan", name: "Fuji & the lake", zh: "富士山", blurb: "the mountain, the lake, the onsen monkeys, the shinkansen", center: [6, 8] },
   hokkaido: { world: "japan", name: "Hokkaido", zh: "北海道", blurb: "the fishing port, salmon and cod, pumpkins and cabbages, the miso brewery", center: [-22, -16] },
-  london: { world: "central-europe", name: "Britain", zh: "Great Britain", blurb: "Westminster and the river, the docks, the Weald, the Dales, the West Country and the herring coast", center: [-48, 2] },
+  london: { world: "central-europe", name: "Britain", zh: "Great Britain", blurb: "Westminster and the river, the docks, the Weald, the Dales, the West Country and the herring coast", center: [-66, -1.6] },
   budapest: { world: "central-europe", name: "Budapest & the puszta", zh: "Magyarország", blurb: "the Parliament on the Danube, the baths, goulash in the bogrács, grey cattle and csikós", center: [10, -4] },
   alps: { world: "central-europe", name: "The Alps", zh: "Die Alpen", blurb: "the chalet, the cable car, cows with bells and alpine cheese", center: [-20, 14] },
   georgia: { world: "central-europe", name: "Georgia", zh: "საქართველო", blurb: "old Tbilisi, the sulfur baths, the supra, qvevri wine, beans and walnuts", center: [27, 2] },

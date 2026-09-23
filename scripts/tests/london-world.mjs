@@ -45,7 +45,7 @@ const measured={overWater:{},hidden:{},crowded:{}};
  *  tables are empty and any entry that appears is a failure. docs/london-world.md, "Shared-ground pass". */
 /** Vertices of a stand over water. `forthBridge` is by design: its own firth plate and span reach over the
  *  Firth of Forth it crosses. Every other stand is dry. */
-const OVER_WATER={ 'forthBridge':230 };
+const OVER_WATER={};
 /** 'a<b': stand b is the first thing on n of stand a's ten arrival rays. None since 2026-09-23. */
 const HIDDEN={};
 /** Footprint overlap in units, positive for an overlap, for pairs under a unit apart. None since 2026-09-23. */
@@ -66,7 +66,7 @@ try {
     CHANNEL_SAND_WET,CHANNEL_SAND_DRY}=L;
   const T=await import(pathToFileURL(join(temp,'town.mjs')));
   const {LD_PAVING}=T;
-  const {LONDON_OBJECTS}=await import(pathToFileURL(join(temp,'objects.mjs')));
+  const {LONDON_OBJECTS,LONDON_CLUSTERS}=await import(pathToFileURL(join(temp,'objects.mjs')));
   const LONDON_PROPS=HAS_PROPS?(await import(pathToFileURL(join(temp,'props.mjs')))).LONDON_PROPS:null;
   const {worldZoomLimit,worldFogRange}=await import(pathToFileURL(join(temp,'camera.mjs')));
 
@@ -149,20 +149,22 @@ try {
     // The source is inside the tarn, by the same rule.
     const src=RIVER_POINTS[0];
     assert.ok(LD_POOLS.some(p=>Math.hypot((src[0]-p.x)/p.rx,(src[1]-p.z)/p.rz)<=.8),'the river must rise inside the tarn, not beside it');
-    // The three widths of the blueprint.
-    assert.equal(riverWidth(-50),2.6); assert.equal(riverWidth(-42),2.6);
-    assert.ok(Math.abs(riverWidth(-38)-4.0)<1e-9,'the river is 4.0 at x -38');
-    assert.ok(Math.abs(riverWidth(-35.8)-5.2)<1e-9,'the river is 5.2 at the mouth');
+    // The widths (re-cluster pass, 2026-09-23): 2.6 through Westminster, and wide enough under Tower Bridge for its
+    // bascule span, whose piers stand at the river's edges.
+    const uAt=(x,z)=>{let best=0,bd=1e9;for(let i=0;i<=400;i++){const p=L.RIVER_CURVE.getPointAt(i/400);const d=Math.hypot(p.x-x,p.z-z);if(d<bd){bd=d;best=i/400;}}return best;};
+    assert.equal(riverWidth(uAt(-62,8.6)),2.6,'the river is 2.6 through Westminster');
+    assert.ok(riverWidth(uAt(-45.5,20))>=5.4,`the river under Tower Bridge is ${riverWidth(uAt(-45.5,20)).toFixed(2)} wide, narrower than the bascule span`);
   }
 
   // ---------- the two inlets and the cockle sand ----------
   {
-    // The Firth of Forth is cut south to z -20.6 and is water at its head.
-    assert.ok(isWet(-57.6,-21.4),'the Firth of Forth must be open water at its head');
-    assert.ok(!isWet(-57.6,-19.0),'the land south of the firth must stay dry');
-    // The Bristol Channel reaches x -71.4 and its head is wet sand, which is ground and not water.
-    assert.ok(isWet(-73.5,15),'the Bristol Channel must be open water west of its head');
-    assert.ok(!isWet(-70,15.4),'the cockle sand east of the channel head is ground, not water');
+    // The Firth of Forth is cut to the Forth Bridge's width (re-cluster pass, 2026-09-23): open water under the
+    // bridge, and its shore road dry just south of the bridge's front.
+    assert.ok(isWet(-59.6,-23.2)&&isWet(-61.8,-23.2)&&isWet(-56.4,-23.2),'the Firth of Forth must be open water under the bridge');
+    assert.ok(!isWet(-59.6,-20.3),'the shore road south of the firth must stay dry');
+    // The Bristol Channel reaches x -72.9 and its head is wet sand, which is ground and not water.
+    assert.ok(isWet(-75,12.7),'the Bristol Channel must be open water west of its head');
+    assert.ok(!isWet(-71.5,13),'the cockle sand east of the channel head is ground, not water');
     assert.ok(CHANNEL_SAND_WET.length>=4&&CHANNEL_SAND_DRY.length>=4,'the channel head carries both sand polygons');
     for(const [x,z] of CHANNEL_SAND_DRY) assert.ok(!isWet(x,z),`the dry sand corner ${x}, ${z} is in the water`);
   }
@@ -170,9 +172,10 @@ try {
   // ---------- the twenty-nine objects: dry ground, a road at the door, and the band ----------
   const objects=LONDON_OBJECTS.filter(o=>o.area==='london');
   assert.equal(objects.length,29,'thirteen rooms, ten ingredient stops and six landmarks');
-  // The blueprint's on-water objects, and only these: the bascule bridge built to stand in the estuary and the
-  // two oyster smacks moored at the mouth.
-  const AFLOAT=new Set(['towerBridge','oystersUk']);
+  // The on-water objects, and only these: the two bridges, each built to span its water from bank to bank (Tower
+  // Bridge over the river, the Forth Bridge over the firth; re-cluster pass, 2026-09-23, where the bank-to-bank rule
+  // below holds them), and the two oyster smacks moored at the river quay.
+  const AFLOAT=new Set(['towerBridge','oystersUk','forthBridge']);
   const distToRoute=(x,z,points)=>{let d=1e9;for(let i=0;i<points.length-1;i++){const [ax,az]=points[i],[bx,bz]=points[i+1];const ex=bx-ax,ez=bz-az,l2=ex*ex+ez*ez||1;const t=Math.max(0,Math.min(1,((x-ax)*ex+(z-az)*ez)/l2));d=Math.min(d,Math.hypot(x-ax-ex*t,z-az-ez*t));}return d;};
   const doors=[];
   for(const o of objects){
@@ -260,7 +263,10 @@ try {
       let front=-1e9;
       s.group.traverse(m=>{ if(!m.isMesh||isFigure(m))return; const b=new THREE.Box3().setFromObject(m); if(b.max.y<.35)return; front=Math.max(front,b.max.z-s.obj.pos[1]); });
       s.group.rotation.y=rot; s.group.updateMatrixWorld(true);
-      const d=edgeOf(s.obj.pos[0]+Math.sin(rot)*front, s.obj.pos[1]+Math.cos(rot)*front);
+      // A bridge's front is its water (Tower Bridge's coaster lies in the river, the Forth Bridge's piers in the firth),
+      // so its door is the nearer of its two abutments, the ends of its deck on the banks (re-cluster pass, 2026-09-23).
+      let d=edgeOf(s.obj.pos[0]+Math.sin(rot)*front, s.obj.pos[1]+Math.cos(rot)*front);
+      if(/Bridge$/.test(s.id)){ const bb=new THREE.Box3().setFromObject(s.group); d=Math.min(edgeOf(bb.min.x,s.obj.pos[1]),edgeOf(bb.max.x,s.obj.pos[1])); }
       measured.doors??={}; measured.doors[s.id]=Number(d.toFixed(2));
       const cap=DOOR_BEHIND[s.id]??2.0;
       if(d>cap+.005) farDoors.push(`${s.id}: its front door is ${d.toFixed(2)} from a road, over the ${cap} allowed`);
@@ -355,7 +361,9 @@ try {
       if(Math.abs(z)>=TABLE.maxZ-.4||x<=TABLE.minX+.4) continue;   // it leaves the table
       const reach=r.width/2;
       const onRoadEnd=LD_ROADS.some(o=>o!==r&&centrelineGap(x,z,o)<=reach);
-      const onDeck=LD_CROSSINGS.some(c=>Math.hypot(x-c.at[0],z-c.at[1])<=reach+c.span/2);
+      const onDeck=LD_CROSSINGS.some(c=>Math.hypot(x-c.at[0],z-c.at[1])<=reach+c.span/2)
+        // or at an abutment of one of the two bridges that stand as landmarks (re-cluster pass, 2026-09-23)
+        ||stands.filter(st=>/Bridge$/.test(st.id)).some(st=>{const bb=new THREE.Box3().setFromObject(st.group);return [bb.min.x,bb.max.x].some(ex=>Math.hypot(x-ex,z-st.obj.pos[1])<=reach+1.4);});
       const door=Math.min(...LONDON_OBJECTS.map(o=>Math.hypot(x-o.pos[0],z-o.pos[1])));
       const shore=Math.min(...waters.map(poly=>edgeDistance(x,z,poly)));
       if(onRoadEnd||onDeck) { ends.push(`${r.id} ${which} [${x}, ${z}]: on another route or a deck`); continue; }
@@ -553,7 +561,8 @@ try {
     assert.ok(Math.max(box.max.x-box.min.x,box.max.z-box.min.z)>=crossing.span-.2,'the deck must span the water');
     assert.ok(Math.max(box.max.x-box.min.x,box.max.z-box.min.z)<=crossing.span+2*1.6+.6,'the deck and its two 1.6 embankments run past their crossing');
     // It is square to the water: the deck's long axis crosses the river's own direction within 20 degrees.
-    const ahead=[-42+46,3.2-2.5];   // the river's direction under the bridge
+    const tan=(()=>{let best=0,bd=1e9;for(let i=0;i<=400;i++){const p=L.RIVER_CURVE.getPointAt(i/400);const d=Math.hypot(p.x-crossing.at[0],p.z-crossing.at[1]);if(d<bd){bd=d;best=i/400;}}return L.RIVER_CURVE.getTangentAt(best);})();
+    const ahead=[tan.x,tan.z];   // the river's direction under the bridge
     const along=[Math.cos(b.rotation.y),-Math.sin(b.rotation.y)];   // the deck's long axis is its local +x
     const cos=Math.abs((ahead[0]*along[0]+ahead[1]*along[1])/Math.hypot(...ahead));
     assert.ok(cos<Math.cos(Math.PI/180*70),`the bridge is not square to the water (${(Math.acos(cos)*180/Math.PI).toFixed(0)} degrees)`);
@@ -580,6 +589,101 @@ try {
   }
   const sprites=world.group.children.filter(o=>o.isSprite).length;
   assert.ok(sprites>=smoking.length*4,`the world must collect every chimney: ${sprites} puff sprites for ${smoking.length} smoking houses`);
+
+  // ---------- no house and no stand building in or over any water ----------
+  // Owner, on the live site, 2026-09-23: "please make sure houses are not standing in the river". Every decorative
+  // house and every stand's own building (each room's `uk-building`, the oast, the forcing shed and the engine house)
+  // stands wholly on dry ground with at least 1.0 of it between its walls and every water edge: the sea, the strait,
+  // the Firth of Forth, the Bristol Channel, the river (under Tower Bridge too), the tarn, the mill pond and the burn.
+  // The footprint is every mesh of the building above 0.35, sampled on a quarter-unit grid.
+  const housesAndBuildings=[];
+  {
+    const burnD=(x,z)=>{let d=1e9;for(const p of L.BURN_CURVE.getSpacedPoints(80))d=Math.min(d,Math.hypot(x-p.x,z-p.z));return d-L.BURN_WIDTH/2;};
+    const roots=[...world.group.children.filter(o=>o.name==='britain-house').map(o=>[`house ${o.userData.houseId}`,o])];
+    for(const st of stands) if(!/Bridge$/.test(st.id)) st.group.traverse(o=>{ if(/^(uk-building|hop-oast|rhubarb-shed|engine-house-building)$/.test(o.name)) roots.push([`${st.id} ${o.name}`,o]); });
+    const wetBuild=[];
+    for(const [label,root] of roots){
+      root.updateMatrixWorld(true); let b=null;
+      root.traverse(m=>{ if(!m.isMesh||m.isSprite||!m.geometry)return; if(m.material&&(m.material.visible===false||m.material.opacity===0))return; m.geometry.computeBoundingBox(); const bb=m.geometry.boundingBox.clone().applyMatrix4(m.matrixWorld); if(bb.max.y<.35)return; b=b?b.union(bb):bb; });
+      if(!b)continue;
+      let worst=1e9, at=null;
+      for(let x=b.min.x;x<=b.max.x+1e-6;x+=.25) for(let z=b.min.z;z<=b.max.z+1e-6;z+=.25){
+        const d=isWet(x,z)?-waterEdge(x,z):Math.min(waterEdge(x,z),burnD(x,z));
+        if(d<worst){worst=d;at=[x,z];}
+      }
+      housesAndBuildings.push([label,+worst.toFixed(2)]);
+      if(worst<1.0) wetBuild.push(`${label}: ${worst<0?'stands in the water':`only ${worst.toFixed(2)} from the water`} at ${at[0].toFixed(1)}, ${at[1].toFixed(1)}`);
+    }
+    assert.ok(roots.filter(([l])=>l.startsWith('house')).length===houses.length,'every house was tested');
+    assert.ok(roots.some(([l])=>/hop-oast/.test(l))&&roots.some(([l])=>/rhubarb-shed/.test(l))&&roots.some(([l])=>/engine-house-building/.test(l))&&roots.some(([l])=>/smokehouseUk uk-building/.test(l)),'the four stand-owned buildings were found');
+    assert.deepEqual(wetBuild,[],'a house or a stand building stands in or within 1.0 of the water');
+  }
+
+  // ---------- both bridges bank to bank ----------
+  // Owner, 2026-09-23: "Tower Bridge is not on land on the right side", then "Tower Bridge is on the land now, doesn't
+  // make sense" of a dock basin, and "the train bridge just stops in the middle". Each bridge crosses its own water:
+  // both ends of the deck on dry bank, a unit clear of the water, and the middle of the span over the water. Tower
+  // Bridge crosses the river itself, with nothing but the river's water between its abutments and the coaster in the
+  // river at rest and at the top of its run; the Forth Bridge crosses the firth, and its train stays on the deck.
+  {
+    const bank=(id)=>{ const st=stands.find(x=>x.id===id); const bb=new THREE.Box3().setFromObject(st.group); return {st,bb,z:st.obj.pos[1]}; };
+    for(const id of ['towerBridge','forthBridge']){
+      const {bb,z,st}=bank(id);
+      for(const x of [bb.min.x,bb.max.x]){ assert.ok(!isWet(x,z)&&waterEdge(x,z)>=.6,`${id}: its deck ends at ${x.toFixed(1)}, ${z} in or beside the water (edge ${waterEdge(x,z).toFixed(2)})`); }
+      assert.ok(isWet(st.obj.pos[0],z),`${id}: the middle of its span is not over water`);
+    }
+    // Tower Bridge: the only water between its abutments is the river's, and the coaster floats on it.
+    { const {bb,z,st}=bank('towerBridge');
+      for(let x=bb.min.x;x<=bb.max.x;x+=.1) if(isWet(x,z)) assert.ok(L.inPolygon(x,z,L.riverOutline()),`Tower Bridge crosses water at ${x.toFixed(1)} that is not the river`);
+      const coaster=st.group.getObjectByName('bridge-coaster'); assert.ok(coaster,'Tower Bridge keeps its coaster');
+      const hull=new THREE.Box3().setFromObject(coaster); const dz=[0,-4.0];
+      for(const shift of dz) for(const x of [hull.min.x,(hull.min.x+hull.max.x)/2,hull.max.x]) for(const zz of [hull.min.z,(hull.min.z+hull.max.z)/2,hull.max.z])
+        assert.ok(isWet(x,zz+shift),`the coaster is out of the water at ${x.toFixed(1)}, ${(zz+shift).toFixed(1)}`);
+      assert.ok(hull.max.z-hull.min.z>hull.max.x-hull.min.x,'the coaster lies along the river, not across it'); }
+    // The Forth Bridge's train runs its whole course on the deck.
+    { const {st}=bank('forthBridge'); const train=st.group.getObjectByName('forth-train'); assert.ok(train,'the Forth Bridge keeps its train');
+      // the deck is merged into the bridge's steel; its reach is the span of the steel at the deck's height (3.1 to 3.3)
+      let deck=null; st.group.traverse(o=>{ if(!o.isMesh||o.isSprite)return; for(let p=o;p;p=p.parent) if(p===train||p.userData?.legs) return;
+        const pos=o.geometry?.attributes?.position; if(!pos)return; const v=new THREE.Vector3();
+        for(let i=0;i<pos.count;i++){ v.fromBufferAttribute(pos,i).applyMatrix4(o.matrixWorld); if(v.y>3.05&&v.y<3.3){ deck??=new THREE.Box3(); deck.expandByPoint(v); } } });
+      assert.ok(deck,'the Forth Bridge deck is found');
+      const t0=new THREE.Box3().setFromObject(train), run=5.18;
+      assert.ok(t0.min.x>=deck.min.x-.01&&t0.max.x+run<=deck.max.x+.01,`the train runs off the deck: ${t0.min.x.toFixed(2)}..${(t0.max.x+run).toFixed(2)} on a deck ${deck.min.x.toFixed(2)}..${deck.max.x.toFixed(2)}`); }
+  }
+
+  // ---------- six clusters: compact, each on its own ground, and separated ----------
+  // Owner's live walkthrough, 2026-09-23: "In China, regions are nicely clustered and separated; in the UK it can be
+  // messy". The shared-ground pass spread the clusters and the owner could not see them. Each cluster in
+  // `LONDON_CLUSTERS` states its centre and radius, and every one of its objects stands within that radius; every
+  // object belongs to exactly one cluster; each cluster has a ground tint of its own; no object stands inside
+  // another cluster's hull, and the hulls of the clusters' anchors are at least 8 apart (docs/agent-team-playbook.md,
+  // "Definition of done"). The gap between the clusters' footprint hulls, the ground actually left open, is printed.
+  const clusterReport=[];
+  {
+    const ids=objects.map(o=>o.id), seen=new Map();
+    for(const c of LONDON_CLUSTERS) for(const id of c.ids){ assert.ok(ids.includes(id),`${c.id}: ${id} is not a British object`); assert.ok(!seen.has(id),`${id} is in two clusters`); seen.set(id,c.id); }
+    assert.equal(seen.size,objects.length,`objects in no cluster: ${ids.filter(i=>!seen.has(i))}`);
+    assert.equal(new Set(LONDON_CLUSTERS.map(c=>c.tint)).size,LONDON_CLUSTERS.length,'each cluster stands on a tint of its own');
+    const far=[];
+    for(const c of LONDON_CLUSTERS){ let r=0; for(const id of c.ids){ const o=objects.find(x=>x.id===id); const d=Math.hypot(o.pos[0]-c.centre[0],o.pos[1]-c.centre[1]); r=Math.max(r,d); if(d>c.radius+1e-9) far.push(`${id} is ${d.toFixed(2)} from the centre of ${c.id}, over its ${c.radius}`); } clusterReport.push(`${c.id} r ${r.toFixed(2)}/${c.radius}`); }
+    assert.deepEqual(far,[],'an object stands outside its cluster');
+    const hull=pts=>{pts=[...pts].sort((a,b)=>a[0]-b[0]||a[1]-b[1]);const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);const lo=[],up=[];for(const p of pts){while(lo.length>=2&&cr(lo[lo.length-2],lo[lo.length-1],p)<=0)lo.pop();lo.push(p);}for(const p of [...pts].reverse()){while(up.length>=2&&cr(up[up.length-2],up[up.length-1],p)<=0)up.pop();up.push(p);}return lo.slice(0,-1).concat(up.slice(0,-1));};
+    const segD=(p,a,b)=>{const ex=b[0]-a[0],ez=b[1]-a[1],l2=ex*ex+ez*ez||1;const t=Math.max(0,Math.min(1,((p[0]-a[0])*ex+(p[1]-a[1])*ez)/l2));return Math.hypot(p[0]-a[0]-ex*t,p[1]-a[1]-ez*t);};
+    const edges=h=>h.length<2?[[h[0],h[0]]]:h.map((p,i)=>[p,h[(i+1)%h.length]]);
+    const dist=(A,B)=>{let d=1e9;for(const [a,b] of edges(A))for(const p of B)d=Math.min(d,segD(p,a,b));for(const [a,b] of edges(B))for(const p of A)d=Math.min(d,segD(p,a,b));return d;};
+    const anchorHull=new Map(LONDON_CLUSTERS.map(c=>[c.id,hull(c.ids.map(id=>objects.find(o=>o.id===id).pos))]));
+    const feetHull=new Map(LONDON_CLUSTERS.map(c=>[c.id,hull(c.ids.flatMap(id=>{const st=stands.find(s=>s.id===id);const b=new THREE.Box3().setFromObject(st.group);return [[b.min.x,b.min.z],[b.min.x,b.max.z],[b.max.x,b.min.z],[b.max.x,b.max.z]];}))]));
+    const close=[];
+    for(let i=0;i<LONDON_CLUSTERS.length;i++) for(let j=i+1;j<LONDON_CLUSTERS.length;j++){
+      const a=LONDON_CLUSTERS[i], b=LONDON_CLUSTERS[j], A=anchorHull.get(a.id), B=anchorHull.get(b.id);
+      for(const id of b.ids){ const p=objects.find(o=>o.id===id).pos; if(A.length>=3&&inPolygon(p[0],p[1],A)) close.push(`${id} of ${b.id} stands inside the hull of ${a.id}`); }
+      for(const id of a.ids){ const p=objects.find(o=>o.id===id).pos; if(B.length>=3&&inPolygon(p[0],p[1],B)) close.push(`${id} of ${a.id} stands inside the hull of ${b.id}`); }
+      const d=dist(A,B), fd=dist(feetHull.get(a.id),feetHull.get(b.id));
+      if(d<8) close.push(`${a.id} and ${b.id}: their hulls are ${d.toFixed(2)} apart, under 8`);
+      if(d<14) clusterReport.push(`${a.id}/${b.id} ${d.toFixed(1)} (ground ${fd.toFixed(1)})`);
+    }
+    assert.deepEqual(close,[],'two clusters run together');
+  }
 
   // ---------- the landscape the blueprint asked for, and the decor it retired ----------
   const missingNames=[];
@@ -766,6 +870,8 @@ try {
   console.log(`PASS: ${LD_ROADS.length} continuous roads, ${objects.length} British objects${LONDON_PROPS?` with ${stands.length} props clear of the water (the oyster stand's ${measured.oysterQuay} quay meshes on dry ground)`:' (props-london.ts absent: stand geometry NOT RUN)'}, ${houses.length} houses, ${bridges.length} crossing, ${measured.gulls??0} pale gulls over the table and off every ray, ${walkers.length} walkers, 240 seconds of motion.`);
   console.log(`      doors: ${doors.map(([id,d])=>`${id} ${d.toFixed(2)}`).join(', ')}`);
   console.log(`      road ends: ${ends.join('; ')}`);
+  console.log(`      clusters: ${clusterReport.join('; ')}`);
+  console.log(`      water clearance: ${housesAndBuildings.map(([l,d])=>`${l} ${d}`).join(', ')}`);
   for(const line of notRun) console.log(`      NOT RUN: ${line}`);
   if(process.env.LONDON_DUMP) console.log(JSON.stringify(measured,null,1));
   { const counts={}; for(const d of decor) counts[d.name]=(counts[d.name]||0)+1; console.log(`      decor: ${Object.entries(counts).map(([k,v])=>`${k} ${v}`).join(', ')}`); }

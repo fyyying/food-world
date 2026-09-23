@@ -35,7 +35,7 @@ const SOOT = '#33302C', TIMBER = '#6E5A3E';
  *  drawn 14 x 4.2 on the street's own centre, which is the ground the paving is actually on. The Docks take
  *  no paving at all, which is the blueprint's own word for them. */
 export const LD_PAVING: [string, number, number, number, number, string][] = [
-  ['westminster-paving', -50, -2.6, 7.0, 2.2, '#b8b4ad'],
+  ['westminster-paving', -66.0, -1.6, 12.0, 1.6, '#b8b4ad'],
 ];
 
 /** How far a walker is raised while it is on a bridge deck, and the ramp at each end. The height is read from
@@ -249,35 +249,37 @@ function costerBarrow(): P {
   return masonry(g) as P;
 }
 
-/** Style, footprint, storeys and candidate spots. Five decorative houses in the whole of Britain, one per
- *  cluster and none in the West Country. The first spot of each is the one the shared-ground pass of 2026-09-23
- *  found in its own cluster: dry, off every road, clear of every stand's 6 x 5 pad and 2.5 approach, and first
- *  on none of the ten arrival rays of any stand (`placeBuilding`); the others are small nudges of it.
+/** Style, footprint, storeys and candidate spots (re-cluster pass, 2026-09-23). At most five decorative houses in
+ *  the whole of Britain, none in the West Country. Each is built at the first of its spots that is dry and at least
+ *  a unit from every water edge (the owner: "please make sure houses are not standing in the river"), off every road,
+ *  clear of every stand's 6 x 5 pad, 2.5 approach and room approach, and first on none of the ten arrival rays of any
+ *  stand (`placeBuilding`). The clusters are dense now, so a house stands in the ground between a cluster's rows or at
+ *  its edge, and a style whose spots all fail is left out rather than forced:
  *
- *  - `uk-westminster-terrace` [-66.3, 1.5]: Lambeth, on the south bank opposite the palace
- *  - `uk-dock-warehouse` [-47.9, 5.0]: Bankside, on the river at the south foot of Westminster Bridge
- *  - `uk-kentish-cottage` [-60.4, 17.9]: among the Weald's hop rows, behind the public house's approach camera
- *  - `uk-dale-farmhouse` [-36.1, -13.2]: on the north-east fell by the flock
- *  - `uk-fife-cottage` [-71.5, -24.5]: behind the distillery on the north coast
+ *  - `uk-westminster-terrace` [-62, -7.5], two storeys, behind the pastry board on the moor road
+ *  - `uk-dock-warehouse` [-39, 8.5] on the river's east bank, behind the pie shop
+ *  - `uk-kentish-cottage` [-43, -8] behind the hop garden
+ *  - `uk-dale-farmhouse` [-49, -23.5] beside the dairy, at the head of the dale lane
+ *  - `uk-fife-cottage` [-66, -12.5] between the herring quay and the oat mill
+ *  The spots were found by a half-unit grid search with `placeBuilding` itself.
  */
 const HOUSES: { id: string; style: UkStyle; w: number; d: number; h: number; storeys?: number; spots: [number, number, number][] }[] = [
-  { id: 'uk-westminster-terrace', style: 'londonTerrace', w: 4.0, d: 1.8, h: 1.45, storeys: 3,
-    spots: [[-66.3, 1.5, 0], [-66.6, 1.3, 0], [-65.9, 1.7, 0]] },
+  { id: 'uk-westminster-terrace', style: 'londonTerrace', w: 4.0, d: 1.8, h: 1.45, storeys: 2,
+    spots: [[-62.0, -7.5, 0], [-62.0, -8.0, 0]] },
   { id: 'uk-dock-warehouse', style: 'dockWarehouse', w: 3.0, d: 2.0, h: 1.25, storeys: 4,
-    spots: [[-47.9, 5.0, 0], [-47.8, 5.1, 0], [-47.6, 5.1, 0]] },
-  // Moved south from [-60.3, 15.2] on 2026-09-23: the public house's approach camera stood inside it.
+    spots: [[-39.0, 8.5, 0], [-39.0, 8.0, 0], [-39.5, 7.5, 0]] },
   { id: 'uk-kentish-cottage', style: 'kentishCottage', w: 2.8, d: 2.0, h: 1.15, storeys: 2,
-    spots: [[-60.4, 17.9, 0], [-60.7, 17.8, 0], [-60.1, 18.0, 0]] },
+    spots: [[-43.0, -8.0, 0], [-43.0, -8.5, 0]] },
   { id: 'uk-dale-farmhouse', style: 'daleFarm', w: 2.4, d: 1.9, h: 1.9,
-    spots: [[-36.1, -13.2, 0], [-36.1, -13.0, 0], [-64, -12.5, 0]] },
+    spots: [[-49.0, -23.5, 0], [-48.5, -23.0, 0], [-48.5, -22.0, 0]] },
   { id: 'uk-fife-cottage', style: 'fifeCottage', w: 2.4, d: 1.8, h: 1.8,
-    spots: [[-71.5, -24.5, 0], [-72, -24.5, 0], [-75, -24.4, 0]] },
+    spots: [[-66.0, -12.5, 0], [-65.5, -12.5, 0]] },
 ];
 
 /** Hand-picked gas standards; `londonTown` then lays more along every road, at least 4.5 apart. Each is
  *  dropped if it would crowd a clickable, stand on a lane, reach into the water or hide a stand. */
 const LAMPS: [number, number][] = [
-  [-45.9, -2.6], [-43.1, 1.0], [-43.1, 5.0], [-57.9, 9.3],
+  [-54.5, -0.3], [-56.6, 1.0],
 ];
 
 export function londonTown(ctx: LayoutCtx) {
@@ -319,7 +321,9 @@ export function londonTown(ctx: LayoutCtx) {
   const ts0 = road('LD-TS').points;
   const offTerminus = (x: number, z: number) => !(x > ts0[1][0] - 2.4 && x < ts0[0][0] + 2.4 && Math.abs(z - ts0[0][1]) < 2.3);   // the omnibus swings wide at its turns
   const yd = road('LD-YD').points, offYard = (x: number, z: number) => !(x > Math.min(...yd.map(p => p[0])) - 1.3 && x < Math.max(...yd.map(p => p[0])) + 1.3 && z > Math.min(...yd.map(p => p[1])) - 1.3 && z < Math.max(...yd.map(p => p[1])) + 1.3);   // the pony's ring is drawn rounder than its table
-  const spaced = (x: number, z: number) => offTerminus(x, z) && offYard(x, z) && lit.every(([lx, lz]) => Math.hypot(lx - x, lz - z) >= 4.5);   // a standard every few doors, never a cluster
+  // nothing tall within the palace's width and 1.25 of its height behind it, where the arrival camera draws it on the roof
+  const offRoofLine = (x: number, z: number) => !(x > -79.6 && x < -70.4 && z > -14.2 && z < -6.2);
+  const spaced = (x: number, z: number) => offRoofLine(x, z) && offTerminus(x, z) && offYard(x, z) && lit.every(([lx, lz]) => Math.hypot(lx - x, lz - z) >= 4.5);   // a standard every few doors, never a cluster
   for (const [i, [x, z]] of LAMPS.entries()) {
     if (!spaced(x, z)) continue;
     const lamp = tryPlace(ctx, gasLamp(2.5 + (i % 2) * .2), x, z, i * .7);
@@ -340,7 +344,7 @@ export function londonTown(ctx: LayoutCtx) {
   }
 
   // ---------- the dock furniture: bollards, coils of rope and stacked barrels along the river bank ----------
-  for (const [i, [x, z]] of ([[-48.6, 16.7], [-46.8, 16.6], [-45.0, 16.6], [-43.3, 16.9], [-49.6, 14.0]] as [number, number][]).entries()) {
+  for (const [i, [x, z]] of ([[-48.3, 16.3], [-48.2, 14.4], [-36.9, 18.9], [-38.3, 19.2], [-49.9, 16.4]] as [number, number][]).entries()) {
     const bollard = new THREE.Group();
     add(bollard, new THREE.Mesh(new THREE.CylinderGeometry(.15, .19, .52, 10), mat(SOOT)), 0, .26, 0);
     add(bollard, new THREE.Mesh(new THREE.SphereGeometry(.16, 9, 6), mat(SOOT)), 0, .54, 0);
@@ -351,14 +355,14 @@ export function londonTown(ctx: LayoutCtx) {
       const c = tryPlace(ctx, coil, x + .7, z - .5, i); if (c) c.name = 'rope-coil';
     }
   }
-  for (const [x, z, rot] of [[-47.9, 17.6, .2], [-44.2, 17.8, -.3], [-49.6, 12.2, .1]] as [number, number, number][]) {
+  for (const [x, z, rot] of [[-37.2, 20.4, .2], [-49.9, 15.1, -.3], [-38.6, 20.9, .1]] as [number, number, number][]) {
     const stack = new THREE.Group();
     for (const [dx, dy, dz] of [[0, 0, 0], [.52, 0, .1], [.26, .46, .05]] as [number, number, number][])
       add(stack, new THREE.Mesh(new THREE.CylinderGeometry(.23, .19, .44, 10), mat(LD.oakSmoke)), dx, dy + .22, dz);
     const s = tryPlace(ctx, stack, x, z, rot); if (s) s.name = 'dock-barrels';
   }
   // A coster's barrow standing at the kerb at each end of the street, and one on the dock road.
-  for (const [x, z, rot] of [[-47.3, 5.9, .1], [-41.2, -3.1, 3.0], [-51.9, 9.8, .3], [-62.0, 10.2, .2]] as [number, number, number][]) {
+  for (const [x, z, rot] of [[-52.6, -0.2, .1], [-37.6, 3.1, 3.0], [-58.9, 20.4, .3], [-70.6, 10.3, .2]] as [number, number, number][]) {
     const barrow = tryPlace(ctx, costerBarrow(), x, z, rot); if (barrow) barrow.name = 'coster-barrow';
   }
 
@@ -370,7 +374,9 @@ export function londonTown(ctx: LayoutCtx) {
   // to the omnibus terminus at the south foot of Westminster Bridge (LD-TS), a stretch of Borough High Street no
   // stand faces and no room approach looks across: the omnibus and one hansom turn its loop half a lap apart,
   // one on each side of the street, so they meet only side by side on the straight; the second hansom waits at
-  // the kerb on the hop road, with its horse to the north.
+  // the kerb on the east lane, with its horse to the north. Re-cluster pass (2026-09-23): the terminus is now a
+  // widened stretch of the moor road at Westminster's north-east corner, behind the tea room, where no stand's rays
+  // or room approach pass.
   // The loop runs 0.2 north of the street's centreline (second walkthrough 60, 2026-09-23), so its south lane
   // keeps 1.4 clear of the omnibus stand's inner rank; the north lane stays on the widened street.
   const ts = road('LD-TS').points, cz = ts[0][1] - .2, WEST = ts[1][0] + .1, EAST = ts[0][0] - .1, SIDE = .62, loop: THREE.Vector3[] = [];
@@ -395,8 +401,8 @@ export function londonTown(ctx: LayoutCtx) {
     v.userData.tick?.(t, dt);
   }));
   { const waiting = hansomCab('#2A2420'); waiting.name = 'street-vehicle'; group.add(waiting);
-    // 0.6 further up the hop road than it was, clear of the loop's west turn (second walkthrough 60)
-    waiting.position.set(-50.5, TOP + .04, 13.0); waiting.rotation.y = Math.PI / 2; tickers.push((t, dt) => waiting.userData.tick?.(t, dt)); }
+    // on the east lane between the tea room and the mushroom wood, clear of the loop's east turn
+    waiting.position.set(-53.4, TOP + .04, -6.0); waiting.rotation.y = Math.PI / 2; tickers.push((t, dt) => waiting.userData.tick?.(t, dt)); }
 
   // ---------- five peopled lanes, twenty residents, one leading a pit pony round the dale yard ----------
   for (const lane of LD_LANES) {
@@ -425,7 +431,7 @@ export function londonTown(ctx: LayoutCtx) {
   // A standing figure does not translate, so it does not step. The pair at the fell gate, [-65.5, -13.0], stood
   // inside the walled pen 2.2 behind the palace and drew on its roof from the arrival camera (second walkthrough
   // 56, 2026-09-23); the pen is gone from there, and so is the pair.
-  for (const [i, [x, z, n]] of ([[-59.2, -12.3, 2], [-47.8, 6.1, 2], [-47.3, 17.3, 2], [-56.3, -12.5, 2], [-67.0, 12.6, 2]] as [number, number, number][]).entries()) {
+  for (const [i, [x, z, n]] of ([[-58.4, -9.5, 2], [-52.8, 1.8, 2], [-37.3, 2.9, 2]] as [number, number, number][]).entries()) {
     for (let k = 0; k < n; k++) {
       const a = (k / n) * Math.PI * 2 + i;
       const nx = x + Math.cos(a) * .55, nz = z + Math.sin(a) * .55;

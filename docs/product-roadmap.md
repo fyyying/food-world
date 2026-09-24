@@ -184,6 +184,10 @@ Requested by the owner on 2026-09-23, for next week or later. The Food World lan
 - The raise effect, the plate shadow and the world names carry over from the plates; the map is one image or one SVG with per-area hit regions, sized for the phone first.
 - Open questions for the design pass: projection and framing (the whole globe or the inhabited belt), how an area smaller than a country (Sichuan) is lit inside its country, and whether the lit areas carry a tiny painted landmark each.
 
+## 13. One world per country where visitors pick it from the map
+
+Owner direction, 2026-09-24, alongside item 12. Britain moves out of Central Europe into its own world, the UK (docs/london-world.md, "Owner ruling, 2026-09-24"). Later, Spain (today in `mediterranean`) and Turkey (today in `middle-east`) are split into their own worlds the same way, because on the world map a visitor picks a country, and a country should open its own world. Each split: new world id and plate, its areas moved with their objects, cards, rooms and harness, the old world left published only if it still has built areas, old links redirected. Turkey's split can travel with its re-cluster (docs/turkey-world.md). Not scheduled yet.
+
 ## How to continue
 
 The first UI pass is complete. No implementation order has been agreed for topics 2–11.

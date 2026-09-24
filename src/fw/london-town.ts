@@ -20,6 +20,8 @@ import {
   tryPlace, placeBuilding, isWet, inRoomApproach, road, type Lane, type Pt, type Road,
 } from './london-landscape';
 import { LONDON_OBJECTS } from './london-objects';
+import { W, WP, WPS } from './london-warp';
+import { TABLE } from './london-landscape';
 import type { LayoutCtx } from './worldkit';
 
 export { LD_ROADS, LD_BRIDGES, LD_LANES, BRIDGE_SPAN, BRIDGE_DECK_Y, type Lane, type Road };
@@ -35,7 +37,7 @@ const SOOT = '#33302C', TIMBER = '#6E5A3E';
  *  drawn 14 x 4.2 on the street's own centre, which is the ground the paving is actually on. The Docks take
  *  no paving at all, which is the blueprint's own word for them. */
 export const LD_PAVING: [string, number, number, number, number, string][] = [
-  ['westminster-paving', -66.0, -1.6, 12.0, 1.6, '#b8b4ad'],
+  ['westminster-paving', ...W(-66.0, -1.6), 12.0, 1.6, '#b8b4ad'],
 ];
 
 /** How far a walker is raised while it is on a bridge deck, and the ramp at each end. The height is read from
@@ -89,7 +91,7 @@ function drawnPoints(r: Road): Pt[] {
   for (const end of [0, 1]) {
     const i = end ? points.length - 1 : 0, j = end ? points.length - 2 : 1;
     const [x, z] = points[i];
-    if (Math.abs(z) >= 27.6 || x <= -81.6) continue;                             // the road leaves the table
+    if (z <= TABLE.minZ + .4 || z >= TABLE.maxZ - .4 || x <= TABLE.minX + .4 || x >= TABLE.maxX - .4) continue;   // the road leaves the table
     let reach = 0;
     for (const other of LD_ROADS) {
       if (other.id === r.id) continue;
@@ -265,22 +267,22 @@ function costerBarrow(): P {
  */
 const HOUSES: { id: string; style: UkStyle; w: number; d: number; h: number; storeys?: number; spots: [number, number, number][] }[] = [
   { id: 'uk-westminster-terrace', style: 'londonTerrace', w: 4.0, d: 1.8, h: 1.45, storeys: 2,
-    spots: [[-62.0, -7.5, 0], [-62.0, -8.0, 0]] },
+    spots: ([[-62.0, -7.5, 0], [-62.0, -8.0, 0]] as [number, number, number][]).map(([x, z, r]) => [...W(x, z), r]) },
   { id: 'uk-dock-warehouse', style: 'dockWarehouse', w: 3.0, d: 2.0, h: 1.25, storeys: 4,
-    spots: [[-39.0, 8.5, 0], [-39.0, 8.0, 0], [-39.5, 7.5, 0]] },
+    spots: ([[-39.0, 8.5, 0], [-39.0, 8.0, 0], [-39.5, 7.5, 0]] as [number, number, number][]).map(([x, z, r]) => [...W(x, z, 2), r]) },   // with the Docks, south of the row cut
   { id: 'uk-kentish-cottage', style: 'kentishCottage', w: 2.8, d: 2.0, h: 1.15, storeys: 2,
-    spots: [[-43.0, -8.0, 0], [-43.0, -8.5, 0]] },
+    spots: ([[-43.0, -8.0, 0], [-43.0, -8.5, 0]] as [number, number, number][]).map(([x, z, r]) => [...W(x, z, 1), r]) },   // with the Weald, south of the row cut
   { id: 'uk-dale-farmhouse', style: 'daleFarm', w: 2.4, d: 1.9, h: 1.9,
-    spots: [[-49.0, -23.5, 0], [-48.5, -23.0, 0], [-48.5, -22.0, 0]] },
+    spots: ([[-49.0, -23.5, 0], [-48.5, -23.0, 0], [-48.5, -22.0, 0]] as [number, number, number][]).map(([x, z, r]) => [...W(x, z), r]) },
   { id: 'uk-fife-cottage', style: 'fifeCottage', w: 2.4, d: 1.8, h: 1.8,
-    spots: [[-66.0, -12.5, 0], [-65.5, -12.5, 0]] },
+    spots: ([[-66.0, -12.5, 0], [-65.5, -12.5, 0]] as [number, number, number][]).map(([x, z, r]) => [...W(x, z), r]) },
 ];
 
 /** Hand-picked gas standards; `londonTown` then lays more along every road, at least 4.5 apart. Each is
  *  dropped if it would crowd a clickable, stand on a lane, reach into the water or hide a stand. */
-const LAMPS: [number, number][] = [
+const LAMPS: [number, number][] = WPS([
   [-54.5, -0.3], [-56.6, 1.0],
-];
+]);
 
 export function londonTown(ctx: LayoutCtx) {
   const { group, place, tickers, TOP } = ctx;
@@ -322,7 +324,8 @@ export function londonTown(ctx: LayoutCtx) {
   const offTerminus = (x: number, z: number) => !(x > ts0[1][0] - 2.4 && x < ts0[0][0] + 2.4 && Math.abs(z - ts0[0][1]) < 2.3);   // the omnibus swings wide at its turns
   const yd = road('LD-YD').points, offYard = (x: number, z: number) => !(x > Math.min(...yd.map(p => p[0])) - 1.3 && x < Math.max(...yd.map(p => p[0])) + 1.3 && z > Math.min(...yd.map(p => p[1])) - 1.3 && z < Math.max(...yd.map(p => p[1])) + 1.3);   // the pony's ring is drawn rounder than its table
   // nothing tall within the palace's width and 1.25 of its height behind it, where the arrival camera draws it on the roof
-  const offRoofLine = (x: number, z: number) => !(x > -79.6 && x < -70.4 && z > -14.2 && z < -6.2);
+  const [rx0, rz0] = W(-79.6, -9.0), [rx1, rz1] = W(-70.4, -6.2);   // the band behind the palace, in its own row
+  const offRoofLine = (x: number, z: number) => !(x > rx0 && x < rx1 && z > rz0 - 5.2 && z < rz1);
   const spaced = (x: number, z: number) => offRoofLine(x, z) && offTerminus(x, z) && offYard(x, z) && lit.every(([lx, lz]) => Math.hypot(lx - x, lz - z) >= 4.5);   // a standard every few doors, never a cluster
   for (const [i, [x, z]] of LAMPS.entries()) {
     if (!spaced(x, z)) continue;
@@ -344,7 +347,7 @@ export function londonTown(ctx: LayoutCtx) {
   }
 
   // ---------- the dock furniture: bollards, coils of rope and stacked barrels along the river bank ----------
-  for (const [i, [x, z]] of ([[-48.3, 16.3], [-48.2, 14.4], [-36.9, 18.9], [-38.3, 19.2], [-49.9, 16.4]] as [number, number][]).entries()) {
+  for (const [i, [x, z]] of WPS([[-48.3, 16.3], [-48.2, 14.4], [-36.9, 18.9], [-38.3, 19.2], [-49.9, 16.4]]).entries()) {
     const bollard = new THREE.Group();
     add(bollard, new THREE.Mesh(new THREE.CylinderGeometry(.15, .19, .52, 10), mat(SOOT)), 0, .26, 0);
     add(bollard, new THREE.Mesh(new THREE.SphereGeometry(.16, 9, 6), mat(SOOT)), 0, .54, 0);
@@ -355,14 +358,14 @@ export function londonTown(ctx: LayoutCtx) {
       const c = tryPlace(ctx, coil, x + .7, z - .5, i); if (c) c.name = 'rope-coil';
     }
   }
-  for (const [x, z, rot] of [[-37.2, 20.4, .2], [-49.9, 15.1, -.3], [-38.6, 20.9, .1]] as [number, number, number][]) {
+  for (const [x, z, rot] of ([[-37.2, 20.4, .2], [-49.9, 15.1, -.3], [-38.6, 20.9, .1]] as [number, number, number][]).map(([x, z, r]) => [...W(x, z), r])) {
     const stack = new THREE.Group();
     for (const [dx, dy, dz] of [[0, 0, 0], [.52, 0, .1], [.26, .46, .05]] as [number, number, number][])
       add(stack, new THREE.Mesh(new THREE.CylinderGeometry(.23, .19, .44, 10), mat(LD.oakSmoke)), dx, dy + .22, dz);
     const s = tryPlace(ctx, stack, x, z, rot); if (s) s.name = 'dock-barrels';
   }
   // A coster's barrow standing at the kerb at each end of the street, and one on the dock road.
-  for (const [x, z, rot] of [[-52.6, -0.2, .1], [-37.6, 3.1, 3.0], [-58.9, 20.4, .3], [-70.6, 10.3, .2]] as [number, number, number][]) {
+  for (const [x, z, rot] of ([[-52.6, -0.2, .1], [-37.6, 3.1, 3.0], [-58.9, 20.4, .3], [-70.6, 10.3, .2]] as [number, number, number][]).map(([x, z, r]) => [...W(x, z), r])) {
     const barrow = tryPlace(ctx, costerBarrow(), x, z, rot); if (barrow) barrow.name = 'coster-barrow';
   }
 
@@ -402,7 +405,7 @@ export function londonTown(ctx: LayoutCtx) {
   }));
   { const waiting = hansomCab('#2A2420'); waiting.name = 'street-vehicle'; group.add(waiting);
     // on the east lane between the tea room and the mushroom wood, clear of the loop's east turn
-    waiting.position.set(-53.4, TOP + .04, -6.0); waiting.rotation.y = Math.PI / 2; tickers.push((t, dt) => waiting.userData.tick?.(t, dt)); }
+    const [wx, wz] = W(-53.4, -6.0); waiting.position.set(wx, TOP + .04, wz); waiting.rotation.y = Math.PI / 2; tickers.push((t, dt) => waiting.userData.tick?.(t, dt)); }
 
   // ---------- five peopled lanes, twenty residents, one leading a pit pony round the dale yard ----------
   for (const lane of LD_LANES) {
@@ -431,7 +434,7 @@ export function londonTown(ctx: LayoutCtx) {
   // A standing figure does not translate, so it does not step. The pair at the fell gate, [-65.5, -13.0], stood
   // inside the walled pen 2.2 behind the palace and drew on its roof from the arrival camera (second walkthrough
   // 56, 2026-09-23); the pen is gone from there, and so is the pair.
-  for (const [i, [x, z, n]] of ([[-58.4, -9.5, 2], [-52.8, 1.8, 2], [-37.3, 2.9, 2]] as [number, number, number][]).entries()) {
+  for (const [i, [x, z, n]] of ([[-58.4, -9.5, 2], [-52.8, 1.8, 2], [-37.3, 2.9, 2]] as [number, number, number][]).map(([x, z, k]) => [...W(x, z), k]).entries()) {
     for (let k = 0; k < n; k++) {
       const a = (k / n) * Math.PI * 2 + i;
       const nx = x + Math.cos(a) * .55, nz = z + Math.sin(a) * .55;

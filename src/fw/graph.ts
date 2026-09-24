@@ -121,7 +121,7 @@ export const AREAS: Record<Area, AreaInfo> = {
   kyoto: { world: "japan", name: "Kyoto", zh: "京都", blurb: "the Golden Pavilion, the torii path, machiya, sakura on the Kamo river", center: [-24, 12] },
   fuji: { world: "japan", name: "Fuji & the lake", zh: "富士山", blurb: "the mountain, the lake, the onsen monkeys, the shinkansen", center: [6, 8] },
   hokkaido: { world: "japan", name: "Hokkaido", zh: "北海道", blurb: "the fishing port, salmon and cod, pumpkins and cabbages, the miso brewery", center: [-22, -16] },
-  london: { world: "central-europe", name: "Britain", zh: "Great Britain", blurb: "Westminster and the river, the docks, the Weald, the Dales, the West Country and the herring coast", center: [-66, -1.6] },
+  london: { world: "central-europe", name: "Britain", zh: "Great Britain", blurb: "Westminster and the river, the docks, the Weald, the Dales, the West Country and the herring coast", center: [-66, 11.9] },
   budapest: { world: "central-europe", name: "Budapest & the puszta", zh: "Magyarország", blurb: "the Parliament on the Danube, the baths, goulash in the bogrács, grey cattle and csikós", center: [10, -4] },
   alps: { world: "central-europe", name: "The Alps", zh: "Die Alpen", blurb: "the chalet, the cable car, cows with bells and alpine cheese", center: [-20, 14] },
   georgia: { world: "central-europe", name: "Georgia", zh: "საქართველო", blurb: "old Tbilisi, the sulfur baths, the supra, qvevri wine, beans and walnuts", center: [27, 2] },
@@ -137,7 +137,8 @@ export const WORLDS: Record<WorldId, { name: string; zh: string; regionId: strin
   "southeast-asia": { name: "Southeast Asia", zh: "เอเชียตะวันออกเฉียงใต้", regionId: "southeast-asia" },
   "north-america": { name: "North America", zh: "The United States", regionId: "north-america" },
   japan: { name: "Japan", zh: "日本", regionId: "japan" },
-  "central-europe": { name: "Central Europe", zh: "Europe", regionId: "central-europe" },
+  // UK re-lay, 2026-09-24: this world is the United Kingdom; the id stays `central-europe` until the rename to `uk`
+  "central-europe": { name: "United Kingdom", zh: "Britain", regionId: "central-europe" },
 };
 export const areasOf = (world: WorldId) => (Object.keys(AREAS) as Area[]).filter((a) => AREAS[a].world === world);
 
@@ -1061,7 +1062,7 @@ export const MAP_REGIONS: MapRegion[] = [
   { id: "north-america", name: "North America", cuisines: ["American"], pos: [-50, -14], size: 6, color: "#d8c27b", emoji: ["🍔", "🥞", "🔥", "🌽"], built: true, seed: 11 },
   { id: "mexico", name: "Mexico", cuisines: ["Mexican"], pos: [-40, 10], size: 6, color: "#e0a06a", emoji: ["🌽", "🌵", "🥑", "🌮"], built: true, seed: 12 },
   { id: "italy", name: "Italy", cuisines: ["Italian"], pos: [-8, -4], size: 6.5, color: "#a8c07a", emoji: ["🍝", "🍅", "🫒", "🧀"], built: true, seed: 13 },
-  { id: "central-europe", name: "Central Europe", cuisines: ["British", "Hungarian", "Georgian", "German", "Swiss", "French", "Swedish"], pos: [-12, -26], size: 6, color: "#93b48a", emoji: ["🥧", "🍲", "🥔", "🧈"], built: true, seed: 14 },
+  { id: "central-europe", name: "United Kingdom", cuisines: ["British", "Hungarian", "Georgian", "German", "Swiss", "French", "Swedish"], pos: [-12, -26], size: 6, color: "#93b48a", emoji: ["🥧", "🍲", "🥔", "🧈"], built: true, seed: 14 },
   { id: "mediterranean", name: "Mediterranean", cuisines: ["Mediterranean", "Greek", "Spanish", "North African"], pos: [-20, 14], size: 6, color: "#b9cf94", emoji: ["🫒", "🍋", "🐟", "🧆"], built: true, seed: 15 },
   { id: "middle-east", name: "Middle East", cuisines: ["Middle Eastern", "Lebanese", "Turkish"], pos: [10, 8], size: 6, color: "#e2cf9b", emoji: ["🧆", "🍢", "🫓", "🌿"], built: true, seed: 16 },
   { id: "india", name: "India", cuisines: ["Indian"], pos: [22, 20], size: 6, color: "#e0b25e", emoji: ["🍛", "🫚", "🌶️", "🫓"], built: true, seed: 17 },

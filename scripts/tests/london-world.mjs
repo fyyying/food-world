@@ -51,11 +51,15 @@ const HIDDEN={};
 /** Footprint overlap in units, positive for an overlap, for pairs under a unit apart. None since 2026-09-23. */
 const CROWDED={};
 
+/** China's gap between two areas' footprint hulls that are parted by landscape: Sichuan and Xinjiang, the owner's
+ *  example ("China has a clear area for Sichuan, separated by mountains from Xinjiang"), measured on 2026-09-24 with
+ *  the same hull as the check below over the props as built by `world-china.ts` (docs/london-world.md, "UK re-lay"). */
+const CHINA_GAP=14.97;
 const temp=await mkdtemp(join(tmpdir(),'london-world-'));
 try {
   await build({input:{
     world:'src/fw/world-ceurope.ts', landscape:'src/fw/london-landscape.ts', town:'src/fw/london-town.ts',
-    objects:'src/fw/london-objects.ts', camera:'src/fw/world-camera.ts',
+    objects:'src/fw/london-objects.ts', camera:'src/fw/world-camera.ts', warp:'src/fw/london-warp.ts', graph:'src/fw/graph.ts',
     ...(HAS_PROPS?{props:PROPS_FILE}:{}),
   },platform:'node',output:{banner:'import.meta.env={VITE_STATIC:"1",BASE_URL:"/"};',dir:temp,format:'esm',entryFileNames:'[name].mjs',chunkFileNames:'[name].mjs'}});
   const {buildCeurope}=await import(pathToFileURL(join(temp,'world.mjs')));
@@ -69,34 +73,37 @@ try {
   const {LONDON_OBJECTS,LONDON_CLUSTERS}=await import(pathToFileURL(join(temp,'objects.mjs')));
   const LONDON_PROPS=HAS_PROPS?(await import(pathToFileURL(join(temp,'props.mjs')))).LONDON_PROPS:null;
   const {worldZoomLimit,worldFogRange}=await import(pathToFileURL(join(temp,'camera.mjs')));
+  const {W}=await import(pathToFileURL(join(temp,'warp.mjs')));
+  const {CEUROPE_OBJECTS,AREAS,WORLDS,MAP_REGIONS}=await import(pathToFileURL(join(temp,'graph.mjs')));
 
   // ---------- the table and the camera ----------
   for(const [w,h] of [[390,844],[430,932],[720,1024],[667,375]]) assert.equal(worldZoomLimit('central-europe',w,h),90,'phone worlds share one zoom-out limit');
-  assert.equal(worldZoomLimit('central-europe',1280,720),215,'Central Europe joins the wide desktop overview now that its table is 120 across');
-  const HALF=Math.hypot(120,56)/2, REACH=215+HALF;
+  assert.equal(worldZoomLimit('central-europe',1280,720),215,'the United Kingdom keeps the wide desktop overview: its table is 88 deep');
+  const HALF=Math.hypot(68,88)/2, REACH=215+HALF;
   const [fogNear,fogFar]=worldFogRange('central-europe',1280,720,HALF);
   const haze=d=>Math.min(1,Math.max(0,(d-fogNear)/(fogFar-fogNear)));
   assert.ok(haze(215)<.1,`the table centre at the zoom limit is ${(haze(215)*100).toFixed(0)} percent hazed`);
   assert.ok(haze(REACH)<.4,`the far corner of the table at the zoom limit is ${(haze(REACH)*100).toFixed(0)} percent hazed`);
   assert.deepEqual(worldFogRange('central-europe',390,844,HALF),[90,200],'a phone keeps 90 and 200: its limit is 90');
-  assert.deepEqual(TABLE,{minX:-82,maxX:38,minZ:-28,maxZ:28},'the table runs x -82 to 38 and z -28 to 28');
-  assert.deepEqual(LD_BAND,[-80,-34],'Britain owns x -80 to -34');
+  // UK re-lay, 2026-09-24: Britain has the whole table, W 68 by D 88, and nothing of the continent is on it.
+  assert.deepEqual(TABLE,{minX:-84,maxX:-16,minZ:-31,maxZ:57},'the table runs x -84 to -16 and z -31 to 57');
+  assert.deepEqual(LD_BAND,[-84,-16],'Britain owns the whole table');
 
   // ---------- the sea is one shape: an outer ring with the island as its hole ----------
   const sea=seaOutline(), island=islandOutline();
   assert.equal(sea.length,SEA_RING.length);
   assert.equal(island.length,ISLAND.length);
   assert.deepEqual(sea,SEA_RING.map(p=>[...p]),'the outer ring takes no wobble: three of its sides are the table edge and the fourth is the strait it is measured against');
-  for(const [x,z] of sea) assert.ok(x<=-82||x>=-31.4-1e-9,`a ring vertex at x ${x} is neither the west edge nor the continent's coast`);
+  for(const [x,z] of sea) assert.ok((x===TABLE.minX||x===TABLE.maxX)&&(z===TABLE.minZ||z===TABLE.maxZ),`a ring vertex at ${x}, ${z} is not a table corner`);
   // Square caps: the ring's own vertices are all at the table edge, and the island never reaches one.
-  for(const [x,z] of island) assert.ok(x>TABLE.minX&&x<TABLE.maxX&&Math.abs(z)<TABLE.maxZ,`the island coast must not touch the table edge, ${x} ${z} does`);
+  for(const [x,z] of island) assert.ok(x>TABLE.minX+1&&x<TABLE.maxX-1&&z>TABLE.minZ+1&&z<TABLE.maxZ-1,`the island coast must keep sea between it and the table edge, ${x} ${z} does not`);
   // The rim is an inset of both rings, vertex by vertex, and it never folds through itself inside an inlet.
   const ringRim=offsetOutline(sea,1.2), islandRim=insetOutline(island,1.2);
   assert.equal(ringRim.length,sea.length); assert.equal(islandRim.length,island.length);
   for(const [i,[x,z]] of sea.entries()){
     const [rx,rz]=ringRim[i];
     if(x<=TABLE.minX||x>=TABLE.maxX) assert.equal(rx,x,'a vertex on the table edge must not move, so the cap stays square');
-    if(Math.abs(z)>=TABLE.maxZ) assert.equal(rz,z,'a vertex on the table edge must not move, so the cap stays square');
+    if(z<=TABLE.minZ||z>=TABLE.maxZ) assert.equal(rz,z,'a vertex on the table edge must not move, so the cap stays square');
   }
   for(const [i,[rx,rz]] of islandRim.entries()){
     assert.ok(Number.isFinite(rx)&&Number.isFinite(rz));
@@ -105,24 +112,10 @@ try {
   }
   for(const [x,z] of ringRim) assert.ok(!inPolygon(x,z,sea)||x<=TABLE.minX||x>=TABLE.maxX,'the rim must lie outside the water');
 
-  // ---------- the strait: at least four units of open water, the table's full depth, square at each edge ----------
+  // ---------- the sea all round: the strait went with the continent (UK re-lay, 2026-09-24) ----------
   {
-    const east=-31.4;
-    let narrowest=1e9, where=null;
-    for(let z=-28;z<=28;z+=.25){
-      // the island's east shore at this z, taken off the drawn coast
-      let shore=-1e9;
-      for(let i=0,j=island.length-1;i<island.length;j=i++){
-        const [ax,az]=island[j],[bx,bz]=island[i];
-        if((az>z)!==(bz>z)){ const x=ax+(bx-ax)*(z-az)/(bz-az); shore=Math.max(shore,x); }
-      }
-      if(shore<-1e8)continue;
-      const w=east-shore;
-      if(w<narrowest){narrowest=w;where=z;}
-    }
-    assert.ok(narrowest>=4.0,`the strait narrows to ${narrowest.toFixed(2)} at z ${where}; the blueprint keeps it at least 4.0 after the jitter`);
-    assert.ok(COAST_JITTER<=.2,`the strait's own shore may take at most 0.2 of jitter`);
-    for(const z of [-28,28]) assert.ok(isWet(-33.5,z===28?27.9:-27.9),'the strait must reach the table edge at both ends');
+    for(const [x,z] of [[TABLE.minX+.5,0],[TABLE.maxX-.5,0],[-50,TABLE.minZ+.5],[-50,TABLE.maxZ-.5],[TABLE.maxX-.5,TABLE.minZ+.5]]) assert.ok(isWet(x,z),`the sea must run round the island, it does not at ${x}, ${z}`);
+    assert.ok(COAST_JITTER<=.2,'the coast may take at most 0.2 of jitter');
   }
 
   // ---------- every river and channel runs from a source to a mouth ----------
@@ -152,19 +145,19 @@ try {
     // The widths (re-cluster pass, 2026-09-23): 2.6 through Westminster, and wide enough under Tower Bridge for its
     // bascule span, whose piers stand at the river's edges.
     const uAt=(x,z)=>{let best=0,bd=1e9;for(let i=0;i<=400;i++){const p=L.RIVER_CURVE.getPointAt(i/400);const d=Math.hypot(p.x-x,p.z-z);if(d<bd){bd=d;best=i/400;}}return best;};
-    assert.equal(riverWidth(uAt(-62,8.6)),2.6,'the river is 2.6 through Westminster');
-    assert.ok(riverWidth(uAt(-45.5,20))>=5.4,`the river under Tower Bridge is ${riverWidth(uAt(-45.5,20)).toFixed(2)} wide, narrower than the bascule span`);
+    assert.equal(riverWidth(uAt(...W(-62,8.6))),2.6,'the river is 2.6 through Westminster');
+    assert.ok(riverWidth(uAt(...W(-45.5,20)))>=5.4,`the river under Tower Bridge is ${riverWidth(uAt(...W(-45.5,20))).toFixed(2)} wide, narrower than the bascule span`);
   }
 
   // ---------- the two inlets and the cockle sand ----------
   {
     // The Firth of Forth is cut to the Forth Bridge's width (re-cluster pass, 2026-09-23): open water under the
     // bridge, and its shore road dry just south of the bridge's front.
-    assert.ok(isWet(-59.6,-23.2)&&isWet(-61.8,-23.2)&&isWet(-56.4,-23.2),'the Firth of Forth must be open water under the bridge');
-    assert.ok(!isWet(-59.6,-20.3),'the shore road south of the firth must stay dry');
+    assert.ok(isWet(...W(-59.6,-23.2))&&isWet(...W(-61.8,-23.2))&&isWet(...W(-56.4,-23.2)),'the Firth of Forth must be open water under the bridge');
+    assert.ok(!isWet(...W(-59.6,-20.3)),'the shore road south of the firth must stay dry');
     // The Bristol Channel reaches x -72.9 and its head is wet sand, which is ground and not water.
-    assert.ok(isWet(-75,12.7),'the Bristol Channel must be open water west of its head');
-    assert.ok(!isWet(-71.5,13),'the cockle sand east of the channel head is ground, not water');
+    assert.ok(isWet(...W(-75,12.7)),'the Bristol Channel must be open water west of its head');
+    assert.ok(!isWet(...W(-71.5,13)),'the cockle sand east of the channel head is ground, not water');
     assert.ok(CHANNEL_SAND_WET.length>=4&&CHANNEL_SAND_DRY.length>=4,'the channel head carries both sand polygons');
     for(const [x,z] of CHANNEL_SAND_DRY) assert.ok(!isWet(x,z),`the dry sand corner ${x}, ${z} is in the water`);
   }
@@ -181,7 +174,7 @@ try {
   for(const o of objects){
     const [x,z]=o.pos;
     assert.ok(x>=LD_BAND[0]&&x<=LD_BAND[1],`${o.id}: at x ${x}, outside Britain's band of ${LD_BAND}`);
-    assert.ok(z>=-28&&z<=24,`${o.id}: at z ${z}, outside Britain's band`);
+    assert.ok(z>=TABLE.minZ+2&&z<=TABLE.maxZ-2,`${o.id}: at z ${z}, off the island`);
     if(!AFLOAT.has(o.id)){
       assert.ok(!isWet(x,z),`${o.id}: stands in water`);
       for(let dx=-1.4;dx<=1.4;dx+=.35)for(let dz=-1.2;dz<=1.2;dz+=.3)
@@ -358,7 +351,7 @@ try {
   const dangling=[], ends=[];
   for(const r of LD_ROADS){
     for(const [which,[x,z]] of [['start',r.points[0]],['end',r.points[r.points.length-1]]]){
-      if(Math.abs(z)>=TABLE.maxZ-.4||x<=TABLE.minX+.4) continue;   // it leaves the table
+      if(z<=TABLE.minZ+.4||z>=TABLE.maxZ-.4||x<=TABLE.minX+.4||x>=TABLE.maxX-.4) continue;   // it leaves the table
       const reach=r.width/2;
       const onRoadEnd=LD_ROADS.some(o=>o!==r&&centrelineGap(x,z,o)<=reach);
       const onDeck=LD_CROSSINGS.some(c=>Math.hypot(x-c.at[0],z-c.at[1])<=reach+c.span/2)
@@ -426,7 +419,7 @@ try {
     if(placedGroups.has(root)||root.isSprite)continue;
     if(LANDSCAPE.test(root.name||''))continue;
     if(/paving$/.test(root.name||''))continue;
-    if(root.position.x<LD_BAND[0]-2||root.position.x>LD_BAND[1]||root.position.z<-27.5||root.position.z>25)continue;   // Britain's band only
+    if(root.position.x<LD_BAND[0]-2||root.position.x>LD_BAND[1]||root.position.z<TABLE.minZ||root.position.z>TABLE.maxZ)continue;   // the table
     root.updateMatrixWorld(true);
     let box=null;
     root.traverse(o=>{
@@ -509,7 +502,7 @@ try {
     if(!o.isMesh||o.isSprite||!o.geometry)return;
     ownerOf.set(o,s.id); blockers.push(o);
   });
-  const BUILDING=/^(britain-house|britain-bridge|gas-lamp|coster-barrow|dock-barrels|dock-bollard|rope-coil|fell-sheep-pen|field-gate|drystone-wall|granite-hedgebank|hedge-bank|weald-oak|weald-hornbeam|dale-oak|moor-oak|hedgerow-oak|westminster-oak|orchard-tree|hop-row|moor-gorse|west-gorse|peat-stack|tarn-boulder)$/;
+  const BUILDING=/^(britain-house|britain-bridge|gas-lamp|coster-barrow|dock-barrels|dock-bollard|rope-coil|fell-sheep-pen|field-gate|uk-highland|uk-upland|uk-pennine|uk-downs|uk-moor|uk-wood|drystone-wall|granite-hedgebank|hedge-bank|weald-oak|weald-hornbeam|dale-oak|moor-oak|hedgerow-oak|westminster-oak|orchard-tree|hop-row|moor-gorse|west-gorse|peat-stack|tarn-boulder)$/;
   for(const root of world.group.children){
     if(!BUILDING.test(root.name||''))continue;
     root.traverse(o=>{ if(o.isMesh&&!o.isSprite&&o.geometry&&!(o.material&&(o.material.visible===false||o.material.opacity===0))){ownerOf.set(o,root.name);blockers.push(o);} });
@@ -680,7 +673,10 @@ try {
       for(const id of a.ids){ const p=objects.find(o=>o.id===id).pos; if(B.length>=3&&inPolygon(p[0],p[1],B)) close.push(`${id} of ${a.id} stands inside the hull of ${b.id}`); }
       const d=dist(A,B), fd=dist(feetHull.get(a.id),feetHull.get(b.id));
       if(d<8) close.push(`${a.id} and ${b.id}: their hulls are ${d.toFixed(2)} apart, under 8`);
-      if(d<14) clusterReport.push(`${a.id}/${b.id} ${d.toFixed(1)} (ground ${fd.toFixed(1)})`);
+      // UK re-lay, 2026-09-24: the open ground between two clusters' footprint hulls is at least China's gap between
+      // Sichuan and Xinjiang, the owner's own example of separated areas, and never under 10.
+      if(fd<Math.max(CHINA_GAP,10)) close.push(`${a.id} and ${b.id}: ${fd.toFixed(2)} of open ground between their footprints, under China's ${CHINA_GAP}`);
+      if(fd<24) clusterReport.push(`${a.id}/${b.id} ${d.toFixed(1)} (ground ${fd.toFixed(1)})`);
     }
     assert.deepEqual(close,[],'two clusters run together');
   }
@@ -747,17 +743,21 @@ try {
       }
     }
   }
-  // The two Alpine peaks moved out of the strait, and the old Channel polygon is gone with them.
+  // ---------- the UK table: Britain alone (owner ruling and UK re-lay, 2026-09-24) ----------
+  // Budapest, the Alps and Georgia leave this table for a Central Europe world of their own: none of their objects is
+  // placed, none of their water or scenery is built, and their object definitions stay in graph.ts for that world.
   {
+    const OFF=new Set(['budapest','alps','georgia']);
+    const onTable=world.placed.filter(p=>OFF.has(p.obj.area)).map(p=>`${p.obj.id} (${p.obj.area})`);
+    assert.deepEqual(onTable,[],'a Budapest, Alps or Georgia object is on the UK table');
+    assert.ok(CEUROPE_OBJECTS.filter(o=>OFF.has(o.area)).length>=15,'the continental objects must stay defined in graph.ts for the Central Europe world to come');
+    for(const name of ['black-sea','danube']) assert.ok(!world.group.getObjectByName(name),`${name} is still built on the UK table`);
+    assert.ok(world.placed.every(p=>p.obj.area==='london'),'every object on the table is British');
+    assert.equal(WORLDS['central-europe'].name,'United Kingdom','the world is called the United Kingdom');
+    assert.equal(MAP_REGIONS.find(r=>r.id==='central-europe').name,'United Kingdom','the landing region is called the United Kingdom');
     const src=(await readFile('src/fw/world-ceurope.ts','utf8')).replace(/\/\*[\s\S]*?\*\//g,'').replace(/\/\/[^\n]*/g,'');
-    assert.ok(/-22\.5,\s*16\.5/.test(src),'the first western Alpine peak must stand at [-22.5, 16.5]');
-    assert.ok(/-27\.8,\s*2\.6/.test(src),'the second western Alpine peak must stand at [-27.8, 2.6]');
-    assert.ok(!/-34\.5,\s*12/.test(src)&&!/mountain\(3\.0,\s*5\.5,\s*true\),\s*-33/.test(src),'a peak is still standing in the strait');
-    assert.ok(!/const channel/.test(src),'the old Channel polygon is now the strait inside the sea ring');
-    assert.ok(/W:\s*120,\s*D:\s*56,\s*cx:\s*-22/.test(src),'the table must be W 120, D 56, cx -22');
+    assert.ok(/W:\s*68,\s*D:\s*88,\s*cx:\s*-50,\s*cz:\s*13/.test(src),'the table must be W 68, D 88, cx -50, cz 13');
   }
-  // The continent keeps its own water, unchanged.
-  assert.ok(world.group.getObjectByName('black-sea')&&world.group.getObjectByName('danube'),'the continent keeps the Black Sea and the Danube');
 
   // ---------- residents: eight profiles, women, children, distinct paces ----------
   const walkers=world.group.children.filter(o=>o.name==='britain-walker');

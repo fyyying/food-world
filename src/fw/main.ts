@@ -546,10 +546,10 @@ function enterRegion(region: MapRegion) {
     setTimeout(() => {
       level = "world"; switchScene(worldScene); configureControls("world");
       // the arrival view of each grown table: Istanbul on the Middle East table, the Bangkok khlongs on the
-      // Southeast Asia one (AREAS.bangkok.center), Westminster on the Central Europe one (AREAS.london.center),
+      // Southeast Asia one (AREAS.bangkok.center), the middle of the island on the United Kingdom one (the table centre, 2026-09-24),
       // the default valley everywhere else
       // Italy arrives on the Campo de' Fiori market in Rome (AREAS.rome.center)
-      const target = id === 'middle-east' ? new THREE.Vector3(-24,0,-20) : id === 'southeast-asia' ? new THREE.Vector3(-44, 0, 0) : id === 'italy' ? new THREE.Vector3(1, 0, -5) : id === 'central-europe' ? new THREE.Vector3(-48, 0, 2) : new THREE.Vector3(-4, 0, 2);
+      const target = id === 'middle-east' ? new THREE.Vector3(-24,0,-20) : id === 'southeast-asia' ? new THREE.Vector3(-44, 0, 0) : id === 'italy' ? new THREE.Vector3(1, 0, -5) : id === 'central-europe' ? new THREE.Vector3(-50, 0, 13) : new THREE.Vector3(-4, 0, 2);
       camera.position.copy(target).add(new THREE.Vector3(-2,80,90)); controls.target.copy(target);
       worldIntro.enter(id, false);
       // Set time-based poses and warm the world's shaders while the paper still covers it. Without this,
@@ -570,7 +570,7 @@ function enterRegion(region: MapRegion) {
 
 function setCrumbsWorld() {
   setCrumbs([{ label: "Back to world map", onClick: () => leaveWorld() }, { label: `${WORLDS[world].name} · ${WORLDS[world].zh}` }], {
-    current: currentArea, areas: areasOf(world),
+    current: currentArea, areas: areasOf(world).filter((a) => !diorama || diorama.placed.some((p) => p.obj.area === a)),   // Budapest, the Alps and Georgia are not on the UK table
     onPick: focusWorldArea,
   });
 }

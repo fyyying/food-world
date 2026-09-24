@@ -1210,3 +1210,114 @@ After the re-cluster pass went live the owner looked again on her phone: "still 
 4. The rules in "Re-cluster pass, 2026-09-23" all still hold: both bridges bank to bank, no house or stand in or over water, rays, roads, river continuity, fronts to +z.
 
 Order: see docs/product-roadmap.md "How to continue" and the lead's queue; weekly usage stood at 87% on 2026-09-24 against the owner's 90% line, too little for this rebuild, so it starts after the weekly reset on 2026-09-29.
+
+## UK re-lay, 2026-09-24
+
+Britain now has its table to itself, and its six clusters are pulled apart so that hills, moorland, downs and the river lie between them instead of 2 to 5 units of lawn. The world id is still `central-europe` (the rename to `uk` is a separate job); its visible name is **United Kingdom** (`WORLDS` in graph.ts and the landing region in `MAP_REGIONS`), and the world intro now covers Britain alone.
+
+### China's gap, measured first
+
+The footprint hulls of each China area were measured the way `london-world.mjs` measures a cluster: the convex hull of the bounding boxes of every placed prop in the area, as `world-china.ts` builds them, with hull-to-hull distance between each pair.
+
+| Pair | Gap between footprint hulls |
+| --- | --- |
+| Jiangnan / Northern | 0.44 |
+| Sichuan / Northern | 1.36 |
+| Everyday / Northern | 1.42 |
+| Everyday / Jiangnan | 2.18 |
+| Sichuan / Jiangnan | 3.87 |
+| Sichuan / Everyday | 4.23 |
+| **Sichuan / Xinjiang** | **14.97** |
+| Everyday / Xinjiang | 34.82 |
+| Northern / Xinjiang, Jiangnan / Xinjiang | 46.90, 47.48 |
+
+Taken literally, China's narrowest gap is 0.44, because Northern China's stands are spread widely and its convex hull reaches up to Jiangnan's and Sichuan's. That number cannot be the standard. The pair the owner pointed to, Sichuan and Xinjiang with the mountains between them, is **14.97**, and that is the number the harness now enforces: every pair of UK clusters has at least `max(14.97, 10)` of open ground between their footprint hulls (`CHINA_GAP` in `london-world.mjs`).
+
+### The table
+
+- **W 68, D 88, cx -50, cz 13** (x -84 to -16, z -31 to 57). It was W 120, D 56, cx -22. The island fills it, with 2 to 4 units of sea all round. There is no strait and no continent.
+- Budapest, the Alps and Georgia are off the table. `world-ceurope.ts` filters out their objects (`OFF_TABLE_AREAS`) and builds none of their scenery: no Black Sea, Danube, alpine lake, Széchenyi pool, peaks, cable car, rowboat, ferries, cruise boat, walkers, riders, storks or continental farmland. Their object definitions stay in `CEUROPE_OBJECTS` and their props stay in `props-ceurope.ts`. Recipes that point at `bogracs` or `supra` fall back to the public house through `fallbackPlace`. The area picker in the breadcrumb shows only areas that have objects on the table.
+- Camera: the desktop zoom-out limit stays 215 and the phone limit stays 90. The fog follows the new half-diagonal (55.6). The arrival target in `main.ts` is now the middle of the island, (-50, 0, 13). `AREAS.london.center` is Westminster's new centre, [-66, 11.9].
+
+### How the clusters were moved: `london-warp.ts`
+
+Every coordinate written in the frame of the 2026-09-23 re-cluster pass goes through `W(x, z)`. It is a translation per region, not a stretch:
+
+- There are three rows, cut at z -9.8 (between the moor road and the back of the public house) and z 8.85 (between the river at Westminster and the seamen's kitchen).
+- Each row has a west column and an east column, cut at x -52.8 or -56.0 in the north row (the cut steps round the Forth Bridge and the dale yard), -53.0 in the middle row and -57.3 in the south row.
+- The east column moves **15.5** east. The middle row moves **13.5** south, and the south row moves **27** south.
+
+Each cut runs through ground that was already open, so each cluster moves as one rigid piece. Everything the harness had checked inside a cluster still holds unchanged: rays, corridors, doorsteps, walker strips, house spots and water clearances. A road or river whose two ends now lie in different regions is simply drawn longer across the new country. Road junctions are joined in the old frame before the warp, so every junction stays a vertex on both routes, and joined again afterwards.
+
+A few pieces were written straight into the new frame or given a forced row:
+
+- The omnibus terminus (`LD-TS`) and the dock warehouse's spots take the row of their own cluster.
+- The east lane (`LD-EL`) is the pass road running straight north from Whitehall to the moor road.
+- The bridge road (`LD-R2`) runs straight south from Westminster Bridge over the moor to the West Country street.
+- A back lane, `LD-TW`, runs from the terminus to the west coast behind Westminster, where the moor road used to pass.
+- The river has four new points: two carry it east through the Downs gap and two carry it south between the Weald and the Docks. Its source (the tarn), its mouth, and its widths at Westminster and under Tower Bridge are unchanged.
+- The coast gained capes in the new gaps: east of the Pennines, below the Weald, west of the Highlands and of Exmoor, and a headland between the Docks and the West Country.
+
+### The clusters
+
+| Cluster | Centre (new) | Radius stated / measured | Footprint box x, z |
+| --- | --- | --- | --- |
+| Westminster and the River | [-66.0, 11.9] | 10 / 9.82 | -79.3..-54.7, 4.5..20.5 |
+| The Docks and the East End | [-31.1, 44.2] | 9 / 8.81 | -41.7..-20.8, 36.0..52.4 |
+| The Weald | [-29.9, 11.0] | 9 / 5.03 | -36.7..-20.9, 4.5..19.2 |
+| The Dales and the Mill Towns | [-27.7, -18.6] | 9 / 5.88 | -35.8..-20.3, -26.7..-11.9 |
+| The West Country and the Bristol Channel | [-69.0, 44.1] | 9 / 8.50 | -80.1..-57.4, 38.5..52.1 |
+| The Firths and the Herring Coast | [-67.6, -20.8] | 9 / 8.35 | -78.3..-53.0, -26.7..-11.2 |
+
+Every object moved exactly by its region's offset: the Firths (0, 0), the Dales (+15.5, 0), Westminster (0, +13.5), the Weald (+15.5, +13.5), the West Country (0, +27) and the Docks (+15.5, +27). No object moved within its cluster, and no rotation changed.
+
+### Neighbour gaps and what separates them
+
+Open ground is measured between the footprint hulls. The harness prints these values and fails any pair under 14.97.
+
+| Pair | Anchor hulls | Open ground | Between them |
+| --- | --- | --- | --- |
+| Westminster / Firths | 23.2 | **15.8** | The Highlands: three peaks and two fells across the whole west, from the coast to the pass road |
+| Docks / West Country | 23.4 | **16.0** | Dartmoor (a tor-topped moor) and a copse, crossed by the West Country street and the south road |
+| Weald / Dales | 22.3 | **16.4** | The Pennines: three fells and a tor from the pass road to the east coast cape |
+| Docks / Weald | 23.3 | **16.9** | The Thames, turning south to the oyster quay, with the east lane along the coast |
+| Dales / Firths | 28.4 | **17.7** | The Southern Uplands, the tallest hills on the table (up to 6.8), north and south of the shore road |
+| Westminster / West Country | 23.6 | **17.9** | The Thames along Westminster's Embankment, then Exmoor: four moor domes with tors, gorse and bracken |
+| Westminster / Weald | 23.8 | **18.0** | The North Downs (two long chalk ridges) and the Thames below them |
+| Westminster / Docks (diagonal) | more than 24 | more than 20 | The river and its estuary, and a wood of oak and hornbeam north of the Docks |
+
+Every separating piece is built by `londonUplands` in `london-countryside.ts` and sits on its own ground tint: muted upland green, pale downland, heather brown for the moors and deep green for the wood. Each piece goes through `tryPlace` (water, roads, pads, room approaches, ten rays) and must keep 0.9 of clear ground from the edge of every road. Peaks in front of a row are kept low enough (about 5) for that row's rays to pass over them. The harness now counts every separator as a ray blocker (`uk-highland`, `uk-upland`, `uk-pennine`, `uk-downs`, `uk-moor`, `uk-wood`). There is no farm decor outside the Dales and the West Country, and no sheep in town.
+
+### Checks added to `london-world.mjs`
+
+- Every cluster pair has open ground between its footprint hulls of at least `max(CHINA_GAP, 10)`, where `CHINA_GAP` is 14.97.
+- No Budapest, Alps or Georgia object is placed; `black-sea` and `danube` are not built; every placed object is in `london`; and at least 15 continental objects are still defined in graph.ts.
+- The world and the landing region are named United Kingdom, and the table is W 68, D 88, cx -50, cz 13.
+- The strait checks became a check that the sea runs all round the island. The literal water checks (the Firth, the Channel, the river widths) are now written through `W`.
+
+### Verification of this pass
+
+| Check | Result |
+| --- | --- |
+| `npx tsc --noEmit` | Passes |
+| `npm test` | 25 of 25 harnesses pass |
+| `london-world.mjs` | "42 continuous roads, 29 British objects with 29 props clear of the water, 5 houses, 1 crossing, 13 pale gulls, 20 walkers, 240 seconds of motion", with the cluster, gap, bridge and water checks passing. Decor: 5 Highland, 3 Southern Upland, 4 Pennine, 2 Downs and 7 moor pieces, and 29 trees in the wood |
+| `london-reactions.mjs` | Passes |
+| `node scripts/audit/objects.mjs` | `london` is unchanged at 13 rooms and 16 card-only objects |
+| `__fw.audit(60)` on the dev server | 56 movers (the continental walkers and riders are gone). 3 violations, all the cockle stall's steam puff inside its own copper, as before |
+| Looked at | The overview at 1280 x 720 and at 390 x 844, and one shot of each of the six clusters, taken on the dev server in a hidden pane with `__fw.look` / `__fw.shot`. The six regions read as separate places. Nothing was seen floating, standing in water or crossing a road. The contact sheet is `uk-relayout-contact.jpg` in the builder's scratchpad (`.data/shots/uk-r-*.jpg`) |
+
+**Not verified in this pass:**
+
+- The rooms were not flown to. No room config changed, but every room approach now looks over new country.
+- The live ten-ray check at every moment was not run in the browser. It was run in the harness only.
+- The phone overview composite came out narrow in the hidden pane, so the phone view needs a look on a real phone.
+- Reduced motion and flicker were not checked.
+- Nothing was pushed or published.
+
+**Open:**
+
+- The world id rename to `uk`, with its published-worlds entry and the redirect from `central-europe` links, is still to do.
+- The moor domes read as smooth mounds, not rough moorland. A rougher, heather-textured moor would read better.
+- The Southern Uplands' fourth peak found no ground clear of the shore road and the dale yard.
+- The comments in `london-landscape.ts` and `world-camera.ts` still describe the grown Central Europe table in places.

@@ -4,7 +4,7 @@
  *  Budapest, the Alps and Georgia leave this table and wait, card-only, for an unpublished Central Europe world of
  *  their own. Their objects stay in `CEUROPE_OBJECTS` and their props in `props-ceurope.ts`, and recipes routed to
  *  them fall back to the public house; this table builds none of them, and none of their water, peaks, cable car,
- *  ferries, walkers or farmland. The table is **W 68, D 88, cx -50, cz 13**: the island has all of it, and its six
+ *  ferries, walkers or farmland. The table is **W 85, D 109, cx -52.5, cz 8.5** (grown from W 68 x D 88 on the lead's QC so the sea is wide round the headlands): the island has all of it, and its six
  *  clusters are pulled apart by `london-warp.ts` so hills, moor and river lie between them.
  *
  *  Britain's ground, water, roads, buildings, people and countryside are the `london-*` modules. Objects come from
@@ -22,7 +22,7 @@ export const OFF_TABLE_AREAS = new Set(["budapest", "alps", "georgia"]);
 
 export function buildCeurope(recipes: EnrichedRecipe[]): Diorama {
   return buildWorld({
-    id: "central-europe", W: 68, D: 88, cx: -50, cz: 13, ground: "#8fb56a", plinth: "#5a4a3a", recipes,
+    id: "central-europe", W: 85, D: 109, cx: -52.5, cz: 8.5, ground: "#8fb56a", plinth: "#5a4a3a", recipes,
     objects: CEUROPE_OBJECTS.filter((o) => !OFF_TABLE_AREAS.has(o.area)), props: LONDON_PROPS,
     small: /^(phoneBox|redBus)$/, fallbackPlace: "roastPub",
     layout: layoutUk,

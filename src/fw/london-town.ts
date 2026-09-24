@@ -269,7 +269,8 @@ const HOUSES: { id: string; style: UkStyle; w: number; d: number; h: number; sto
   { id: 'uk-westminster-terrace', style: 'londonTerrace', w: 4.0, d: 1.8, h: 1.45, storeys: 2,
     spots: ([[-62.0, -7.5, 0], [-62.0, -8.0, 0]] as [number, number, number][]).map(([x, z, r]) => [...W(x, z), r]) },
   { id: 'uk-dock-warehouse', style: 'dockWarehouse', w: 3.0, d: 2.0, h: 1.25, storeys: 4,
-    spots: ([[-39.0, 8.5, 0], [-39.0, 8.0, 0], [-39.5, 7.5, 0]] as [number, number, number][]).map(([x, z, r]) => [...W(x, z, 2), r]) },   // with the Docks, south of the row cut
+    // behind the seamen's kitchen on the river's west bank: the old spot behind the pie shop is the east lane's now
+    spots: [[-36.5, 33.4, 0], [-35.5, 33.0, 0], [-38.0, 33.5, 0], [-36.5, 32.4, 0]] },
   { id: 'uk-kentish-cottage', style: 'kentishCottage', w: 2.8, d: 2.0, h: 1.15, storeys: 2,
     spots: ([[-43.0, -8.0, 0], [-43.0, -8.5, 0]] as [number, number, number][]).map(([x, z, r]) => [...W(x, z, 1), r]) },   // with the Weald, south of the row cut
   { id: 'uk-dale-farmhouse', style: 'daleFarm', w: 2.4, d: 1.9, h: 1.9,

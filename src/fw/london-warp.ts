@@ -30,9 +30,13 @@ export function ukColumnCut(row: number, z: number): number {
 export const ukRow = (z: number) => (z < UK_S1 ? 0 : z < UK_S2 ? 1 : 2);
 /** An old-frame point into the UK table. `row` forces the row for the few points that stand in one row's band but
  *  belong to the next: the omnibus terminus behind the tea room and the dock warehouse's spots. */
+/** The island's silhouette (lead QC of b0022fd, 2026-09-24): two clusters take a further move of their own so
+ *  the coast can be shaped like Britain. The Firths go 10 north and 2 east, so Scotland stands out narrower above
+ *  England; the West Country goes 8 west and 2 south, so Cornwall reaches out as a peninsula below the Bristol Channel. */
+export const UK_EXTRA: Record<string, Pt> = { '0,0': [2, -10], '2,0': [-8, 2] };
 export function W(x: number, z: number, row?: number): Pt {
-  const r = row ?? ukRow(z), east = x > ukColumnCut(r, z);
-  return [+(x + (east ? UK_DX : 0)).toFixed(3), +(z + (r >= 1 ? UK_DZ1 : 0) + (r >= 2 ? UK_DZ2 : 0)).toFixed(3)];
+  const r = row ?? ukRow(z), east = x > ukColumnCut(r, z), [ex, ez] = UK_EXTRA[`${r},${east ? 1 : 0}`] ?? [0, 0];
+  return [+(x + (east ? UK_DX : 0) + ex).toFixed(3), +(z + (r >= 1 ? UK_DZ1 : 0) + (r >= 2 ? UK_DZ2 : 0) + ez).toFixed(3)];
 }
 export const WP = (p: Pt, row?: number): Pt => W(p[0], p[1], row);
 export const WPS = (pts: Pt[], row?: number): Pt[] => pts.map(p => W(p[0], p[1], row));

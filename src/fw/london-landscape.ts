@@ -24,9 +24,9 @@ import { LONDON_PROPS } from './props-london';
 import { W, WPS, ukOffset } from './london-warp';
 
 export type Pt = [number, number];
-/** Table edges after the UK re-lay (2026-09-24): Britain has the whole table, W 68, D 88, cx -50, cz 13. The old
+/** Table edges after the UK re-lay (2026-09-24): Britain has the whole table, W 85, D 109, cx -52.5, cz 8.5. The old
  *  frame's coordinates below go through `W` (london-warp.ts), which pulls the six clusters apart. */
-export const TABLE = { minX: -84, maxX: -16, minZ: -31, maxZ: 57 };
+export const TABLE = { minX: -95, maxX: -10, minZ: -46, maxZ: 63 };
 export const atEdgeX = (x: number) => x <= TABLE.minX || x >= TABLE.maxX;
 export const atEdgeZ = (z: number) => z <= TABLE.minZ || z >= TABLE.maxZ;
 /** The band rule: Britain owns the whole table now; there is no continent and no strait. */
@@ -70,16 +70,22 @@ export const NORTH_EAST: Pt[] = WPS([[-52, -27.2], [-49, -27.75], [-37.6, -27.75
  *  it. This polygon is the **hole** in the shape above. The re-cluster pass pushed the north and south coasts out
  *  to z -27 and 27 (a unit from the table edge, as before on the north) to give the six clusters room. */
 export const ISLAND: Pt[] = [
-  ...NORTH_WEST,                                                                                      // the north coast
+  ...NORTH_WEST,                                                                                      // Scotland's north coast
   ...FIRTH,                                                                                           // the Firth of Forth
-  ...NORTH_EAST,                                                                                      // on to the north-east cape
-  ...WPS([[-35.6, -20], [-35.4, -17]]), [-18.9, -6.5], [-18.6, -2.5], [-19.2, 1.5],             // the east coast, a cape in the Pennine gap
-  ...WPS([[-35.4, -2], [-35.8, 2.6], [-35.9, 5.6], [-35.4, 8.5]]), [-18.9, 26.5], [-18.4, 30.5], [-19.3, 34], ...WPS([[-35.4, 19.5]]),   // and one below the Weald
-  ...ESTUARY,                                                                                         // the river's mouth below Tower Bridge
-  ...WPS([[-52, 27], [-56, 26.9]]), [-45.5, 55.2], [-50, 55.6], [-54.5, 55.1], ...WPS([[-60, 27], [-64, 26.9], [-68, 27], [-72, 26.9], [-76, 27.2], [-79.4, 27.0]]),   // the south coast, a headland between the Docks and the West Country
-  ...SOUTH_WEST,
+  [-49.5, -36.0], [-45.2, -32.5], [-41.4, -28.3],                                                     // Scotland's east coast, down to England
+  ...NORTH_EAST,                                                                                      // the Dales' coast and the north-east cape
+  ...WPS([[-35.6, -20], [-35.4, -17]]), [-19.8, -12.2], [-16.4, -8.0], [-15.0, -3.5], [-16.8, 1.5],             // the east coast, the Pennine cape
+  ...WPS([[-35.4, -2], [-35.8, 2.6], [-35.9, 5.6], [-35.4, 8.5]]),
+  [-23.4, 24.2], [-23.6, 28.5], [-23.2, 31.8], [-19.9, 33.6],                                         // the North Sea bay below the Weald, by the estuary
+  ...WPS([[-35.4, 19.5]]),
+  ...ESTUARY,                                                                                         // the Thames's mouth below Tower Bridge
+  ...WPS([[-52, 27], [-56, 26.9]]), [-45.5, 55.4], [-50, 56.0], [-54.5, 55.3],                     // a headland between the Docks and Cornwall
+  ...WPS([[-60, 27], [-64, 26.9], [-68, 27], [-72, 26.9], [-76, 27.2], [-79.4, 27.0]]),            // Cornwall's south coast
+  ...SOUTH_WEST,                                                                                      // Land's End
   ...CHANNEL,                                                                                         // the Bristol Channel
-  [-81.2, 32.5], [-81.6, 28.5], [-81.0, 24.5], ...WPS([[-80.3, 6], [-80.1, 0], [-80.3, -6]]), [-81.2, 2.5], [-81.8, -2.5], [-81.0, -7], ...WPS([[-80, -12], [-80.4, -18]]),   // the west coast, back to the start
+  [-82.0, 37.5], [-81.2, 34.5], [-78.9, 31.0], [-79.2, 27.0], [-81.4, 24.5],                          // the channel's north shore and Cardigan Bay
+  ...WPS([[-80.3, 6], [-80.1, 0], [-80.3, -6]]), [-81.2, 2.5], [-81.8, -2.5], [-81.0, -7], [-78.4, -10.5],
+  ...WPS([[-80, -12], [-80.4, -18]]),                                                                 // Scotland's west coast, back to the start
 ];
 /** How far the drawn coast wobbles off the traced line. The blueprint asks the strait to stay at least 4.0
  *  wide after the jitter and it is only 4.2 at its narrowest, so the strait's own shore — every island vertex
@@ -319,7 +325,8 @@ const RAW_ROADS: Road[] = [
   { id: 'LD-HL', width: 1.0, points: [[-44.4, -2.45], [-44.4, 4.9]] },
   { id: 'LD-HR', width: 1.0, points: [[-44.4, 0.8], [-36.4, 0.8]] },
   // the Docks
-  { id: 'LD-EE', width: 0.7, points: [[-37.0, 4.9], [-36.9, 8.0], [-36.3, 9.2], [-35.95, 10.4], [-35.95, 17.7]] },
+  // the east lane, rerouted in the new frame between the river and the North Sea bay (lead QC, 2026-09-24)
+  { id: 'LD-EE', width: 0.7, points: [W(-37.0, 4.9), [-21.4, 21.5], [-24.8, 23.6], [-24.9, 33.4], [-20.8, 36.2], ...WPS([[-35.95, 10.4], [-35.95, 17.7]])] },
   { id: 'LD-PQ', width: 0.9, points: [[-35.95, 17.7], [-38.9, 17.7]] },
   { id: 'LD-LQ', width: 0.9, points: [[-55.6, 17.6], [-49.5, 17.6]] },
   { id: 'LD-OQ', width: 1.0, points: [[-49.5, 17.6], [-49.3, 15.0], [-47.4, 13.5]] },
@@ -352,7 +359,7 @@ const RAW_ROADS: Road[] = [
  *  terminus behind the tea room lay beside the moor road, which now runs along the Firths fifteen units north. */
 const FORCED_ROW: Record<string, number> = { 'LD-TS': 1 };
 /** Roads written in the new frame already: they take no warp and join the network in the second pass. */
-const NEW_FRAME = new Set(['LD-EL', 'LD-R2', 'LD-TW']);
+const NEW_FRAME = new Set(['LD-EL', 'LD-R2', 'LD-TW', 'LD-EE']);
 /** Every junction is a vertex of both routes: where one route ends on another's centreline, the point on that centreline
  *  is inserted into it, so the network reads as one piece to the walkers and to the harness, which joins routes at
  *  their vertices. Rings are left as drawn. */
@@ -371,6 +378,13 @@ function joinJunctions(roads: Road[]) { for (const r of roads) for (const [x, z]
 // made once more for the one road that changed rows (the omnibus terminus on the east lane).
 joinJunctions(RAW_ROADS.filter(r => !(r.id in FORCED_ROW) && !NEW_FRAME.has(r.id)));
 export const LD_ROADS: Road[] = RAW_ROADS.map(r => NEW_FRAME.has(r.id) ? r : ({ ...r, points: WPS(r.points, FORCED_ROW[r.id]) }));
+{ // the bridge road ends on the West Country street, wherever the Cornish move left that street at x -55.6
+  const ws = LD_ROADS.find(r => r.id === 'LD-WS')!.points, r2 = LD_ROADS.find(r => r.id === 'LD-R2')!.points;
+  for (let i = 0; i < ws.length - 1; i++) { const [ax, az] = ws[i], [bx, bz] = ws[i + 1]; if ((ax + 55.6) * (bx + 55.6) <= 0) { r2[r2.length - 1] = [-55.6, +(az + (bz - az) * (-55.6 - ax) / ((bx - ax) || 1)).toFixed(2)]; break; } }
+  // and the pass road meets the moor road where the Firths' move left it
+  const r5 = LD_ROADS.find(r => r.id === 'LD-R5')!.points, el = LD_ROADS.find(r => r.id === 'LD-EL')!.points;
+  for (let i = 0; i < r5.length - 1; i++) { const [ax, az] = r5[i], [bx, bz] = r5[i + 1]; if ((ax + 53.4) * (bx + 53.4) <= 0) { el[0] = [-53.4, +(az + (bz - az) * (-53.4 - ax) / ((bx - ax) || 1)).toFixed(2)]; break; } }
+}
 joinJunctions(LD_ROADS);
 export const road = (id: string) => LD_ROADS.find(r => r.id === id)!;
 

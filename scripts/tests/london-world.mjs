@@ -79,15 +79,15 @@ try {
   // ---------- the table and the camera ----------
   for(const [w,h] of [[390,844],[430,932],[720,1024],[667,375]]) assert.equal(worldZoomLimit('central-europe',w,h),90,'phone worlds share one zoom-out limit');
   assert.equal(worldZoomLimit('central-europe',1280,720),215,'the United Kingdom keeps the wide desktop overview: its table is 88 deep');
-  const HALF=Math.hypot(68,88)/2, REACH=215+HALF;
+  const HALF=Math.hypot(85,109)/2, REACH=215+HALF;
   const [fogNear,fogFar]=worldFogRange('central-europe',1280,720,HALF);
   const haze=d=>Math.min(1,Math.max(0,(d-fogNear)/(fogFar-fogNear)));
   assert.ok(haze(215)<.1,`the table centre at the zoom limit is ${(haze(215)*100).toFixed(0)} percent hazed`);
   assert.ok(haze(REACH)<.4,`the far corner of the table at the zoom limit is ${(haze(REACH)*100).toFixed(0)} percent hazed`);
   assert.deepEqual(worldFogRange('central-europe',390,844,HALF),[90,200],'a phone keeps 90 and 200: its limit is 90');
   // UK re-lay, 2026-09-24: Britain has the whole table, W 68 by D 88, and nothing of the continent is on it.
-  assert.deepEqual(TABLE,{minX:-84,maxX:-16,minZ:-31,maxZ:57},'the table runs x -84 to -16 and z -31 to 57');
-  assert.deepEqual(LD_BAND,[-84,-16],'Britain owns the whole table');
+  assert.deepEqual(TABLE,{minX:-95,maxX:-10,minZ:-46,maxZ:63},'the table runs x -95 to -10 and z -46 to 63');
+  assert.deepEqual(LD_BAND,[-95,-10],'Britain owns the whole table');
 
   // ---------- the sea is one shape: an outer ring with the island as its hole ----------
   const sea=seaOutline(), island=islandOutline();
@@ -756,7 +756,7 @@ try {
     assert.equal(WORLDS['central-europe'].name,'United Kingdom','the world is called the United Kingdom');
     assert.equal(MAP_REGIONS.find(r=>r.id==='central-europe').name,'United Kingdom','the landing region is called the United Kingdom');
     const src=(await readFile('src/fw/world-ceurope.ts','utf8')).replace(/\/\*[\s\S]*?\*\//g,'').replace(/\/\/[^\n]*/g,'');
-    assert.ok(/W:\s*68,\s*D:\s*88,\s*cx:\s*-50,\s*cz:\s*13/.test(src),'the table must be W 68, D 88, cx -50, cz 13');
+    assert.ok(/W:\s*85,\s*D:\s*109,\s*cx:\s*-52.5,\s*cz:\s*8.5/.test(src),'the table must be W 85, D 109, cx -52.5, cz 8.5');
   }
 
   // ---------- residents: eight profiles, women, children, distinct paces ----------

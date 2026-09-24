@@ -1321,3 +1321,35 @@ Every separating piece is built by `londonUplands` in `london-countryside.ts` an
 - The moor domes read as smooth mounds, not rough moorland. A rougher, heather-textured moor would read better.
 - The Southern Uplands' fourth peak found no ground clear of the shore road and the dale yard.
 - The comments in `london-landscape.ts` and `world-camera.ts` still describe the grown Central Europe table in places.
+
+### Silhouette and moorland, after the lead's QC of b0022fd (2026-09-24)
+
+The lead had two objections to `b0022fd`: the island read as a board with a moat, and the moor domes looked like loaves.
+
+**The island's shape.**
+
+- `london-warp.ts` gives two clusters an extra move of their own (`UK_EXTRA`):
+  - The Firths go 10 north and 2 east, so Scotland stands out above England and is narrower on both sides.
+  - The West Country goes 8 west and 2 south, so Cornwall reaches out as a peninsula below the Bristol Channel.
+- The table grows to **W 85, D 109, cx -52.5, cz 8.5** (x -95 to -10, z -46 to 63), and the arrival target moves to (-52, 0, 9).
+- The coast is redrawn with these features:
+  - Scotland's east coast steps down to England.
+  - A Pennine cape on the east.
+  - A North Sea bay cut in below the Weald, beside the Thames's southward reach. The east lane `LD-EE` is rerouted between the river and the bay.
+  - The Thames mouth below Tower Bridge.
+  - A headland between the Docks and Cornwall.
+  - Land's End.
+  - The Bristol Channel, with Cardigan Bay north of it.
+- The sea is wide in some places and narrow in others: about 8 to 18 round Scotland, the North Sea bay and Cornwall, and 5 to 7 at the Pennine cape and the Docks.
+- Some roads were adjusted to follow the moved clusters:
+  - The pass road and the bridge road now end where the moved moor road and the West Country street actually run.
+  - The dock warehouse stands behind the seamen's kitchen, because the east lane took its old ground.
+  - The Highlands and the Southern Uplands were re-sited in the new gaps.
+- Cluster gaps are now all 16.4 or more (Weald / Dales 16.4 is the smallest), so the 14.97 check still holds.
+- Not a true estuary: the Thames still reaches the sea on the south coast below Tower Bridge. The east-coast bay sits beside the river's lower reach; it is not the river's mouth. Moving the mouth to the east would mean turning Tower Bridge.
+
+**Moorland.** `moor()` replaces the smooth domes on Exmoor, Dartmoor and the south copse. Each is a low, rough hill of flat facets in a patchy heather, olive, bracken and dry-grass palette, with a granite tor on the larger hills and loose rocks and heather and gorse tufts on the flanks. The Downs keep their pale smooth ridges.
+
+**Checks.** `npx tsc --noEmit`, `npm test` and `london-world.mjs` all pass.
+
+**Shots.** Overview at 1280 x 720, phone at 375 x 812 (at the phone zoom limit of 90), the West Country and the Docks. The contact sheet is `uk-silhouette-contact.jpg` in the builder's scratchpad, next to the first `uk-relayout-contact.jpg`.

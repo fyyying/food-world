@@ -246,12 +246,52 @@ function dome(rx: number, rz: number, h: number, turf: string, foot: string, tor
   return g as P;
 }
 
+/** A stretch of moorland (lead QC of b0022fd: the smooth tan domes read as loaves or haystacks). A low, rough hill of
+ *  flat facets, each facet its own shade of heather purple-brown, olive, bracken rust or dry grass, so the slope reads
+ *  as patchy moor rather than one turf; a granite tor on its crown when asked for, loose rocks and heather and gorse
+ *  tufts on its flanks. */
+function moor(rx: number, rz: number, h: number, tor = false, seed = 1): P {
+  const g = new THREE.Group();
+  const base = new THREE.SphereGeometry(1, 14, 5, 0, Math.PI * 2, 0, Math.PI / 2);
+  const bp = base.attributes.position as THREE.BufferAttribute;
+  for (let i = 0; i < bp.count; i++) {
+    const x = bp.getX(i), y = bp.getY(i), z = bp.getZ(i), a = Math.atan2(z, x);
+    const rough = 1 + (Math.sin(a * 5 + seed) * .07 + Math.sin(a * 11 + seed * 2.3) * .05) * (1 - y * .5);
+    const lump = y > .05 ? 1 + Math.sin(a * 3 + seed * 1.7) * .16 * y + Math.cos(a * 7 + seed) * .08 * y : 1;
+    bp.setX(i, x * rough); bp.setZ(i, z * rough); bp.setY(i, y * lump);
+  }
+  const geo = base.toNonIndexed(), pos = geo.attributes.position as THREE.BufferAttribute, colors: number[] = [];
+  const palette = ['#6f5a62', '#7a6670', '#6d6a44', '#7b7848', '#8a6a3e', '#9a8a5c', '#5f5a3e'].map(c => new THREE.Color(c));
+  for (let f = 0; f < pos.count / 3; f++) {
+    const cy = (pos.getY(f * 3) + pos.getY(f * 3 + 1) + pos.getY(f * 3 + 2)) / 3;
+    const pick = palette[Math.abs(Math.floor(Math.sin(f * 12.9898 + seed * 78.233) * 43758.5453)) % palette.length].clone();
+    pick.offsetHSL(0, 0, (cy - .4) * .06);
+    for (let k = 0; k < 3; k++) colors.push(pick.r, pick.g, pick.b);
+  }
+  geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+  geo.computeVertexNormals();
+  const hill = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, flatShading: true, roughness: 1 }));
+  hill.scale.set(rx, h, rz); hill.receiveShadow = true; hill.castShadow = true; g.add(hill);
+  const onHill = (u: number, v: number) => { const r = Math.hypot(u, v); return h * Math.sqrt(Math.max(0, 1 - r * r)) * .92; };
+  if (tor) for (const [dx, dz, s, k] of [[-.12, .05, .5, 0], [.1, -.06, .42, 1], [.02, .16, .34, 2], [-.02, -.14, .3, 3]] as [number, number, number, number][]) {
+    const rock = add(g, new THREE.Mesh(new THREE.DodecahedronGeometry(s, 0), mat(k % 2 ? '#8E8A82' : '#A19B90')), dx * rx, onHill(dx, dz) + s * .45, dz * rz);
+    rock.scale.set(1.3, .75, 1); rock.rotation.y = k * .8;
+  }
+  for (let k = 0; k < 9; k++) {
+    const a = k * 2.39 + seed, r = .45 + (k % 3) * .14, u = Math.cos(a) * r, v = Math.sin(a) * r;
+    if (k % 3 === 0) { const rock = add(g, new THREE.Mesh(new THREE.DodecahedronGeometry(.16 + (k % 2) * .06, 0), mat('#96918A')), u * rx, onHill(u, v), v * rz); rock.scale.y = .6; continue; }
+    const tuft = add(g, new THREE.Mesh(new THREE.IcosahedronGeometry(.22, 0), mat(k % 3 === 1 ? '#6E4F66' : '#556038')), u * rx, onHill(u, v) + .06, v * rz);
+    tuft.scale.set(1.3, .55, 1.2);
+  }
+  return g as P;
+}
+
 export function londonUplands(ctx: LayoutCtx) {
   const { group, tint } = ctx;
   // The ground of each separating landscape, laid before its hills: muted upland green, pale chalk downland, heather
   // brown for the moors, the deep green of the wood.
-  tint(-67.0, -5.2, 13.5, 4.6, '#7f9670');   // the Highlands
-  tint(-47.0, -20.0, 5.6, 7.2, '#7f9670');   // the Southern Uplands
+  tint(-67.0, -9.0, 13.5, 7.0, '#7f9670');   // the Highlands
+  tint(-45.5, -22.5, 6.0, 7.0, '#7f9670');   // the Southern Uplands
   tint(-35.5, -3.8, 16.0, 4.8, '#95a06c');   // the Pennines
   tint(-45.2, 11.6, 7.6, 6.0, '#a9c47a');    // the North Downs
   tint(-67.5, 31.0, 11.5, 5.4, '#8c7a66');   // Exmoor, between Westminster and the West Country
@@ -280,13 +320,13 @@ export function londonUplands(ctx: LayoutCtx) {
   };
 
   // ---------- the Highlands, between the Firths and England: a wall of peaks from the west coast to the pass road ----------
-  for (const [x, z, r, h, dark] of [[-75.8, -5.4, 3.0, 5.0, true], [-67.4, -5.0, 3.2, 5.4, false], [-59.6, -5.3, 3.0, 4.8, true]] as [number, number, number, number, boolean][])
+  for (const [x, z, r, h, dark] of [[-74.6, -11.2, 3.2, 6.6, true], [-67.0, -11.6, 3.4, 7.0, false], [-59.6, -11.0, 3.0, 6.2, true]] as [number, number, number, number, boolean][])
     put('uk-highland', mountain(r, h, dark), x, z, 0);
-  for (const [x, z] of [[-71.6, -3.2], [-63.4, -2.8]] as [number, number][]) put('uk-highland', dome(2.0, 1.6, 1.6, '#7c9068', '#6c8058'), x, z);
+  for (const [x, z] of [[-70.8, -5.6], [-63.2, -5.2]] as [number, number][]) put('uk-highland', dome(2.0, 1.6, 1.6, '#7c9068', '#6c8058'), x, z);
 
   // ---------- the Southern Uplands, between the Firths and the Dales: the tallest hills on the table ----------
-  for (const [x, z, r, h, dark] of [[-48.2, -24.0, 2.0, 6.8, true], [-43.6, -24.1, 2.1, 6.2, false], [-48.6, -15.9, 1.9, 5.2, false], [-44.3, -15.9, 1.7, 4.4, true]] as [number, number, number, number, boolean][])
-    put('uk-upland', mountain(r, h, dark), x, z, 0);
+  for (const [x, z, r, h, dark] of [[-47.5, -22.2, 1.4, 6.0, true], [-42.6, -19.8, 1.4, 5.2, false]] as [number, number, number, number, boolean][])
+    put('uk-upland', mountain(r, h, dark), x, z, 0, .5);   // no walker lane crosses the Uplands: half a unit of verge is enough
 
   // ---------- the Pennines, under the Dales: a long chain of fells ----------
   for (const [x, z, r, h, dark] of [[-46.2, -3.6, 3.1, 5.2, false], [-37.4, -3.4, 3.2, 5.6, true], [-28.6, -3.6, 3.0, 5.0, false]] as [number, number, number, number, boolean][])
@@ -298,11 +338,11 @@ export function londonUplands(ctx: LayoutCtx) {
   put('uk-downs', dome(4.0, 1.35, 1.2, '#b6cc86', '#94ad68'), -45.2, 14.3);
 
   // ---------- the moors: Exmoor between Westminster and the West Country, Dartmoor between it and the Docks ----------
-  for (const [x, z, rx, rz, h] of [[-75.4, 30.2, 3.8, 2.8, 2.6], [-66.8, 32.2, 4.4, 3.0, 3.0], [-59.8, 30.6, 2.7, 3.0, 2.3], [-71.0, 26.2, 2.4, 1.6, 1.4]] as [number, number, number, number, number][])
-    put('uk-moor', dome(rx, rz, h, '#8a8458', '#6f6a48', h > 2), x, z);
-  put('uk-moor', dome(5.2, 3.0, 2.6, '#8a8458', '#6f6a48', true), -48.8, 39.6);
-  for (const [x, z, rx, rz, h] of [[-52.2, 48.4, 1.8, 1.4, 1.0], [-45.8, 48.6, 2.0, 1.4, 1.1]] as [number, number, number, number, number][])
-    put('uk-moor', dome(rx, rz, h, '#8a8458', '#6f6a48'), x, z);
+  for (const [i, [x, z, rx, rz, h]] of ([[-74.2, 30.6, 3.2, 2.8, 1.9], [-66.8, 32.6, 4.4, 3.0, 2.2], [-59.8, 31.0, 2.7, 3.0, 1.7], [-71.0, 26.4, 2.4, 1.6, 1.1], [-63.0, 27.0, 2.0, 1.5, 1.0]] as [number, number, number, number, number][]).entries())
+    put('uk-moor', moor(rx, rz, h, h > 1.5, i + 1), x, z);
+  put('uk-moor', moor(5.2, 3.0, 1.9, true, 7), -48.8, 39.6);
+  for (const [i, [x, z, rx, rz, h]] of ([[-52.2, 48.4, 1.8, 1.4, .8], [-45.8, 48.6, 2.0, 1.4, .9]] as [number, number, number, number, number][]).entries())
+    put('uk-moor', moor(rx, rz, h, false, i + 9), x, z);
   const heath = (i: number) => (i % 2 ? gorse(.95 + (i % 3) * .1) : bracken(.9 + (i % 3) * .12));
   let k = 0;
   for (const [x0, x1, z0, z1] of [[-79.0, -57.5, 24.5, 36.5], [-54.0, -43.0, 36.5, 43.5]] as [number, number, number, number][])

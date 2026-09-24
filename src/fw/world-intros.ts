@@ -389,14 +389,14 @@ export const WORLD_INTROS: Record<WorldId, WorldIntro> = {
         title: "Food carries the seasons",
         body: "Baking, smoking, curing, pickling and slow cooking make harvests last through colder months. Grain, dairy, roots, orchard fruit, herring and meat take different forms from the Cornish coast to the Scottish firths.",
         emoji: "🍎",
-        areas: ["london"],
+        areas: ["westcountry", "dales", "firths"],
       },
       {
         eyebrow: "Britain, about 1880 to 1914",
         title: "An island of separate kitchens",
         body: "Britain here is one island and six regions, parted by the Highlands, the Pennines, the Downs, the moors and the Thames, and held to a single recorded period. A Westminster public house and a Shadwell seamen's kitchen, a Dales dairy and a Cornish bakehouse, cockle sands on the Gower and a curing fire on a Scottish shore.",
         emoji: "🇬🇧",
-        areas: ["london"],
+        areas: ["london", "weald", "dales", "firths"],
       },
       {
         eyebrow: "Gathering",

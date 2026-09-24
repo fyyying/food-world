@@ -29,7 +29,7 @@
  *  or "traditionally". The curry house (Holborn 1911 at the earliest, the East End cafés from the 1920s),
  *  the Routemaster (1956), the K6 kiosk (1935) and the London Eye (2000) are outside the band and appear
  *  only as dated later developments, where docs/london-world.md says they should. */
-import type { EnrichedRecipe, Kind, WorldObject } from "./graph";
+import type { Area, EnrichedRecipe, Kind, WorldObject } from "./graph";
 import { LONDON_STORY_DEPTH } from "./london-stories";
 import { W } from "./london-warp";
 
@@ -394,3 +394,8 @@ LONDON_OBJECTS.push(
     match: () => false,
   },
 );
+
+/** Owner round, 2026-09-24: each cluster's objects belong to their region's area, so the area picker can fly to it.
+ *  Westminster and the Docks are both London. Recipes keep `area: "london"` and match by `brit`, unchanged. */
+export const UK_CLUSTER_AREA: Record<string, Area> = { westminster: "london", docks: "london", weald: "weald", dales: "dales", westCountry: "westcountry", firths: "firths" };
+for (const c of LONDON_CLUSTERS) for (const id of c.ids) { const o = LONDON_OBJECTS.find((x) => x.id === id); if (o) o.area = UK_CLUSTER_AREA[c.id]; }

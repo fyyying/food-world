@@ -34,9 +34,25 @@ export const ukRow = (z: number) => (z < UK_S1 ? 0 : z < UK_S2 ? 1 : 2);
  *  the coast can be shaped like Britain. The Firths go 10 north and 2 east, so Scotland stands out narrower above
  *  England; the West Country goes 8 west and 2 south, so Cornwall reaches out as a peninsula below the Bristol Channel. */
 export const UK_EXTRA: Record<string, Pt> = { '0,0': [2, -10], '2,0': [-8, 2] };
+/** Owner round, 2026-09-24 ("Tower Bridge is not in London"): London is one city on one river again. Westminster
+ *  and the Docks take the same move, 13.5 south, so they stand exactly as the re-cluster pass laid them, the Docks
+ *  just downstream of Westminster with the river, the bridge road and the quays between them as they were. The
+ *  Weald goes east of London (31 east, 13.5 south) and the West Country further west (15 west, 31 south) to keep
+ *  their distance from the Docks. The Firths and the Dales keep their moves. */
+export const UK_REGION: Record<string, Pt> = {
+  firths: [2, -10], dales: [UK_DX, 0], london: [0, UK_DZ1], weald: [31, UK_DZ1], westCountry: [-15, 31],
+};
+export function ukRegion(x: number, z: number, row?: number): string {
+  const r = row ?? ukRow(z);
+  if (r === 0) return x > ukColumnCut(0, z) ? 'dales' : 'firths';
+  // the Weald's old ground: east of the middle row's cut, except the river's reach below the hop cookhouse
+  if (r === 1 && x > -53 && !(x < -44 && z >= 6.3)) return 'weald';
+  if (r === 2 && x <= -57.3) return 'westCountry';
+  return 'london';
+}
 export function W(x: number, z: number, row?: number): Pt {
-  const r = row ?? ukRow(z), east = x > ukColumnCut(r, z), [ex, ez] = UK_EXTRA[`${r},${east ? 1 : 0}`] ?? [0, 0];
-  return [+(x + (east ? UK_DX : 0) + ex).toFixed(3), +(z + (r >= 1 ? UK_DZ1 : 0) + (r >= 2 ? UK_DZ2 : 0) + ez).toFixed(3)];
+  const [ox, oz] = UK_REGION[ukRegion(x, z, row)];
+  return [+(x + ox).toFixed(3), +(z + oz).toFixed(3)];
 }
 export const WP = (p: Pt, row?: number): Pt => W(p[0], p[1], row);
 export const WPS = (pts: Pt[], row?: number): Pt[] => pts.map(p => W(p[0], p[1], row));

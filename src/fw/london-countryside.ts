@@ -100,7 +100,7 @@ function peatStack(): P {
 
 /** A hop row: two twelve-foot chestnut poles, the wirework between them and four bines twisted up the strings.
  *  The bines sway; the poles do not. */
-function hopRow(length = 2.6): P {
+export function hopRow(length = 2.6): P {
   const g = new THREE.Group(), h = 3.3;
   for (const x of [-length / 2, length / 2]) {
     const pole = add(g, new THREE.Mesh(new THREE.CylinderGeometry(.06, .09, h, 6), mat('#7A6045')), x, h / 2, 0);
@@ -293,10 +293,11 @@ export function londonUplands(ctx: LayoutCtx) {
   tint(-67.0, -9.0, 13.5, 7.0, '#7f9670');   // the Highlands
   tint(-45.5, -22.5, 6.0, 7.0, '#7f9670');   // the Southern Uplands
   tint(-35.5, -3.8, 16.0, 4.8, '#95a06c');   // the Pennines
-  tint(-45.2, 11.6, 7.6, 6.0, '#a9c47a');    // the North Downs
-  tint(-67.5, 31.0, 11.5, 5.4, '#8c7a66');   // Exmoor, between Westminster and the West Country
-  tint(-48.8, 40.0, 6.0, 3.8, '#8c7a66');    // Dartmoor, between the West Country and the Docks
-  tint(-45.5, 29.0, 8.5, 4.6, '#6a8f4c');    // the wood north of the Docks
+  tint(-29.0, 12.0, 6.0, 7.5, '#a9c47a');    // the North Downs, between London and the Weald
+  tint(-78.0, 32.0, 13.0, 5.8, '#8c7a66');   // Exmoor, between London and the West Country
+  tint(-64.5, 48.0, 5.5, 6.0, '#8c7a66');    // Dartmoor, between the West Country and the Docks
+  tint(-57.0, 12.0, 22.0, 13.0, '#b3aea4');  // London: one city's ground from Westminster to the Docks
+  tint(-47.0, 31.0, 11.0, 9.5, '#b3aea4');
 
   /** Distance from a box's ground footprint to the nearest road's edge. */
   const roadGap = (b: THREE.Box3) => {
@@ -334,30 +335,29 @@ export function londonUplands(ctx: LayoutCtx) {
   put('uk-pennine', dome(2.2, 2.0, 2.2, '#8e9a62', '#7a8652', true), -22.6, -4.6);
 
   // ---------- the North Downs, between the Weald and London, and the Thames below them ----------
-  put('uk-downs', dome(6.6, 2.2, 2.0, '#b6cc86', '#94ad68'), -45.2, 7.0);
-  put('uk-downs', dome(4.0, 1.35, 1.2, '#b6cc86', '#94ad68'), -45.2, 14.3);
+  put('uk-downs', dome(4.2, 2.2, 2.0, '#b6cc86', '#94ad68'), -30.2, 7.2);
+  put('uk-downs', dome(3.8, 1.35, 1.3, '#b6cc86', '#94ad68'), -29.5, 14.2);
+  put('uk-downs', dome(2.6, 1.3, 1.1, '#b6cc86', '#94ad68'), -28.5, 20.0);
 
   // ---------- the moors: Exmoor between Westminster and the West Country, Dartmoor between it and the Docks ----------
-  for (const [i, [x, z, rx, rz, h]] of ([[-74.2, 30.6, 3.2, 2.8, 1.9], [-66.8, 32.6, 4.4, 3.0, 2.2], [-59.8, 31.0, 2.7, 3.0, 1.7], [-71.0, 26.4, 2.4, 1.6, 1.1], [-63.0, 27.0, 2.0, 1.5, 1.0]] as [number, number, number, number, number][]).entries())
+  for (const [i, [x, z, rx, rz, h]] of ([[-89.0, 34.0, 3.0, 2.4, 1.6], [-82.0, 34.5, 3.6, 2.8, 2.0], [-74.5, 33.5, 3.4, 2.8, 1.9], [-67.0, 34.8, 3.4, 2.6, 1.7], [-78.0, 28.8, 2.4, 1.6, 1.1], [-86.5, 39.6, 2.2, 1.5, 1.0]] as [number, number, number, number, number][]).entries())
     put('uk-moor', moor(rx, rz, h, h > 1.5, i + 1), x, z);
-  put('uk-moor', moor(5.2, 3.0, 1.9, true, 7), -48.8, 39.6);
-  for (const [i, [x, z, rx, rz, h]] of ([[-52.2, 48.4, 1.8, 1.4, .8], [-45.8, 48.6, 2.0, 1.4, .9]] as [number, number, number, number, number][]).entries())
-    put('uk-moor', moor(rx, rz, h, false, i + 9), x, z);
+  for (const [i, [x, z, rx, rz, h]] of ([[-64.0, 44.0, 3.0, 2.4, 1.8], [-66.0, 51.0, 2.4, 1.8, 1.2], [-61.0, 40.5, 1.8, 1.4, .9]] as [number, number, number, number, number][]).entries())
+    put('uk-moor', moor(rx, rz, h, h > 1.5, i + 7), x, z);
   const heath = (i: number) => (i % 2 ? gorse(.95 + (i % 3) * .1) : bracken(.9 + (i % 3) * .12));
   let k = 0;
-  for (const [x0, x1, z0, z1] of [[-79.0, -57.5, 24.5, 36.5], [-54.0, -43.0, 36.5, 43.5]] as [number, number, number, number][])
+  for (const [x0, x1, z0, z1] of [[-92.0, -62.0, 26.0, 40.0], [-70.0, -59.0, 39.0, 54.0]] as [number, number, number, number][])
     for (let z = z0; z <= z1; z += 2.1) for (let x = x0; x <= x1; x += 2.3) {
       k++; const jx = x + Math.sin(k * 2.7) * .6, jz = z + Math.cos(k * 1.9) * .6;
       if (isWet(jx, jz) || distToRoads(jx, jz) < 1.6 || objectDistance(jx, jz) < 3) continue;
       put(k % 2 ? 'moor-gorse' : 'moor-bracken', heath(k), jx, jz, k);
     }
 
-  // ---------- the wood north of the Docks, with the river round two sides of it ----------
+  // ---------- a wood on the Downs' south slope, between London and the Weald ----------
   k = 0;
-  for (let z = 24.6; z <= 34.0; z += 2.3) for (let x = -53.0; x <= -37.5; x += 2.4) {
-    k++; const jx = x + Math.sin(k * 2.3) * .7, jz = z + Math.cos(k * 1.7) * .7;
+  for (let z = 17.5; z <= 23.5; z += 2.2) for (let x = -34.5; x <= -23.0; x += 2.4) {
+    k++; const jx = x + Math.sin(k * 2.3) * .6, jz = z + Math.cos(k * 1.7) * .5;
     if (isWet(jx, jz) || distToRoads(jx, jz) < 1.8 || objectDistance(jx, jz) < 3.5) continue;
     put('uk-wood', k % 3 ? oak(.8 + (k % 3) * .1) : hornbeam(.9), jx, jz, k);
   }
-  for (const [x, z] of [[-50.5, 47.6], [-47.6, 49.4], [-44.2, 47.4]] as [number, number][]) put('uk-wood', oak(.8), x, z, x);
 }

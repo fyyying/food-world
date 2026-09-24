@@ -52,7 +52,7 @@ const cardArt = (o: WorldObject) => o.world === 'mediterranean' && SPAIN_CARD_AR
   : o.world === 'southeast-asia' && VIETNAM_CARD_ART[o.id]
   ? `${import.meta.env.BASE_URL}scenes/vietnam-food/${VIETNAM_CARD_ART[o.id]}.webp`
   // Britain shares the `central-europe` world id with Hungary, the Alps and Georgia, so it is told apart by area
-  : o.world === 'central-europe' && o.area === 'london' && LONDON_CARD_ART[o.id]
+  : o.world === 'central-europe' && LONDON_CARD_ART[o.id]
   ? `${import.meta.env.BASE_URL}scenes/london-food/${LONDON_CARD_ART[o.id]}.webp`
   : o.world === 'italy' && ITALY_CARD_ART[o.id]
   ? `${import.meta.env.BASE_URL}scenes/italy-food/${ITALY_CARD_ART[o.id]}.webp`

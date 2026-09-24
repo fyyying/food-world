@@ -79,15 +79,15 @@ try {
   // ---------- the table and the camera ----------
   for(const [w,h] of [[390,844],[430,932],[720,1024],[667,375]]) assert.equal(worldZoomLimit('central-europe',w,h),90,'phone worlds share one zoom-out limit');
   assert.equal(worldZoomLimit('central-europe',1280,720),215,'the United Kingdom keeps the wide desktop overview: its table is 88 deep');
-  const HALF=Math.hypot(85,109)/2, REACH=215+HALF;
+  const HALF=Math.hypot(106,112)/2, REACH=215+HALF;
   const [fogNear,fogFar]=worldFogRange('central-europe',1280,720,HALF);
   const haze=d=>Math.min(1,Math.max(0,(d-fogNear)/(fogFar-fogNear)));
   assert.ok(haze(215)<.1,`the table centre at the zoom limit is ${(haze(215)*100).toFixed(0)} percent hazed`);
   assert.ok(haze(REACH)<.4,`the far corner of the table at the zoom limit is ${(haze(REACH)*100).toFixed(0)} percent hazed`);
   assert.deepEqual(worldFogRange('central-europe',390,844,HALF),[90,200],'a phone keeps 90 and 200: its limit is 90');
   // UK re-lay, 2026-09-24: Britain has the whole table, W 68 by D 88, and nothing of the continent is on it.
-  assert.deepEqual(TABLE,{minX:-95,maxX:-10,minZ:-46,maxZ:63},'the table runs x -95 to -10 and z -46 to 63');
-  assert.deepEqual(LD_BAND,[-95,-10],'Britain owns the whole table');
+  assert.deepEqual(TABLE,{minX:-103,maxX:3,minZ:-46,maxZ:66},'the table runs x -103 to 3 and z -46 to 66');
+  assert.deepEqual(LD_BAND,[-103,3],'Britain owns the whole table');
 
   // ---------- the sea is one shape: an outer ring with the island as its hole ----------
   const sea=seaOutline(), island=islandOutline();
@@ -163,7 +163,8 @@ try {
   }
 
   // ---------- the twenty-nine objects: dry ground, a road at the door, and the band ----------
-  const objects=LONDON_OBJECTS.filter(o=>o.area==='london');
+  const UK_AREAS=new Set(['london','weald','dales','westcountry','firths']);
+  const objects=LONDON_OBJECTS.filter(o=>UK_AREAS.has(o.area));
   assert.equal(objects.length,29,'thirteen rooms, ten ingredient stops and six landmarks');
   // The on-water objects, and only these: the two bridges, each built to span its water from bank to bank (Tower
   // Bridge over the river, the Forth Bridge over the firth; re-cluster pass, 2026-09-23, where the bank-to-bank rule
@@ -502,7 +503,7 @@ try {
     if(!o.isMesh||o.isSprite||!o.geometry)return;
     ownerOf.set(o,s.id); blockers.push(o);
   });
-  const BUILDING=/^(britain-house|britain-bridge|gas-lamp|coster-barrow|dock-barrels|dock-bollard|rope-coil|fell-sheep-pen|field-gate|uk-highland|uk-upland|uk-pennine|uk-downs|uk-moor|uk-wood|drystone-wall|granite-hedgebank|hedge-bank|weald-oak|weald-hornbeam|dale-oak|moor-oak|hedgerow-oak|westminster-oak|orchard-tree|hop-row|moor-gorse|west-gorse|peat-stack|tarn-boulder)$/;
+  const BUILDING=/^(britain-house|britain-bridge|gas-lamp|coster-barrow|dock-barrels|dock-bollard|rope-coil|fell-sheep-pen|field-gate|uk-highland|uk-upland|uk-pennine|uk-downs|uk-moor|uk-wood|uk-village|uk-barn|uk-mill|uk-pasture|drystone-wall|granite-hedgebank|hedge-bank|weald-oak|weald-hornbeam|dale-oak|moor-oak|hedgerow-oak|westminster-oak|orchard-tree|hop-row|moor-gorse|west-gorse|peat-stack|tarn-boulder)$/;
   for(const root of world.group.children){
     if(!BUILDING.test(root.name||''))continue;
     root.traverse(o=>{ if(o.isMesh&&!o.isSprite&&o.geometry&&!(o.material&&(o.material.visible===false||o.material.opacity===0))){ownerOf.set(o,root.name);blockers.push(o);} });
@@ -672,10 +673,13 @@ try {
       for(const id of b.ids){ const p=objects.find(o=>o.id===id).pos; if(A.length>=3&&inPolygon(p[0],p[1],A)) close.push(`${id} of ${b.id} stands inside the hull of ${a.id}`); }
       for(const id of a.ids){ const p=objects.find(o=>o.id===id).pos; if(B.length>=3&&inPolygon(p[0],p[1],B)) close.push(`${id} of ${a.id} stands inside the hull of ${b.id}`); }
       const d=dist(A,B), fd=dist(feetHull.get(a.id),feetHull.get(b.id));
-      if(d<8) close.push(`${a.id} and ${b.id}: their hulls are ${d.toFixed(2)} apart, under 8`);
+      if(d<8&&!(['westminster','docks'].includes(a.id)&&['westminster','docks'].includes(b.id))) close.push(`${a.id} and ${b.id}: their hulls are ${d.toFixed(2)} apart, under 8`);
       // UK re-lay, 2026-09-24: the open ground between two clusters' footprint hulls is at least China's gap between
       // Sichuan and Xinjiang, the owner's own example of separated areas, and never under 10.
-      if(fd<Math.max(CHINA_GAP,10)) close.push(`${a.id} and ${b.id}: ${fd.toFixed(2)} of open ground between their footprints, under China's ${CHINA_GAP}`);
+      // Owner round, 2026-09-24 ("Tower Bridge is not in London"): Westminster and the Docks are one city on one river,
+      // two sub-clusters with town ground between them, so this one pair is exempt from the countryside gap.
+      const CITY=new Set(['westminster','docks']);
+      if(!(CITY.has(a.id)&&CITY.has(b.id))&&fd<Math.max(CHINA_GAP,10)) close.push(`${a.id} and ${b.id}: ${fd.toFixed(2)} of open ground between their footprints, under China's ${CHINA_GAP}`);
       if(fd<24) clusterReport.push(`${a.id}/${b.id} ${d.toFixed(1)} (ground ${fd.toFixed(1)})`);
     }
     assert.deepEqual(close,[],'two clusters run together');
@@ -752,11 +756,11 @@ try {
     assert.deepEqual(onTable,[],'a Budapest, Alps or Georgia object is on the UK table');
     assert.ok(CEUROPE_OBJECTS.filter(o=>OFF.has(o.area)).length>=15,'the continental objects must stay defined in graph.ts for the Central Europe world to come');
     for(const name of ['black-sea','danube']) assert.ok(!world.group.getObjectByName(name),`${name} is still built on the UK table`);
-    assert.ok(world.placed.every(p=>p.obj.area==='london'),'every object on the table is British');
+    assert.ok(world.placed.every(p=>UK_AREAS.has(p.obj.area)),'every object on the table is British');
     assert.equal(WORLDS['central-europe'].name,'United Kingdom','the world is called the United Kingdom');
     assert.equal(MAP_REGIONS.find(r=>r.id==='central-europe').name,'United Kingdom','the landing region is called the United Kingdom');
     const src=(await readFile('src/fw/world-ceurope.ts','utf8')).replace(/\/\*[\s\S]*?\*\//g,'').replace(/\/\/[^\n]*/g,'');
-    assert.ok(/W:\s*85,\s*D:\s*109,\s*cx:\s*-52.5,\s*cz:\s*8.5/.test(src),'the table must be W 85, D 109, cx -52.5, cz 8.5');
+    assert.ok(/W:\s*106,\s*D:\s*112,\s*cx:\s*-50,\s*cz:\s*10/.test(src),'the table must be W 106, D 112, cx -50, cz 10');
   }
 
   // ---------- residents: eight profiles, women, children, distinct paces ----------

@@ -1353,3 +1353,91 @@ The lead had two objections to `b0022fd`: the island read as a board with a moat
 **Checks.** `npx tsc --noEmit`, `npm test` and `london-world.mjs` all pass.
 
 **Shots.** Overview at 1280 x 720, phone at 375 x 812 (at the phone zoom limit of 90), the West Country and the Docks. The contact sheet is `uk-silhouette-contact.jpg` in the builder's scratchpad, next to the first `uk-relayout-contact.jpg`.
+
+## Owner round, 2026-09-24
+
+After `d9bcc95` went live, the owner said "much better". She raised three points from her phone, all fixed in this pass.
+
+### 1. "Tower Bridge is not in London"
+
+London is one city on one river again.
+
+- **The move.** `london-warp.ts` now moves each region as a whole (`UK_REGION`, `ukRegion`). Westminster and the Docks both move 13.5 south, so they stand exactly as the re-cluster pass laid them.
+  - The Thames runs from the tarn, past Westminster, under Westminster Bridge, down the quays to Tower Bridge and out to the sea past the Docks.
+  - The river, the bridge road, the quays and the east lane are the re-cluster pass's own, with no new-frame patches.
+- **The other regions.** The Weald goes 31 east and 13.5 south, east of London across the North Downs and the Thames estuary. The West Country goes 15 west and 31 south, keeping 15.9 from the Docks. The Firths (2 east, 10 north) and the Dales (15.5 east) keep their moves.
+- **The table** is now **W 106, D 112, cx -50, cz 10**. The coast is redrawn round the new layout:
+  - the Pennine coast and Kent's shore;
+  - the estuary's north shore east of the Docks;
+  - the south coast round to Cornwall;
+  - Wales and the Exmoor shore.
+- **City ground.** One London ground tint runs from Westminster to the Docks. Five London terraces now stand north of the river between them.
+- **Harness rule.** `london-world.mjs` exempts the Westminster / Docks pair from the countryside gap (and from the old 8-apart anchor rule), and records why. Every other pair must still have at least 14.97 of open ground between footprint hulls:
+
+| Pair | Open ground |
+| --- | --- |
+| Docks / West Country | 15.9 (the lowest) |
+| Weald / Dales | 16.4 |
+| Docks / Weald | 17.0 |
+| Dales / Firths | 19.2 |
+| Westminster / West Country | 22.2 |
+
+  Westminster / Docks is now 4.7 of city ground.
+
+### 2. "A bit too few things in one region"
+
+`london-life.ts` is new. It adds only things that are not clickable:
+
+- **London:** five terraces.
+- **The Weald:** a village of three Kentish cottages and six more hop rows.
+- **The Dales:** two dale barns, a mill with its brick chimney, and nine lengths of dry-stone wall along the moor road.
+- **Beside the West Country:** a fenced pasture with two still cattle, which is the only livestock added. The sheep pen found no spot.
+- **People:** two new walker lanes with four residents, on the London–Weald road and the West Country road across Dartmoor.
+- **Separating landscape, re-sited for the new layout:**
+  - the North Downs between London and the Weald;
+  - Exmoor between London and the West Country;
+  - Dartmoor between the West Country and the Docks;
+  - a wood on the Downs' south slope.
+
+How the checks apply:
+
+- Every building goes through `placeBuilding`: a unit off the water, off roads, clear of pads and approaches, and off every stand's ten rays.
+- Every other piece goes through `tryPlace`.
+- Later scenery keeps clear of the new buildings (`onHouse` now knows them).
+- The harness counts `uk-village`, `uk-barn`, `uk-mill` and `uk-pasture` as ray blockers.
+- The five decorative-house rule still counts only the original `britain-house` styles.
+
+### 3. "Areas available in the dropdown, not just Britain"
+
+The single `london` area is split into five areas in `AREAS`:
+
+| Area | Name | Centre |
+| --- | --- | --- |
+| `london` | London · Westminster & the Docks | [-58, 21] |
+| `weald` | The Weald | [-14.4, 11] |
+| `dales` | The Dales & Mill Towns | [-27.7, -18.6] |
+| `westcountry` | The West Country | [-84, 48.1] |
+| `firths` | The Firths & Herring Coast | [-65.6, -30.8] |
+
+- Every object's `area` is set from its cluster (`UK_CLUSTER_AREA` in `london-objects.ts`). Recipes keep `area: "london"` and still match through `brit`.
+- `ui.ts` shows the card art for every UK object.
+- The world intro's place buttons name the regions.
+- The harnesses accept the five areas.
+- Choosing a region in the picker flies there. Choosing the West Country on the dev server glided the camera to [-84, 48.1].
+
+### Verification
+
+| Check | Result |
+| --- | --- |
+| `npx tsc --noEmit` | Passes |
+| `london-world.mjs` | Passes: 42 roads, 29 objects, 5 houses, 24 walkers, 240 s of motion. The decor count lists 8 `uk-village`, 8 `hop-row`, 2 `uk-barn`, 1 `uk-mill`, 9 `drystone-wall` and 1 `uk-pasture` |
+| `london-reactions.mjs` | Passes |
+| `npm test` | 25 of 25 harnesses pass |
+
+The contact sheet is `uk-owner-round-contact.jpg` in the builder's scratchpad. It shows the overview at 1280 x 720, the phone at 375 x 812, London, the Weald, the Dales, and the picker's options.
+
+### Open
+
+- The table is large now (106 x 112), with a wide empty sea south-east of the Docks.
+- The Southern Uplands and the wood are thin: a few pieces found no ground clear of the roads and the new buildings.
+- The picker screenshot is the option list drawn into the sheet. A native select cannot be captured open in the hidden pane.

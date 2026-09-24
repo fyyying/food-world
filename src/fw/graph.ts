@@ -13,7 +13,7 @@ import { ITALY_OBJECTS as ITALY_WORLD_OBJECTS } from "./italy-objects";
 
 export type Kind = "ingredient" | "flavour" | "technique" | "landmark" | "place" | "dish";
 export type WorldId = "china" | "italy" | "korea" | "mexico" | "middle-east" | "mediterranean" | "india" | "southeast-asia" | "north-america" | "japan" | "central-europe";
-export type Area = "sichuan" | "jiangnan" | "northern" | "xinjiang" | "everyday" | "rome" | "venice" | "sicily" | "seoul" | "jeonju" | "busan" | "jeju" | "cdmx" | "oaxaca" | "jalisco" | "yucatan" | "istanbul" | "aegean" | "anatolia" | "blacksea-tr" | "levant" | "arabia" | "persia" | "greece" | "spain" | "morocco" | "dalmatia" | "punjab" | "rajasthan" | "mumbai" | "kerala" | "bangkok" | "hanoi" | "mekong" | "newyork" | "midwest" | "texas" | "california" | "tokyo" | "kyoto" | "fuji" | "hokkaido" | "london" | "budapest" | "alps" | "georgia";
+export type Area = "sichuan" | "jiangnan" | "northern" | "xinjiang" | "everyday" | "rome" | "venice" | "sicily" | "seoul" | "jeonju" | "busan" | "jeju" | "cdmx" | "oaxaca" | "jalisco" | "yucatan" | "istanbul" | "aegean" | "anatolia" | "blacksea-tr" | "levant" | "arabia" | "persia" | "greece" | "spain" | "morocco" | "dalmatia" | "punjab" | "rajasthan" | "mumbai" | "kerala" | "bangkok" | "hanoi" | "mekong" | "newyork" | "midwest" | "texas" | "california" | "tokyo" | "kyoto" | "fuji" | "hokkaido" | "london" | "weald" | "dales" | "westcountry" | "firths" | "budapest" | "alps" | "georgia";
 
 export type EnrichedRecipe = Recipe & {
   zh?: string;
@@ -121,7 +121,12 @@ export const AREAS: Record<Area, AreaInfo> = {
   kyoto: { world: "japan", name: "Kyoto", zh: "京都", blurb: "the Golden Pavilion, the torii path, machiya, sakura on the Kamo river", center: [-24, 12] },
   fuji: { world: "japan", name: "Fuji & the lake", zh: "富士山", blurb: "the mountain, the lake, the onsen monkeys, the shinkansen", center: [6, 8] },
   hokkaido: { world: "japan", name: "Hokkaido", zh: "北海道", blurb: "the fishing port, salmon and cod, pumpkins and cabbages, the miso brewery", center: [-22, -16] },
-  london: { world: "central-europe", name: "Britain", zh: "Great Britain", blurb: "Westminster and the river, the docks, the Weald, the Dales, the West Country and the herring coast", center: [-66, 11.9] },
+  // Owner round, 2026-09-24: the UK's regions are areas of their own, so the area picker offers each of them
+  london: { world: "central-europe", name: "London", zh: "Westminster & the Docks", blurb: "Westminster on the Thames, and downstream the docks, Tower Bridge and the East End", center: [-58, 21] },
+  weald: { world: "central-europe", name: "The Weald", zh: "Kent", blurb: "hop gardens, oast houses, the woods and the pickers' cookhouse", center: [-14.4, 11] },
+  dales: { world: "central-europe", name: "The Dales & Mill Towns", zh: "Yorkshire", blurb: "the dale dairy, the flock, the fried fish shop and the forcing sheds", center: [-27.7, -18.6] },
+  westcountry: { world: "central-europe", name: "The West Country", zh: "Cornwall & the Bristol Channel", blurb: "the pasty bakehouse, the cockle sands, the cider orchard and the engine house", center: [-84, 48.1] },
+  firths: { world: "central-europe", name: "The Firths & Herring Coast", zh: "Scotland", blurb: "the curing yard, the distillery, the herring quay, the oat mill and the Forth Bridge", center: [-65.6, -30.8] },
   budapest: { world: "central-europe", name: "Budapest & the puszta", zh: "Magyarország", blurb: "the Parliament on the Danube, the baths, goulash in the bogrács, grey cattle and csikós", center: [10, -4] },
   alps: { world: "central-europe", name: "The Alps", zh: "Die Alpen", blurb: "the chalet, the cable car, cows with bells and alpine cheese", center: [-20, 14] },
   georgia: { world: "central-europe", name: "Georgia", zh: "საქართველო", blurb: "old Tbilisi, the sulfur baths, the supra, qvevri wine, beans and walnuts", center: [27, 2] },

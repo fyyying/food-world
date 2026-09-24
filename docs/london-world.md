@@ -1441,3 +1441,9 @@ The contact sheet is `uk-owner-round-contact.jpg` in the builder's scratchpad. I
 - The table is large now (106 x 112), with a wide empty sea south-east of the Docks.
 - The Southern Uplands and the wood are thin: a few pieces found no ground clear of the roads and the new buildings.
 - The picker screenshot is the option list drawn into the sheet. A native select cannot be captured open in the hidden pane.
+
+**Table trim (lead QC of a74d051, approved by the owner).** The table is now **W 106, D 110, cx -49, cz 10** (x -102 to 4, z -45 to 65), with a sea margin of about 6 to 8 round the island's extreme points.
+
+The empty sea sat inside the island's own bounding box, south-east of the Docks, so trimming the edges alone could not remove it. Kent's shore therefore now reaches south as a peninsula (x -2.6 to -20, z 23 to 46.5), with the Thames estuary as a bay between it and the Docks. No cluster moved, and nothing clickable or placed stands on the new land.
+
+The arrival target is (-49, 0, 10). The camera limits stay at 215 on desktop and 90 on a phone, and the fog follows the half-diagonal. The harness table numbers are updated. `npx tsc --noEmit`, `npm test` (25), `london-world.mjs` and `london-reactions.mjs` all pass. The shots are `uk-trim-overview.jpg` and `uk-trim-phone.jpg` in the builder's scratchpad.

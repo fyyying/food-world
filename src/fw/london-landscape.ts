@@ -24,9 +24,9 @@ import { LONDON_PROPS } from './props-london';
 import { W, WPS, ukOffset } from './london-warp';
 
 export type Pt = [number, number];
-/** Table edges after the UK re-lay (2026-09-24): Britain has the whole table, W 106, D 112, cx -50, cz 10. The old
+/** Table edges after the UK re-lay (2026-09-24): Britain has the whole table, W 106, D 110, cx -49, cz 10. The old
  *  frame's coordinates below go through `W` (london-warp.ts), which pulls the six clusters apart. */
-export const TABLE = { minX: -103, maxX: 3, minZ: -46, maxZ: 66 };
+export const TABLE = { minX: -102, maxX: 4, minZ: -45, maxZ: 65 };
 export const atEdgeX = (x: number) => x <= TABLE.minX || x >= TABLE.maxX;
 export const atEdgeZ = (z: number) => z <= TABLE.minZ || z >= TABLE.maxZ;
 /** The band rule: Britain owns the whole table now; there is no continent and no strait. */
@@ -76,7 +76,8 @@ export const ISLAND: Pt[] = [
   ...NORTH_EAST,                                                                                      // the Dales' coast and the north-east cape
   ...WPS([[-35.6, -20], [-35.4, -17]]), [-19.8, -12.2], [-14.0, -10.5], [-6.0, -7.8], [-2.4, -3.0], [-2.6, 3.5],   // the Pennine coast
   [-4.4, 8.0], [-4.4, 11.5], [-4.8, 16.1], [-4.9, 19.1], [-4.0, 23.0],                                // the Weald's shore, Kent
-  [-6.5, 25.0], [-14.0, 25.6], [-24.0, 25.3], [-31.0, 25.8], [-35.4, 26.4],                           // the Thames estuary's north shore
+  [-3.0, 28.0], [-2.6, 36.0], [-5.0, 43.0], [-10.0, 46.5], [-16.0, 45.5], [-19.0, 40.0],             // Kent reaching south (table trim, 2026-09-24)
+  [-20.5, 33.0], [-24.0, 29.0], [-31.0, 26.8], [-35.4, 26.4],                                         // the Thames estuary between Kent and the Docks
   ...WPS([[-35.4, 19.5]]),                                                                            // the Docks' east bank
   ...ESTUARY,                                                                                         // the Thames's mouth below Tower Bridge
   ...WPS([[-52, 27], [-56, 26.9]]), [-58.5, 45.5], [-62.5, 51.5], [-66.5, 56.5], [-70.5, 58.4],       // the south coast, round to Cornwall
